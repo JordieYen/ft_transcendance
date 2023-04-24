@@ -11,35 +11,39 @@ const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const typeorm_1 = require("@nestjs/typeorm");
+const config_1 = require("@nestjs/config");
 const core_1 = require("@nestjs/core");
+const typeorm_2 = require("./typeorm");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            config_1.ConfigModule.forRoot({ isGlobal: true }),
             typeorm_1.TypeOrmModule.forRootAsync({
-                useFactory: (ModuleRef) => ({
+                imports: [config_1.ConfigModule],
+                useFactory: (ConfigService) => ({
                     type: 'postgres',
-                    host: 'localhost',
-                    port: 5432,
-                    username: 'postgres',
-                    password: "password",
-                    database: "mydb",
-                    autoLoadEntities: true,
+                    host: ConfigService.get('DB_HOST'),
+                    port: ConfigService.get('DB_PORT'),
+                    username: ConfigService.get('DB_USERNAME'),
+                    password: ConfigService.get('DB_PASSWORD'),
+                    database: ConfigService.get('DB_NAME'),
+                    entities: typeorm_2.default,
                     synchronize: true,
-                    keepConnectionAlive: true,
-                    contextId: '__typeorm__',
-                    extrac: {
-                        max: 30,
-                        min: 2,
-                        idleTimeoutMillis: 1000,
-                    },
                 }),
-                inject: [core_1.ModuleRef],
+                inject: [config_1.ConfigService],
             }),
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [
+            app_service_1.AppService,
+            {
+                provide: 'MY_MODULE_REF',
+                useValue: core_1.ModuleRef,
+            },
+        ],
+        exports: ['MY_MODULE_REF', typeorm_1.TypeOrmModule],
     })
 ], AppModule);
 exports.AppModule = AppModule;
