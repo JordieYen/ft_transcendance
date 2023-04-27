@@ -4,11 +4,9 @@ WORKDIR /app
 
 COPY . /app
 
-RUN npm install --verbose
+RUN npm install --verbose && npm run build
 
 EXPOSE 3000
-
-# SHELL ["/bin/bash", "-c"]
 
 CMD ["npm", "run", "start:prod"]
 
