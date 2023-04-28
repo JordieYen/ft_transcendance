@@ -3,7 +3,7 @@ import { IsEmail } from 'class-validator';
 import bcrypt from 'bcrypt';
 
 @Entity()
-export class User {
+export class User2 {
     @PrimaryGeneratedColumn({
         type: 'int',
         name: 'user_id',
