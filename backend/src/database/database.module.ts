@@ -7,7 +7,7 @@ import entities from '../typeorm';
     imports: [
         ConfigModule.forRoot({ 
             isGlobal: true,
-            envFilePath: ['.env'],
+            envFilePath: ['../.env'],
         }),
         TypeOrmModule.forRootAsync({
             imports: [ ConfigModule],
@@ -23,6 +23,7 @@ import entities from '../typeorm';
                 //   __dirname + '/**/*.entity{.ts,.js}',
                 // ],
                 entities: entities,
+                autoLoadEntities: true,
                 synchronize: true,
             }),
         }),

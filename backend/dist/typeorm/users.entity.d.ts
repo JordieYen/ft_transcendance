@@ -1,4 +1,4 @@
-export declare class User {
+export declare class Users {
     id: number;
     username: string;
     boolean: boolean;

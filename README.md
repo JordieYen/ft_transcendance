@@ -57,3 +57,4 @@ export class UserController {
 # Reference
 1. [Postgresql with nestjs](https://blog.devgenius.io/setting-up-nestjs-with-postgresql-ac2cce9045fe)
 2. [TypeOrmCoreModule dependencies issue](https://www.youtube.com/watch?v=O0fzKqswwJs)
+3. [42 API](https://api.intra.42.fr/apidoc/guides/web_application_flow)

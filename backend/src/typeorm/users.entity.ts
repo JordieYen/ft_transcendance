@@ -1,9 +1,11 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { IsEmail } from 'class-validator';
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
+
 
 @Entity()
-export class User {
+export class Users {
     @PrimaryGeneratedColumn({
         type: 'int',
         name: 'user_id',
