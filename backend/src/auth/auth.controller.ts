@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios/dist/http.service';
-import { Controller, Get, Req, Res } from '@nestjs/common';
+import { Controller, Get, Query, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
@@ -13,8 +13,18 @@ export class AuthController {
     private readonly authService: AuthService
   ) {}
 
-  @Get('42')
-  redirectTo42OAuth(@Res() res: Response) {
+  @Get('login')
+  login(@Res() res: Response) {
     return this.authService.redirectTo42OAuth(res);
+  }
+
+  @Get('callback')
+  async callback(@Query('code') code: string, @Res() res: Response) {
+    try {
+      const user = await this.authService.authenticateUser(code);
+      return res.redirect('/');
+    } catch (error) {
+      console.error(error)
+    }
   }
 }

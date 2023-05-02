@@ -23,19 +23,22 @@ services:
     
   postgres:
     container_name: postgres-container
-    image: postgres:latest
+    image: postgres:buster #ls: cannot access '/docker-entrypoint-initdb.d/': Operation not permitted
+    env_file:
+      - .env
+      # - ./backend/.env
     environment:
-      POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: my_db
+        POSTGRES_INITDB_PATH: /docker-entrypoint-initdb.d/initdb.sql
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+        POSTGRES_HOST: ${DB_HOST}
+        POSTGRES_PORT: ${DB_PORT}
+        POSTGRES_USER: ${DB_USERNAME}
+        POSTGRES_DB: ${DB_NAME}
     ports:
       - 5432:5432
-    # env_file:
-    #   - .env
     volumes:
       - data:/var/lib/postgresql/data
+      - ./backend/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
     restart: on-failure
     networks:
       - backend

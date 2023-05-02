@@ -19,13 +19,18 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Get()
-  getUsers() {
-    return this.userService.getUsers();
+  async getUsers() {
+    return await this.userService.getUsers();
   }
 
   @Get('id/:id')
-  findUsersById(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.findUsersById(id);
+  async findUsersById(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.findUsersById(id);
+  }
+
+  @Get('name/:name')
+  async findUsersByName(@Param('username') username: string) {
+    return await this.userService.findUsersByName(username);
   }
 
   @Post('create')

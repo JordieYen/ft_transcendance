@@ -9,5 +9,5 @@ export declare class UsersService {
     findUsersById(id: number): Promise<Users | null>;
     findAll(): Promise<Users[]>;
     deleteUserById(id: number): Promise<import("typeorm").DeleteResult>;
-    findOne(username: string): Promise<Users>;
+    findUsersByName(username: string): Promise<Users>;
 }

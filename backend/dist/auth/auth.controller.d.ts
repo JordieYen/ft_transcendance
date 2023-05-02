@@ -7,5 +7,6 @@ export declare class AuthController {
     private readonly configService;
     private readonly authService;
     constructor(httpService: HttpService, configService: ConfigService, authService: AuthService);
-    redirectTo42OAuth(res: Response): void;
+    login(res: Response): void;
+    callback(code: string, res: Response): Promise<void>;
 }
