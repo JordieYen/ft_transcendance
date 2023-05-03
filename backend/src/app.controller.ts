@@ -9,9 +9,6 @@ export class AppController {
 
   @Get()
   getHello(): string {
-    const dbUsername = this.configService.get<string>('DB_USERNAME');
-    console.log('DB_USERNAME:', dbUsername);
     return this.appService.getHello();
-
   }
 }

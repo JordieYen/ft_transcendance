@@ -7,7 +7,7 @@ import entities from '../typeorm';
     imports: [
         // ConfigModule.forRoot({ 
         //     isGlobal: true,
-        //     envFilePath: ['../.env'],
+            // envFilePath: ['../.env'],
         // }),
         TypeOrmModule.forRootAsync({
             imports: [ ConfigModule],
@@ -29,4 +29,9 @@ import entities from '../typeorm';
         }),
     ],
 })
-export class DatabaseModule {}
+export class DatabaseModule {
+    constructor(private readonly configService: ConfigService) {
+        const dbHost = this.configService.get<string>('DB_USER');
+        console.log(`DB_HOST: ${dbHost}`);
+    }
+}

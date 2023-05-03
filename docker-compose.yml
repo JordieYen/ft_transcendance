@@ -1,4 +1,4 @@
-version: "3.0"
+version: "3.3"
 
 services:
   backend:
@@ -9,12 +9,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
-    # environment:
-    #   POSTGRES_HOST: db
-    #   POSTGRES_PORT: 5432
-    #   POSTGRES_USER: postgres
-    #   POSTGRES_PASSWORD: postgres
-    #   POSTGRES_DB: my_db
     depends_on:
       - postgres
     restart: on-failure
@@ -25,24 +19,22 @@ services:
     container_name: postgres-container
     image: postgres:buster #ls: cannot access '/docker-entrypoint-initdb.d/': Operation not permitted
     env_file:
-      - .env
-      # - ./backend/.env
+        - .env
     environment:
-        POSTGRES_INITDB_PATH: /docker-entrypoint-initdb.d/initdb.sql
         POSTGRES_PASSWORD: ${DB_PASSWORD}
         POSTGRES_HOST: ${DB_HOST}
         POSTGRES_PORT: ${DB_PORT}
-        POSTGRES_USER: ${DB_USERNAME}
-        POSTGRES_DB: ${DB_NAME}
+        POSTGRES_USER: ${DB_USER}
+        POSTGRES_DB: ${DB_DB}
     ports:
       - 5432:5432
     volumes:
       - data:/var/lib/postgresql/data
-      - ./backend/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+      - ./backend/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+      # - ./backend/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
     restart: on-failure
     networks:
       - backend
-  
 
 volumes:
   data:
@@ -51,7 +43,6 @@ volumes:
     #   type: none
     #   o: bind
     #   device: $PWD/postgres_data/
-
 
 networks:
   backend:
