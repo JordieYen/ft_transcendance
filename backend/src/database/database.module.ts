@@ -32,6 +32,8 @@ import entities from '../typeorm';
 export class DatabaseModule {
     constructor(private readonly configService: ConfigService) {
         const dbHost = this.configService.get<string>('DB_USER');
+        const dbDatabase = this.configService.get<string>('DB_NAME');
         console.log(`DB_HOST: ${dbHost}`);
+        console.log(`DB_NAME: ${dbDatabase}`);
     }
 }

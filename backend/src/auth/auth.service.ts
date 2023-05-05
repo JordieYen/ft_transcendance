@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { Users } from 'src/typeorm/users.entity';
 import { HttpService } from '@nestjs/axios';
-
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -26,42 +26,58 @@ export class AuthService {
 
     redirectTo42OAuth(res: Response) {
         const client_id = this.configService.get<string>('CLIENT_ID');
-        // const clientSecret = this.configService.get<string>('CLIENT_SECRET');
-        // const client_id = 'u-s4t2ud-u-s4t2ud-134d3bd57fda8066d5380d71a2d111f5fceab951ecb10cf1b88f9ea3994278b4';
-        // const redirect_uri = `${res.protocol}://${req.get('host')}/auth/42/callback`;
-        const redirect_uri = 'http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fcallback';
-
+        const redirect_uri = `http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fcallback`;
         const authorizeUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=public`;
         return res.redirect(authorizeUrl);
     }
 
     async authenticateUser(code: string) : Promise<Users> {
 
-        const response = await this.httpService.post(
-            'https://api.intra.42.fr/oauth/token',
-            {
+        try {
+            const { data: tokenResponse } = await axios.post('https://api.intra.42.fr/oauth/token', {
                 grant_type: 'authorization_code',
                 client_id: this.configService.get<string>('CLIENT_ID'),
                 client_secret: this.configService.get<string>('CLIENT_SECRET'),
-                code,
                 redirect_uri: 'http://localhost:3000/auth/callback',
+                code,
+            });
+    
+            // const accessToken = response.data.access_token;
+            const accessToken = tokenResponse.access_token;
+            console.log(accessToken);
 
-            },
-        ).toPromise();
+            const profileResponse =  await axios.get(
+                'https://api.intra.42.fr/v2/me',
+                {
+                    headers: {Authorization: `Bearer ${accessToken}`},
+                },
+                );
+            console.log('Profile reposnze', profileResponse);
+            const user = new Users();
+            user.email = profileResponse.data.email;
+            user.username =  profileResponse.data.login;
+            user.boolean = true;
+            user.role = 'user';
+            user.password = profileResponse.data.login;
+            // const tokens = await this.authService.signIn(intra_data.data.login);
+            console.log(user.username);
+            console.log(user.email);
 
-        const accessToken = response.data.access_token;
-        const profileResponse =  await this.httpService.get(
-            'https://api.intra.42.fr/v2/me',
-            {
-                headers: {Authorization: `Bearer ${accessToken}`},
-            },
-        ).toPromise();
-
-        const user = new Users();
-        user.email = profileResponse.data.email;
-        user.username =  profileResponse.data.username;
-        // const tokens = await this.authService.signIn(intra_data.data.login);
-        console.log(user.username);
-        return (user);
+            const existingUser = await this.userService.findUsersByEmail({ email: user.email });
+            if (existingUser)
+                return (existingUser);
+            else 
+                return await this.userService.createUser(user);
+        } catch (error) {
+            if (error.response) {
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                console.log('REQUEST', error.request);
+            } else {
+                console.log('Error', error.message);
+            }
+        };
     }
 }

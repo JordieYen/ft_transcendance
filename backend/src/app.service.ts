@@ -10,4 +10,8 @@ export class AppService {
     return 'Hello World!';
   }
 
+  getSuccesslogin(): string {
+    return "successfully login!";
+  }
+
 }

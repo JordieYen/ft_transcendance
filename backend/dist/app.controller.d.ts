@@ -5,4 +5,5 @@ export declare class AppController {
     private readonly configService;
     constructor(appService: AppService, configService: ConfigService);
     getHello(): string;
+    getSuccesslogin(): string;
 }

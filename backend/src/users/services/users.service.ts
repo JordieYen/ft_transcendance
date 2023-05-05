@@ -40,4 +40,8 @@ export class UsersService {
   async findUsersByName(username: string): Promise<Users> {
     return await this.usersRepository.findOneBy({ username });
   }
+
+  async findUsersByEmail(email: any): Promise<Users> {
+    return await this.usersRepository.findOneBy({ email });
+  }
 }

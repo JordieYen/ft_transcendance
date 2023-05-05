@@ -10,4 +10,5 @@ export declare class UsersService {
     findAll(): Promise<Users[]>;
     deleteUserById(id: number): Promise<import("typeorm").DeleteResult>;
     findUsersByName(username: string): Promise<Users>;
+    findUsersByEmail(email: any): Promise<Users>;
 }

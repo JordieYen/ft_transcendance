@@ -11,4 +11,9 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  @Get('success')
+  getSuccesslogin(): string {
+    return this.appService.getSuccesslogin()
+  }
 }
