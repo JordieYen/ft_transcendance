@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Response } from 'express';
+import { Request, request, Response } from 'express';
 
 
 @Controller('auth')

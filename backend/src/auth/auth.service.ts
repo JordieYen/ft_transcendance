@@ -59,18 +59,20 @@ export class AuthService {
             user.boolean = true;
             user.role = 'user';
             user.password = profileResponse.data.login;
-            // const tokens = await this.authService.signIn(intra_data.data.login);
             console.log(user.username);
             console.log(user.email);
-
             const existingUser = await this.userService.findUsersByEmail({ email: user.email });
             if (existingUser)
                 return (existingUser);
-            else 
+            else
+            {
+                console.log('CREATE USER');
+                
                 return await this.userService.createUser(user);
+            } 
         } catch (error) {
             if (error.response) {
-                console.log(error.response.data);
+                console.log('RESPONSE', error.response.data);
                 console.log(error.response.status);
                 console.log(error.response.headers);
             } else if (error.request) {
