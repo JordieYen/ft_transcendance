@@ -6,6 +6,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -16,8 +18,20 @@ import { ConfigService } from '@nestjs/config';
       isGlobal: true,
       envFilePath: '../.env'
   }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', '..', 'frontend'),
+      // rootPath: join(process.cwd(), '..', 'frontend'),
+      serveRoot: '/frontend',
+      // exclude: ['/api*'],
+    })
   ],
   controllers: [AppController ],
   providers: [ AppService ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    console.log('dirname:', __dirname);
+    console.log('join dirname:', join(__dirname, '..', '..', 'frontend'));
+    console.log('cwd', join(process.cwd(), '..', 'frontend'));
+  }
+}
