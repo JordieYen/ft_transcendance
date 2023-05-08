@@ -19,7 +19,7 @@ import { join } from 'path';
       envFilePath: '../.env'
   }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', '..', 'frontend'),
+      rootPath: join(__dirname, '..', '..', '..', 'frontend', 'src'),
       // rootPath: join(process.cwd(), '..', 'frontend'),
       serveRoot: '/frontend',
       // exclude: ['/api*'],
@@ -31,7 +31,7 @@ import { join } from 'path';
 export class AppModule {
   constructor() {
     console.log('dirname:', __dirname);
-    console.log('join dirname:', join(__dirname, '..', '..', 'frontend'));
+    console.log('join dirname:', join(__dirname, '..', '..', '..', 'frontend', 'src'));
     console.log('cwd', join(process.cwd(), '..', 'frontend'));
   }
 }

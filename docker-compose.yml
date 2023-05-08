@@ -1,6 +1,23 @@
 version: "3.3"
 
 services:
+
+  frontend:
+    container_name: frontend-container
+    image: frontend:latest
+    build:
+        context: ./frontend
+        dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    restart: on-failure
+    networks:
+      - backend
+
   backend:
     container_name: backend-container
     image: backend:latest
@@ -9,6 +26,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
+    env_file:
+       - .env
     depends_on:
       - postgres
     restart: on-failure

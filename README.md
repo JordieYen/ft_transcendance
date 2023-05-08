@@ -66,3 +66,4 @@ $ initdb -D /path/to/data/directory
 1. [Postgresql with nestjs](https://blog.devgenius.io/setting-up-nestjs-with-postgresql-ac2cce9045fe)
 2. [TypeOrmCoreModule dependencies issue](https://www.youtube.com/watch?v=O0fzKqswwJs)
 3. [42 API](https://api.intra.42.fr/apidoc/guides/web_application_flow)
+4. [Notion](https://www.notion.so/a615f8244a264c3d8cd42a9a0159d34d?v=b19aec694fe74401af8ad859f3b31a15&p=021309324ca745a0ac61fac8f57e57a9&pm=s)

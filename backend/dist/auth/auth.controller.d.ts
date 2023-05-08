@@ -1,9 +1,12 @@
 import { AuthService } from './auth.service';
 import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 export declare class AuthController {
     private readonly authService;
-    constructor(authService: AuthService);
-    login(res: Response): void;
+    private readonly configService;
+    constructor(authService: AuthService, configService: ConfigService);
+    login(res: Response): Promise<void>;
     loginPage(res: Response): void;
+    loginPageTsx(res: Response): void;
     callback(code: string, res: Response): Promise<void>;
 }

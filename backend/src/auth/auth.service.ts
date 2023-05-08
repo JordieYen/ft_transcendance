@@ -24,11 +24,15 @@ export class AuthService {
         return (null);
     }
 
-    redirectTo42OAuth(res: Response) {
+    async redirectTo42OAuth(res: Response) {
         const client_id = this.configService.get<string>('CLIENT_ID');
         const redirect_uri = `http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fcallback`;
         const authorizeUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=public`;
-        return res.redirect(authorizeUrl);
+        // return res.redirect(authorizeUrl);
+        const response = await axios.post(authorizeUrl);
+        console.log('response...', response.data);
+        
+        res.redirect(response.data);
     }
 
     async authenticateUser(code: string) : Promise<Users> {
