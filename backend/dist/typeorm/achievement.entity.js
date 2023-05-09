@@ -9,33 +9,29 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Stat = void 0;
+exports.Achievement = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
-let Stat = class Stat {
+let Achievement = class Achievement {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], Stat.prototype, "id", void 0);
+], Achievement.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => user_entity_1.User, user => user.stat),
+    (0, typeorm_1.OneToOne)(() => user_entity_1.User, user => user.achievement),
     __metadata("design:type", user_entity_1.User)
-], Stat.prototype, "user", void 0);
+], Achievement.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
-], Stat.prototype, "wins", void 0);
+], Achievement.prototype, "achievement_1", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
-], Stat.prototype, "losses", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Stat.prototype, "mmr", void 0);
-Stat = __decorate([
+], Achievement.prototype, "achievement_2", void 0);
+Achievement = __decorate([
     (0, typeorm_1.Entity)()
-], Stat);
-exports.Stat = Stat;
-//# sourceMappingURL=stats.entity.js.map
+], Achievement);
+exports.Achievement = Achievement;
+//# sourceMappingURL=achievement.entity.js.map

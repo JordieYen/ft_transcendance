@@ -9,70 +9,63 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User2 = void 0;
+exports.Channel = void 0;
 const typeorm_1 = require("typeorm");
-const class_validator_1 = require("class-validator");
-const bcrypt_1 = require("bcrypt");
-let User2 = class User2 {
+const bcrypt = require("bcrypt");
+const channel_user_entity_1 = require("./channel_user.entity");
+const Message_entity_1 = require("./Message.entity");
+var ChannelType;
+(function (ChannelType) {
+    ChannelType["Public"] = "public";
+    ChannelType["Private"] = "private";
+    ChannelType["Protected"] = "protected";
+    ChannelType["Direct"] = "direct";
+})(ChannelType || (ChannelType = {}));
+let Channel = class Channel {
     hashPassword() {
-        this.password = bcrypt_1.default.hashSync(this.password, 10);
+        if (this.channel_type === ChannelType.Private || this.channel_type === ChannelType.Protected)
+            this.channel_hash = bcrypt.hashSync(this.channel_hash, 10);
     }
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)({
-        type: 'int',
-        name: 'user_id',
-    }),
-    __metadata("design:type", Number)
-], User2.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        nullable: false,
-        default: '',
-        unique: true,
-    }),
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", String)
-], User2.prototype, "username", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Boolean)
-], User2.prototype, "boolean", void 0);
+], Channel.prototype, "channel_uid", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], User2.prototype, "password", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
-], User2.prototype, "email", void 0);
+], Channel.prototype, "channel_name", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], User2.prototype, "role", void 0);
+], Channel.prototype, "channel_type", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Channel.prototype, "channel_hash", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => channel_user_entity_1.ChannelUser, channelUser => channelUser.channel),
+    __metadata("design:type", Array)
+], Channel.prototype, "channelUser", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'timestamp',
         default: () => 'CURRENT_TIMESTAMP',
     }),
     __metadata("design:type", Date)
-], User2.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
-        onUpdate: 'CURRENT_TIMESTAMP',
-    }),
-    __metadata("design:type", Date)
-], User2.prototype, "updatedAt", void 0);
+], Channel.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], User2.prototype, "hashPassword", null);
-User2 = __decorate([
+], Channel.prototype, "hashPassword", null);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Message_entity_1.Message, message => message.channel),
+    __metadata("design:type", Array)
+], Channel.prototype, "messages", void 0);
+Channel = __decorate([
     (0, typeorm_1.Entity)()
-], User2);
-exports.User2 = User2;
-//# sourceMappingURL=user2.entity.js.map
+], Channel);
+exports.Channel = Channel;
+//# sourceMappingURL=channel.entity.js.map

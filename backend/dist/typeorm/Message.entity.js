@@ -9,33 +9,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Stat = void 0;
+exports.Message = void 0;
 const typeorm_1 = require("typeorm");
+const channel_entity_1 = require("./channel.entity");
 const user_entity_1 = require("./user.entity");
-let Stat = class Stat {
+let Message = class Message {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], Stat.prototype, "id", void 0);
+], Message.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => user_entity_1.User, user => user.stat),
+    (0, typeorm_1.ManyToOne)(() => channel_entity_1.Channel, channel => channel.messages),
+    __metadata("design:type", channel_entity_1.Channel)
+], Message.prototype, "channel", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.messages),
     __metadata("design:type", user_entity_1.User)
-], Stat.prototype, "user", void 0);
+], Message.prototype, "sender", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Stat.prototype, "wins", void 0);
+    __metadata("design:type", String)
+], Message.prototype, "message_content", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Stat.prototype, "losses", void 0);
+    __metadata("design:type", String)
+], Message.prototype, "message_type", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Stat.prototype, "mmr", void 0);
-Stat = __decorate([
+    (0, typeorm_1.Column)({
+        type: 'timestamp',
+        default: () => 'CURRENT_TIMESTAMP',
+    }),
+    __metadata("design:type", Date)
+], Message.prototype, "createdAt", void 0);
+Message = __decorate([
     (0, typeorm_1.Entity)()
-], Stat);
-exports.Stat = Stat;
-//# sourceMappingURL=stats.entity.js.map
+], Message);
+exports.Message = Message;
+//# sourceMappingURL=Message.entity.js.map

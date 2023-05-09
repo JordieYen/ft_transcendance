@@ -14,6 +14,8 @@ services:
       - .env
     depends_on:
       - postgres
+    volumes:
+      - ./frontend:/frontend;
     restart: on-failure
     networks:
       - backend
@@ -30,6 +32,8 @@ services:
        - .env
     depends_on:
       - postgres
+    # volumes:
+    #   - ./backend:/backend;
     restart: on-failure
     networks:
       - backend

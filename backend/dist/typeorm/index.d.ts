@@ -1,5 +1,10 @@
+import { Achievement } from "./achievement.entity";
+import { Channel } from "./channel.entity";
+import { ChannelUser } from "./channel_user.entity";
+import { Friend } from "./friends.entity";
 import { MatchHistory } from "./match_history.entity";
-import { Users } from "./users.entity";
-declare const entities: (typeof MatchHistory | typeof Users)[];
-export { Users, MatchHistory };
+import { Message } from "./Message.entity";
+import { Stat } from "./stats.entity";
+import { User } from "./user.entity";
+declare const entities: (typeof User | typeof MatchHistory | typeof Stat | typeof Achievement | typeof Friend | typeof Channel | typeof ChannelUser | typeof Message)[];
 export default entities;

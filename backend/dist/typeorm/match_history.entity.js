@@ -11,24 +11,33 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MatchHistory = void 0;
 const typeorm_1 = require("typeorm");
+const user_entity_1 = require("./user.entity");
 let MatchHistory = class MatchHistory {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], MatchHistory.prototype, "match_uid", void 0);
+], MatchHistory.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], MatchHistory.prototype, "winner_uid", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.p1_match, { nullable: false }),
     __metadata("design:type", Number)
 ], MatchHistory.prototype, "p1_uid", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.p2_match, { nullable: false }),
     __metadata("design:type", Number)
 ], MatchHistory.prototype, "p2_uid", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], MatchHistory.prototype, "p1_score", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], MatchHistory.prototype, "p2_score", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'timestamp',

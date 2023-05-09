@@ -1,4 +1,9 @@
-import { BeforeInsert, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Achievement } from './achievement.entity';
+import { ChannelUser } from './channel_user.entity';
+import { Friend } from './friends.entity';
+import { MatchHistory } from './match_history.entity';
+import { Message } from './Message.entity';
 import { Stat } from './stats.entity';
 
 @Entity()
@@ -32,6 +37,24 @@ export class User {
     updatedAt: Date;
 
     @OneToOne(() => Stat)
-    @JoinColumn()
     stat: Stat;
+
+    @OneToOne(() => Achievement, achievement => achievement.user)
+    achievement: Achievement;
+
+    @OneToMany(() => MatchHistory, matchHistory => matchHistory.p1_uid)
+    p1_match: MatchHistory[];
+
+    @OneToMany(() => MatchHistory, matchHistory => matchHistory.p2_uid)
+    p2_match: MatchHistory[];
+
+    @ManyToMany(() => Friend, friend => [friend.user1, friend.user2])
+    friends: Friend[];
+
+    @OneToMany(() => ChannelUser, channelUser => channelUser.user)
+    channelMember: ChannelUser[];
+
+    @OneToMany(() => Message, message => message.sender)
+    messages: Message[];
+
 }
