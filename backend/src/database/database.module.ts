@@ -24,8 +24,8 @@ import entities from '../typeorm';
                 // ],
                 entities: entities,
                 autoLoadEntities: true,
-                // synchronize: true,
-                synchronize: false
+                synchronize: true,
+                // synchronize: false
             }),
         }),
     ],

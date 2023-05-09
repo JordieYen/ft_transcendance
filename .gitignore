@@ -1,7 +1,7 @@
 /node_modules
 /dist
 /*/node_modules
-*.js
+# *.js
 node_modules
 .DS_Store
 .env

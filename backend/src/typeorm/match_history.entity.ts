@@ -1,12 +1,12 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class MatchHistory {
     @PrimaryGeneratedColumn()
-    match_uid: number;
+    id: number;
 
     @Column()
-    winner_uid: number;
+    winner_uid: number; 
 
     @Column()
     p1_uid: number;
