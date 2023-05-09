@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MatchHistoryModule } from './match-history/match-history.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { join } from 'path';
       // rootPath: join(process.cwd(), '..', 'frontend'),
       serveRoot: '/frontend',
       // exclude: ['/api*'],
-    })
+    }),
+    MatchHistoryModule
   ],
   controllers: [AppController ],
   providers: [ AppService ],

@@ -1,5 +1,5 @@
 export declare class MatchHistory {
-    match_uid: number;
+    id: number;
     winner_uid: number;
     p1_uid: number;
     p2_uid: number;

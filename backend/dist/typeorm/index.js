@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MatchHistory = exports.Users = void 0;
 const match_history_entity_1 = require("./match_history.entity");
-Object.defineProperty(exports, "MatchHistory", { enumerable: true, get: function () { return match_history_entity_1.MatchHistory; } });
-const users_entity_1 = require("./users.entity");
-Object.defineProperty(exports, "Users", { enumerable: true, get: function () { return users_entity_1.Users; } });
-const entities = [users_entity_1.Users, match_history_entity_1.MatchHistory];
+const stats_entity_1 = require("./stats.entity");
+const user_entity_1 = require("./user.entity");
+const entities = [
+    user_entity_1.User,
+    match_history_entity_1.MatchHistory,
+    stats_entity_1.Stat
+];
 exports.default = entities;
 //# sourceMappingURL=index.js.map
