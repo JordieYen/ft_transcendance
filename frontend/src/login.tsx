@@ -12,8 +12,9 @@ const Login: React.FC<LoginProps> = ({ redirectUrl }) => {
         console.log('handle login with 42');
         
         const response = await axios.get('http://localhost:3000/auth/login');
+        // const response = await axios.get('http://backend-container:3000/auth/login');
         console.log('response');
-        window.location.href = response.data;
+        window.location.href = response.data.redirectUrl;
        } catch (error) {
          console.error(error); 
        }

@@ -1,5 +1,5 @@
+import { MatchHistory } from "./match_history.entity";
 import { Users } from "./users.entity";
-import { User2 } from "./user2.entity";
-declare const entities: (typeof Users)[];
-export { Users, User2 };
+declare const entities: (typeof Users | typeof MatchHistory)[];
+export { Users, MatchHistory };
 export default entities;

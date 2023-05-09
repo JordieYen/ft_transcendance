@@ -1,14 +1,15 @@
 FROM node:18.16-alpine3.16
 
-# RUN apk update && apk upgrade
-
-# RUN apk add --no-cache bash got openssh
-
 WORKDIR /app
 
-COPY . /app
+COPY package.json .
+COPY package-lock.json .
 
-RUN npm install --verbose && npm run build
+RUN npm install
+
+COPY . .
+
+RUN npm run build
 
 EXPOSE 3000
 

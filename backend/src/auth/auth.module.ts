@@ -9,7 +9,7 @@ import { HttpModule, HttpService } from '@nestjs/axios';
 
 @Module({
   imports: [ TypeOrmModule.forFeature([Users]), HttpModule],
-  providers: [AuthService, UsersService, ConfigService, HttpService,
+  providers: [AuthService, UsersService, ConfigService,
   {
     provide: 'AXIOS_INSTANCE_TOKEN',
     useValue: new HttpService(),

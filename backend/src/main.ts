@@ -3,8 +3,8 @@ import { AppModule } from './app.module';
 import * as session from 'express-session';
 import { generate } from 'randomstring';
 import { ConfigService } from '@nestjs/config'
-import * as express from 'express';
-import { join } from 'path';
+import { setupSwagger } from 'src/swagger.config';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,9 +12,10 @@ async function bootstrap() {
   app.enableCors({
     origin: 'http://localhost:3001', // Replace with the URL of your React frontend
     methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
+    allowedHeaders: 'Content-Type, Accept',
     credentials: true, // Set this to true if you need to include cookies in the request
   });
-
+  setupSwagger(app);
   app.use(session({
     secret: configService.get<string>('CLIENT_SECRET'),
     resave: false,

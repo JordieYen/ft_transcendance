@@ -2,7 +2,7 @@ import { UsersService } from 'src/users/services/users.service';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { Users } from 'src/typeorm/users.entity';
-import { HttpService } from '@nestjs/axios';
+import { HttpService } from '@nestjs/axios/dist/http.service';
 export declare class AuthService {
     private readonly userService;
     private readonly configService;

@@ -17,7 +17,7 @@ export class AuthController {
   login(@Res() res: Response) {
     console.log('loging backend');
     return (this.authService.redirectTo42OAuth(res));
-  } 
+  }
 
   // @Get('login')
   // async login(@Res() res: Response) {
@@ -49,7 +49,7 @@ export class AuthController {
 
   @Get('loginpagetsx')
   loginPageTsx(@Res() res: Response) {
-    return res.redirect('http://localhost:3000/login');
+    return res.redirect('http://localhost:3000/auth/login');
   }
 
 
