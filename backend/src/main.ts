@@ -12,7 +12,7 @@ async function bootstrap() {
   app.enableCors({
     origin: 'http://localhost:3001', // Replace with the URL of your React frontend
     methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
-    allowedHeaders: 'Content-Type, Accept',
+    // allowedHeaders: 'Content-Type, Accept',
     credentials: true, // Set this to true if you need to include cookies in the request
   });
   setupSwagger(app);

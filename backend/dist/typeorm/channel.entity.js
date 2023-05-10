@@ -13,7 +13,7 @@ exports.Channel = void 0;
 const typeorm_1 = require("typeorm");
 const bcrypt = require("bcrypt");
 const channel_user_entity_1 = require("./channel_user.entity");
-const Message_entity_1 = require("./Message.entity");
+const message_entity_1 = require("./message.entity");
 var ChannelType;
 (function (ChannelType) {
     ChannelType["Public"] = "public";
@@ -61,7 +61,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], Channel.prototype, "hashPassword", null);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => Message_entity_1.Message, message => message.channel),
+    (0, typeorm_1.OneToMany)(() => message_entity_1.Message, message => message.channel),
     __metadata("design:type", Array)
 ], Channel.prototype, "messages", void 0);
 Channel = __decorate([

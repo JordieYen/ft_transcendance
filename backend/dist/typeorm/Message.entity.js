@@ -46,4 +46,4 @@ Message = __decorate([
     (0, typeorm_1.Entity)()
 ], Message);
 exports.Message = Message;
-//# sourceMappingURL=Message.entity.js.map
+//# sourceMappingURL=message.entity.js.map

@@ -17,10 +17,12 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const path_1 = require("path");
 const config_1 = require("@nestjs/config");
+const http_service_1 = require("@nestjs/axios/dist/http.service");
 let AuthController = class AuthController {
-    constructor(authService, configService) {
+    constructor(authService, configService, httpService) {
         this.authService = authService;
         this.configService = configService;
+        this.httpService = httpService;
     }
     login(res) {
         console.log('loging backend');
@@ -36,7 +38,7 @@ let AuthController = class AuthController {
         try {
             const user = await this.authService.authenticateUser(code);
             console.log("callback");
-            return (res.redirect('http://localhost:3000/success'));
+            return (res.redirect('http://localhost:3001/pong-main'));
         }
         catch (error) {
             console.log('---------ERRRRRORRRRR--------');
@@ -76,7 +78,8 @@ __decorate([
 AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        http_service_1.HttpService])
 ], AuthController);
 exports.AuthController = AuthController;
 //# sourceMappingURL=auth.controller.js.map

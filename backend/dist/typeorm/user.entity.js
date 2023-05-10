@@ -15,7 +15,7 @@ const achievement_entity_1 = require("./achievement.entity");
 const channel_user_entity_1 = require("./channel_user.entity");
 const friends_entity_1 = require("./friends.entity");
 const match_history_entity_1 = require("./match_history.entity");
-const Message_entity_1 = require("./Message.entity");
+const message_entity_1 = require("./message.entity");
 const stats_entity_1 = require("./stats.entity");
 let User = class User {
 };
@@ -79,7 +79,7 @@ __decorate([
     __metadata("design:type", Array)
 ], User.prototype, "channelMember", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => Message_entity_1.Message, message => message.sender),
+    (0, typeorm_1.OneToMany)(() => message_entity_1.Message, message => message.sender),
     __metadata("design:type", Array)
 ], User.prototype, "messages", void 0);
 User = __decorate([

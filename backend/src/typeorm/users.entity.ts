@@ -1,6 +1,5 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { IsEmail } from 'class-validator';
-// import bcrypt from 'bcrypt';
 import * as bcrypt from 'bcrypt';
 
 

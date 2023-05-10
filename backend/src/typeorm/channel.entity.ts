@@ -1,7 +1,7 @@
 import { BeforeInsert, Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { ChannelUser } from "./channel_user.entity";
-import { Message } from "./Message.entity";
+import { Message } from "./message.entity";
 
 enum ChannelType {
     Public = 'public',

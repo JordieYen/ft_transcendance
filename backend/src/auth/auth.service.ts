@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/services/users.service';
-import { compareSync } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { Users } from 'src/typeorm/users.entity';
@@ -15,19 +14,14 @@ export class AuthService {
         private readonly httpService: HttpService
     ) {}
 
-    async validateUser(username: string, password: string): Promise<any> {
-        const user = await this.userService.findUsersByName(username);
-        if (user && compareSync(password, user.password)) {
-            const { password, ...result } =  user;
-            return (result);
-        }
-        return (null);
-    }
-
     async redirectTo42OAuth(res: Response) {
         const client_id = this.configService.get<string>('CLIENT_ID');
         const redirect_uri = `http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fcallback`;
         const authorizeUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=public`;
+        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, PATCH');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
         return res.redirect(authorizeUrl);
         // Proxy the request to the API
         // const proxyResponse = await this.httpService.get(authorizeUrl).toPromise();

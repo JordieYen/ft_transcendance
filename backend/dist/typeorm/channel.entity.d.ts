@@ -1,5 +1,5 @@
 import { ChannelUser } from "./channel_user.entity";
-import { Message } from "./Message.entity";
+import { Message } from "./message.entity";
 declare enum ChannelType {
     Public = "public",
     Private = "private",
