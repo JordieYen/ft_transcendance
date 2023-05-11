@@ -19,7 +19,11 @@ __decorate([
     __metadata("design:type", Number)
 ], Stat.prototype, "id", void 0);
 __decorate([
+<<<<<<< HEAD
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.stat),
+=======
+    (0, typeorm_1.OneToOne)(() => user_entity_1.User, user => user.stat),
+>>>>>>> 56525b5ef61670041761c2190d6c528e3234d671
     __metadata("design:type", user_entity_1.User)
 ], Stat.prototype, "user", void 0);
 __decorate([
@@ -29,7 +33,11 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
+<<<<<<< HEAD
 ], Stat.prototype, "lossess", void 0);
+=======
+], Stat.prototype, "losses", void 0);
+>>>>>>> 56525b5ef61670041761c2190d6c528e3234d671
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)

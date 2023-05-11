@@ -8,44 +8,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("../users/services/users.service");
-const bcrypt_1 = require("bcrypt");
 const config_1 = require("@nestjs/config");
-const users_entity_1 = require("../typeorm/users.entity");
 const axios_1 = require("axios");
 const http_service_1 = require("@nestjs/axios/dist/http.service");
+const user_entity_1 = require("../typeorm/user.entity");
 let AuthService = class AuthService {
     constructor(userService, configService, httpService) {
         this.userService = userService;
         this.configService = configService;
         this.httpService = httpService;
     }
-    async validateUser(username, password) {
-        const user = await this.userService.findUsersByName(username);
-        if (user && (0, bcrypt_1.compareSync)(password, user.password)) {
-            const { password } = user, result = __rest(user, ["password"]);
-            return (result);
-        }
-        return (null);
-    }
     async redirectTo42OAuth(res) {
         const client_id = this.configService.get('CLIENT_ID');
         const redirect_uri = `http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fcallback`;
         const authorizeUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=public`;
+        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, PATCH');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
         return res.redirect(authorizeUrl);
     }
     async authenticateUser(code) {
@@ -62,16 +46,14 @@ let AuthService = class AuthService {
             const profileResponse = await axios_1.default.get('https://api.intra.42.fr/v2/me', {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
-            console.log('Profile reposnze', profileResponse);
-            const user = new users_entity_1.Users();
-            user.email = profileResponse.data.email;
+            console.log('Profile reposnze data', profileResponse.data);
+            const user = new user_entity_1.User();
+            user.intra_uid = profileResponse.data.id;
             user.username = profileResponse.data.login;
-            user.boolean = true;
-            user.role = 'user';
-            user.password = profileResponse.data.login;
-            console.log(user.username);
-            console.log(user.email);
-            const existingUser = await this.userService.findUsersByEmail({ email: user.email });
+            user.avatar = profileResponse.data.image.link;
+            user.online = false;
+            console.log('users info', user);
+            const existingUser = await this.userService.findUsersByName(user.username);
             if (existingUser)
                 return (existingUser);
             else {

@@ -1,16 +1,17 @@
 FROM node:18.16-alpine3.16
 
-WORKDIR /app
+WORKDIR /frontend
 
-COPY package.json .
-COPY package-lock.json .
+# COPY package.json .
+# COPY package-lock.json .
 
-RUN npm install
+# RUN npm install
+# RUN npm ci
 
-COPY . .
+# COPY . .
 
-RUN npm run build
+# RUN npm run build
 
 EXPOSE 3001
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "dev"]

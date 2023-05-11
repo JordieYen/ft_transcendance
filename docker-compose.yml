@@ -14,6 +14,8 @@ services:
       - .env
     depends_on:
       - postgres
+    volumes:
+      - ./frontend:/frontend
     restart: on-failure
     networks:
       - backend
@@ -30,13 +32,16 @@ services:
        - .env
     depends_on:
       - postgres
+    volumes:
+      - ./backend:/backend
+      - /backend/node_modules
     restart: on-failure
     networks:
       - backend
     
   postgres:
     container_name: postgres-container
-    image: postgres:buster #ls: cannot access '/docker-entrypoint-initdb.d/': Operation not permitted
+    image: postgres:buster
     env_file:
         - .env
     environment:

@@ -12,14 +12,14 @@ const auth_service_1 = require("./auth.service");
 const auth_controller_1 = require("./auth.controller");
 const users_service_1 = require("../users/services/users.service");
 const typeorm_module_1 = require("@nestjs/typeorm/dist/typeorm.module");
-const users_entity_1 = require("../typeorm/users.entity");
 const config_1 = require("@nestjs/config");
 const axios_1 = require("@nestjs/axios");
+const user_entity_1 = require("../typeorm/user.entity");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_module_1.TypeOrmModule.forFeature([users_entity_1.Users]), axios_1.HttpModule],
+        imports: [typeorm_module_1.TypeOrmModule.forFeature([user_entity_1.User]), axios_1.HttpModule],
         providers: [auth_service_1.AuthService, users_service_1.UsersService, config_1.ConfigService,
             {
                 provide: 'AXIOS_INSTANCE_TOKEN',
