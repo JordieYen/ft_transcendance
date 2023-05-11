@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class MatchHistory {
     @PrimaryGeneratedColumn()
-    id: number;
+    match_uid: number;
 
     @Column()
     winner_uid: number; 
@@ -13,6 +13,12 @@ export class MatchHistory {
 
     @Column()
     p2_uid: number;
+
+	@Column()
+	p1_score: number;
+
+	@Column()
+	p2_score: number;
 
     @Column({
         type: 'timestamp',
