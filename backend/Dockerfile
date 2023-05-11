@@ -2,10 +2,10 @@ FROM node:18.16-alpine3.16
 
 WORKDIR /backend
 
-# COPY package.json .
-# COPY package-lock.json .
+COPY package.json .
+COPY package-lock.json .
 
-# RUN npm ci
+RUN npm ci
 
 # COPY . .
 

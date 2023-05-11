@@ -13,9 +13,9 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("../users/services/users.service");
 const config_1 = require("@nestjs/config");
-const users_entity_1 = require("../typeorm/users.entity");
 const axios_1 = require("axios");
 const http_service_1 = require("@nestjs/axios/dist/http.service");
+const user_entity_1 = require("../typeorm/user.entity");
 let AuthService = class AuthService {
     constructor(userService, configService, httpService) {
         this.userService = userService;
@@ -46,16 +46,14 @@ let AuthService = class AuthService {
             const profileResponse = await axios_1.default.get('https://api.intra.42.fr/v2/me', {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
-            console.log('Profile reposnze', profileResponse);
-            const user = new users_entity_1.Users();
-            user.email = profileResponse.data.email;
+            console.log('Profile reposnze data', profileResponse.data);
+            const user = new user_entity_1.User();
+            user.intra_uid = profileResponse.data.id;
             user.username = profileResponse.data.login;
-            user.boolean = true;
-            user.role = 'user';
-            user.password = profileResponse.data.login;
-            console.log(user.username);
-            console.log(user.email);
-            const existingUser = await this.userService.findUsersByEmail({ email: user.email });
+            user.avatar = profileResponse.data.image.link;
+            user.online = false;
+            console.log('users info', user);
+            const existingUser = await this.userService.findUsersByName(user.username);
             if (existingUser)
                 return (existingUser);
             else {

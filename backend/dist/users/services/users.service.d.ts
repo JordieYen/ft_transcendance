@@ -1,14 +1,13 @@
 import { Repository } from 'typeorm';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
-import { Users } from 'src/typeorm/users.entity';
+import { User } from 'src/typeorm/user.entity';
 export declare class UsersService {
     private usersRepository;
-    constructor(usersRepository: Repository<Users>);
-    createUser(createUserDto: CreateUserDto): Promise<Users>;
-    getUsers(): Promise<Users[]>;
-    findUsersById(id: number): Promise<Users | null>;
-    findAll(): Promise<Users[]>;
+    constructor(usersRepository: Repository<User>);
+    createUser(createUserDto: CreateUserDto): Promise<User>;
+    getUsers(): Promise<User[]>;
+    findUsersById(id: number): Promise<User | null>;
+    findAll(): Promise<User[]>;
     deleteUserById(id: number): Promise<import("typeorm").DeleteResult>;
-    findUsersByName(username: string): Promise<Users>;
-    findUsersByEmail(email: any): Promise<Users>;
+    findUsersByName(username: string): Promise<User>;
 }

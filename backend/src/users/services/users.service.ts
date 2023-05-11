@@ -2,12 +2,12 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
-import { Users } from 'src/typeorm/users.entity';
+import { User } from 'src/typeorm/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(Users) private usersRepository: Repository<Users>
+    @InjectRepository(User) private usersRepository: Repository<User>
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -16,7 +16,7 @@ export class UsersService {
     try {
       return await this.usersRepository.save(newUser);
     } catch (error) {
-      console.log(error.message);
+      console.log('error=', error.message);
       throw new InternalServerErrorException('Could not create user');
     }
   }
@@ -25,11 +25,11 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  findUsersById(id: number) : Promise<Users | null> {
+  findUsersById(id: number) : Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
 
-  findAll(): Promise<Users[]> {
+  findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
 
@@ -37,11 +37,7 @@ export class UsersService {
     return await this.usersRepository.delete(id);
   }
 
-  async findUsersByName(username: string): Promise<Users> {
+  async findUsersByName(username: string): Promise<User> {
     return await this.usersRepository.findOneBy({ username });
-  }
-
-  async findUsersByEmail(email: any): Promise<Users> {
-    return await this.usersRepository.findOneBy({ email });
   }
 }

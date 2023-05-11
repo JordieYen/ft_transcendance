@@ -20,27 +20,6 @@ export class AuthController {
     return (this.authService.redirectTo42OAuth(res));
   }
 
-  // @Get('login')
-  // async login(@Res() res: Response) {
-  //   try {
-  //     console.log('logining...');
-      
-  //     const response = await axios.get(`https://api.intra.42.fr/oauth/authorize`, {
-  //       params: {
-  //         client_id: this.configService.get<string>('CLIENT_ID'),
-  //         redirect_uri: `http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fcallback`,
-  //         response_type: 'code',
-  //         scope: 'public',
-  //       },
-  //     });
-  //     console.log('response...', response.data);
-  //     res.redirect(response.data);
-  //   } catch (error) {
-  //     console.error(error);
-  //     res.status(500).send('An error occurred');
-  //   }
-  // }
-
   @Get('loginpage')
   loginPage(@Res() res: Response) {
     // return (res.sendFile('login.html', { root: 'frontend'}));

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/services/users.service';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
-import { Users } from 'src/typeorm/users.entity';
 import axios from 'axios';
 import { HttpService } from '@nestjs/axios/dist/http.service';
+import { User } from 'src/typeorm/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +31,7 @@ export class AuthService {
         // return res.redirect(redirectedUrl);
     }
 
-    async authenticateUser(code: string) : Promise<Users> {
+    async authenticateUser(code: string) : Promise<User> {
 
         try {
             const { data: tokenResponse } = await axios.post('https://api.intra.42.fr/oauth/token', {
@@ -52,16 +52,14 @@ export class AuthService {
                     headers: {Authorization: `Bearer ${accessToken}`},
                 },
                 );
-            console.log('Profile reposnze', profileResponse);
-            const user = new Users();
-            user.email = profileResponse.data.email;
+            console.log('Profile reposnze data', profileResponse.data);
+            const user = new User();
+            user.intra_uid = profileResponse.data.id;
             user.username =  profileResponse.data.login;
-            user.boolean = true;
-            user.role = 'user';
-            user.password = profileResponse.data.login;
-            console.log(user.username);
-            console.log(user.email);
-            const existingUser = await this.userService.findUsersByEmail({ email: user.email });
+            user.avatar = profileResponse.data.image.link;
+            user.online = false;
+            console.log('users info', user);
+            const existingUser = await this.userService.findUsersByName(user.username);
             if (existingUser)
                 return (existingUser);
             else
