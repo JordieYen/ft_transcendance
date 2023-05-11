@@ -19,21 +19,11 @@ import { MatchHistoryModule } from './match-history/match-history.module';
       isGlobal: true,
       envFilePath: '../.env'
   }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', '..', 'frontend', 'src'),
-      // rootPath: join(process.cwd(), '..', 'frontend'),
-      serveRoot: '/frontend',
-      // exclude: ['/api*'],
-    }),
     MatchHistoryModule
   ],
   controllers: [AppController ],
   providers: [ AppService ],
 })
 export class AppModule {
-  constructor() {
-    console.log('dirname:', __dirname);
-    console.log('join dirname:', join(__dirname, '..', '..', '..', 'frontend', 'src'));
-    console.log('cwd', join(process.cwd(), '..', 'frontend'));
-  }
+  constructor() {}
 }

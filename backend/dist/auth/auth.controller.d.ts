@@ -1,5 +1,5 @@
 import { AuthService } from './auth.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios/dist/http.service';
 export declare class AuthController {
@@ -8,7 +8,5 @@ export declare class AuthController {
     private readonly httpService;
     constructor(authService: AuthService, configService: ConfigService, httpService: HttpService);
     login(res: Response): Promise<void>;
-    loginPage(res: Response): void;
-    loginPageTsx(res: Response): void;
-    callback(code: string, res: Response): Promise<void>;
+    callback(code: string, req: Request, res: Response): Promise<void>;
 }

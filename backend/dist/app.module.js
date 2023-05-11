@@ -17,14 +17,9 @@ const database_module_1 = require("./database/database.module");
 const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
 const config_module_1 = require("@nestjs/config/dist/config.module");
-const serve_static_1 = require("@nestjs/serve-static");
-const path_1 = require("path");
+const match_history_module_1 = require("./match-history/match-history.module");
 let AppModule = class AppModule {
-    constructor() {
-        console.log('dirname:', __dirname);
-        console.log('join dirname:', (0, path_1.join)(__dirname, '..', '..', '..', 'frontend', 'src'));
-        console.log('cwd', (0, path_1.join)(process.cwd(), '..', 'frontend'));
-    }
+    constructor() { }
 };
 AppModule = __decorate([
     (0, common_1.Module)({
@@ -36,10 +31,7 @@ AppModule = __decorate([
                 isGlobal: true,
                 envFilePath: '../.env'
             }),
-            serve_static_1.ServeStaticModule.forRoot({
-                rootPath: (0, path_1.join)(__dirname, '..', '..', '..', 'frontend', 'src'),
-                serveRoot: '/frontend',
-            })
+            match_history_module_1.MatchHistoryModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

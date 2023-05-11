@@ -26,13 +26,9 @@ let AuthService = class AuthService {
         const client_id = this.configService.get('CLIENT_ID');
         const redirect_uri = `http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fcallback`;
         const authorizeUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=public`;
-        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, PATCH');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
         return res.redirect(authorizeUrl);
     }
-    async authenticateUser(code) {
+    async authenticateUser(code, req) {
         try {
             const { data: tokenResponse } = await axios_1.default.post('https://api.intra.42.fr/oauth/token', {
                 grant_type: 'authorization_code',
@@ -54,8 +50,9 @@ let AuthService = class AuthService {
             user.online = false;
             console.log('users info', user);
             const existingUser = await this.userService.findUsersByName(user.username);
-            if (existingUser)
+            if (existingUser) {
                 return (existingUser);
+            }
             else {
                 console.log('CREATE USER');
                 return await this.userService.createUser(user);

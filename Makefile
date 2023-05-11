@@ -22,6 +22,9 @@ fclean:		clean
 ps:
 			docker-compose -f $(COMPOSE_YML) ps
 
+restart:
+			docker-compose restart
+
 re: 		fclean build_up
 
 .PHONY:		all build_up down build clean fclean ps

@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
-const path_1 = require("path");
 const config_1 = require("@nestjs/config");
 const http_service_1 = require("@nestjs/axios/dist/http.service");
 let AuthController = class AuthController {
@@ -28,17 +27,11 @@ let AuthController = class AuthController {
         console.log('loging backend');
         return (this.authService.redirectTo42OAuth(res));
     }
-    loginPage(res) {
-        return res.sendFile('login.tsx', { root: (0, path_1.join)(__dirname, '..', '..', '..', 'frontend/src') });
-    }
-    loginPageTsx(res) {
-        return res.redirect('http://localhost:3000/auth/login');
-    }
-    async callback(code, res) {
+    async callback(code, req, res) {
         try {
-            const user = await this.authService.authenticateUser(code);
+            const user = await this.authService.authenticateUser(code, req);
             console.log("callback");
-            return (res.redirect('http://localhost:3001/pong-main'));
+            return (res.redirect(`http://localhost:3001/pong-main?userId=${user.id}`));
         }
         catch (error) {
             console.log('---------ERRRRRORRRRR--------');
@@ -54,25 +47,12 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.Get)('loginpage'),
-    __param(0, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], AuthController.prototype, "loginPage", null);
-__decorate([
-    (0, common_1.Get)('loginpagetsx'),
-    __param(0, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], AuthController.prototype, "loginPageTsx", null);
-__decorate([
     (0, common_1.Get)('callback'),
     __param(0, (0, common_1.Query)('code')),
-    __param(1, (0, common_1.Res)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "callback", null);
 AuthController = __decorate([

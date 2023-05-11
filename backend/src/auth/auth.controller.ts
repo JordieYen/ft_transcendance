@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Req, Res, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios/dist/http.service';
@@ -20,26 +20,13 @@ export class AuthController {
     return (this.authService.redirectTo42OAuth(res));
   }
 
-  @Get('loginpage')
-  loginPage(@Res() res: Response) {
-    // return (res.sendFile('login.html', { root: 'frontend'}));
-    // return res.sendFile('login.html', { root: join(__dirname, '..', '..', '..', 'frontend', 'src') });
-    return res.sendFile('login.tsx', { root: join(__dirname, '..', '..', '..', 'frontend/src') });
-  }
-
-  @Get('loginpagetsx')
-  loginPageTsx(@Res() res: Response) {
-    return res.redirect('http://localhost:3000/auth/login');
-  }
-
-
   @Get('callback')
-  async callback(@Query('code') code: string, @Res() res: Response) {
+  async callback(@Query('code') code: string, @Req() req: Request, @Res() res: Response) {
     try {
-      const user = await this.authService.authenticateUser(code);
+      const user = await this.authService.authenticateUser(code, req);
       console.log("callback");
       // return (res.redirect('http://localhost:3000/success'));
-      return (res.redirect('http://localhost:3001/pong-main'));
+      return (res.redirect(`http://localhost:3001/pong-main?userId=${user.id}`));
     } catch (error) {
       console.log('---------ERRRRRORRRRR--------');
       console.error(error)

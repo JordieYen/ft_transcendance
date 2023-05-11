@@ -4,7 +4,7 @@ import * as session from 'express-session';
 import { generate } from 'randomstring';
 import { ConfigService } from '@nestjs/config'
 import { setupSwagger } from 'src/swagger.config';
-
+import { Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,6 +25,12 @@ async function bootstrap() {
       return (sessionId);
     }
   }));
+  // app.use((req: Request, res: Response, next) => {
+  //   console.log('Received request:', req.method, req.url);
+  //   console.log('Request headers:', req.headers);
+  //   next();
+  // });
+  
   // app.use(express.static(join(__dirname, '..', '..', 'frontend')));
   await app.listen(3000);
 }
