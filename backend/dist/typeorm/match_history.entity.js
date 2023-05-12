@@ -17,7 +17,7 @@ let MatchHistory = class MatchHistory {
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], MatchHistory.prototype, "id", void 0);
+], MatchHistory.prototype, "match_uid", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)

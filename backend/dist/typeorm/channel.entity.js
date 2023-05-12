@@ -9,21 +9,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-<<<<<<< HEAD:backend/dist/typeorm/user.entity.js
-exports.User = void 0;
-const typeorm_1 = require("typeorm");
-const stats_entity_1 = require("./stats.entity");
-let User = class User {
-};
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], User.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true }),
-    __metadata("design:type", Number)
-], User.prototype, "intra_uid", void 0);
-=======
 exports.Channel = void 0;
 const typeorm_1 = require("typeorm");
 const bcrypt = require("bcrypt");
@@ -46,28 +31,9 @@ __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", String)
 ], Channel.prototype, "channel_uid", void 0);
->>>>>>> 56525b5ef61670041761c2190d6c528e3234d671:backend/dist/typeorm/channel.entity.js
 __decorate([
-    (0, typeorm_1.Column)({ unique: true, nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-<<<<<<< HEAD:backend/dist/typeorm/user.entity.js
-], User.prototype, "username", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: 'default_avatar.png' }),
-    __metadata("design:type", String)
-], User.prototype, "avatar", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: false }),
-    __metadata("design:type", Boolean)
-], User.prototype, "online", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
-    }),
-    __metadata("design:type", Date)
-], User.prototype, "createdAt", void 0);
-=======
 ], Channel.prototype, "channel_name", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
@@ -81,26 +47,12 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => channel_user_entity_1.ChannelUser, channelUser => channelUser.channel),
     __metadata("design:type", Array)
 ], Channel.prototype, "channelUser", void 0);
->>>>>>> 56525b5ef61670041761c2190d6c528e3234d671:backend/dist/typeorm/channel.entity.js
 __decorate([
     (0, typeorm_1.Column)({
         type: 'timestamp',
         default: () => 'CURRENT_TIMESTAMP',
     }),
     __metadata("design:type", Date)
-<<<<<<< HEAD:backend/dist/typeorm/user.entity.js
-], User.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)(() => stats_entity_1.Stat),
-    (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", stats_entity_1.Stat)
-], User.prototype, "stat", void 0);
-User = __decorate([
-    (0, typeorm_1.Entity)()
-], User);
-exports.User = User;
-//# sourceMappingURL=user.entity.js.map
-=======
 ], Channel.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.BeforeInsert)(),
@@ -117,4 +69,3 @@ Channel = __decorate([
 ], Channel);
 exports.Channel = Channel;
 //# sourceMappingURL=channel.entity.js.map
->>>>>>> 56525b5ef61670041761c2190d6c528e3234d671:backend/dist/typeorm/channel.entity.js

@@ -1,4 +1,4 @@
-import { Injectable, Options } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, Options } from '@nestjs/common';
 import { CreateMatchHistoryDto } from '../dto/create-match-history.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MatchHistory } from 'src/typeorm/match_history.entity';
@@ -17,7 +17,7 @@ export class MatchHistoryService {
   }
 
   // Return entries with {match_uid}
-  async getByMatchUid(uid: number): Promise<MatchHistory[] | MatchHistory> {
+  async getByMatchUid(uid: number): Promise<MatchHistory[]> {
     return await this.matchHistoryRepository.find({
       where: {
         match_uid: uid
@@ -26,7 +26,7 @@ export class MatchHistoryService {
   }
 
   // Return entries with {user_uid}
-  async getByPlayerUid(uid: number): Promise<MatchHistory[] | MatchHistory> {
+  async getByPlayerUid(uid: number): Promise<MatchHistory[]> {
     return await this.matchHistoryRepository.find({
       where: [
         {winner_uid: uid},
@@ -37,7 +37,7 @@ export class MatchHistoryService {
   }
   
   // Return entries with {score}
-  async getByScore(score: number): Promise<MatchHistory[] | MatchHistory> {
+  async getByScore(score: number): Promise<MatchHistory[]> {
     return await this.matchHistoryRepository.find({
       where: [
         {p1_score: score},
@@ -48,10 +48,23 @@ export class MatchHistoryService {
 
   // Add new entry
   async create(createMatchHistoryDto: CreateMatchHistoryDto): Promise<void> {
-    await this.matchHistoryRepository.save(createMatchHistoryDto);
+    const newMatch = this.matchHistoryRepository.create(createMatchHistoryDto);
+    console.log(newMatch);
+    try {
+      await this.matchHistoryRepository.save(createMatchHistoryDto);
+    } catch (error) {
+      console.log('error=', error.message);
+      throw new InternalServerErrorException('Could not create user');
+    }
   }
 
-  async remove(uid: number): Promise<void> {
-
+  // Delete an entry
+  async remove(uid: number) {
+    try {
+      await this.matchHistoryRepository.delete(uid);
+      return {message: 'User with uid ${uid} has been deleted successfully'};
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

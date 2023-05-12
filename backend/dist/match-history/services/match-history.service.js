@@ -1,0 +1,78 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MatchHistoryService = void 0;
+const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const match_history_entity_1 = require("../../typeorm/match_history.entity");
+const typeorm_2 = require("typeorm");
+let MatchHistoryService = class MatchHistoryService {
+    constructor(matchHistoryRepository) {
+        this.matchHistoryRepository = matchHistoryRepository;
+    }
+    async getHistory() {
+        return await this.matchHistoryRepository.find();
+    }
+    async getByMatchUid(uid) {
+        return await this.matchHistoryRepository.find({
+            where: {
+                match_uid: uid
+            }
+        });
+    }
+    async getByPlayerUid(uid) {
+        return await this.matchHistoryRepository.find({
+            where: [
+                { winner_uid: uid },
+                { p1_uid: uid },
+                { p2_uid: uid }
+            ]
+        });
+    }
+    async getByScore(score) {
+        return await this.matchHistoryRepository.find({
+            where: [
+                { p1_score: score },
+                { p2_score: score }
+            ]
+        });
+    }
+    async create(createMatchHistoryDto) {
+        const newMatch = this.matchHistoryRepository.create(createMatchHistoryDto);
+        console.log(newMatch);
+        try {
+            await this.matchHistoryRepository.save(createMatchHistoryDto);
+        }
+        catch (error) {
+            console.log('error=', error.message);
+            throw new common_1.InternalServerErrorException('Could not create user');
+        }
+    }
+    async remove(uid) {
+        try {
+            await this.matchHistoryRepository.delete(uid);
+            return { message: 'User with uid ${uid} has been deleted successfully' };
+        }
+        catch (err) {
+            throw new common_1.HttpException(err.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+};
+MatchHistoryService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(match_history_entity_1.MatchHistory)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
+], MatchHistoryService);
+exports.MatchHistoryService = MatchHistoryService;
+//# sourceMappingURL=match-history.service.js.map

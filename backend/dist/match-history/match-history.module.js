@@ -6,20 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsersModule = void 0;
+exports.MatchHistoryModule = void 0;
 const common_1 = require("@nestjs/common");
-const users_controller_1 = require("./controllers/users.controller");
-const users_service_1 = require("./services/users.service");
+const match_history_service_1 = require("./services/match-history.service");
+const match_history_controller_1 = require("./controllers/match-history.controller");
 const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("../typeorm/user.entity");
-let UsersModule = class UsersModule {
+const match_history_entity_1 = require("../typeorm/match_history.entity");
+let MatchHistoryModule = class MatchHistoryModule {
 };
-UsersModule = __decorate([
+MatchHistoryModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),],
-        controllers: [users_controller_1.UsersController],
-        providers: [users_service_1.UsersService],
+        imports: [typeorm_1.TypeOrmModule.forFeature([match_history_entity_1.MatchHistory])],
+        controllers: [match_history_controller_1.MatchHistoryController],
+        providers: [match_history_service_1.MatchHistoryService]
     })
-], UsersModule);
-exports.UsersModule = UsersModule;
-//# sourceMappingURL=users.module.js.map
+], MatchHistoryModule);
+exports.MatchHistoryModule = MatchHistoryModule;
+//# sourceMappingURL=match-history.module.js.map
