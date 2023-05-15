@@ -18,6 +18,7 @@ const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
 const config_module_1 = require("@nestjs/config/dist/config.module");
 const match_history_module_1 = require("./match-history/match-history.module");
+const chat_module_1 = require("./chat/chat.module");
 let AppModule = class AppModule {
     constructor() { }
 };
@@ -31,7 +32,8 @@ AppModule = __decorate([
                 isGlobal: true,
                 envFilePath: '../.env'
             }),
-            match_history_module_1.MatchHistoryModule
+            match_history_module_1.MatchHistoryModule,
+            chat_module_1.ChatModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

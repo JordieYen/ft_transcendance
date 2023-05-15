@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MatchHistoryModule } from './match-history/match-history.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { MatchHistoryModule } from './match-history/match-history.module';
       isGlobal: true,
       envFilePath: '../.env'
   }),
-    MatchHistoryModule
+    MatchHistoryModule,
+    ChatModule
   ],
   controllers: [AppController ],
   providers: [ AppService ],
