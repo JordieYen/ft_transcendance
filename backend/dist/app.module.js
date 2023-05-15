@@ -18,20 +18,26 @@ const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
 const config_module_1 = require("@nestjs/config/dist/config.module");
 const match_history_module_1 = require("./match-history/match-history.module");
+const passport_1 = require("@nestjs/passport");
+const achievement_module_1 = require("./achievement/achievement.module");
+const user_achievement_module_1 = require("./user_achievement/user_achievement.module");
 let AppModule = class AppModule {
     constructor() { }
 };
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            database_module_1.DatabaseModule,
-            users_module_1.UsersModule,
-            auth_module_1.AuthModule,
             config_module_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '../.env'
             }),
-            match_history_module_1.MatchHistoryModule
+            passport_1.PassportModule.register({ defaultStrategy: 'bearer' }),
+            database_module_1.DatabaseModule,
+            users_module_1.UsersModule,
+            auth_module_1.AuthModule,
+            match_history_module_1.MatchHistoryModule,
+            achievement_module_1.AchievementModule,
+            user_achievement_module_1.UserAchievementModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

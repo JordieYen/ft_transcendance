@@ -1,9 +1,9 @@
-import { Achievement } from './achievement.entity';
 import { ChannelUser } from './channel_user.entity';
 import { Friend } from './friends.entity';
 import { MatchHistory } from './match_history.entity';
 import { Message } from './message.entity';
 import { Stat } from './stats.entity';
+import { UserAchievement } from './user_achievement.entity';
 export declare class User {
     id: number;
     intra_uid: number;
@@ -13,7 +13,7 @@ export declare class User {
     createdAt: Date;
     updatedAt: Date;
     stat: Stat;
-    achievement: Achievement;
+    userAchievement: UserAchievement[];
     p1_match: MatchHistory[];
     p2_match: MatchHistory[];
     friends: Friend[];

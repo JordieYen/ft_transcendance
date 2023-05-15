@@ -1,10 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as session from 'express-session';
-import { generate } from 'randomstring';
 import { ConfigService } from '@nestjs/config'
 import { setupSwagger } from 'src/swagger.config';
-import { Request, Response } from 'express';
+import * as passport from 'passport';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,20 +16,28 @@ async function bootstrap() {
   });
   setupSwagger(app);
   app.use(session({
+    name: 'shawn_session_id',
     secret: configService.get<string>('CLIENT_SECRET'),
     resave: false,
     saveUninitialized: false,
-    genid: () => {
-      const sessionId = generate({ length: 10, charset: 'alphanumeric' });
-      return (sessionId);
-    }
+    cookie: {
+        maxAge: 600000,
+    },
   }));
+
+  app.use(passport.initialize());
+  app.use(passport.session());
   // app.use((req: Request, res: Response, next) => {
   //   console.log('Received request:', req.method, req.url);
   //   console.log('Request headers:', req.headers);
   //   next();
   // });
-  
+  // Attach user object to req
+  app.use((req, res, next) => {
+    req.user = req.session.user;
+    next();
+  });
+    
   // app.use(express.static(join(__dirname, '..', '..', 'frontend')));
   await app.listen(3000);
 }

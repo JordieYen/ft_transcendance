@@ -5,6 +5,7 @@ import { Friend } from './friends.entity';
 import { MatchHistory } from './match_history.entity';
 import { Message } from './message.entity';
 import { Stat } from './stats.entity';
+import { UserAchievement } from './user_achievement.entity';
 
 @Entity()
 export class User {
@@ -39,8 +40,8 @@ export class User {
     @OneToOne(() => Stat)
     stat: Stat;
 
-    @OneToOne(() => Achievement, achievement => achievement.user)
-    achievement: Achievement;
+    @OneToMany(() => UserAchievement, userAchievement => userAchievement.user)
+    userAchievement: UserAchievement[];
 
     @OneToMany(() => MatchHistory, matchHistory => matchHistory.p1_uid)
     p1_match: MatchHistory[];

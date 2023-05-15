@@ -6,11 +6,13 @@ import { MatchHistory } from "./match_history.entity";
 import { Message } from "./message.entity";
 import { Stat } from "./stats.entity";
 import { User } from "./user.entity";
+import { UserAchievement } from "./user_achievement.entity";
 
 const entities = [
     User, 
     MatchHistory,
     Stat,
+    UserAchievement,
     Achievement,
     Friend,
     Channel,

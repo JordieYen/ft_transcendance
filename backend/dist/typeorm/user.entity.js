@@ -11,12 +11,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const typeorm_1 = require("typeorm");
-const achievement_entity_1 = require("./achievement.entity");
 const channel_user_entity_1 = require("./channel_user.entity");
 const friends_entity_1 = require("./friends.entity");
 const match_history_entity_1 = require("./match_history.entity");
 const message_entity_1 = require("./message.entity");
 const stats_entity_1 = require("./stats.entity");
+const user_achievement_entity_1 = require("./user_achievement.entity");
 let User = class User {
 };
 __decorate([
@@ -59,9 +59,9 @@ __decorate([
     __metadata("design:type", stats_entity_1.Stat)
 ], User.prototype, "stat", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => achievement_entity_1.Achievement, achievement => achievement.user),
-    __metadata("design:type", achievement_entity_1.Achievement)
-], User.prototype, "achievement", void 0);
+    (0, typeorm_1.OneToMany)(() => user_achievement_entity_1.UserAchievement, userAchievement => userAchievement.user),
+    __metadata("design:type", Array)
+], User.prototype, "userAchievement", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => match_history_entity_1.MatchHistory, matchHistory => matchHistory.p1_uid),
     __metadata("design:type", Array)

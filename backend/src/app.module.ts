@@ -5,21 +5,24 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config/dist/config.module';
-import { ConfigService } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { MatchHistoryModule } from './match-history/match-history.module';
+import { PassportModule } from '@nestjs/passport';
+import { AchievementModule } from './achievement/achievement.module';
+import { UserAchievementModule } from './user_achievement/user_achievement.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ 
+        isGlobal: true,
+        envFilePath: '../.env'
+    }),
+    PassportModule.register({ defaultStrategy: 'bearer' }),
     DatabaseModule,
     UsersModule,
     AuthModule,
-    ConfigModule.forRoot({ 
-      isGlobal: true,
-      envFilePath: '../.env'
-  }),
-    MatchHistoryModule
+    MatchHistoryModule,
+    AchievementModule,
+    UserAchievementModule,
   ],
   controllers: [AppController ],
   providers: [ AppService ],

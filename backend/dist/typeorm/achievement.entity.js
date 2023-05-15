@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Achievement = void 0;
 const typeorm_1 = require("typeorm");
-const user_entity_1 = require("./user.entity");
+const user_achievement_entity_1 = require("./user_achievement.entity");
 let Achievement = class Achievement {
 };
 __decorate([
@@ -19,17 +19,17 @@ __decorate([
     __metadata("design:type", Number)
 ], Achievement.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => user_entity_1.User, user => user.achievement),
-    __metadata("design:type", user_entity_1.User)
-], Achievement.prototype, "user", void 0);
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Achievement.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
-    __metadata("design:type", Number)
-], Achievement.prototype, "achievement_1", void 0);
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Achievement.prototype, "description", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
-    __metadata("design:type", Number)
-], Achievement.prototype, "achievement_2", void 0);
+    (0, typeorm_1.OneToMany)(() => user_achievement_entity_1.UserAchievement, userAchievement => userAchievement.achievement, { cascade: true }),
+    __metadata("design:type", Array)
+], Achievement.prototype, "userAchievements", void 0);
 Achievement = __decorate([
     (0, typeorm_1.Entity)()
 ], Achievement);
