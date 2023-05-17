@@ -21,7 +21,7 @@ import { ChatModule } from './chat/chat.module';
       envFilePath: '../.env'
   }),
     MatchHistoryModule,
-    ChatModule
+    ChatModule,
   ],
   controllers: [AppController ],
   providers: [ AppService ],

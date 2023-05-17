@@ -33,7 +33,7 @@ AppModule = __decorate([
                 envFilePath: '../.env'
             }),
             match_history_module_1.MatchHistoryModule,
-            chat_module_1.ChatModule
+            chat_module_1.ChatModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
