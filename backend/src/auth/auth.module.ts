@@ -7,44 +7,47 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { User } from 'src/typeorm/user.entity';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './util/local_strategy';
 import { SessionSerializer } from './util/session_serializer';
-import { BearerStrategy } from './util/bearer_strategy';
-import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './util/jwt.strategy';
-import { UserGuard } from './util/local.guard';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './util/jwt-auth.guard';
-import { Request, Response } from 'express';
+import { FortyTwoStrategy } from './util/42.strategy';
+// import { JwtStrategy } from './util/jwt.strategy';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     HttpModule,
     PassportModule.register({
-      defaultStrategy: 'bearer',
+      defaultStrategy: 'session',
       session: true,
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (ConfigService: ConfigService) => ({
         secret: ConfigService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1h'},
+        signOptions: { expiresIn: '1d'},
       }),
       inject: [ConfigService],
     })
   ],
   providers: [
+    ConfigService,
+    JwtService,
     AuthService,
     UsersService,
-    ConfigService,
-    LocalStrategy,
     SessionSerializer,
-    BearerStrategy,
-    JwtStrategy,
     JwtAuthGuard,
-    UserGuard,
+    // JwtStrategy,
+    FortyTwoStrategy,
+    SessionSerializer,
   ],
   controllers: [AuthController],
   exports: [AuthService]
 })
-export class AuthModule {}
+export class AuthModule {
+  constructor(private readonly configService: ConfigService) {
+    const jwtSecret = this.configService.get<string>('JWT_SECRET');
+    console.log(`JWTSECRET: ${jwtSecret}`);
+    
+  }
+}

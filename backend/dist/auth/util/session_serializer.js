@@ -8,11 +8,11 @@ class SessionSerializer extends passport_1.PassportSerializer {
         this.userService = userService;
     }
     serializeUser(user, done) {
-        console.log('serializer user');
         done(null, user);
     }
     async deserializeUser(user, done) {
         console.log('deserializer user');
+        console.log(user.id);
         const userDB = await this.userService.findUsersById(user.id);
         return userDB ? done(null, userDB) : done(null, null);
     }

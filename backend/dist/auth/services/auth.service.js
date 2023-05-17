@@ -14,15 +14,13 @@ const common_1 = require("@nestjs/common");
 const users_service_1 = require("../../users/services/users.service");
 const config_1 = require("@nestjs/config");
 const axios_1 = require("axios");
-const http_service_1 = require("@nestjs/axios/dist/http.service");
 const user_entity_1 = require("../../typeorm/user.entity");
-const jwt_1 = require("@nestjs/jwt");
+const otplib_1 = require("otplib");
+const qrcode = require("qrcode");
 let AuthService = class AuthService {
-    constructor(userService, configService, httpService, jwtService) {
+    constructor(userService, configService) {
         this.userService = userService;
         this.configService = configService;
-        this.httpService = httpService;
-        this.jwtService = jwtService;
     }
     async redirectTo42OAuth(res) {
         const client_id = this.configService.get('CLIENT_ID');
@@ -46,7 +44,6 @@ let AuthService = class AuthService {
                 `access_token=${accessToken}`,
             ]);
             const cookieHeader = req.res.getHeader('Set-Cookie');
-            console.log('req response', cookieHeader);
             const profileResponse = await axios_1.default.get('https://api.intra.42.fr/v2/me', {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
@@ -87,19 +84,30 @@ let AuthService = class AuthService {
             return (user);
         return (null);
     }
-    async login(user) {
-        const payload = { name: user.name, sub: user.id };
-        return {
-            access_token: this.jwtService.sign(payload),
-        };
+    async findOneOrCreate(user) {
+        let existingUser = this.userService.findUsersById(user.id);
+        if (!existingUser)
+            this.userService.createUser(user);
+        return (existingUser);
+    }
+    async generateTwoFactorAuthSecret(user) {
+        this.secret = otplib_1.authenticator.generateSecret();
+        const otpAuthUrl = otplib_1.authenticator.keyuri(user.username, 'MyApp', this.secret);
+        return otpAuthUrl;
+    }
+    async displayQrCode(res, otpAuthUrl) {
+        const qrCode = await qrcode.toFileStream(res, otpAuthUrl);
+    }
+    async verifyOtp(otp) {
+        console.log('otp', otp);
+        console.log('secret', this.secret);
+        return otplib_1.authenticator.check(otp, this.secret);
     }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [users_service_1.UsersService,
-        config_1.ConfigService,
-        http_service_1.HttpService,
-        jwt_1.JwtService])
+        config_1.ConfigService])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

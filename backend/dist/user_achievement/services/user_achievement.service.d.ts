@@ -10,7 +10,7 @@ export declare class UserAchievementService {
     private achievementRepository;
     constructor(userAchievementRepository: Repository<UserAchievement>, userRepository: Repository<User>, achievementRepository: Repository<Achievement>);
     create(createUserAchievementDto: CreateUserAchievementDto): Promise<UserAchievement>;
-    findAll(): string;
+    findAll(): Promise<UserAchievement[]>;
     findOne(id: number): string;
     update(id: number, updateUserAchievementDto: UpdateUserAchievementDto): string;
     remove(id: number): string;

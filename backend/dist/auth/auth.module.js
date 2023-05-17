@@ -5,6 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
@@ -16,14 +19,16 @@ const config_1 = require("@nestjs/config");
 const axios_1 = require("@nestjs/axios");
 const user_entity_1 = require("../typeorm/user.entity");
 const passport_1 = require("@nestjs/passport");
-const local_strategy_1 = require("./util/local_strategy");
 const session_serializer_1 = require("./util/session_serializer");
-const bearer_strategy_1 = require("./util/bearer_strategy");
 const jwt_1 = require("@nestjs/jwt");
-const jwt_strategy_1 = require("./util/jwt.strategy");
-const local_guard_1 = require("./util/local.guard");
 const jwt_auth_guard_1 = require("./util/jwt-auth.guard");
+const _42_strategy_1 = require("./util/42.strategy");
 let AuthModule = class AuthModule {
+    constructor(configService) {
+        this.configService = configService;
+        const jwtSecret = this.configService.get('JWT_SECRET');
+        console.log(`JWTSECRET: ${jwtSecret}`);
+    }
 };
 AuthModule = __decorate([
     (0, common_1.Module)({
@@ -31,32 +36,32 @@ AuthModule = __decorate([
             typeorm_module_1.TypeOrmModule.forFeature([user_entity_1.User]),
             axios_1.HttpModule,
             passport_1.PassportModule.register({
-                defaultStrategy: 'bearer',
+                defaultStrategy: 'session',
                 session: true,
             }),
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 useFactory: async (ConfigService) => ({
                     secret: ConfigService.get('JWT_SECRET'),
-                    signOptions: { expiresIn: '1h' },
+                    signOptions: { expiresIn: '1d' },
                 }),
                 inject: [config_1.ConfigService],
             })
         ],
         providers: [
+            config_1.ConfigService,
+            jwt_1.JwtService,
             auth_service_1.AuthService,
             users_service_1.UsersService,
-            config_1.ConfigService,
-            local_strategy_1.LocalStrategy,
             session_serializer_1.SessionSerializer,
-            bearer_strategy_1.BearerStrategy,
-            jwt_strategy_1.JwtStrategy,
             jwt_auth_guard_1.JwtAuthGuard,
-            local_guard_1.UserGuard,
+            _42_strategy_1.FortyTwoStrategy,
+            session_serializer_1.SessionSerializer,
         ],
         controllers: [auth_controller_1.AuthController],
         exports: [auth_service_1.AuthService]
-    })
+    }),
+    __metadata("design:paramtypes", [config_1.ConfigService])
 ], AuthModule);
 exports.AuthModule = AuthModule;
 //# sourceMappingURL=auth.module.js.map

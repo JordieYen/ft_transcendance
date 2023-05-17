@@ -5,7 +5,7 @@ export declare class UserAchievementController {
     private readonly userAchievementService;
     constructor(userAchievementService: UserAchievementService);
     create(createUserAchievementDto: CreateUserAchievementDto): Promise<import("../../typeorm/user_achievement.entity").UserAchievement>;
-    findAll(): string;
+    findAll(): Promise<import("../../typeorm/user_achievement.entity").UserAchievement[]>;
     findOne(id: string): string;
     update(id: string, updateUserAchievementDto: UpdateUserAchievementDto): string;
     remove(id: string): string;

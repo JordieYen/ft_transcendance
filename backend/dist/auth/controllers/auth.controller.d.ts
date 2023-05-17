@@ -1,12 +1,20 @@
 import { AuthService } from '../services/auth.service';
 import { Response } from 'express';
 import { RequestWithSessionUser } from '../request_with_session_user';
+import { JwtService } from '@nestjs/jwt/dist/jwt.service';
 export declare class AuthController {
     private readonly authService;
-    constructor(authService: AuthService);
-    login(res: Response): Promise<void>;
-    callback(code: string, req: RequestWithSessionUser, res: Response): Promise<void>;
+    private readonly jwtService;
+    constructor(authService: AuthService, jwtService: JwtService);
+    login(): Promise<void>;
+    callback(req: any, res: Response): Promise<void>;
+    enableTwoFactorAuth(req: RequestWithSessionUser, res: Response): Promise<void>;
+    verifyOtp(req: RequestWithSessionUser, body: {
+        otp: string;
+    }): Promise<string>;
     getAuthSession(session: Record<string, any>): Promise<any[]>;
-    getAuthStatus(req: any): Promise<any>;
-    findAll(): string;
+    getProfile(user: RequestWithSessionUser): Promise<RequestWithSessionUser>;
+    logout(req: any): {
+        msg: string;
+    };
 }

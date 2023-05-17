@@ -18,7 +18,6 @@ const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
 const config_module_1 = require("@nestjs/config/dist/config.module");
 const match_history_module_1 = require("./match-history/match-history.module");
-const passport_1 = require("@nestjs/passport");
 const achievement_module_1 = require("./achievement/achievement.module");
 const user_achievement_module_1 = require("./user_achievement/user_achievement.module");
 let AppModule = class AppModule {
@@ -31,7 +30,6 @@ AppModule = __decorate([
                 isGlobal: true,
                 envFilePath: '../.env'
             }),
-            passport_1.PassportModule.register({ defaultStrategy: 'bearer' }),
             database_module_1.DatabaseModule,
             users_module_1.UsersModule,
             auth_module_1.AuthModule,

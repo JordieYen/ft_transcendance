@@ -36,8 +36,8 @@ export class UserAchievementService {
     return this.userAchievementRepository.save(userAchievement);
   }
 
-  findAll() {
-    return `This action returns all userAchievement`;
+  async findAll() : Promise<UserAchievement[]> {
+    return this.userAchievementRepository.find();
   }
 
   findOne(id: number) {

@@ -16,7 +16,6 @@ import { UserAchievementModule } from './user_achievement/user_achievement.modul
         isGlobal: true,
         envFilePath: '../.env'
     }),
-    PassportModule.register({ defaultStrategy: 'bearer' }),
     DatabaseModule,
     UsersModule,
     AuthModule,

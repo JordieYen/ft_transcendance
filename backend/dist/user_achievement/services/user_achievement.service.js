@@ -40,8 +40,8 @@ let UserAchievementService = class UserAchievementService {
         userAchievement.achievement = achievement;
         return this.userAchievementRepository.save(userAchievement);
     }
-    findAll() {
-        return `This action returns all userAchievement`;
+    async findAll() {
+        return this.userAchievementRepository.find();
     }
     findOne(id) {
         return `This action returns a #${id} userAchievement`;

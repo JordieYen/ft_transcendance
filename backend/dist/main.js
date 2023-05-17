@@ -10,7 +10,7 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const configService = app.get(config_1.ConfigService);
     app.enableCors({
-        origin: 'http://localhost:3001',
+        origin: `${process.env.NEXT_HOST}`,
         methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
         credentials: true,
     });
