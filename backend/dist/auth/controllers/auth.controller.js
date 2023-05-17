@@ -34,8 +34,8 @@ let AuthController = class AuthController {
         return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
     }
     async enableTwoFactorAuth(req, res) {
-        console.log('2fa', req.user);
         const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(req.user);
+        console.log('2fa', req.user);
         await this.authService.displayQrCode(res, otpAuthUrl);
     }
     async verifyOtp(req, body) {

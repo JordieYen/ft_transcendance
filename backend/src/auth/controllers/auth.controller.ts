@@ -45,9 +45,9 @@ export class AuthController {
   // @UseGuards(FortyTwoAuthGuard)
   @Get('2fa')
   async enableTwoFactorAuth(@Req() req: RequestWithSessionUser, @Res() res: Response) {
-    console.log('2fa', req.user);
     
     const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(req.user);
+    console.log('2fa', req.user);
     await this.authService.displayQrCode(res, otpAuthUrl);
   }
 
