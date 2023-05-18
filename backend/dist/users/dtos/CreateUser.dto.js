@@ -18,5 +18,18 @@ __decorate([
     (0, class_validator_1.MinLength)(3),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "username", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateUserDto.prototype, "intra_uid", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "avatar", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateUserDto.prototype, "online", void 0);
 exports.CreateUserDto = CreateUserDto;
 //# sourceMappingURL=CreateUser.dto.js.map

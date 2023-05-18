@@ -85,10 +85,13 @@ let AuthService = class AuthService {
         return (null);
     }
     async findOneOrCreate(user) {
-        let existingUser = this.userService.findUsersById(user.id);
-        if (!existingUser)
-            this.userService.createUser(user);
-        return (existingUser);
+        let returnUser = await this.userService.findUsersByName(user.username);
+        console.log('existinerUser', returnUser);
+        if (!returnUser) {
+            ('create user');
+            returnUser = await this.userService.createUser(user);
+        }
+        return (returnUser);
     }
     async generateTwoFactorAuthSecret(user) {
         this.secret = otplib_1.authenticator.generateSecret();

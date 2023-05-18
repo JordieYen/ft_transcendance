@@ -11,12 +11,13 @@ import { SessionSerializer } from './util/session_serializer';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './util/jwt-auth.guard';
 import { FortyTwoStrategy } from './util/42.strategy';
+import { AuthenticatedGuard } from './util/local.guard';
+import { SessionEntity } from 'src/typeorm/session.entity';
 // import { JwtStrategy } from './util/jwt.strategy';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
-    HttpModule,
+    TypeOrmModule.forFeature([User, SessionEntity]),
     PassportModule.register({
       defaultStrategy: 'session',
       session: true,
@@ -33,12 +34,10 @@ import { FortyTwoStrategy } from './util/42.strategy';
   providers: [
     ConfigService,
     JwtService,
-    AuthService,
     UsersService,
-    SessionSerializer,
-    JwtAuthGuard,
-    // JwtStrategy,
+    AuthService,
     FortyTwoStrategy,
+    // JwtStrategy,
     SessionSerializer,
   ],
   controllers: [AuthController],

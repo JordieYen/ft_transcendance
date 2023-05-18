@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { VerifiedCallback } from "passport-jwt";
 import { Strategy } from 'passport-42';
-import { SessionSerializer } from "./session_serializer";
+import { User } from "src/typeorm/user.entity";
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy) {
@@ -25,9 +25,12 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
             intra_uid : profile.id,
             username : profile.username,
             avatar : profile._json.image.link,
+            online: true,
             accessToken: accessToken,
             refreshToken: refreshToken,
         };
+        console.log('running 42 strategy');
+        
         done(null, user);        
     }
 }

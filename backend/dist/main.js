@@ -6,6 +6,10 @@ const session = require("express-session");
 const config_1 = require("@nestjs/config");
 const swagger_config_1 = require("./swagger.config");
 const passport = require("passport");
+const common_1 = require("@nestjs/common");
+const out_1 = require("connect-typeorm/out");
+const typeorm_1 = require("typeorm");
+const session_entity_1 = require("./typeorm/session.entity");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const configService = app.get(config_1.ConfigService);
@@ -15,19 +19,27 @@ async function bootstrap() {
         credentials: true,
     });
     (0, swagger_config_1.setupSwagger)(app);
-    app.use(session({
-        name: 'shawn_session_id',
-        secret: configService.get('CLIENT_SECRET'),
+    app.useGlobalPipes(new common_1.ValidationPipe(({
+        whitelist: true,
+    })));
+    const sessionRepo = app.get(typeorm_1.DataSource).getRepository(session_entity_1.SessionEntity);
+    const secret = configService.get('CLIENT_SECRET');
+    const sessionMiddleware = session({
+        name: 'ft_transcendence_session_id',
+        secret: secret,
         resave: false,
         saveUninitialized: false,
         cookie: {
+            secure: false,
             maxAge: 600000,
         },
-    }));
+        store: new out_1.TypeormStore().connect(sessionRepo),
+    });
+    app.use(sessionMiddleware);
     app.use(passport.initialize());
     app.use(passport.session());
     app.use((req, res, next) => {
-        req.user = req.session.user;
+        req.session.user = req.user;
         next();
     });
     await app.listen(3000);

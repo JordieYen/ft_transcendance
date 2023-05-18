@@ -17,7 +17,7 @@ const PongMain: React.FC = () => {
                   const userData = await response.json();
                   setUser(userData);
                 } else {
-                  throw new Error('User not found');
+                throw new Error('User not found');
                 }
             } catch (error) {
                 console.log('Error fetching user data:', error);

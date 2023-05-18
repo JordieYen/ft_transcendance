@@ -16,13 +16,12 @@ const auth_controller_1 = require("./controllers/auth.controller");
 const users_service_1 = require("../users/services/users.service");
 const typeorm_module_1 = require("@nestjs/typeorm/dist/typeorm.module");
 const config_1 = require("@nestjs/config");
-const axios_1 = require("@nestjs/axios");
 const user_entity_1 = require("../typeorm/user.entity");
 const passport_1 = require("@nestjs/passport");
 const session_serializer_1 = require("./util/session_serializer");
 const jwt_1 = require("@nestjs/jwt");
-const jwt_auth_guard_1 = require("./util/jwt-auth.guard");
 const _42_strategy_1 = require("./util/42.strategy");
+const session_entity_1 = require("../typeorm/session.entity");
 let AuthModule = class AuthModule {
     constructor(configService) {
         this.configService = configService;
@@ -33,8 +32,7 @@ let AuthModule = class AuthModule {
 AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_module_1.TypeOrmModule.forFeature([user_entity_1.User]),
-            axios_1.HttpModule,
+            typeorm_module_1.TypeOrmModule.forFeature([user_entity_1.User, session_entity_1.SessionEntity]),
             passport_1.PassportModule.register({
                 defaultStrategy: 'session',
                 session: true,
@@ -51,10 +49,8 @@ AuthModule = __decorate([
         providers: [
             config_1.ConfigService,
             jwt_1.JwtService,
-            auth_service_1.AuthService,
             users_service_1.UsersService,
-            session_serializer_1.SessionSerializer,
-            jwt_auth_guard_1.JwtAuthGuard,
+            auth_service_1.AuthService,
             _42_strategy_1.FortyTwoStrategy,
             session_serializer_1.SessionSerializer,
         ],

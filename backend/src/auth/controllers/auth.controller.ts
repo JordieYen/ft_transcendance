@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Logger, Post, Req, Res, Session, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Query, Req, Res, Session, UseGuards } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from '../util/local.guard';
-import { RequestWithSessionUser } from '../request_with_session_user';
+import { RequestWithSessionUser } from '../util/request_with_session_user';
 import { FortyTwoAuthGuard } from '../util/42-auth.guard';
 import { User } from 'src/users/decorators/user.decorator';
 import { InvalidOtpException } from '../util/invalid_otp_exception';
@@ -18,17 +18,27 @@ export class AuthController {
   // Using 42 Passport
   @UseGuards(FortyTwoAuthGuard)
   @Get('login')
-  async login() {}
-  
+  async login() {
+  }
 
   // req.user contains token
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
-  async callback(@Req() req, @Res() res: Response) {
-    req.session.accessToken = req.user.accessToken;
-    req.session.refreshToken = req.user.refreshToken;
+  async callback(@Req() req , @Res() res: Response) {
+
+    console.log('req.user', req.user);
+    const accessToken = req.user.accessToken;
+    const refreshToken = req.user.refreshToken;
     const existingUser = await this.authService.findOneOrCreate(req.user);
+    console.log('existin user', existingUser);
+    
+    req.session.accessToken = accessToken;
+    req.session.refreshToken = refreshToken;
     req.session.user = existingUser;
+    console.log('req.user after', req.user);
+    console.log('req session', req.session);
+    console.log('req session user', req.session.user);
+    
     return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
   }
 
@@ -45,7 +55,6 @@ export class AuthController {
   // @UseGuards(FortyTwoAuthGuard)
   @Get('2fa')
   async enableTwoFactorAuth(@Req() req: RequestWithSessionUser, @Res() res: Response) {
-    
     const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(req.user);
     console.log('2fa', req.user);
     await this.authService.displayQrCode(res, otpAuthUrl);
@@ -53,9 +62,10 @@ export class AuthController {
 
   @Post('otp')
   async verifyOtp(@Req() req: RequestWithSessionUser, @Body() body: { otp: string }) {
-    const isValid = await this.authService.verifyOtp(body.otp);
-    console.log(req.user);
+    console.log('user', req.user);
+    console.log('res session', req.session.user);
     console.log('secret: ', process.env.JWT_SECRET);
+    const isValid = await this.authService.verifyOtp(body.otp);
     if (isValid) {
       const payload = {
         sub: 'shawn',
@@ -73,16 +83,24 @@ export class AuthController {
     // return ({session: session, sessionId: session.id});
   }
   
+  // @UseGuards(AuthenticatedGuard)
+  // @Get('profile')
+  // async getProfile(@User() user: RequestWithSessionUser) {
+  //     console.log(user);
+  //     return user;
+  // }
   @UseGuards(AuthenticatedGuard)
   @Get('profile')
-  async getProfile(@User() user: RequestWithSessionUser) {
-      console.log(user);
-      return user;
+  async getProfile(@Req() req: RequestWithSessionUser) {
+      console.log('profile session', req.session.user);
+      console.log('profile user', req.user);
+      return req.session.user;
   }
 
   @Get('logout')
   logout(@Req() req) {
       req.user = null;
+      req.session.user = null;
       req.session.destroy();
       return {
         msg: 'The user session has ended. '
@@ -90,14 +108,13 @@ export class AuthController {
   }
 
   // Manual approach
-  // @Get('logins')
+  // @Get('login')
   // login(@Res() res: Response) {
   //   console.log('loging backend');
   //   return (this.authService.redirectTo42OAuth(res));
   // }
     
-  // @UseGuards(FortyTwoAuthGuard)
-  // @Get('callbacks')
+  // @Get('callback')
   // async callback(@Query('code') code: string, @Req() req: RequestWithSessionUser, @Res() res: Response) {
   //   try {
   //     console.log(req.user);

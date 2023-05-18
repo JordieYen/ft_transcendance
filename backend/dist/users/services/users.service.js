@@ -22,30 +22,30 @@ let UsersService = class UsersService {
         this.usersRepository = usersRepository;
     }
     async createUser(createUserDto) {
-        const newUser = this.usersRepository.create(createUserDto);
-        console.log(newUser);
+        const newUser = await this.usersRepository.create(createUserDto);
+        console.log('newUser', newUser);
         try {
             return await this.usersRepository.save(newUser);
         }
         catch (error) {
-            console.log('error=', error.message);
             throw new common_1.InternalServerErrorException('Could not create user');
         }
     }
-    getUsers() {
-        return this.usersRepository.find();
+    async getUsers() {
+        return await this.usersRepository.find();
     }
-    findUsersById(id) {
-        return this.usersRepository.findOneBy({ id });
+    async findUsersById(id) {
+        return await this.usersRepository.findOneBy({ id });
     }
-    findAll() {
-        return this.usersRepository.find();
+    async findAll() {
+        return await this.usersRepository.find();
     }
     async deleteUserById(id) {
         return await this.usersRepository.delete(id);
     }
     async findUsersByName(username) {
-        return await this.usersRepository.findOneBy({ username });
+        console.log('finduserbyname', username);
+        return await this.usersRepository.findOne({ where: { username: username } });
     }
 };
 UsersService = __decorate([

@@ -11,26 +11,26 @@ export class UsersService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    const newUser = this.usersRepository.create(createUserDto);
-    console.log(newUser);
+    const newUser = await this.usersRepository.create(createUserDto);
+    console.log('newUser', newUser);
     try {
       return await this.usersRepository.save(newUser);
     } catch (error) {
-      console.log('error=', error.message);
+      // console.log('error=', error.message);
       throw new InternalServerErrorException('Could not create user');
     }
   }
 
-  getUsers() {
-    return this.usersRepository.find();
+  async getUsers() {
+    return await this.usersRepository.find();
   }
 
-  findUsersById(id: number) : Promise<User | null> {
-    return this.usersRepository.findOneBy({ id });
+  async findUsersById(id: number) : Promise<User | null> {
+    return await this.usersRepository.findOneBy({ id });
   }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  async findAll(): Promise<User[]> {
+    return await this.usersRepository.find();
   }
 
   async deleteUserById(id: number) {
@@ -38,6 +38,7 @@ export class UsersService {
   }
 
   async findUsersByName(username: string):  Promise<User | null> {
-    return await this.usersRepository.findOneBy({ username });
+    console.log('finduserbyname', username);
+    return await this.usersRepository.findOne({ where: {username : username }});
   }
 }

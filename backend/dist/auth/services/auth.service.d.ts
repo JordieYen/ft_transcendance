@@ -2,7 +2,7 @@ import { UsersService } from 'src/users/services/users.service';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { User } from 'src/typeorm/user.entity';
-import { RequestWithSessionUser } from '../request_with_session_user';
+import { RequestWithSessionUser } from '../util/request_with_session_user';
 export declare class AuthService {
     private readonly userService;
     private readonly configService;

@@ -17,7 +17,6 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("../services/auth.service");
 const local_guard_1 = require("../util/local.guard");
 const _42_auth_guard_1 = require("../util/42-auth.guard");
-const user_decorator_1 = require("../../users/decorators/user.decorator");
 const invalid_otp_exception_1 = require("../util/invalid_otp_exception");
 const jwt_service_1 = require("@nestjs/jwt/dist/jwt.service");
 let AuthController = class AuthController {
@@ -25,12 +24,20 @@ let AuthController = class AuthController {
         this.authService = authService;
         this.jwtService = jwtService;
     }
-    async login() { }
+    async login() {
+    }
     async callback(req, res) {
-        req.session.accessToken = req.user.accessToken;
-        req.session.refreshToken = req.user.refreshToken;
+        console.log('req.user', req.user);
+        const accessToken = req.user.accessToken;
+        const refreshToken = req.user.refreshToken;
         const existingUser = await this.authService.findOneOrCreate(req.user);
+        console.log('existin user', existingUser);
+        req.session.accessToken = accessToken;
+        req.session.refreshToken = refreshToken;
         req.session.user = existingUser;
+        console.log('req.user after', req.user);
+        console.log('req session', req.session);
+        console.log('req session user', req.session.user);
         return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
     }
     async enableTwoFactorAuth(req, res) {
@@ -39,9 +46,10 @@ let AuthController = class AuthController {
         await this.authService.displayQrCode(res, otpAuthUrl);
     }
     async verifyOtp(req, body) {
-        const isValid = await this.authService.verifyOtp(body.otp);
-        console.log(req.user);
+        console.log('user', req.user);
+        console.log('res session', req.session.user);
         console.log('secret: ', process.env.JWT_SECRET);
+        const isValid = await this.authService.verifyOtp(body.otp);
         if (isValid) {
             const payload = {
                 sub: 'shawn',
@@ -54,12 +62,14 @@ let AuthController = class AuthController {
     async getAuthSession(session) {
         return [session, session.id];
     }
-    async getProfile(user) {
-        console.log(user);
-        return user;
+    async getProfile(req) {
+        console.log('profile session', req.session.user);
+        console.log('profile user', req.user);
+        return req.session.user;
     }
     logout(req) {
         req.user = null;
+        req.session.user = null;
         req.session.destroy();
         return {
             msg: 'The user session has ended. '
@@ -109,7 +119,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(local_guard_1.AuthenticatedGuard),
     (0, common_1.Get)('profile'),
-    __param(0, (0, user_decorator_1.User)()),
+    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)

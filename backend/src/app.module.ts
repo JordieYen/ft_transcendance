@@ -6,7 +6,6 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { MatchHistoryModule } from './match-history/match-history.module';
-import { PassportModule } from '@nestjs/passport';
 import { AchievementModule } from './achievement/achievement.module';
 import { UserAchievementModule } from './user_achievement/user_achievement.module';
 

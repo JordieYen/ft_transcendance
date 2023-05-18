@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import axios from 'axios';
 import { User } from 'src/typeorm/user.entity';
-import { RequestWithSessionUser } from '../request_with_session_user';
+import { RequestWithSessionUser } from '../util/request_with_session_user';
 import { authenticator } from 'otplib';
 import * as qrcode from 'qrcode';
 
@@ -83,10 +83,14 @@ export class AuthService {
     }
 
     async findOneOrCreate(user: any): Promise<User> {
-        let existingUser = this.userService.findUsersById(user.id);        
-        if (!existingUser)
-            this.userService.createUser(user);
-        return (existingUser);
+        // console.log('findOneOrCreate', user);
+        let returnUser = await this.userService.findUsersByName(user.username);
+        console.log('existinerUser', returnUser);
+        if (!returnUser) {
+            ('create user')
+            returnUser = await this.userService.createUser(user);
+        }
+        return (returnUser);
     }
 
     async generateTwoFactorAuthSecret(user: any) : Promise<string> {

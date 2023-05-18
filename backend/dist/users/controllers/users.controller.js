@@ -58,7 +58,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "findUsersById", null);
 __decorate([
-    (0, common_1.Get)('name/:name'),
+    (0, common_1.Get)('username/:username'),
     __param(0, (0, common_1.Param)('username')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
