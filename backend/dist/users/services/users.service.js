@@ -47,6 +47,19 @@ let UsersService = class UsersService {
         console.log('finduserbyname', username);
         return await this.usersRepository.findOne({ where: { username: username } });
     }
+    async uploadAvatar(id, avatar) {
+        try {
+            const user = await this.usersRepository.findOne({ where: { id: id } });
+            if (!user) {
+                throw new Error('User not found');
+            }
+            user.avatar = avatar;
+            return await this.usersRepository.save(user);
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Could not upload avatar');
+        }
+    }
 };
 UsersService = __decorate([
     (0, common_1.Injectable)(),

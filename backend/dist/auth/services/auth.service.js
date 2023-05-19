@@ -87,6 +87,7 @@ let AuthService = class AuthService {
         return (returnUser);
     }
     async generateTwoFactorAuthSecret(user) {
+        console.log('user', user);
         this.secret = otplib_1.authenticator.generateSecret();
         const otpAuthUrl = otplib_1.authenticator.keyuri(user.username, 'MyApp', this.secret);
         return otpAuthUrl;

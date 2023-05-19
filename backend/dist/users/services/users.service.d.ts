@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { User } from 'src/typeorm/user.entity';
 export declare class UsersService {
     private usersRepository;
@@ -10,4 +10,5 @@ export declare class UsersService {
     findAll(): Promise<User[]>;
     deleteUserById(id: number): Promise<import("typeorm").DeleteResult>;
     findUsersByName(username: string): Promise<User | null>;
+    uploadAvatar(id: number, avatar: string): Promise<User>;
 }

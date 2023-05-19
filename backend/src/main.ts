@@ -11,6 +11,7 @@ import { SessionEntity } from './typeorm/session.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthMiddleware } from './auth/util/auth.middleware';
 import { User } from './typeorm/user.entity';
+import credentials from 'next-auth/providers/credentials';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -36,7 +37,7 @@ async function bootstrap() {
       // }
       // const newSession = sessionRepo.create({ id: generatedSessionID, /* ... other session data ... */ });
       // await sessionRepo.save(newSession);
-      
+
       const secret = configService.get<string>('CLIENT_SECRET');
       const sessionMiddleware = session({
         name: 'ft_transcendence_session_id',
@@ -55,22 +56,22 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use((req, res, next) => {
-    var status = req.isAuthenticated() ? 'logged in' : 'logged out';
-    console.log(
-      'status:', status, '\n',
-      // 'session', req.session, '\n',
-      'path', req.path, '\n',
-      );
-    const isAuthRoute = (req.path == '/auth/login' 
-    || req.path == '/auth/callback' 
-    || req.path == '/auth/logout'
-    || req.path == '/api');
-    if (isAuthRoute)
-      next;
-    if (!req.isAuthenticated() && !isAuthRoute) {
-        console.log('enter');
-        return res.redirect(`${process.env.NEXT_HOST}/login`)
-    }
+    // var status = req.isAuthenticated() ? 'logged in' : 'logged out';
+    // console.log(
+    //   'status:', status, '\n',
+    //   // 'session', req.session, '\n',
+    //   'path', req.path, '\n',
+    //   );
+    // const isAuthRoute = (req.path == '/auth/login' 
+    // || req.path == '/auth/callback' 
+    // || req.path == '/auth/logout'
+    // || req.path == '/api');
+    // if (isAuthRoute)
+    //   next;
+    // if (!req.isAuthenticated() && !isAuthRoute) {
+    //     console.log('enter');
+    //     return res.redirect(`${process.env.NEXT_HOST}/login`)
+    // }
       next();
   });
   await app.listen(3000);

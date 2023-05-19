@@ -37,16 +37,18 @@ let AuthController = class AuthController {
         console.log('2fa', req.user);
         await this.authService.displayQrCode(res, otpAuthUrl);
     }
-    async verifyOtp(req, body) {
+    async verifyOtp(req, res, body) {
         console.log('user', req.user);
-        console.log('res session', req.session.user);
+        const jwtUser = Object.assign({}, req.user);
+        console.log('jwtUser', jwtUser);
         console.log('secret: ', process.env.JWT_SECRET);
         const isValid = await this.authService.verifyOtp(body.otp);
         if (isValid) {
             const payload = {
-                sub: 'shawn',
+                sub: jwtUser.id,
             };
-            const token = this.jwtService.sign(payload, { secret: 'secret' });
+            const token = this.jwtService.sign(payload, { secret: `${process.env.JWT_SECRET}` });
+            res.cookie('jwt', token, { httpOnly: true });
             return token;
         }
         throw new invalid_otp_exception_1.InvalidOtpException();
@@ -97,9 +99,10 @@ __decorate([
 __decorate([
     (0, common_1.Post)('otp'),
     __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "verifyOtp", null);
 __decorate([

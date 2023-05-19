@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Post, Query, Req, Res, Session, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query, Req, Res, Session, UseGuards } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from '../util/local.guard';
@@ -7,6 +7,7 @@ import { FortyTwoAuthGuard } from '../util/42-auth.guard';
 import { User } from 'src/users/decorators/user.decorator';
 import { InvalidOtpException } from '../util/invalid_otp_exception';
 import { JwtService } from '@nestjs/jwt/dist/jwt.service';
+import { User as userEntity } from 'src/typeorm/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -42,24 +43,29 @@ export class AuthController {
   // if match, user authnticated.
 
   // @UseGuards(FortyTwoAuthGuard)
+  // @UseGuards(AuthenticatedGuard)
   @Get('2fa')
-  async enableTwoFactorAuth(@Req() req: RequestWithSessionUser, @Res() res: Response) {
+  async enableTwoFactorAuth(@Req() req: Request, @Res() res: Response) {
     const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(req.user);
     console.log('2fa', req.user);
     await this.authService.displayQrCode(res, otpAuthUrl);
   }
 
+  // @UseGuards(AuthenticatedGuard)
   @Post('otp')
-  async verifyOtp(@Req() req, @Body() body: { otp: string }) {
+  async verifyOtp(@Req() req: Request, @Res() res: Response, @Body() body: { otp: string }) {
     console.log('user', req.user);
-    console.log('res session', req.session.user);
+    const jwtUser: any = { ...req.user };
+    console.log('jwtUser', jwtUser);
+    
     console.log('secret: ', process.env.JWT_SECRET);
     const isValid = await this.authService.verifyOtp(body.otp);
     if (isValid) {
       const payload = {
-        sub: 'shawn',
+        sub: jwtUser.id,
       };
-      const token = this.jwtService.sign(payload, { secret: 'secret' });
+      const token = this.jwtService.sign(payload, { secret: `${process.env.JWT_SECRET}` });
+      res.cookie('jwt', token, { httpOnly: true });
       return token;
     }
     throw new InvalidOtpException();

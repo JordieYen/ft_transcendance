@@ -7,7 +7,7 @@ import { User } from 'src/typeorm/user.entity';
 import { RequestWithSessionUser } from '../util/request_with_session_user';
 import { authenticator } from 'otplib';
 import * as qrcode from 'qrcode';
-import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -94,6 +94,7 @@ export class AuthService {
     }
 
     async generateTwoFactorAuthSecret(user: any) : Promise<string> {
+        console.log('user', user);
         this.secret = authenticator.generateSecret();
         const otpAuthUrl = authenticator.keyuri(user.username, 'MyApp', this.secret);
         return otpAuthUrl;
