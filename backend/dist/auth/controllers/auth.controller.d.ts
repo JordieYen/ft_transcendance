@@ -1,5 +1,5 @@
 import { AuthService } from '../services/auth.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { RequestWithSessionUser } from '../util/request_with_session_user';
 import { JwtService } from '@nestjs/jwt/dist/jwt.service';
 export declare class AuthController {
@@ -9,12 +9,12 @@ export declare class AuthController {
     login(): Promise<void>;
     callback(req: any, res: Response): Promise<void>;
     enableTwoFactorAuth(req: RequestWithSessionUser, res: Response): Promise<void>;
-    verifyOtp(req: RequestWithSessionUser, body: {
+    verifyOtp(req: any, body: {
         otp: string;
     }): Promise<string>;
     getAuthSession(session: Record<string, any>): Promise<any[]>;
-    getProfile(req: RequestWithSessionUser): Promise<import("../../typeorm/user.entity").User>;
-    logout(req: any): {
+    getProfile(user: any): Promise<any>;
+    logout(req: Request): Promise<{
         msg: string;
-    };
+    }>;
 }

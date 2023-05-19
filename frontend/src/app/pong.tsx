@@ -15,6 +15,7 @@ const PongMain: React.FC = () => {
                 });
                 if (response.ok) {
                   const userData = await response.json();
+                  console.log('response', userData);
                   setUser(userData);
                 } else {
                 throw new Error('User not found');
@@ -30,7 +31,10 @@ const PongMain: React.FC = () => {
 
     const logout = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/auth/logout');
+        const response = await fetch('http://localhost:3000/auth/logout', {
+                  credentials: 'include',
+          });
+        console.log('logout response', response);
         router.push('/login');
       } catch (error) {
         setError('Error loggin out');
@@ -55,7 +59,9 @@ const PongMain: React.FC = () => {
               <h2>User Profile:</h2>
               <img src={user.avatar} alt="User Avatar" />
               <p>Id: {user.id} </p>
+              <p>Intra_uid: {user.intra_uid} </p>
               <p>Username: {user.username} </p>
+              <p>Online: {user.online ? 'online' : 'offline'} </p>
           </div>
           
         ) : (

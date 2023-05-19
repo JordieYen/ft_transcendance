@@ -9,6 +9,8 @@ import { ISession, TypeormStore } from 'connect-typeorm/out';
 import { DataSource } from 'typeorm';
 import { SessionEntity } from './typeorm/session.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { AuthMiddleware } from './auth/util/auth.middleware';
+import { User } from './typeorm/user.entity';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,49 +26,53 @@ async function bootstrap() {
   })));
   const sessionRepo = app.get(DataSource).getRepository<ISession>(SessionEntity);
   // function generateUniqueSessionID(): string {
-  //   return uuidv4();
-  // }
-  // const generatedSessionID = generateUniqueSessionID();
-
-  // const existingSession = await sessionRepo.findOne({ where: { id: generatedSessionID } });
-  // if (existingSession) {
-  //   await sessionRepo.remove(existingSession);
-  // }
-  // const newSession = sessionRepo.create({ id: generatedSessionID, /* ... other session data ... */ });
-  // await sessionRepo.save(newSession);
-
-  const secret = configService.get<string>('CLIENT_SECRET');
-  const sessionMiddleware = session({
-    name: 'ft_transcendence_session_id',
-    secret: secret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false,
-      maxAge: 600000,
-    },
-    store: new TypeormStore().connect(sessionRepo),
-  });
-  
+    //   return uuidv4();
+    // }
+    // const generatedSessionID = generateUniqueSessionID();
+    
+    // const existingSession = await sessionRepo.findOne({ where: { id: generatedSessionID } });
+    // if (existingSession) {
+      //   await sessionRepo.remove(existingSession);
+      // }
+      // const newSession = sessionRepo.create({ id: generatedSessionID, /* ... other session data ... */ });
+      // await sessionRepo.save(newSession);
+      
+      const secret = configService.get<string>('CLIENT_SECRET');
+      const sessionMiddleware = session({
+        name: 'ft_transcendence_session_id',
+        secret: secret,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          secure: false,
+          maxAge: 600000,
+        },
+        // store: new TypeormStore().connect(sessionRepo),
+      });
+      
   // Set up passport.initialize() and passport.session() with the session middleware
   app.use(sessionMiddleware);
   app.use(passport.initialize());
   app.use(passport.session());
   app.use((req, res, next) => {
-    // req.user = req.session.user;
-    req.session.user = req.user;
-    // var status = req.isAuthenticated() ? 'logged in' : 'logged out';
-    // console.log(
-    //   'status:', status, '\n',
-    //   req.sessionStore,
-    //   req.sessionID,
-    //   req.session
-    // );
-    // if (!req.user)
-    //   return res.redirect('http://localhost:3001/login')
-    next();
+    var status = req.isAuthenticated() ? 'logged in' : 'logged out';
+    console.log(
+      'status:', status, '\n',
+      // 'session', req.session, '\n',
+      'path', req.path, '\n',
+      );
+    const isAuthRoute = (req.path == '/auth/login' 
+    || req.path == '/auth/callback' 
+    || req.path == '/auth/logout'
+    || req.path == '/api');
+    if (isAuthRoute)
+      next;
+    if (!req.isAuthenticated() && !isAuthRoute) {
+        console.log('enter');
+        return res.redirect(`${process.env.NEXT_HOST}/login`)
+    }
+      next();
   });
-  
   await app.listen(3000);
 }
 bootstrap();

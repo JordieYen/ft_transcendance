@@ -56,24 +56,17 @@ let AuthService = class AuthService {
             user.online = false;
             let existingUser = await this.userService.findUsersByName(user.username);
             if (!existingUser) {
-                console.log('CREATE USER');
                 existingUser = await this.userService.createUser(user);
             }
             req.session.user = existingUser;
-            console.log(req.session.user);
             return existingUser;
         }
         catch (error) {
             if (error.response) {
-                console.log('RESPONSE', error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
             }
             else if (error.request) {
-                console.log('REQUEST', error.request);
             }
             else {
-                console.log('Error', error.message);
             }
         }
         ;
@@ -85,8 +78,8 @@ let AuthService = class AuthService {
         return (null);
     }
     async findOneOrCreate(user) {
+        console.log('find user');
         let returnUser = await this.userService.findUsersByName(user.username);
-        console.log('existinerUser', returnUser);
         if (!returnUser) {
             ('create user');
             returnUser = await this.userService.createUser(user);

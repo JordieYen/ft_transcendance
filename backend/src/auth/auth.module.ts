@@ -13,6 +13,7 @@ import { JwtAuthGuard } from './util/jwt-auth.guard';
 import { FortyTwoStrategy } from './util/42.strategy';
 import { AuthenticatedGuard } from './util/local.guard';
 import { SessionEntity } from 'src/typeorm/session.entity';
+import { JwtStrategy } from './util/jwt.strategy';
 // import { JwtStrategy } from './util/jwt.strategy';
 
 @Module({
@@ -37,7 +38,7 @@ import { SessionEntity } from 'src/typeorm/session.entity';
     UsersService,
     AuthService,
     FortyTwoStrategy,
-    // JwtStrategy,
+    JwtStrategy,
     SessionSerializer,
   ],
   controllers: [AuthController],

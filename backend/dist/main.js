@@ -7,7 +7,6 @@ const config_1 = require("@nestjs/config");
 const swagger_config_1 = require("./swagger.config");
 const passport = require("passport");
 const common_1 = require("@nestjs/common");
-const out_1 = require("connect-typeorm/out");
 const typeorm_1 = require("typeorm");
 const session_entity_1 = require("./typeorm/session.entity");
 async function bootstrap() {
@@ -33,13 +32,23 @@ async function bootstrap() {
             secure: false,
             maxAge: 600000,
         },
-        store: new out_1.TypeormStore().connect(sessionRepo),
     });
     app.use(sessionMiddleware);
     app.use(passport.initialize());
     app.use(passport.session());
     app.use((req, res, next) => {
-        req.session.user = req.user;
+        var status = req.isAuthenticated() ? 'logged in' : 'logged out';
+        console.log('status:', status, '\n', 'path', req.path, '\n');
+        const isAuthRoute = (req.path == '/auth/login'
+            || req.path == '/auth/callback'
+            || req.path == '/auth/logout'
+            || req.path == '/api');
+        if (isAuthRoute)
+            next;
+        if (!req.isAuthenticated() && !isAuthRoute) {
+            console.log('enter');
+            return res.redirect(`${process.env.NEXT_HOST}/login`);
+        }
         next();
     });
     await app.listen(3000);

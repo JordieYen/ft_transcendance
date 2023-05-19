@@ -25,20 +25,9 @@ export class AuthController {
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
   async callback(@Req() req , @Res() res: Response) {
-
-    console.log('req.user', req.user);
-    const accessToken = req.user.accessToken;
-    const refreshToken = req.user.refreshToken;
-    const existingUser = await this.authService.findOneOrCreate(req.user);
-    console.log('existin user', existingUser);
-    
-    req.session.accessToken = accessToken;
-    req.session.refreshToken = refreshToken;
-    req.session.user = existingUser;
-    console.log('req.user after', req.user);
-    console.log('req session', req.session);
-    console.log('req session user', req.session.user);
-    
+    req.session.accessToken = req.user.accessToken;
+    req.session.refreshToken = req.user.refreshToken;
+    req.session.user = req.user;
     return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
   }
 
@@ -61,7 +50,7 @@ export class AuthController {
   }
 
   @Post('otp')
-  async verifyOtp(@Req() req: RequestWithSessionUser, @Body() body: { otp: string }) {
+  async verifyOtp(@Req() req, @Body() body: { otp: string }) {
     console.log('user', req.user);
     console.log('res session', req.session.user);
     console.log('secret: ', process.env.JWT_SECRET);
@@ -76,7 +65,7 @@ export class AuthController {
     throw new InvalidOtpException();
   }
   
-  @UseGuards(AuthenticatedGuard)
+  // @UseGuards(AuthenticatedGuard)
   @Get('session')
   async getAuthSession(@Session() session: Record<string, any>) {
     return [session, session.id];
@@ -84,25 +73,21 @@ export class AuthController {
   }
   
   // @UseGuards(AuthenticatedGuard)
-  // @Get('profile')
-  // async getProfile(@User() user: RequestWithSessionUser) {
-  //     console.log(user);
-  //     return user;
-  // }
-  @UseGuards(AuthenticatedGuard)
   @Get('profile')
-  async getProfile(@Req() req: RequestWithSessionUser) {
-      console.log('profile session', req.session.user);
-      console.log('profile user', req.user);
-      return req.session.user;
+  async getProfile(@User() user) {
+      return await user;
   }
 
   @Get('logout')
-  logout(@Req() req) {
+  async logout(@Req() req: Request) {
       req.user = null;
-      req.session.user = null;
-      req.session.destroy();
-      return {
+      console.log('logout');
+      req.logOut((err) => {
+        if (err) {
+          throw err;
+        }
+      });
+      return await {
         msg: 'The user session has ended. '
       }
   }

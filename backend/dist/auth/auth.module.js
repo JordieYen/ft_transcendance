@@ -22,6 +22,7 @@ const session_serializer_1 = require("./util/session_serializer");
 const jwt_1 = require("@nestjs/jwt");
 const _42_strategy_1 = require("./util/42.strategy");
 const session_entity_1 = require("../typeorm/session.entity");
+const jwt_strategy_1 = require("./util/jwt.strategy");
 let AuthModule = class AuthModule {
     constructor(configService) {
         this.configService = configService;
@@ -52,6 +53,7 @@ AuthModule = __decorate([
             users_service_1.UsersService,
             auth_service_1.AuthService,
             _42_strategy_1.FortyTwoStrategy,
+            jwt_strategy_1.JwtStrategy,
             session_serializer_1.SessionSerializer,
         ],
         controllers: [auth_controller_1.AuthController],
