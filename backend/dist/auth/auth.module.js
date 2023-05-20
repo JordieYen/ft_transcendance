@@ -16,6 +16,7 @@ const auth_controller_1 = require("./controllers/auth.controller");
 const users_service_1 = require("../users/services/users.service");
 const typeorm_module_1 = require("@nestjs/typeorm/dist/typeorm.module");
 const config_1 = require("@nestjs/config");
+const axios_1 = require("@nestjs/axios");
 const user_entity_1 = require("../typeorm/user.entity");
 const passport_1 = require("@nestjs/passport");
 const session_serializer_1 = require("./util/session_serializer");
@@ -45,7 +46,8 @@ AuthModule = __decorate([
                     signOptions: { expiresIn: '1d' },
                 }),
                 inject: [config_1.ConfigService],
-            })
+            }),
+            axios_1.HttpModule,
         ],
         providers: [
             config_1.ConfigService,

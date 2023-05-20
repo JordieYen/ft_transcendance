@@ -86,7 +86,7 @@ export class AuthController {
 
   @Get('logout')
   async logout(@Req() req: Request) {
-      req.user = null;
+    req.user = null;
       console.log('logout');
       req.logOut((err) => {
         if (err) {

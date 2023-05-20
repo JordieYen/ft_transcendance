@@ -35,30 +35,77 @@ let UsersService = class UsersService {
         return await this.usersRepository.find();
     }
     async findUsersById(id) {
-        return await this.usersRepository.findOneBy({ id });
+        if (id === undefined) {
+            return null;
+        }
+        const user = await this.usersRepository.findOne({
+            where: {
+                id: id
+            }
+        });
+        if (!user)
+            throw new Error('User not found');
+        return (user);
+    }
+    async findUsersByIntraId(intra_uid) {
+        return await this.usersRepository.findOne({
+            where: {
+                intra_uid: intra_uid
+            }
+        });
     }
     async findAll() {
         return await this.usersRepository.find();
     }
     async deleteUserById(id) {
+        const user = await this.findUsersById(id);
+        if (!user)
+            throw new common_1.NotFoundException(`User with ID ${id} not found`);
         return await this.usersRepository.delete(id);
     }
     async findUsersByName(username) {
         console.log('finduserbyname', username);
-        return await this.usersRepository.findOne({ where: { username: username } });
+        return await this.usersRepository.findOne({
+            where: {
+                username: username
+            }
+        });
     }
     async uploadAvatar(id, avatar) {
         try {
-            const user = await this.usersRepository.findOne({ where: { id: id } });
-            if (!user) {
-                throw new Error('User not found');
-            }
+            const user = await this.findUsersById(id);
             user.avatar = avatar;
             return await this.usersRepository.save(user);
         }
         catch (error) {
             throw new common_1.InternalServerErrorException('Could not upload avatar');
         }
+    }
+    async updateUser(id, UpdateUserDto) {
+        try {
+            const updatedUserDto = Object.assign(Object.assign({}, UpdateUserDto), { updatedAt: new Date() });
+            await this.usersRepository.update(id, updatedUserDto);
+            return await this.usersRepository.findOneBy({
+                id: id
+            });
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Failed to update user');
+        }
+    }
+    async findUsersByIdWithRelation(id) {
+        const user = this.usersRepository.findOne({
+            relations: [
+                'userAchievement',
+                'userAchievement.achievement',
+            ],
+            where: {
+                id: id,
+            }
+        });
+        if (!user)
+            throw new common_1.NotFoundException(`User with ID ${id} not found`);
+        return await user;
     }
 };
 UsersService = __decorate([

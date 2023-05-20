@@ -80,7 +80,7 @@ const PongMain: React.FC = () => {
               `}
               </style>
               <h2>User Profile:</h2>
-              <img src={user.avatar} alt="User Avatar" />
+              <img src={user.avatar} alt="User Avatar" style={{ width: '200px', height: '200px'}} />
               <p>Id: {user.id} </p>
               <p>Intra_uid: {user.intra_uid} </p>
               <p>Username: {user.username} </p>

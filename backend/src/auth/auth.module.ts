@@ -30,7 +30,8 @@ import { JwtStrategy } from './util/jwt.strategy';
         signOptions: { expiresIn: '1d'},
       }),
       inject: [ConfigService],
-    })
+    }),
+    HttpModule,
   ],
   providers: [
     ConfigService,

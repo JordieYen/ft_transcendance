@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
+    "debug": "NODE_OPTIONS='--inspect' next dev -p 3001",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -17,12 +18,12 @@
     "dotenv": "^16.0.3",
     "eslint": "8.40.0",
     "eslint-config-next": "13.4.1",
-    "next": "13.4.1",
+    "next": "^13.4.1",
     "next-auth": "^4.22.1",
     "path": "^0.12.7",
     "postcss": "8.4.23",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
     "tailwindcss": "3.3.2",
     "typescript": "5.0.4"

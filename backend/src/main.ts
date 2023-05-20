@@ -12,9 +12,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthMiddleware } from './auth/util/auth.middleware';
 import { User } from './typeorm/user.entity';
 import credentials from 'next-auth/providers/credentials';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
+
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
   app.enableCors({
     origin: `${process.env.NEXT_HOST}`,
@@ -25,6 +28,10 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe(({
     whitelist: true,
   })));
+  app.useStaticAssets(join(__dirname, '..', 'public'), {
+    index: false,
+    prefix: '/public',
+  });
   const sessionRepo = app.get(DataSource).getRepository<ISession>(SessionEntity);
   // function generateUniqueSessionID(): string {
     //   return uuidv4();
@@ -74,6 +81,8 @@ async function bootstrap() {
     // }
       next();
   });
+
+  
   await app.listen(3000);
 }
 bootstrap();

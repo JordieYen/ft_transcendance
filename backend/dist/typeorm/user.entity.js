@@ -18,6 +18,9 @@ const message_entity_1 = require("./message.entity");
 const stats_entity_1 = require("./stats.entity");
 const user_achievement_entity_1 = require("./user_achievement.entity");
 let User = class User {
+    updateUpdatedAt() {
+        this.updatedAt = new Date();
+    }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
@@ -82,6 +85,12 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => message_entity_1.Message, message => message.sender),
     __metadata("design:type", Array)
 ], User.prototype, "messages", void 0);
+__decorate([
+    (0, typeorm_1.BeforeInsert)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], User.prototype, "updateUpdatedAt", null);
 User = __decorate([
     (0, typeorm_1.Entity)()
 ], User);

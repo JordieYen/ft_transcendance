@@ -19,4 +19,5 @@ export declare class User {
     friends: Friend[];
     channelMember: ChannelUser[];
     messages: Message[];
+    updateUpdatedAt(): void;
 }

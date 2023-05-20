@@ -10,6 +10,8 @@ import { AchievementModule } from './achievement/achievement.module';
 import { UserAchievementModule } from './user_achievement/user_achievement.module';
 import { AuthMiddleware } from './auth/util/auth.middleware';
 import { NestFactory } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [

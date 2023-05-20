@@ -85,7 +85,9 @@ export class AuthService {
 
     async findOneOrCreate(user: any): Promise<User> {
         console.log('find user');
-        let returnUser = await this.userService.findUsersByName(user.username);
+        console.log(user.intra_uid);
+        
+        let returnUser = await this.userService.findUsersByIntraId(user.intra_uid);
         if (!returnUser) {
             ('create user')
             returnUser = await this.userService.createUser(user);

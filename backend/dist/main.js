@@ -9,6 +9,7 @@ const passport = require("passport");
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const session_entity_1 = require("./typeorm/session.entity");
+const path_1 = require("path");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const configService = app.get(config_1.ConfigService);
@@ -21,6 +22,10 @@ async function bootstrap() {
     app.useGlobalPipes(new common_1.ValidationPipe(({
         whitelist: true,
     })));
+    app.useStaticAssets((0, path_1.join)(__dirname, '..', 'public'), {
+        index: false,
+        prefix: '/public',
+    });
     const sessionRepo = app.get(typeorm_1.DataSource).getRepository(session_entity_1.SessionEntity);
     const secret = configService.get('CLIENT_SECRET');
     const sessionMiddleware = session({

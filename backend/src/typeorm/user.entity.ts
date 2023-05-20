@@ -58,4 +58,9 @@ export class User {
     @OneToMany(() => Message, message => message.sender)
     messages: Message[];
 
+    @BeforeInsert()
+    updateUpdatedAt() {
+        this.updatedAt = new Date();
+    }
+
 }

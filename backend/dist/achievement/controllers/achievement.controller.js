@@ -21,20 +21,21 @@ let AchievementController = class AchievementController {
     constructor(achievementService) {
         this.achievementService = achievementService;
     }
-    async reate(createAchievementDto) {
-        return this.achievementService.create(createAchievementDto);
+    async create(createAchievementDto) {
+        return await this.achievementService.create(createAchievementDto);
     }
     async findAll() {
-        return this.achievementService.findAll();
+        return await this.achievementService.findAll();
     }
     async findOne(id) {
-        return this.achievementService.findOne(+id);
+        return await this.achievementService.findOne(id);
     }
     async update(id, updateAchievementDto) {
-        return this.achievementService.update(id, updateAchievementDto);
+        return await this.achievementService.update(id, updateAchievementDto);
     }
     async remove(id) {
-        return this.achievementService.remove(id);
+        await this.achievementService.remove(id);
+        return await `User achievement with id ${id} has been deleted.`;
     }
 };
 __decorate([
@@ -43,7 +44,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_achievement_dto_1.CreateAchievementDto]),
     __metadata("design:returntype", Promise)
-], AchievementController.prototype, "reate", null);
+], AchievementController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
@@ -54,7 +55,7 @@ __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AchievementController.prototype, "findOne", null);
 __decorate([
