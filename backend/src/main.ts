@@ -63,6 +63,7 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use((req, res, next) => {
+      req.session.user = req.user;
     // var status = req.isAuthenticated() ? 'logged in' : 'logged out';
     // console.log(
     //   'status:', status, '\n',

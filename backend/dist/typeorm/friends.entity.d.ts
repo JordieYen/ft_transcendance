@@ -1,5 +1,5 @@
 import { User } from "./user.entity";
-declare enum FriendStatus {
+export declare enum FriendStatus {
     Invited = "invited",
     Pending = "pending",
     Friended = "friended",
@@ -11,4 +11,3 @@ export declare class Friend {
     user2: User;
     status: FriendStatus;
 }
-export {};

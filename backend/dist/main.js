@@ -42,6 +42,7 @@ async function bootstrap() {
     app.use(passport.initialize());
     app.use(passport.session());
     app.use((req, res, next) => {
+        req.session.user = req.user;
         next();
     });
     await app.listen(3000);

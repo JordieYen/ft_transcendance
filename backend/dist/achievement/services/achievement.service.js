@@ -22,8 +22,13 @@ let AchievementService = class AchievementService {
         this.achievementRepository = achievementRepository;
     }
     async create(createAchievementDto) {
-        const newAchievement = this.achievementRepository.create(createAchievementDto);
-        return await this.achievementRepository.save(newAchievement);
+        try {
+            const newAchievement = this.achievementRepository.create(createAchievementDto);
+            return await this.achievementRepository.save(newAchievement);
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Could not create achhievement');
+        }
     }
     async findAll() {
         return await this.achievementRepository.find();

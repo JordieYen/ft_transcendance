@@ -2,12 +2,13 @@ import { Body, Controller, Get, Logger, Param, Post, Query, Req, Res, Session, U
 import { AuthService } from '../services/auth.service';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from '../util/local.guard';
-import { RequestWithSessionUser } from '../util/request_with_session_user';
+import { AuthenticatedUser, RequestWithSessionUser } from '../util/user_interface';
 import { FortyTwoAuthGuard } from '../util/42-auth.guard';
 import { User } from 'src/users/decorators/user.decorator';
 import { InvalidOtpException } from '../util/invalid_otp_exception';
 import { JwtService } from '@nestjs/jwt/dist/jwt.service';
 import { User as userEntity } from 'src/typeorm/user.entity';
+import session from 'express-session';
 
 @Controller('auth')
 export class AuthController {
@@ -25,10 +26,7 @@ export class AuthController {
   // req.user contains token
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
-  async callback(@Req() req , @Res() res: Response) {
-    req.session.accessToken = req.user.accessToken;
-    req.session.refreshToken = req.user.refreshToken;
-    req.session.user = req.user;
+  async callback(@Req() req: Request & RequestWithSessionUser, @Res() res: Response) : Promise<void> {
     return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
   }
 
@@ -45,7 +43,7 @@ export class AuthController {
   // @UseGuards(FortyTwoAuthGuard)
   // @UseGuards(AuthenticatedGuard)
   @Get('2fa')
-  async enableTwoFactorAuth(@Req() req: Request, @Res() res: Response) {
+  async enableTwoFactorAuth(@Req() req: Request, @Res() res: Response) : Promise<void> {
     const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(req.user);
     console.log('2fa', req.user);
     await this.authService.displayQrCode(res, otpAuthUrl);
@@ -53,12 +51,8 @@ export class AuthController {
 
   // @UseGuards(AuthenticatedGuard)
   @Post('otp')
-  async verifyOtp(@Req() req: Request, @Res() res: Response, @Body() body: { otp: string }) {
-    console.log('user', req.user);
-    const jwtUser: any = { ...req.user };
-    console.log('jwtUser', jwtUser);
-    
-    console.log('secret: ', process.env.JWT_SECRET);
+  async verifyOtp(@Req() req: Request, @Res() res: Response, @Body() body: { otp: string }) : Promise<string> {
+    const jwtUser: AuthenticatedUser = req.user;
     const isValid = await this.authService.verifyOtp(body.otp);
     if (isValid) {
       const payload = {
@@ -66,6 +60,7 @@ export class AuthController {
       };
       const token = this.jwtService.sign(payload, { secret: `${process.env.JWT_SECRET}` });
       res.cookie('jwt', token, { httpOnly: true });
+      console.log(res);
       return token;
     }
     throw new InvalidOtpException();
@@ -73,8 +68,8 @@ export class AuthController {
   
   // @UseGuards(AuthenticatedGuard)
   @Get('session')
-  async getAuthSession(@Session() session: Record<string, any>) {
-    return [session, session.id];
+  async getAuthSession(@Session() session: Record<string, any>) : Promise<Record<string, any> > {
+    return await [session, session.id];
     // return ({session: session, sessionId: session.id});
   }
   
@@ -85,17 +80,14 @@ export class AuthController {
   }
 
   @Get('logout')
-  async logout(@Req() req: Request) {
-    req.user = null;
-      console.log('logout');
-      req.logOut((err) => {
-        if (err) {
-          throw err;
-        }
-      });
-      return await {
-        msg: 'The user session has ended. '
-      }
+  async logout(@Req() req: Request, @Res() res: Response) : Promise<void> {
+    if (req.user) {
+      await this.authService.logout(req.user);
+      await this.authService.clearUserSession(req);
+      await this.authService.clearUserCookies(res);
+      req.logout(() => {});
+    }
+    res.json({ message: 'User logout' });
   }
 
   // Manual approach

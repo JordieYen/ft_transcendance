@@ -63,10 +63,13 @@ let AuthService = class AuthService {
         }
         catch (error) {
             if (error.response) {
+                console.log('RESPONSE', error.response.data);
             }
             else if (error.request) {
+                console.log('REQUEST', error.request);
             }
             else {
+                console.log('Error', error.message);
             }
         }
         ;
@@ -78,17 +81,13 @@ let AuthService = class AuthService {
         return (null);
     }
     async findOneOrCreate(user) {
-        console.log('find user');
-        console.log(user.intra_uid);
         let returnUser = await this.userService.findUsersByIntraId(user.intra_uid);
         if (!returnUser) {
-            ('create user');
             returnUser = await this.userService.createUser(user);
         }
         return (returnUser);
     }
     async generateTwoFactorAuthSecret(user) {
-        console.log('user', user);
         this.secret = otplib_1.authenticator.generateSecret();
         const otpAuthUrl = otplib_1.authenticator.keyuri(user.username, 'MyApp', this.secret);
         return otpAuthUrl;
@@ -97,9 +96,25 @@ let AuthService = class AuthService {
         const qrCode = await qrcode.toFileStream(res, otpAuthUrl);
     }
     async verifyOtp(otp) {
-        console.log('otp', otp);
-        console.log('secret', this.secret);
         return otplib_1.authenticator.check(otp, this.secret);
+    }
+    async logout(user) {
+        return await this.userService.updateUser(user.id, { online: false });
+    }
+    async clearUserSession(req) {
+        return await new Promise((resolve, reject) => {
+            req.session.destroy((err) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve();
+                }
+            });
+        });
+    }
+    async clearUserCookies(res) {
+        res.clearCookie('ft_transcendence_session_id');
     }
 };
 AuthService = __decorate([

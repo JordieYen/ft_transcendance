@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 
-enum FriendStatus {
+export enum FriendStatus {
     Invited = 'invited',
     Pending = 'pending',
     Friended = 'friended',

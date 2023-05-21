@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/services/users.service';
 import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import axios from 'axios';
 import { User } from 'src/typeorm/user.entity';
-import { RequestWithSessionUser } from '../util/request_with_session_user';
+import { AuthenticatedUser, RequestWithSessionUser } from '../util/user_interface';
 import { authenticator } from 'otplib';
 import * as qrcode from 'qrcode';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
@@ -57,26 +57,22 @@ export class AuthService {
             user.online = false;
             let existingUser = await this.userService.findUsersByName(user.username);
             if (!existingUser) {
-                // console.log('CREATE USER');
                 existingUser = await this.userService.createUser(user);
             }
             req.session.user = existingUser;
-            // console.log(req.session.user);
             return existingUser;
         } catch (error) {
             if (error.response) {
-                // console.log('RESPONSE', error.response.data);
-                // console.log(error.response.status);
-                // console.log(error.response.headers);
+                console.log('RESPONSE', error.response.data);
             } else if (error.request) {
-                // console.log('REQUEST', error.request);
+                console.log('REQUEST', error.request);
             } else {
-                // console.log('Error', error.message);
+                console.log('Error', error.message);
             }
         };
     }
 
-    async validateUser(username: string): Promise<any> {
+    async validateUser(username: string): Promise<User> {
         const user = await this.userService.findUsersByName(username);
         if (user)
             return (user);
@@ -84,19 +80,14 @@ export class AuthService {
     }
 
     async findOneOrCreate(user: any): Promise<User> {
-        console.log('find user');
-        console.log(user.intra_uid);
-        
         let returnUser = await this.userService.findUsersByIntraId(user.intra_uid);
         if (!returnUser) {
-            ('create user')
             returnUser = await this.userService.createUser(user);
         }
         return (returnUser);
     }
 
-    async generateTwoFactorAuthSecret(user: any) : Promise<string> {
-        console.log('user', user);
+    async generateTwoFactorAuthSecret(user: AuthenticatedUser) : Promise<string> {
         this.secret = authenticator.generateSecret();
         const otpAuthUrl = authenticator.keyuri(user.username, 'MyApp', this.secret);
         return otpAuthUrl;
@@ -107,9 +98,27 @@ export class AuthService {
     }
 
     async verifyOtp(otp: string) {
-        console.log('otp', otp);
-        console.log('secret', this.secret);
         return authenticator.check(otp, this.secret)
+    }
+
+    async logout(user: AuthenticatedUser) : Promise<User> {
+        return await this.userService.updateUser(user.id, { online: false });
+    }
+
+    async clearUserSession(req: Request): Promise<void> {
+        return await new Promise<void>((resolve, reject) => {
+            req.session.destroy((err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+    async clearUserCookies(res: Response): Promise<void> {
+        res.clearCookie('ft_transcendence_session_id');
     }
 
  }

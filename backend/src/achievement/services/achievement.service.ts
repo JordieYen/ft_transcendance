@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Achievement } from 'src/typeorm/achievement.entity';
 import { Repository } from 'typeorm';
@@ -13,8 +13,12 @@ export class AchievementService {
   ){}
 
   async create(createAchievementDto: CreateAchievementDto) : Promise<Achievement> {
-    const newAchievement = this.achievementRepository.create(createAchievementDto)
-    return await this.achievementRepository.save(newAchievement);
+    try {
+      const newAchievement = this.achievementRepository.create(createAchievementDto)
+      return await this.achievementRepository.save(newAchievement);
+    } catch (error) {
+      throw new InternalServerErrorException('Could not create achhievement');
+    }
   }
 
   async findAll() : Promise<Achievement[]> {

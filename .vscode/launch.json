@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Nest.js: debug server-side",
+            "port": 9229,
+            "request": "attach",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            // "remoteRoot": "/backend/backend", 
+        },
+        {
+            // "preLaunchTask": "Client Build",
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome Incognito",
+            "url": "http://localhost:3001",
+            "webRoot": "${workspaceFolder}/frontend",
+            "userDataDir": "${workspaceFolder}/.chrome",
+            "runtimeExecutable": "stable",
+            "runtimeArgs": ["--incognito"]
+        }
+        // {
+        //     "type": "node",
+        //     "request": "launch",
+        //     "name": "Launch Program",
+        //     "skipFiles": [
+        //         "<node_internals>/**"
+        //     ],
+        //     "program": "${file}",
+        //     "outFiles": [
+        //         "${workspaceFolder}/**/*.js"
+        //     ]
+        // }
+    ]
+}

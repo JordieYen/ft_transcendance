@@ -5,11 +5,14 @@ import { PassportStrategy } from "@nestjs/passport";
 import { User } from "src/typeorm/user.entity";
 import { Strategy, Profile, VerifyCallback } from 'passport-42';
 import { AuthService } from "../services/auth.service";
+import { AuthenticatedUser } from "./user_interface";
+import { UsersService } from "src/users/services/users.service";
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     constructor(
-        private readonly authService: AuthService
+        private readonly authService: AuthService,
+        private readonly userService: UsersService,
 
     ) {
         super({
@@ -24,8 +27,9 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
         refreshToken: string,
         profile: Profile, 
         done: VerifyCallback
-    ) : Promise<any> {
-        const user: Partial<any> = {
+    ) : Promise<void> {
+        const user: AuthenticatedUser = {
+            id: null,
             intra_uid : profile.id,
             username : profile.username,
             avatar : profile._json.image.link,
@@ -33,14 +37,13 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
             accessToken: accessToken,
             refreshToken: refreshToken,
         };
-        const existingUser = await this.authService.findOneOrCreate(user);
+        let existingUser = await this.authService.findOneOrCreate(user);
+        if (!existingUser.online)
+            existingUser = await this.userService.updateUser(existingUser.id, { online: true });
         const newUser = {
             ...user,
             ...existingUser,
         };
         done(null, newUser);
-        // profile.accessToken = accessToken;
-        // profile.refreshToken = refreshToken;        
-        // done(null, profile);        
     }
 }

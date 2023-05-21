@@ -1,8 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityNotFoundError, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from 'src/typeorm/user.entity';
-import { HttpService } from '@nestjs/axios';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 
@@ -18,7 +17,6 @@ export class UsersService {
     try {
       return await this.usersRepository.save(newUser);
     } catch (error) {
-      // console.log('error=', error.message);
       throw new InternalServerErrorException('Could not create user');
     }
   }
@@ -59,11 +57,13 @@ export class UsersService {
   }
 
   async findUsersByName(username: string):  Promise<User | null> {
-    console.log('finduserbyname', username);
-    return await this.usersRepository.findOne({ 
+    const user = await this.usersRepository.findOne({ 
       where: { 
         username : username
       }});
+    if (!user)
+      throw new NotFoundException(`User with username: ${username} not found`);
+    return await user;
   }
 
   async uploadAvatar(id: number, avatar: string) {
@@ -83,19 +83,18 @@ export class UsersService {
         updatedAt: new Date(),
       }
       await this.usersRepository.update(id, updatedUserDto);
-      return await this.usersRepository.findOneBy({
-        id: id 
-      });
+      return await this.findUsersById(id);
     } catch (error) {
       throw new InternalServerErrorException('Failed to update user');
     }
   }
 
-   async findUsersByIdWithRelation(id: number): Promise<User> {
+  async findUsersByIdWithRelation(id: number): Promise<User> {
     const user = this.usersRepository.findOne({
       relations: [
         'userAchievement',
         'userAchievement.achievement',
+        'userAchievement.user',
       ],
       where: {
         id: id,
@@ -105,7 +104,4 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${id} not found`);
     return await user;
    }
-
-
-
 }

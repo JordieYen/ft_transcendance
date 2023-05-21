@@ -27,9 +27,6 @@ let AuthController = class AuthController {
     async login() {
     }
     async callback(req, res) {
-        req.session.accessToken = req.user.accessToken;
-        req.session.refreshToken = req.user.refreshToken;
-        req.session.user = req.user;
         return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
     }
     async enableTwoFactorAuth(req, res) {
@@ -38,10 +35,7 @@ let AuthController = class AuthController {
         await this.authService.displayQrCode(res, otpAuthUrl);
     }
     async verifyOtp(req, res, body) {
-        console.log('user', req.user);
-        const jwtUser = Object.assign({}, req.user);
-        console.log('jwtUser', jwtUser);
-        console.log('secret: ', process.env.JWT_SECRET);
+        const jwtUser = req.user;
         const isValid = await this.authService.verifyOtp(body.otp);
         if (isValid) {
             const payload = {
@@ -49,27 +43,25 @@ let AuthController = class AuthController {
             };
             const token = this.jwtService.sign(payload, { secret: `${process.env.JWT_SECRET}` });
             res.cookie('jwt', token, { httpOnly: true });
+            console.log(res);
             return token;
         }
         throw new invalid_otp_exception_1.InvalidOtpException();
     }
     async getAuthSession(session) {
-        return [session, session.id];
+        return await [session, session.id];
     }
     async getProfile(user) {
         return await user;
     }
-    async logout(req) {
-        req.user = null;
-        console.log('logout');
-        req.logOut((err) => {
-            if (err) {
-                throw err;
-            }
-        });
-        return await {
-            msg: 'The user session has ended. '
-        };
+    async logout(req, res) {
+        if (req.user) {
+            await this.authService.logout(req.user);
+            await this.authService.clearUserSession(req);
+            await this.authService.clearUserCookies(res);
+            req.logout(() => { });
+        }
+        res.json({ message: 'User logout' });
     }
 };
 __decorate([
@@ -122,8 +114,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)('logout'),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "logout", null);
 AuthController = __decorate([

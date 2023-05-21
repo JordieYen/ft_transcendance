@@ -14,12 +14,8 @@ export class UserAchievementService {
   constructor(
     @InjectRepository(UserAchievement)
       private userAchievementRepository: Repository<UserAchievement>, 
-    // @InjectRepository(User)
-    //   private userRepository: Repository<User>, 
-    // @InjectRepository(Achievement)
-    //   private achievementRepository: Repository<Achievement>,
-    private readonly userService: UsersService, 
-    private readonly achievementService: AchievementService, 
+      private readonly userService: UsersService, 
+      private readonly achievementService: AchievementService, 
   ){}
 
   async create(createUserAchievementDto: CreateUserAchievementDto) : Promise<UserAchievement> {
@@ -35,7 +31,7 @@ export class UserAchievementService {
     if (existingRecord) {
       throw new ConflictException('User achievement record already exists');
     }
-    const [user, achievement] = await Promise.all([
+    const [ user, achievement ] = await Promise.all([
       this.userService.findUsersById(userId),
       this.achievementService.findOne(achievementId),
     ])

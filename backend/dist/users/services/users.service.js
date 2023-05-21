@@ -64,12 +64,14 @@ let UsersService = class UsersService {
         return await this.usersRepository.delete(id);
     }
     async findUsersByName(username) {
-        console.log('finduserbyname', username);
-        return await this.usersRepository.findOne({
+        const user = await this.usersRepository.findOne({
             where: {
                 username: username
             }
         });
+        if (!user)
+            throw new common_1.NotFoundException(`User with username: ${username} not found`);
+        return await user;
     }
     async uploadAvatar(id, avatar) {
         try {
@@ -85,9 +87,7 @@ let UsersService = class UsersService {
         try {
             const updatedUserDto = Object.assign(Object.assign({}, UpdateUserDto), { updatedAt: new Date() });
             await this.usersRepository.update(id, updatedUserDto);
-            return await this.usersRepository.findOneBy({
-                id: id
-            });
+            return await this.findUsersById(id);
         }
         catch (error) {
             throw new common_1.InternalServerErrorException('Failed to update user');
@@ -98,6 +98,7 @@ let UsersService = class UsersService {
             relations: [
                 'userAchievement',
                 'userAchievement.achievement',
+                'userAchievement.user',
             ],
             where: {
                 id: id,
