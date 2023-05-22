@@ -16,30 +16,102 @@ exports.ChatController = void 0;
 const common_1 = require("@nestjs/common");
 const chat_service_1 = require("./chat.service");
 const dto_1 = require("./dto");
+const user_decorator_1 = require("../users/decorators/user.decorator");
 let ChatController = class ChatController {
     constructor(chatService) {
         this.chatService = chatService;
     }
-    createChannel(dto) {
-        return this.chatService.createChannel(dto);
+    testChannel(user) {
+        return this.chatService.testChannel(user);
     }
-    enterChat() {
-        return this.chatService.enterChannel();
+    createChannel(dto, user) {
+        return this.chatService.createChannel(dto, user);
+    }
+    joinChannel(dto, user) {
+        return this.chatService.joinChannel(dto, user);
+    }
+    deleteChannel(channel_uid, user) {
+        return this.chatService.deleteChannel(channel_uid, user);
+    }
+    listChannelByUser(user) {
+        return this.chatService.listChannelByUser(user);
+    }
+    listPublicChannels() {
+        return this.chatService.listPublicChannels();
+    }
+    listProtectedChannels() {
+        return this.chatService.listProtectedChannels();
+    }
+    findChannelById(channel_id) {
+        return this.chatService.findChannelById(channel_id);
+    }
+    async getAllChannels() {
+        return await this.chatService.getAllChannels();
     }
 };
 __decorate([
+    (0, common_1.Get)('test'),
+    __param(0, (0, user_decorator_1.User)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "testChannel", null);
+__decorate([
     (0, common_1.Post)('create'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, user_decorator_1.User)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.CreateChatDto]),
+    __metadata("design:paramtypes", [dto_1.CreateChatDto, Object]),
     __metadata("design:returntype", void 0)
 ], ChatController.prototype, "createChannel", null);
 __decorate([
-    (0, common_1.Post)('enter'),
+    (0, common_1.Post)('join'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, user_decorator_1.User)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.JoinChatDto, Object]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "joinChannel", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, user_decorator_1.User)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "deleteChannel", null);
+__decorate([
+    (0, common_1.Get)('user'),
+    __param(0, (0, user_decorator_1.User)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "listChannelByUser", null);
+__decorate([
+    (0, common_1.Get)('public'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], ChatController.prototype, "enterChat", null);
+], ChatController.prototype, "listPublicChannels", null);
+__decorate([
+    (0, common_1.Get)('protected'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "listProtectedChannels", null);
+__decorate([
+    (0, common_1.Get)(':channel_id'),
+    __param(0, (0, common_1.Param)('channel_id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "findChannelById", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChatController.prototype, "getAllChannels", null);
 ChatController = __decorate([
     (0, common_1.Controller)('chat'),
     __metadata("design:paramtypes", [chat_service_1.ChatService])

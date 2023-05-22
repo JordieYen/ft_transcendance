@@ -18,22 +18,28 @@ const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
 const config_module_1 = require("@nestjs/config/dist/config.module");
 const match_history_module_1 = require("./match-history/match-history.module");
-const chat_module_1 = require("./chat/chat.module");
+const channel_module_1 = require("./chat/channel/channel.module");
+const achievement_module_1 = require("./achievement/achievement.module");
+const user_achievement_module_1 = require("./user_achievement/user_achievement.module");
+const channel_user_module_1 = require("./chat/channel-user/channel-user.module");
 let AppModule = class AppModule {
     constructor() { }
 };
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            database_module_1.DatabaseModule,
-            users_module_1.UsersModule,
-            auth_module_1.AuthModule,
             config_module_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '../.env'
             }),
+            database_module_1.DatabaseModule,
+            users_module_1.UsersModule,
+            auth_module_1.AuthModule,
             match_history_module_1.MatchHistoryModule,
-            chat_module_1.ChatModule,
+            achievement_module_1.AchievementModule,
+            user_achievement_module_1.UserAchievementModule,
+            channel_module_1.ChannelModule,
+            channel_user_module_1.ChannelUserModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

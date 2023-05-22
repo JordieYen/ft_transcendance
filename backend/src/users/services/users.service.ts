@@ -11,8 +11,9 @@ export class UsersService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
+    console.log(createUserDto);
     const newUser = this.usersRepository.create(createUserDto);
-    console.log(newUser);
+    console.log('test', newUser);
     try {
       return await this.usersRepository.save(newUser);
     } catch (error) {
@@ -37,7 +38,7 @@ export class UsersService {
     return await this.usersRepository.delete(id);
   }
 
-  async findUsersByName(username: string): Promise<User> {
+  async findUsersByName(username: string):  Promise<User | null> {
     return await this.usersRepository.findOneBy({ username });
   }
 }

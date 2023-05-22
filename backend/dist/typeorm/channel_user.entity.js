@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChannelUser = void 0;
+exports.ChannelUser = exports.Status = exports.Role = void 0;
 const typeorm_1 = require("typeorm");
 const channel_entity_1 = require("./channel.entity");
 const user_entity_1 = require("./user.entity");
@@ -18,19 +18,19 @@ var Role;
     Role["Owner"] = "owner";
     Role["Admin"] = "admin";
     Role["User"] = "user";
-})(Role || (Role = {}));
+})(Role = exports.Role || (exports.Role = {}));
 var Status;
 (function (Status) {
     Status["Null"] = "null";
     Status["Banned"] = "banned";
     Status["Muted"] = "muted";
-})(Status || (Status = {}));
+})(Status = exports.Status || (exports.Status = {}));
 let ChannelUser = class ChannelUser {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], ChannelUser.prototype, "channel_uid", void 0);
+], ChannelUser.prototype, "channeluser_uid", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.channelMember),
     (0, typeorm_1.JoinColumn)({ name: 'user_id' }),

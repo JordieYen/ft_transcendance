@@ -1,2 +1,2 @@
-export * from './create-chat.dto';
-export * from './enter-chat.dto';
+export * from './create-channel.dto';
+export * from './join-channel.dto';

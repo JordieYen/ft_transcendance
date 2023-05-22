@@ -1,38 +1,67 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/router';
 
 const PongMain: React.FC = () => {
     const [user, setUser] = useState<any>(null);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
-        const fetchUser = async(userId: string) => {
+        const fetchUser = async() => {
             try {
-                const response = await fetch(`http://localhost:3000/users/name/${userId}`);
-                const userData = await response.json();
-                setUser(userData);
+                const response = await fetch('http://localhost:3000/auth/profile', {
+                  credentials: 'include',
+                });
+                if (response.ok) {
+                  const userData = await response.json();
+                  setUser(userData);
+                } else {
+                  throw new Error('User not found');
+                }
             } catch (error) {
                 console.log('Error fetching user data:', error);
+                setError('Error fetching user data');
             }
         };
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('userId');
-        if (userId)
-            fetchUser(userId);
+       
+        fetchUser();
     }, []);
 
-    return (
-        <div>
-            <h1>Welcome to the Pong Main Page!</h1>
-            {
-                user && (
-                    <div>
-                        <h2>User Information: </h2>
-                        <img src={user.avatar} alt="User Avatar"/>
-                        <p>ID: {user.id}</p>
-                        <p>Username:  {user.username}</p>
+    const logout = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/auth/logout');
+        router.push('/login');
+      } catch (error) {
+        setError('Error loggin out');
+      }
+    }
 
-                    </div>
-            )}
-        </div>
+    return (
+      <div>
+        { error ? (
+          <div>{error}</div>
+        ) : user ? (
+          <div>
+            <h1>Welcome to Pong Main Page</h1>
+            <button className="logout-button" onClick={logout}>Logout</button>
+              <style jsx> 
+              {`
+                .logout-button {
+                  float: right;
+                }
+              `}
+              </style>
+              <h2>User Profile:</h2>
+              <img src={user.avatar} alt="User Avatar" />
+              <p>Id: {user.id} </p>
+              <p>Username: {user.username} </p>
+          </div>
+          
+        ) : (
+          <div>Loading...</div>
+        )}
+      </div>
     );
 };
 

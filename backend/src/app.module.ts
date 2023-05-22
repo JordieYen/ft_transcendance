@@ -5,25 +5,28 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config/dist/config.module';
-import { ConfigService } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { MatchHistoryModule } from './match-history/match-history.module';
-import { ChatModule } from './chat/chat.module';
+import { ChannelModule } from './chat/channel/channel.module';
+import { AchievementModule } from './achievement/achievement.module';
+import { UserAchievementModule } from './user_achievement/user_achievement.module';
+import { ChannelUserModule } from './chat/channel-user/channel-user.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ 
+        isGlobal: true,
+        envFilePath: '../.env'
+    }),
     DatabaseModule,
     UsersModule,
     AuthModule,
-    ConfigModule.forRoot({ 
-      isGlobal: true,
-      envFilePath: '../.env'
-  }),
     MatchHistoryModule,
-    ChatModule,
+    AchievementModule,
+    UserAchievementModule,
+    ChannelModule,
+    ChannelUserModule
   ],
-  controllers: [AppController ],
+  controllers: [AppController],
   providers: [ AppService ],
 })
 export class AppModule {

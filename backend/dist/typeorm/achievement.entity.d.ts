@@ -1,7 +1,7 @@
-import { User } from './user.entity';
+import { UserAchievement } from './user_achievement.entity';
 export declare class Achievement {
     id: number;
-    user: User;
-    achievement_1: number;
-    achievement_2: number;
+    name: string;
+    description: string;
+    userAchievements: UserAchievement[];
 }
