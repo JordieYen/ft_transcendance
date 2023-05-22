@@ -7,7 +7,7 @@ export declare enum FriendStatus {
 }
 export declare class Friend {
     id: number;
-    user1: User;
-    user2: User;
+    sender: User;
+    receiver: User;
     status: FriendStatus;
 }

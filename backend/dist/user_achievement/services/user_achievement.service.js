@@ -99,8 +99,9 @@ let UserAchievementService = class UserAchievementService {
     }
     async remove(id) {
         const userAchievemnt = await this.findOne(id);
-        if (!userAchievemnt)
+        if (!userAchievemnt) {
             throw new common_1.NotFoundException(`userAchievemnt with ID ${id} not found`);
+        }
         return await this.userAchievementRepository.delete(id);
     }
 };

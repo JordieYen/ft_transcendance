@@ -6,14 +6,13 @@ import { setupSwagger } from 'src/swagger.config';
 import * as passport from 'passport';
 import { ValidationPipe } from '@nestjs/common';
 import { ISession, TypeormStore } from 'connect-typeorm/out';
-import { DataSource } from 'typeorm';
+import { Connection, DataSource, getConnection, getRepository, Repository } from 'typeorm';
 import { SessionEntity } from './typeorm/session.entity';
-import { v4 as uuidv4 } from 'uuid';
-import { AuthMiddleware } from './auth/util/auth.middleware';
-import { User } from './typeorm/user.entity';
-import credentials from 'next-auth/providers/credentials';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { DatabaseModule } from './database/database.module';
+import { Jwt2faStrategy } from './auth/util/jwt.strategy';
 
 
 async function bootstrap() {
@@ -32,33 +31,25 @@ async function bootstrap() {
     index: false,
     prefix: '/public',
   });
-  const sessionRepo = app.get(DataSource).getRepository<ISession>(SessionEntity);
-  // function generateUniqueSessionID(): string {
-    //   return uuidv4();
-    // }
-    // const generatedSessionID = generateUniqueSessionID();
-    
-    // const existingSession = await sessionRepo.findOne({ where: { id: generatedSessionID } });
-    // if (existingSession) {
-      //   await sessionRepo.remove(existingSession);
-      // }
-      // const newSession = sessionRepo.create({ id: generatedSessionID, /* ... other session data ... */ });
-      // await sessionRepo.save(newSession);
 
-      const secret = configService.get<string>('CLIENT_SECRET');
-      const sessionMiddleware = session({
-        name: 'ft_transcendence_session_id',
-        secret: secret,
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-          secure: false,
-          maxAge: 600000,
-        },
-        // store: new TypeormStore().connect(sessionRepo),
-      });
-      
-  // Set up passport.initialize() and passport.session() with the session middleware
+  // const databaseModule = app.select(DatabaseModule);
+  // const connection = getConnection();
+  // const sessionRepo = connection.getRepository<ISession>(SessionEntity); // Replace SessionEntity with your actual session entity class
+  // const sessionRepo = app.get(DataSource).getRepository<ISession>(SessionEntity);
+  const sessionMiddleware = session({
+    name: 'ft_transcendence_session_id',
+    secret: configService.get<string>('CLIENT_SECRET'),
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false,
+      maxAge: 600000,
+    },
+    // store: new TypeormStore().connect(
+    //   app.get('sessionRepository'), // Use the session repository instance
+    // ),
+    // store: new TypeormStore().connect(sessionRepo),
+  });
   app.use(sessionMiddleware);
   app.use(passport.initialize());
   app.use(passport.session());

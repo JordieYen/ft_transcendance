@@ -2,20 +2,18 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import entities from '../typeorm';
+import { DataSource } from 'typeorm';
 
 @Module({
     imports: [
-        // ConfigModule.forRoot({ 
-        //     isGlobal: true,
-            // envFilePath: ['../.env'],
-        // }),
+        ConfigModule,
         TypeOrmModule.forRootAsync({
             imports: [ ConfigModule],
             inject: [ConfigService],
             useFactory: (ConfigService: ConfigService) => ({
                 type: 'postgres',
                 host: ConfigService.get('DB_HOST'),
-                port: ConfigService.get<number>('DB_PORT'),
+                port: ConfigService.get('DB_PORT'),
                 username: ConfigService.get('DB_USER'),
                 password: ConfigService.get('DB_PASSWORD'),
                 database: ConfigService.get('DB_NAME'),
@@ -27,7 +25,11 @@ import entities from '../typeorm';
                 synchronize: true,
                 // synchronize: false
             }),
-        }),
+            // dataSourceFactory: async (options) => {
+            //     const dataSource = await new DataSource(options).initialize();
+            //     return dataSource;
+            //   },
+        }), 
     ],
 })
 export class DatabaseModule {
@@ -35,7 +37,7 @@ export class DatabaseModule {
         const dbHost = this.configService.get<string>('DB_HOST');
         const dbDatabase = this.configService.get<string>('DB_NAME');
         const dbPassword = this.configService.get<string>('DB_PASSWORD');
-        const dbPort = this.configService.get<string>('DB_PORT');
+        const dbPort = this.configService.get<number>('DB_PORT');
         const dbName = this.configService.get<string>('DB_USER');
 
         console.log(`DB_HOST: ${dbHost}`);

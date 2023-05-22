@@ -101,8 +101,9 @@ export class UserAchievementService {
 
   async remove(id: number) {
     const userAchievemnt = await this.findOne(id);
-    if (!userAchievemnt)
+    if (!userAchievemnt) {
       throw new NotFoundException(`userAchievemnt with ID ${id} not found`);
+    }
     return await this.userAchievementRepository.delete(id);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/typeorm/user.entity';
@@ -13,7 +13,6 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto) {
     const newUser = await this.usersRepository.create(createUserDto);
-    console.log('newUser', newUser);
     try {
       return await this.usersRepository.save(newUser);
     } catch (error) {
@@ -76,7 +75,10 @@ export class UsersService {
     }
   }
 
-  async updateUser(id: number, UpdateUserDto: Partial<UpdateUserDto>) : Promise<User> {
+  async updateUser(id: number, updateUserDto: Partial<UpdateUserDto>) : Promise<User> {
+    if (!updateUserDto || Object.keys(updateUserDto).length === 0) {
+      throw new BadRequestException('No update data provided');
+    }
     try {
       const updatedUserDto = {
         ...UpdateUserDto,

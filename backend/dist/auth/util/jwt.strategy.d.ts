@@ -1,9 +1,10 @@
 import { Strategy } from "passport-jwt";
 import { AuthService } from "../services/auth.service";
-declare const JwtStrategy_base: new (...args: any[]) => Strategy;
-export declare class JwtStrategy extends JwtStrategy_base {
-    private readonly authService;
+import { JwtPayload } from 'jsonwebtoken';
+declare const Jwt2faStrategy_base: new (...args: any[]) => Strategy;
+export declare class Jwt2faStrategy extends Jwt2faStrategy_base {
+    readonly authService: AuthService;
     constructor(authService: AuthService);
-    validate(payload: any): Promise<import("../../typeorm/user.entity").User>;
+    validate(payload: JwtPayload): Promise<any>;
 }
 export {};

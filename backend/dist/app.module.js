@@ -17,24 +17,32 @@ const config_module_1 = require("@nestjs/config/dist/config.module");
 const match_history_module_1 = require("./match-history/match-history.module");
 const achievement_module_1 = require("./achievement/achievement.module");
 const user_achievement_module_1 = require("./user_achievement/user_achievement.module");
+const config_schema_1 = require("./config/config.schema");
+const friend_module_1 = require("./friend/friend.module");
+const configFactory = {
+    isGlocal: true,
+    envFilePath: '../.env',
+    validationSchema: config_schema_1.configValidationSchema,
+    cache: true,
+};
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            config_module_1.ConfigModule.forRoot({
-                isGlobal: true,
-                envFilePath: '../.env'
-            }),
             database_module_1.DatabaseModule,
+            config_module_1.ConfigModule.forRoot(configFactory),
             users_module_1.UsersModule,
             auth_module_1.AuthModule,
             match_history_module_1.MatchHistoryModule,
             achievement_module_1.AchievementModule,
             user_achievement_module_1.UserAchievementModule,
+            friend_module_1.FriendModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [
+            app_service_1.AppService,
+        ],
     })
 ], AppModule);
 exports.AppModule = AppModule;

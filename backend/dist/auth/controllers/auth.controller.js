@@ -19,6 +19,7 @@ const _42_auth_guard_1 = require("../util/42-auth.guard");
 const user_decorator_1 = require("../../users/decorators/user.decorator");
 const invalid_otp_exception_1 = require("../util/invalid_otp_exception");
 const jwt_service_1 = require("@nestjs/jwt/dist/jwt.service");
+const jwt_auth_guard_1 = require("../util/jwt-auth.guard");
 let AuthController = class AuthController {
     constructor(authService, jwtService) {
         this.authService = authService;
@@ -31,25 +32,23 @@ let AuthController = class AuthController {
     }
     async enableTwoFactorAuth(req, res) {
         const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(req.user);
-        console.log('2fa', req.user);
         await this.authService.displayQrCode(res, otpAuthUrl);
     }
     async verifyOtp(req, res, body) {
-        const jwtUser = req.user;
         const isValid = await this.authService.verifyOtp(body.otp);
         if (isValid) {
-            const payload = {
-                sub: jwtUser.id,
-            };
-            const token = this.jwtService.sign(payload, { secret: `${process.env.JWT_SECRET}` });
-            res.cookie('jwt', token, { httpOnly: true });
-            console.log(res);
-            return token;
+            const payload = await this.authService.createPayload(req.user);
+            const token = await this.authService.createToken(payload);
+            res.setHeader('Authorization', `Bearer ${token}`);
+            return res.send(token);
         }
         throw new invalid_otp_exception_1.InvalidOtpException();
     }
     async getAuthSession(session) {
         return await [session, session.id];
+    }
+    async getJwt() {
+        return { msg: 'enter jwt guard' };
     }
     async getProfile(user) {
         return await user;
@@ -104,6 +103,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getAuthSession", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('jwt'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "getJwt", null);
 __decorate([
     (0, common_1.Get)('profile'),
     __param(0, (0, user_decorator_1.User)()),

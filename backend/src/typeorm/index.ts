@@ -19,8 +19,7 @@ const entities = [
     Channel,
     ChannelUser,
     Message,
-    SessionEntity
+    // SessionEntity
 ];
 
-// export {Users, MatchHistory};
 export default entities;

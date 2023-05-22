@@ -17,8 +17,6 @@ const common_1 = require("@nestjs/common");
 const users_service_1 = require("../services/users.service");
 const create_user_dto_1 = require("../dtos/create-user.dto");
 const platform_express_1 = require("@nestjs/platform-express");
-const fs_1 = require("fs");
-const { rename } = fs_1.promises;
 let UsersController = class UsersController {
     constructor(userService) {
         this.userService = userService;

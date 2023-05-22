@@ -17,10 +17,12 @@ const axios_1 = require("axios");
 const user_entity_1 = require("../../typeorm/user.entity");
 const otplib_1 = require("otplib");
 const qrcode = require("qrcode");
+const jwt_1 = require("@nestjs/jwt");
 let AuthService = class AuthService {
-    constructor(userService, configService) {
+    constructor(userService, configService, jwtService) {
         this.userService = userService;
         this.configService = configService;
+        this.jwtService = jwtService;
     }
     async redirectTo42OAuth(res) {
         const client_id = this.configService.get('CLIENT_ID');
@@ -116,11 +118,25 @@ let AuthService = class AuthService {
     async clearUserCookies(res) {
         res.clearCookie('ft_transcendence_session_id');
     }
+    async createPayload(user) {
+        const payload = {
+            sub: user.id.toString(),
+            username: user.username,
+        };
+        return payload;
+    }
+    async createToken(payload) {
+        const token = await this.jwtService.sign(payload, {
+            secret: process.env.JWT_SECRET,
+        });
+        return token;
+    }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [users_service_1.UsersService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        jwt_1.JwtService])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

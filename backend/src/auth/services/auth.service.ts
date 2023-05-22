@@ -7,7 +7,9 @@ import { User } from 'src/typeorm/user.entity';
 import { AuthenticatedUser, RequestWithSessionUser } from '../util/user_interface';
 import { authenticator } from 'otplib';
 import * as qrcode from 'qrcode';
-import { CreateUserDto } from 'src/users/dtos/create-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from 'jsonwebtoken';
+
 
 @Injectable()
 export class AuthService {
@@ -16,6 +18,7 @@ export class AuthService {
     constructor(
         private readonly userService: UsersService,
         private readonly configService: ConfigService,
+        private readonly jwtService: JwtService,
         ) {}
         
     async redirectTo42OAuth(res: Response) {
@@ -121,4 +124,18 @@ export class AuthService {
         res.clearCookie('ft_transcendence_session_id');
     }
 
+    async createPayload(user: AuthenticatedUser): Promise<JwtPayload> {
+        const payload = {
+            sub: user.id.toString(),
+            username: user.username,
+        }
+        return payload;
+    }
+
+    async createToken(payload: JwtPayload): Promise<string> {
+        const token = await this.jwtService.sign(payload, {
+             secret: process.env.JWT_SECRET, 
+            });
+        return token;
+    }
  }

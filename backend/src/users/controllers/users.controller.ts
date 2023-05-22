@@ -28,9 +28,6 @@ import { Request, Response } from 'express';
 import { User } from '../decorators/user.decorator';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 
-
-const { rename } = fsPromises;
-
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
@@ -89,9 +86,9 @@ export class UsersController {
         HttpStatus.INTERNAL_SERVER_ERROR
       )
     }
-    // return await this.userService.uploadAvatar(id, file)
   }
 
+  // use PUT for new request body, use PATCH if need request body contain only property changes only
   @Patch('update/:id')
   async updateUser(@Param('id') id: number, @Body() updateUserDto: Partial<UpdateUserDto>) {
       return await this.userService.updateUser(id, updateUserDto);

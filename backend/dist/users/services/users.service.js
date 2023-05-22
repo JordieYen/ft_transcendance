@@ -17,13 +17,13 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("../../typeorm/user.entity");
+const update_user_dto_1 = require("../dtos/update-user.dto");
 let UsersService = class UsersService {
     constructor(usersRepository) {
         this.usersRepository = usersRepository;
     }
     async createUser(createUserDto) {
         const newUser = await this.usersRepository.create(createUserDto);
-        console.log('newUser', newUser);
         try {
             return await this.usersRepository.save(newUser);
         }
@@ -83,9 +83,12 @@ let UsersService = class UsersService {
             throw new common_1.InternalServerErrorException('Could not upload avatar');
         }
     }
-    async updateUser(id, UpdateUserDto) {
+    async updateUser(id, updateUserDto) {
+        if (!updateUserDto || Object.keys(updateUserDto).length === 0) {
+            throw new common_1.BadRequestException('No update data provided');
+        }
         try {
-            const updatedUserDto = Object.assign(Object.assign({}, UpdateUserDto), { updatedAt: new Date() });
+            const updatedUserDto = Object.assign(Object.assign({}, update_user_dto_1.UpdateUserDto), { updatedAt: new Date() });
             await this.usersRepository.update(id, updatedUserDto);
             return await this.findUsersById(id);
         }

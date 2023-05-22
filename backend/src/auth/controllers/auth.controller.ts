@@ -9,6 +9,8 @@ import { InvalidOtpException } from '../util/invalid_otp_exception';
 import { JwtService } from '@nestjs/jwt/dist/jwt.service';
 import { User as userEntity } from 'src/typeorm/user.entity';
 import session from 'express-session';
+import { JwtAuthGuard } from '../util/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -26,7 +28,7 @@ export class AuthController {
   // req.user contains token
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
-  async callback(@Req() req: Request & RequestWithSessionUser, @Res() res: Response) : Promise<void> {
+  async callback(@Req() req: Request, @Res() res: Response) : Promise<void> {
     return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
   }
 
@@ -40,37 +42,39 @@ export class AuthController {
   // compare user entered with generated OTP
   // if match, user authnticated.
 
-  // @UseGuards(FortyTwoAuthGuard)
   // @UseGuards(AuthenticatedGuard)
   @Get('2fa')
   async enableTwoFactorAuth(@Req() req: Request, @Res() res: Response) : Promise<void> {
     const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(req.user);
-    console.log('2fa', req.user);
     await this.authService.displayQrCode(res, otpAuthUrl);
   }
 
+  // JWT containe Header, Payload, Signature
   // @UseGuards(AuthenticatedGuard)
   @Post('otp')
-  async verifyOtp(@Req() req: Request, @Res() res: Response, @Body() body: { otp: string }) : Promise<string> {
-    const jwtUser: AuthenticatedUser = req.user;
+  async verifyOtp(@Req() req: Request, @Res() res: Response, @Body() body: { otp: string }) {
     const isValid = await this.authService.verifyOtp(body.otp);
     if (isValid) {
-      const payload = {
-        sub: jwtUser.id,
-      };
-      const token = this.jwtService.sign(payload, { secret: `${process.env.JWT_SECRET}` });
-      res.cookie('jwt', token, { httpOnly: true });
-      console.log(res);
-      return token;
+      const payload = await this.authService.createPayload(req.user);
+      const token = await this.authService.createToken(payload);
+      res.setHeader('Authorization', `Bearer ${token}`);
+      // res.cookie('jwt', token,  { httpOnly: true });
+      return res.send(token);
     }
     throw new InvalidOtpException();
   }
   
-  // @UseGuards(AuthenticatedGuard)
   @Get('session')
   async getAuthSession(@Session() session: Record<string, any>) : Promise<Record<string, any> > {
     return await [session, session.id];
     // return ({session: session, sessionId: session.id});
+  }
+
+  @UseGuards(JwtAuthGuard) 
+  // @UseGuards(AuthGuard('jwt'))
+  @Get('jwt')
+async getJwt() {
+    return { msg: 'enter jwt guard'};
   }
   
   // @UseGuards(AuthenticatedGuard)

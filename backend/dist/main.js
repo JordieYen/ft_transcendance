@@ -7,8 +7,6 @@ const config_1 = require("@nestjs/config");
 const swagger_config_1 = require("./swagger.config");
 const passport = require("passport");
 const common_1 = require("@nestjs/common");
-const typeorm_1 = require("typeorm");
-const session_entity_1 = require("./typeorm/session.entity");
 const path_1 = require("path");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
@@ -26,11 +24,9 @@ async function bootstrap() {
         index: false,
         prefix: '/public',
     });
-    const sessionRepo = app.get(typeorm_1.DataSource).getRepository(session_entity_1.SessionEntity);
-    const secret = configService.get('CLIENT_SECRET');
     const sessionMiddleware = session({
         name: 'ft_transcendence_session_id',
-        secret: secret,
+        secret: configService.get('CLIENT_SECRET'),
         resave: false,
         saveUninitialized: false,
         cookie: {

@@ -49,7 +49,7 @@ export class User {
     @OneToMany(() => MatchHistory, matchHistory => matchHistory.p2_uid)
     p2_match: MatchHistory[];
 
-    @ManyToMany(() => Friend, friend => [friend.user1, friend.user2])
+    @ManyToMany(() => Friend, friend => [friend.sender, friend.receiver])
     friends: Friend[];
 
     @OneToMany(() => ChannelUser, channelUser => channelUser.user)

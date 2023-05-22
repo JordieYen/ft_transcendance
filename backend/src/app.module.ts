@@ -8,41 +8,35 @@ import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { MatchHistoryModule } from './match-history/match-history.module';
 import { AchievementModule } from './achievement/achievement.module';
 import { UserAchievementModule } from './user_achievement/user_achievement.module';
-import { AuthMiddleware } from './auth/util/auth.middleware';
-import { NestFactory } from '@nestjs/core';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { configValidationSchema } from './config/config.schema';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { SessionEntity } from './typeorm/session.entity';
+import { DataSource } from 'typeorm/data-source/DataSource';
+import { Repository } from 'typeorm';
+import { FriendModule } from './friend/friend.module';
+
+const configFactory = {
+  isGlocal: true,
+  envFilePath: '../.env',
+  validationSchema: configValidationSchema,
+  cache: true,
+}
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ 
-        isGlobal: true,
-        envFilePath: '../.env'
-    }),
     DatabaseModule,
+    ConfigModule.forRoot(configFactory),
     UsersModule,
     AuthModule,
     MatchHistoryModule,
     AchievementModule,
     UserAchievementModule,
+    FriendModule,
   ],
   controllers: [AppController ],
-  providers: [ AppService ],
+  providers: [ 
+    AppService,
+   ],
 })
+
 export class AppModule {}
-// export class AppModule implements NestModule {
-  // constructor(private readonly appService: AppService) {}
-  // async configure(consumer: MiddlewareConsumer) {
-    // const app = await NestFactory.create(AppModule);
-  
-    // app.enableCors({
-    //   origin: `${process.env.NEXT_HOST}`,
-    //   methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
-    //   credentials: true, // Set this to true if you need to include cookies in the request
-    // });
-    // consumer
-      // .apply(AuthMiddleware)
-      // .exclude('/auth/login', '/auth/callback', '/auth/logout')
-      // .forRoutes('*');
-  // }
-// }

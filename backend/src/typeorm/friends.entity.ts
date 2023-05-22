@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 
 export enum FriendStatus {
@@ -14,10 +14,12 @@ export class Friend {
     id: number;
 
     @ManyToOne(() => User)
-    user1: User;
-
+    @JoinColumn({ name: 'sender_id' })
+    sender: User;
+    
     @ManyToOne(() => User)
-    user2: User;
+    @JoinColumn({ name: 'receiver_id' })
+    receiver: User;
 
     @Column({ type: 'enum', enum: FriendStatus})
     status: FriendStatus;
