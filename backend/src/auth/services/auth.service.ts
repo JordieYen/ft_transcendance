@@ -9,6 +9,7 @@ import { authenticator } from 'otplib';
 import * as qrcode from 'qrcode';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'jsonwebtoken';
+import { Profile } from 'passport-42';
 
 
 @Injectable()
@@ -82,10 +83,15 @@ export class AuthService {
         return (null);
     }
 
-    async findOneOrCreate(user: any): Promise<User> {
-        let returnUser = await this.userService.findUsersByIntraId(user.intra_uid);
+    async findOneOrCreate(profile: Profile): Promise<User> {
+        let returnUser = await this.userService.findUsersByIntraId(+profile.id);
         if (!returnUser) {
-            returnUser = await this.userService.createUser(user);
+            const newUser = new User(); 
+            newUser.intra_uid = +profile.id;
+            newUser.username = profile.username;
+            newUser.avatar = profile._json.image.link;
+            newUser.online = true;
+            returnUser = await this.userService.createUser(newUser);
         }
         return (returnUser);
     }
@@ -122,6 +128,7 @@ export class AuthService {
 
     async clearUserCookies(res: Response): Promise<void> {
         res.clearCookie('ft_transcendence_session_id');
+        res.clearCookie('jwt');
     }
 
     async createPayload(user: AuthenticatedUser): Promise<JwtPayload> {

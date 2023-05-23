@@ -32,7 +32,7 @@ const jwtFactory = {
 };
 const passportFactory = {
     defaultStrategy: ['session', 'jwt-2fa'],
-    session: false,
+    session: true,
 };
 let AuthModule = class AuthModule {
 };

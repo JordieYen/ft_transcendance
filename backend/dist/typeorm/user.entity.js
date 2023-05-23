@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
+const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 const channel_user_entity_1 = require("./channel_user.entity");
 const friends_entity_1 = require("./friends.entity");
@@ -20,6 +21,9 @@ const user_achievement_entity_1 = require("./user_achievement.entity");
 let User = class User {
     updateUpdatedAt() {
         this.updatedAt = new Date();
+    }
+    static _OPENAPI_METADATA_FACTORY() {
+        return { id: { required: true, type: () => Number }, intra_uid: { required: true, type: () => Number }, username: { required: true, type: () => String }, avatar: { required: true, type: () => String }, online: { required: true, type: () => Boolean }, createdAt: { required: true, type: () => Date }, updatedAt: { required: true, type: () => Date }, stat: { required: true, type: () => require("./stats.entity").Stat }, userAchievement: { required: true, type: () => [require("./user_achievement.entity").UserAchievement] }, p1_match: { required: true, type: () => [require("./match_history.entity").MatchHistory] }, p2_match: { required: true, type: () => [require("./match_history.entity").MatchHistory] }, friends: { required: true, type: () => [require("./friends.entity").Friend] }, channelMember: { required: true, type: () => [require("./channel_user.entity").ChannelUser] }, messages: { required: true, type: () => [require("./message.entity").Message] } };
     }
 };
 __decorate([
@@ -58,7 +62,7 @@ __decorate([
     __metadata("design:type", Date)
 ], User.prototype, "updatedAt", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => stats_entity_1.Stat),
+    (0, typeorm_1.OneToOne)(() => stats_entity_1.Stat, stat => stat.user),
     __metadata("design:type", stats_entity_1.Stat)
 ], User.prototype, "stat", void 0);
 __decorate([

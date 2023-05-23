@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import entities from '../typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 
 @Module({
     imports: [
@@ -32,6 +32,7 @@ import { DataSource } from 'typeorm';
         }), 
     ],
 })
+
 export class DatabaseModule {
     constructor(private readonly configService: ConfigService) {
         const dbHost = this.configService.get<string>('DB_HOST');

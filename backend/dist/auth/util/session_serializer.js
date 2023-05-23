@@ -24,7 +24,7 @@ let SessionSerializer = class SessionSerializer extends passport_1.PassportSeria
     }
     async deserializeUser(user, done) {
         console.log('deserializer user');
-        return done(null, user);
+        done(null, user);
     }
 };
 SessionSerializer = __decorate([

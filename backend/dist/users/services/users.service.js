@@ -44,15 +44,18 @@ let UsersService = class UsersService {
             }
         });
         if (!user)
-            throw new Error('User not found');
+            throw new common_1.InternalServerErrorException('User not found');
         return (user);
     }
     async findUsersByIntraId(intra_uid) {
-        return await this.usersRepository.findOne({
+        const user = await this.usersRepository.findOne({
             where: {
                 intra_uid: intra_uid
             }
         });
+        if (!user)
+            return null;
+        return user;
     }
     async findAll() {
         return await this.usersRepository.find();

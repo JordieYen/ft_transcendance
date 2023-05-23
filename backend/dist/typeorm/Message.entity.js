@@ -10,10 +10,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Message = void 0;
+const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 const channel_entity_1 = require("./channel.entity");
 const user_entity_1 = require("./user.entity");
 let Message = class Message {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { id: { required: true, type: () => Number }, channel: { required: true, type: () => require("./channel.entity").Channel }, sender: { required: true, type: () => require("./user.entity").User }, message_content: { required: true, type: () => String }, message_type: { required: true, type: () => String }, createdAt: { required: true, type: () => Date } };
+    }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),

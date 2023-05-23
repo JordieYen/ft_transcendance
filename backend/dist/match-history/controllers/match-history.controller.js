@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MatchHistoryController = void 0;
+const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const match_history_service_1 = require("../services/match-history.service");
 const create_match_history_dto_1 = require("../dto/create-match-history.dto");
@@ -41,12 +42,14 @@ let MatchHistoryController = class MatchHistoryController {
 };
 __decorate([
     (0, common_1.Get)(),
+    openapi.ApiResponse({ status: 200, type: [require("../../typeorm/match_history.entity").MatchHistory] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], MatchHistoryController.prototype, "getHistory", null);
 __decorate([
     (0, common_1.Get)('match'),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Query)('uid')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -54,6 +57,7 @@ __decorate([
 ], MatchHistoryController.prototype, "getByMatchUid", null);
 __decorate([
     (0, common_1.Get)('player'),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Query)('uid')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -61,6 +65,7 @@ __decorate([
 ], MatchHistoryController.prototype, "getByPlayerUid", null);
 __decorate([
     (0, common_1.Get)('score'),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Query)('score')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -68,6 +73,7 @@ __decorate([
 ], MatchHistoryController.prototype, "getByScore", null);
 __decorate([
     (0, common_1.Post)(),
+    openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_match_history_dto_1.CreateMatchHistoryDto]),
@@ -75,6 +81,7 @@ __decorate([
 ], MatchHistoryController.prototype, "create", null);
 __decorate([
     (0, common_1.Delete)('match'),
+    openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Query)('uid')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

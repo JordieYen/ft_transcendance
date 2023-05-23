@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
+const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("../services/auth.service");
 const _42_auth_guard_1 = require("../util/42-auth.guard");
@@ -20,6 +21,7 @@ const user_decorator_1 = require("../../users/decorators/user.decorator");
 const invalid_otp_exception_1 = require("../util/invalid_otp_exception");
 const jwt_service_1 = require("@nestjs/jwt/dist/jwt.service");
 const jwt_auth_guard_1 = require("../util/jwt-auth.guard");
+const swagger_1 = require("@nestjs/swagger");
 let AuthController = class AuthController {
     constructor(authService, jwtService) {
         this.authService = authService;
@@ -65,7 +67,11 @@ let AuthController = class AuthController {
 };
 __decorate([
     (0, common_1.UseGuards)(_42_auth_guard_1.FortyTwoAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'login to start your pong game',
+    }),
     (0, common_1.Get)('login'),
+    openapi.ApiResponse({ status: 200 }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -73,6 +79,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(_42_auth_guard_1.FortyTwoAuthGuard),
     (0, common_1.Get)('callback'),
+    openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
@@ -81,6 +88,7 @@ __decorate([
 ], AuthController.prototype, "callback", null);
 __decorate([
     (0, common_1.Get)('2fa'),
+    openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
@@ -89,6 +97,7 @@ __decorate([
 ], AuthController.prototype, "enableTwoFactorAuth", null);
 __decorate([
     (0, common_1.Post)('otp'),
+    openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Res)()),
     __param(2, (0, common_1.Body)()),
@@ -98,6 +107,7 @@ __decorate([
 ], AuthController.prototype, "verifyOtp", null);
 __decorate([
     (0, common_1.Get)('session'),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Session)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -106,12 +116,14 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('jwt'),
+    openapi.ApiResponse({ status: 200 }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getJwt", null);
 __decorate([
     (0, common_1.Get)('profile'),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, user_decorator_1.User)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -119,6 +131,7 @@ __decorate([
 ], AuthController.prototype, "getProfile", null);
 __decorate([
     (0, common_1.Get)('logout'),
+    openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
@@ -127,6 +140,7 @@ __decorate([
 ], AuthController.prototype, "logout", null);
 AuthController = __decorate([
     (0, common_1.Controller)('auth'),
+    (0, swagger_1.ApiTags)('Auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService,
         jwt_service_1.JwtService])
 ], AuthController);

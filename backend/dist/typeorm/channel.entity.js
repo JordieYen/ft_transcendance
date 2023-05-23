@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Channel = void 0;
+const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 const bcrypt = require("bcrypt");
 const channel_user_entity_1 = require("./channel_user.entity");
@@ -25,6 +26,9 @@ let Channel = class Channel {
     hashPassword() {
         if (this.channel_type === ChannelType.Private || this.channel_type === ChannelType.Protected)
             this.channel_hash = bcrypt.hashSync(this.channel_hash, 10);
+    }
+    static _OPENAPI_METADATA_FACTORY() {
+        return { channel_uid: { required: true, type: () => String }, channel_name: { required: true, type: () => String }, channel_type: { required: true, enum: ChannelType }, channel_hash: { required: true, type: () => String }, channelUser: { required: true, type: () => [require("./channel_user.entity").ChannelUser] }, createdAt: { required: true, type: () => Date }, messages: { required: true, type: () => [require("./message.entity").Message] } };
     }
 };
 __decorate([

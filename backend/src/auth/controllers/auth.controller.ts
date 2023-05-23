@@ -11,8 +11,10 @@ import { User as userEntity } from 'src/typeorm/user.entity';
 import session from 'express-session';
 import { JwtAuthGuard } from '../util/jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
+@ApiTags('Auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -21,6 +23,9 @@ export class AuthController {
 
   // Using 42 Passport
   @UseGuards(FortyTwoAuthGuard)
+  @ApiOperation({
+    summary: 'login to start your pong game',
+  })
   @Get('login')
   async login() {
   }
@@ -58,7 +63,6 @@ export class AuthController {
       const payload = await this.authService.createPayload(req.user);
       const token = await this.authService.createToken(payload);
       res.setHeader('Authorization', `Bearer ${token}`);
-      // res.cookie('jwt', token,  { httpOnly: true });
       return res.send(token);
     }
     throw new InvalidOtpException();
@@ -70,10 +74,10 @@ export class AuthController {
     // return ({session: session, sessionId: session.id});
   }
 
-  @UseGuards(JwtAuthGuard) 
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
+  // @UseGuards(AuthGuard('jwt-2fa'))
   @Get('jwt')
-async getJwt() {
+  async getJwt() {
     return { msg: 'enter jwt guard'};
   }
   
@@ -84,7 +88,7 @@ async getJwt() {
   }
 
   @Get('logout')
-  async logout(@Req() req: Request, @Res() res: Response) : Promise<void> {
+  async logout(@Req() req: Request, @Res() res: Response) {
     if (req.user) {
       await this.authService.logout(req.user);
       await this.authService.clearUserSession(req);

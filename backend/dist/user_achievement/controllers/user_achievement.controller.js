@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserAchievementController = void 0;
+const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const user_achievement_service_1 = require("../services/user_achievement.service");
 const create_user_achievement_dto_1 = require("../dto/create-user_achievement.dto");
@@ -39,6 +40,7 @@ let UserAchievementController = class UserAchievementController {
 };
 __decorate([
     (0, common_1.Put)('create'),
+    openapi.ApiResponse({ status: 200, type: require("../../typeorm/user_achievement.entity").UserAchievement }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_user_achievement_dto_1.CreateUserAchievementDto]),
@@ -46,12 +48,14 @@ __decorate([
 ], UserAchievementController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    openapi.ApiResponse({ status: 200, type: [require("../../typeorm/user_achievement.entity").UserAchievement] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], UserAchievementController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    openapi.ApiResponse({ status: 200, type: require("../../typeorm/user_achievement.entity").UserAchievement }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -59,6 +63,7 @@ __decorate([
 ], UserAchievementController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    openapi.ApiResponse({ status: 200, type: require("../../typeorm/user_achievement.entity").UserAchievement }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -67,6 +72,7 @@ __decorate([
 ], UserAchievementController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),

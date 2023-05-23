@@ -26,7 +26,8 @@ const jwtFactory = {
 
 const passportFactory = {
   defaultStrategy: ['session', 'jwt-2fa'],
-  session: false,
+  // defaultStrategy: ['jwt-2fa'],
+  session: true,
 };
 
 @Module({

@@ -37,7 +37,7 @@ export class User {
     })
     updatedAt: Date;
 
-    @OneToOne(() => Stat)
+    @OneToOne(() => Stat, stat => stat.user)
     stat: Stat;
 
     @OneToMany(() => UserAchievement, userAchievement => userAchievement.user)

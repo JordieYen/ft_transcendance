@@ -10,8 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserAchievementDto = void 0;
+const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 class CreateUserAchievementDto {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { userId: { required: true, type: () => Number }, achievementId: { required: true, type: () => Number } };
+    }
 }
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),

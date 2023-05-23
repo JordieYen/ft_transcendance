@@ -10,9 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MatchHistory = void 0;
+const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 let MatchHistory = class MatchHistory {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { match_uid: { required: true, type: () => Number }, winner_uid: { required: true, type: () => Number }, p1_uid: { required: true, type: () => Number }, p2_uid: { required: true, type: () => Number }, p1_score: { required: true, type: () => Number }, p2_score: { required: true, type: () => Number }, data_of_creation: { required: true, type: () => Date } };
+    }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),

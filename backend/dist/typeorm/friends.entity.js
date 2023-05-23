@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Friend = exports.FriendStatus = void 0;
+const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 var FriendStatus;
@@ -20,6 +21,9 @@ var FriendStatus;
     FriendStatus["Blocked"] = "blocked";
 })(FriendStatus = exports.FriendStatus || (exports.FriendStatus = {}));
 let Friend = class Friend {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { id: { required: true, type: () => Number }, sender: { required: true, type: () => require("./user.entity").User }, receiver: { required: true, type: () => require("./user.entity").User }, status: { required: true, enum: require("./friends.entity").FriendStatus } };
+    }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),

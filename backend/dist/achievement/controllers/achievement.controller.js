@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AchievementController = void 0;
+const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const create_achievement_dto_1 = require("../dto/create-achievement.dto");
 const update_achievement_dto_1 = require("../dto/update-achievement.dto");
@@ -40,6 +41,7 @@ let AchievementController = class AchievementController {
 };
 __decorate([
     (0, common_1.Post)(),
+    openapi.ApiResponse({ status: 201, type: require("../../typeorm/achievement.entity").Achievement }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_achievement_dto_1.CreateAchievementDto]),
@@ -47,12 +49,14 @@ __decorate([
 ], AchievementController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    openapi.ApiResponse({ status: 200, type: [require("../../typeorm/achievement.entity").Achievement] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AchievementController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    openapi.ApiResponse({ status: 200, type: require("../../typeorm/achievement.entity").Achievement }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -60,6 +64,7 @@ __decorate([
 ], AchievementController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    openapi.ApiResponse({ status: 200, type: require("../../typeorm/achievement.entity").Achievement }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -68,6 +73,7 @@ __decorate([
 ], AchievementController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    openapi.ApiResponse({ status: 200, type: String }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),

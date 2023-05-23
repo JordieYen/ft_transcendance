@@ -82,10 +82,15 @@ let AuthService = class AuthService {
             return (user);
         return (null);
     }
-    async findOneOrCreate(user) {
-        let returnUser = await this.userService.findUsersByIntraId(user.intra_uid);
+    async findOneOrCreate(profile) {
+        let returnUser = await this.userService.findUsersByIntraId(+profile.id);
         if (!returnUser) {
-            returnUser = await this.userService.createUser(user);
+            const newUser = new user_entity_1.User();
+            newUser.intra_uid = +profile.id;
+            newUser.username = profile.username;
+            newUser.avatar = profile._json.image.link;
+            newUser.online = true;
+            returnUser = await this.userService.createUser(newUser);
         }
         return (returnUser);
     }
@@ -117,6 +122,7 @@ let AuthService = class AuthService {
     }
     async clearUserCookies(res) {
         res.clearCookie('ft_transcendence_session_id');
+        res.clearCookie('jwt');
     }
     async createPayload(user) {
         const payload = {

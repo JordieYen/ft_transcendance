@@ -19,7 +19,7 @@ export class SessionSerializer extends PassportSerializer {
     
     async deserializeUser(user: User, done: (err, user: User) => void) {
         console.log('deserializer user');
-        return done(null, user);
+        done(null, user);
     }
 
     // serializeUser(user: Profile, done: (err: Error, user: Profile) => void): any {

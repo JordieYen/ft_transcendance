@@ -1,7 +1,7 @@
 import { ISession } from "connect-typeorm/out";
 import { Column, DeleteDateColumn, Entity, Index, PrimaryColumn } from "typeorm";
 
-@Entity()
+@Entity('user_session')
 export class SessionEntity implements ISession {
     @Index()
     @Column('bigint')
@@ -14,5 +14,5 @@ export class SessionEntity implements ISession {
     json = '';
 
     @DeleteDateColumn({ name: 'deleted_at' })
-    deletedAt: Date;
+    deletedAt?: Date;
 }

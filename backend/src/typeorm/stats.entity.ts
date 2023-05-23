@@ -10,12 +10,12 @@ export class Stat {
     @OneToOne(() => User, user => user.stat)
     user: User;
 
-    @Column()
+    @Column({ default: 0 })
     wins: number;
 
-    @Column()
+    @Column({ default: 0 })
     losses: number;
 
-    @Column()
+    @Column({ default: 0 })
     mmr: number;
 }

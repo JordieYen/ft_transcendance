@@ -1,25 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as session from 'express-session';
+import session, * as ExpressSession from 'express-session'; 
 import { ConfigService } from '@nestjs/config'
 import { setupSwagger } from 'src/swagger.config';
 import * as passport from 'passport';
 import { ValidationPipe } from '@nestjs/common';
-import { ISession, TypeormStore } from 'connect-typeorm/out';
-import { Connection, DataSource, getConnection, getRepository, Repository } from 'typeorm';
-import { SessionEntity } from './typeorm/session.entity';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { DatabaseModule } from './database/database.module';
-import { Jwt2faStrategy } from './auth/util/jwt.strategy';
-
+import * as pg from 'pg';
+import * as connectPgSimple from 'connect-pg-simple';
+import { ISession, TypeormStore } from 'connect-typeorm';
+import { Store } from 'express-session';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  const configService = app.get(ConfigService);
   app.enableCors({
-    origin: `${process.env.NEXT_HOST}`,
+    origin: process.env.NEXT_HOST,
     methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
     credentials: true, // Set this to true if you need to include cookies in the request
   });
@@ -32,35 +29,44 @@ async function bootstrap() {
     prefix: '/public',
   });
 
-  // const databaseModule = app.select(DatabaseModule);
-  // const connection = getConnection();
-  // const sessionRepo = connection.getRepository<ISession>(SessionEntity); // Replace SessionEntity with your actual session entity class
-  // const sessionRepo = app.get(DataSource).getRepository<ISession>(SessionEntity);
-  const sessionMiddleware = session({
+  //  connect-pg-simple.
+  const pgPool = new pg.Pool({
+    host: process.env.DB_HOST,
+    port: 5432,
+    database: process.env.DB_USER,
+    user: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+  });
+
+  const pgSessionStore = connectPgSimple(ExpressSession);
+  const sessionStore = new pgSessionStore({
+    pool: pgPool,
+    createTableIfMissing: true,
+    // tableName: 'session_entity',
+  })
+  const sessionOption= ExpressSession({
     name: 'ft_transcendence_session_id',
-    secret: configService.get<string>('CLIENT_SECRET'),
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
       secure: false,
-      maxAge: 600000,
+      maxAge: 1 * 24 * 60 * 60 * 100, // 1 day in milisesonds
     },
-    // store: new TypeormStore().connect(
-    //   app.get('sessionRepository'), // Use the session repository instance
-    // ),
-    // store: new TypeormStore().connect(sessionRepo),
+    store: sessionStore as Store,
   });
-  app.use(sessionMiddleware);
+  app.use(sessionOption);
+  app.use(cookieParser())
   app.use(passport.initialize());
   app.use(passport.session());
   app.use((req, res, next) => {
-      req.session.user = req.user;
-    // var status = req.isAuthenticated() ? 'logged in' : 'logged out';
-    // console.log(
-    //   'status:', status, '\n',
+      // req.session.user = req.user;
+    var status = req.isAuthenticated() ? 'logged in' : 'logged out';
+    console.log(
+      'status:', status, '\n',
     //   // 'session', req.session, '\n',
-    //   'path', req.path, '\n',
-    //   );
+      'path', req.path, '\n',
+      );
     // const isAuthRoute = (req.path == '/auth/login' 
     // || req.path == '/auth/callback' 
     // || req.path == '/auth/logout'

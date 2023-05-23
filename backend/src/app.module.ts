@@ -14,6 +14,7 @@ import { SessionEntity } from './typeorm/session.entity';
 import { DataSource } from 'typeorm/data-source/DataSource';
 import { Repository } from 'typeorm';
 import { FriendModule } from './friend/friend.module';
+import { StatModule } from './stat/stat.module';
 
 const configFactory = {
   isGlocal: true,
@@ -32,6 +33,7 @@ const configFactory = {
     AchievementModule,
     UserAchievementModule,
     FriendModule,
+    StatModule,
   ],
   controllers: [AppController ],
   providers: [ 
