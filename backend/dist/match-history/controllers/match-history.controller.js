@@ -17,6 +17,7 @@ const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const match_history_service_1 = require("../services/match-history.service");
 const create_match_history_dto_1 = require("../dto/create-match-history.dto");
+const swagger_1 = require("@nestjs/swagger");
 let MatchHistoryController = class MatchHistoryController {
     constructor(matchHistoryService) {
         this.matchHistoryService = matchHistoryService;
@@ -89,6 +90,7 @@ __decorate([
 ], MatchHistoryController.prototype, "remove", null);
 MatchHistoryController = __decorate([
     (0, common_1.Controller)('match-history'),
+    (0, swagger_1.ApiTags)('Match-history'),
     __metadata("design:paramtypes", [match_history_service_1.MatchHistoryService])
 ], MatchHistoryController);
 exports.MatchHistoryController = MatchHistoryController;

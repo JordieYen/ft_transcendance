@@ -1,9 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateAchievementDto } from '../dto/create-achievement.dto';
 import { UpdateAchievementDto } from '../dto/update-achievement.dto';
 import { AchievementService } from '../services/achievement.service';
 
 @Controller('achievement')
+@ApiTags('Achievement')
 export class AchievementController {
   constructor(private readonly achievementService: AchievementService) {}
 

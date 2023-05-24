@@ -78,7 +78,7 @@ export class UsersService {
     }
   }
 
-  async updateUser(id: number, updateUserDto: Partial<UpdateUserDto>) : Promise<User> {
+  async updateUser(id: number, updateUserDto: UpdateUserDto) : Promise<User> {
     if (!updateUserDto || Object.keys(updateUserDto).length === 0) {
       throw new BadRequestException('No update data provided');
     }

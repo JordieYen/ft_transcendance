@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { FriendService } from '../services/friend.service';
 import { CreateFriendDto } from '../dto/create-friend.dto';
 import { UpdateFriendDto } from '../dto/update-friend.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('friend')
+@ApiTags('Friend')
 export class FriendController {
   constructor(private readonly friendService: FriendService) {}
 

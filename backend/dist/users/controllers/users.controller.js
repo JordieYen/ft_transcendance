@@ -18,6 +18,8 @@ const common_1 = require("@nestjs/common");
 const users_service_1 = require("../services/users.service");
 const create_user_dto_1 = require("../dtos/create-user.dto");
 const platform_express_1 = require("@nestjs/platform-express");
+const update_user_dto_1 = require("../dtos/update-user.dto");
+const swagger_1 = require("@nestjs/swagger");
 let UsersController = class UsersController {
     constructor(userService) {
         this.userService = userService;
@@ -118,12 +120,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "uploadAvatar", null);
 __decorate([
-    (0, common_1.Patch)('update/:id'),
+    (0, common_1.Patch)(':id'),
     openapi.ApiResponse({ status: 200, type: require("../../typeorm/user.entity").User }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, update_user_dto_1.UpdateUserDto]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "updateUser", null);
 __decorate([
@@ -136,6 +138,7 @@ __decorate([
 ], UsersController.prototype, "getUserProfile", null);
 UsersController = __decorate([
     (0, common_1.Controller)('users'),
+    (0, swagger_1.ApiTags)('Users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])
 ], UsersController);
 exports.UsersController = UsersController;

@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { MatchHistoryService } from '../services/match-history.service';
 import { CreateMatchHistoryDto } from '../dto/create-match-history.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('match-history')
+@ApiTags('Match-history')
 export class MatchHistoryController {
   constructor(private readonly matchHistoryService: MatchHistoryService) {}
 

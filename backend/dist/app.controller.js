@@ -16,6 +16,7 @@ exports.AppController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const swagger_1 = require("@nestjs/swagger");
 const app_service_1 = require("./app.service");
 let AppController = class AppController {
     constructor(appService, configService) {
@@ -60,6 +61,7 @@ __decorate([
 ], AppController.prototype, "checkSession", null);
 AppController = __decorate([
     (0, common_1.Controller)(),
+    (0, swagger_1.ApiTags)('Api'),
     __metadata("design:paramtypes", [app_service_1.AppService,
         config_1.ConfigService])
 ], AppController);

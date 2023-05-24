@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Stat } from 'src/typeorm/stats.entity';
 import { UsersService } from 'src/users/services/users.service';
@@ -35,11 +35,27 @@ export class StatService {
   }
 
   async findOne(id: number) {
-    return await `This action returns a #${id} stat`;
+    const stat = await this.statRepository.findOne({
+      relations: [ 'user'],
+      where: {
+        id: id,
+      }
+    })
+    if (!stat)
+      throw new NotFoundException(`Stat with ${id} is not found`);
+    return stat;
   }
 
   async update(id: number, updateStatDto: UpdateStatDto) {
-    return await `This action updates a #${id} stat`;
+    const stat = await this.findOne(id);
+    if (updateStatDto.userId) {
+      const user = await this.userService.findUsersById(updateStatDto.userId);
+      stat.user = user;
+    }
+    stat.wins = updateStatDto.wins;
+    stat.losses = updateStatDto.losses;
+    stat.mmr = updateStatDto.mmr;
+    return await this.statRepository.save(stat);
   }
 
   async remove(id: number) {

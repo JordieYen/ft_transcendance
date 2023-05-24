@@ -15,6 +15,6 @@ export declare class UsersController {
     uploadAvatar(file: Express.Multer.File, id: number): Promise<{
         message: string;
     }>;
-    updateUser(id: number, updateUserDto: Partial<UpdateUserDto>): Promise<import("../../typeorm/user.entity").User>;
+    updateUser(id: number, updateUserDto: UpdateUserDto): Promise<import("../../typeorm/user.entity").User>;
     getUserProfile(id: number): Promise<import("../../typeorm/user.entity").User>;
 }

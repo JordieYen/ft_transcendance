@@ -63,6 +63,9 @@ $ initdb -D /path/to/data/directory
 ```
 
 
+#login page
+1. soundtrack when landing
+
 
 
 # Reference

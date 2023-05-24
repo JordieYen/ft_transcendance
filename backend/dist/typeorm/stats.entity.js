@@ -15,7 +15,7 @@ const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 let Stat = class Stat {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => Number }, user: { required: true, type: () => require("./user.entity").User }, wins: { required: true, type: () => Number }, losses: { required: true, type: () => Number }, mmr: { required: true, type: () => Number } };
+        return { id: { required: true, type: () => Number }, userId: { required: true, type: () => Number }, user: { required: true, type: () => require("./user.entity").User }, wins: { required: true, type: () => Number }, losses: { required: true, type: () => Number }, mmr: { required: true, type: () => Number } };
     }
 };
 __decorate([
@@ -23,7 +23,12 @@ __decorate([
     __metadata("design:type", Number)
 ], Stat.prototype, "id", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Stat.prototype, "userId", void 0);
+__decorate([
     (0, typeorm_1.OneToOne)(() => user_entity_1.User, user => user.stat),
+    (0, typeorm_1.JoinColumn)({ name: 'userId' }),
     __metadata("design:type", user_entity_1.User)
 ], Stat.prototype, "user", void 0);
 __decorate([

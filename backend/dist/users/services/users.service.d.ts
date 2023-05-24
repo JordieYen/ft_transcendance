@@ -13,6 +13,6 @@ export declare class UsersService {
     deleteUserById(id: number): Promise<import("typeorm").DeleteResult>;
     findUsersByName(username: string): Promise<User | null>;
     uploadAvatar(id: number, avatar: string): Promise<User>;
-    updateUser(id: number, updateUserDto: Partial<UpdateUserDto>): Promise<User>;
+    updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User>;
     findUsersByIdWithRelation(id: number): Promise<User>;
 }

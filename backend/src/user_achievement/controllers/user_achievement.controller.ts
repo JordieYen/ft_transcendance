@@ -2,12 +2,14 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/
 import { UserAchievementService } from '../services/user_achievement.service';
 import { CreateUserAchievementDto } from '../dto/create-user_achievement.dto';
 import { UpdateUserAchievementDto } from '../dto/update-user_achievement.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('user-achievement')
+@ApiTags('User-achievement')
 export class UserAchievementController {
   constructor(private readonly userAchievementService: UserAchievementService) {}
 
-  @Put('create')
+  @Post('create')
   async create(@Body() createUserAchievementDto: CreateUserAchievementDto) {
     return await this.userAchievementService.create(createUserAchievementDto);
   }

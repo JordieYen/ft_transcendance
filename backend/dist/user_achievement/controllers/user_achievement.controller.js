@@ -17,6 +17,7 @@ const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const user_achievement_service_1 = require("../services/user_achievement.service");
 const create_user_achievement_dto_1 = require("../dto/create-user_achievement.dto");
+const swagger_1 = require("@nestjs/swagger");
 let UserAchievementController = class UserAchievementController {
     constructor(userAchievementService) {
         this.userAchievementService = userAchievementService;
@@ -39,8 +40,8 @@ let UserAchievementController = class UserAchievementController {
     }
 };
 __decorate([
-    (0, common_1.Put)('create'),
-    openapi.ApiResponse({ status: 200, type: require("../../typeorm/user_achievement.entity").UserAchievement }),
+    (0, common_1.Post)('create'),
+    openapi.ApiResponse({ status: 201, type: require("../../typeorm/user_achievement.entity").UserAchievement }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_user_achievement_dto_1.CreateUserAchievementDto]),
@@ -80,6 +81,7 @@ __decorate([
 ], UserAchievementController.prototype, "remove", null);
 UserAchievementController = __decorate([
     (0, common_1.Controller)('user-achievement'),
+    (0, swagger_1.ApiTags)('User-achievement'),
     __metadata("design:paramtypes", [user_achievement_service_1.UserAchievementService])
 ], UserAchievementController);
 exports.UserAchievementController = UserAchievementController;

@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AchievementController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
+const swagger_1 = require("@nestjs/swagger");
 const create_achievement_dto_1 = require("../dto/create-achievement.dto");
 const update_achievement_dto_1 = require("../dto/update-achievement.dto");
 const achievement_service_1 = require("../services/achievement.service");
@@ -81,6 +82,7 @@ __decorate([
 ], AchievementController.prototype, "remove", null);
 AchievementController = __decorate([
     (0, common_1.Controller)('achievement'),
+    (0, swagger_1.ApiTags)('Achievement'),
     __metadata("design:paramtypes", [achievement_service_1.AchievementService])
 ], AchievementController);
 exports.AchievementController = AchievementController;
