@@ -7,8 +7,6 @@ import Modal from 'react-modal';
 const PongMain: React.FC = () => {
     const [user, setUser] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
-    const [qrCodeURL, setQrCodeUrl] = useState<string | null>(null);
-    const [isQrCodeModalOpen, setQrCodeModalOpen] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -45,24 +43,6 @@ const PongMain: React.FC = () => {
       }
     };
 
-    // useEffect(() => {
-      const enable2fa = async () => {
-        try {
-          const response = await axios.get('http://localhost:3000/auth/2fa', {
-            withCredentials: true,
-            responseType: 'blob',
-          });
-          const qrCodeBlob = new Blob([response.data], { type: 'image/png' });
-          const qrCodeURL = URL.createObjectURL(qrCodeBlob as any);
-          setQrCodeUrl(qrCodeURL);
-          setQrCodeModalOpen(true);
-        } catch (error) {
-          setError('Error enabling 2FA');
-        }
-      };
-      // enable2fa();
-    // }, []);
-
     return (
       <div>
         { error ? (
@@ -71,7 +51,6 @@ const PongMain: React.FC = () => {
           <div>
             <h1>Welcome to Pong Main Page</h1>
             <button className="logout-button" onClick={logout}>Logout</button>
-            {/* <button className="enable-2fa" onClick={enable2fa}>Enable 2fa</button> */}
               <style jsx> 
               {`
                 .logout-button {
@@ -86,18 +65,9 @@ const PongMain: React.FC = () => {
               <p>Username: {user.username} </p>
               <p>Online: {user.online ? 'online' : 'offline'} </p>
           </div>
-          
         ) : (
           <div>Loading...</div>
         )}
-        <Modal 
-          isOpen={isQrCodeModalOpen}
-          onRequestClose={() => setQrCodeModalOpen(false)}
-          contentLabel="QR Code Modal"
-          >
-            <button onClick={() => setQrCodeModalOpen(false)}>Close</button>
-            {qrCodeURL && <img src={qrCodeURL} alt="QR Code"/>}
-        </Modal>
       </div>
     );
 };

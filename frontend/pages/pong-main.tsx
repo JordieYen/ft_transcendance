@@ -1,7 +1,5 @@
 import PongMain from "@/app/pong"
 
-const PongMainPage: React.FC = () => {
+export default function PongMainPage() {
     return <PongMain />;
 };
-
-export default PongMainPage;

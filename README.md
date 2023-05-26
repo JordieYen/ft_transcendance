@@ -63,9 +63,10 @@ $ initdb -D /path/to/data/directory
 ```
 
 
-#login page
+#login page idea
 1. soundtrack when landing
-
+2. backquotes atari pong quote?
+3. shoule be simple minimalistic
 
 
 # Reference
