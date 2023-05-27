@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 
 export enum FriendStatus {
@@ -20,6 +20,14 @@ export class Friend {
     @ManyToOne(() => User)
     @JoinColumn({ name: 'receiver_id' })
     receiver: User;
+
+    // @ManyToOne(() => User, user => user.sentFriendRequest)
+    // @JoinTable({ name: 'friend_sender' })
+    // sender: User;
+
+    // @ManyToMany(() => User, user => user.receiveFriendRequest)
+    // @JoinTable({ name: 'friend_receiver' })
+    // receiver: User;
 
     @Column({ type: 'enum', enum: FriendStatus})
     status: FriendStatus;

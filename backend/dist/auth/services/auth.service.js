@@ -137,6 +137,9 @@ let AuthService = class AuthService {
         });
         return token;
     }
+    async getAuthUserProfile(id) {
+        return await this.userService.findUsersByIdWithRelation(id);
+    }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),

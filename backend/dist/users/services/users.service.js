@@ -100,11 +100,13 @@ let UsersService = class UsersService {
         }
     }
     async findUsersByIdWithRelation(id) {
-        const user = this.usersRepository.findOne({
+        const user = await this.usersRepository.findOne({
             relations: [
                 'userAchievement',
                 'userAchievement.achievement',
-                'userAchievement.user',
+                'stat',
+                'p1_match',
+                'p2_match',
             ],
             where: {
                 id: id,

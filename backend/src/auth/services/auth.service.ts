@@ -145,4 +145,8 @@ export class AuthService {
             });
         return token;
     }
+
+    async getAuthUserProfile(id: number): Promise<User> {
+        return await this.userService.findUsersByIdWithRelation(id);
+    }
  }

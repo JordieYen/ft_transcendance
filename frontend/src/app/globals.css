@@ -1,4 +1,3 @@
-@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -6,8 +5,8 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  --background-dark: #323437;
-  --background-light-dark: #2C2E31;
+  --background-light-dark: #323437;
+  --background-dark: #2C2E31;
   --background-grey: #D1D0C5;
   --background-yellow: #E2B714;
   --background-dark-grey: #646669;
@@ -29,10 +28,121 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb)); */
-  background-color: var(--background-dark);
+  background-color: var(--background-light-dark);
 }
 
 button {
   background-color: var(--background-grey);
   color: var(--background-light-grey);
+  outline: none;
+  border-radius: 5px;
+  border: 0px;
+  padding: 4px 8px;
 }
+
+h1, p {
+  color: var(--background-grey);
+}
+
+a, a:visited {
+  text-decoration: none;
+  color: var(--background-light-grey);
+}
+
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.avatar-image {
+  border-radius: 50%;
+}
+
+.mmr-container {
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ffffff;
+  background-color: var(--background-grey);
+}
+
+.trophy-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.mmr-number {
+  font-weight: bold;
+  color: var(--background-dark);
+}
+
+.horizontal-container {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+/* add gap between components */
+.horizontal-container > * + * {
+  margin-left:  20px;
+}
+
+.top-profile {
+  display: flex;
+  padding: 30px;
+  align-items: top;
+  gap: 30px;
+  background-color: var(--background-dark);
+}
+
+.username-section p:first-child {
+  font-weight: bold;
+  font-size: 2.0em;
+}
+
+.vertical-line {
+  width: 4px;
+  height: 100%;
+  background-color: var(--background-grey);
+  border: none;
+}
+
+.lifetime-section {
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+.lifetime-section p:nth-child(2){
+  font-weight: bold;
+  font-size: 2.0em;
+}
+
+.lifetime-wins-section {
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+.lifetime-wins-section p:nth-child(2){
+  font-weight: bold;
+  font-size: 2.0em;
+}
+
+
+.lifetime-wins-streak-section {
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+.lifetime-wins-streak-section p:nth-child(2){
+  font-weight: bold;
+  font-size: 2.0em;
+}
+

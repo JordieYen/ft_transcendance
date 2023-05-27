@@ -24,4 +24,5 @@ export declare class AuthService {
     clearUserCookies(res: Response): Promise<void>;
     createPayload(user: AuthenticatedUser): Promise<JwtPayload>;
     createToken(payload: JwtPayload): Promise<string>;
+    getAuthUserProfile(id: number): Promise<User>;
 }

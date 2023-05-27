@@ -53,7 +53,8 @@ let AuthController = class AuthController {
         return { msg: 'enter jwt guard' };
     }
     async getProfile(user) {
-        return await user;
+        const returnUser = await this.authService.getAuthUserProfile(user.id);
+        return await returnUser;
     }
     async logout(req, res) {
         if (req.user) {
@@ -123,7 +124,7 @@ __decorate([
 ], AuthController.prototype, "getJwt", null);
 __decorate([
     (0, common_1.Get)('profile'),
-    openapi.ApiResponse({ status: 200, type: Object }),
+    openapi.ApiResponse({ status: 200, type: require("../../typeorm/user.entity").User }),
     __param(0, (0, user_decorator_1.User)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

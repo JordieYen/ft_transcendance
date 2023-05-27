@@ -12,6 +12,7 @@ import session from 'express-session';
 import { JwtAuthGuard } from '../util/jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UsersService } from 'src/users/services/users.service';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -84,8 +85,13 @@ export class AuthController {
   // @UseGuards(AuthenticatedGuard)
   @Get('profile')
   async getProfile(@User() user) {
-      return await user;
+      const returnUser = await this.authService.getAuthUserProfile(user.id);
+      return await returnUser;
   }
+  // @Get('profile')
+  // async getProfile(@User() user) {
+  //     return await user;
+  // }
 
   @Get('logout')
   async logout(@Req() req: Request, @Res() res: Response) {

@@ -1,6 +1,7 @@
 import { AuthService } from '../services/auth.service';
 import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt/dist/jwt.service';
+import { User as userEntity } from 'src/typeorm/user.entity';
 export declare class AuthController {
     private readonly authService;
     private readonly jwtService;
@@ -15,6 +16,6 @@ export declare class AuthController {
     getJwt(): Promise<{
         msg: string;
     }>;
-    getProfile(user: any): Promise<any>;
+    getProfile(user: any): Promise<userEntity>;
     logout(req: Request, res: Response): Promise<void>;
 }
