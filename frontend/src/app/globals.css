@@ -1,3 +1,4 @@
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -40,109 +41,28 @@ button {
   padding: 4px 8px;
 }
 
-h1, p {
+h1, p, table {
+  font-family: 'Roboto Mono', monospace;
   color: var(--background-grey);
 }
 
-a, a:visited {
-  text-decoration: none;
-  color: var(--background-light-grey);
-}
-
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-
-.avatar-image {
-  border-radius: 50%;
-}
-
-.mmr-container {
-  display: flex;
-  align-items: center;
-  color: #ffffff;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ffffff;
+.login-button {
   background-color: var(--background-grey);
+  color: var(--background-dark);
+  text-decoration: none;
 }
 
-.trophy-icon {
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
-  position: relative;
-  z-index: 1;
-}
-
-.mmr-number {
-  font-weight: bold;
+.login-button:visited, .login-button:active {
   color: var(--background-dark);
 }
 
-.horizontal-container {
+.icon-container:hover {
+  background-color: #000;
+}
+
+.wrapper {
   display: flex;
-  align-items: center;
-  margin-right: 10px;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
-
-/* add gap between components */
-.horizontal-container > * + * {
-  margin-left:  20px;
-}
-
-.top-profile {
-  display: flex;
-  padding: 30px;
-  align-items: top;
-  gap: 30px;
-  background-color: var(--background-dark);
-}
-
-.username-section p:first-child {
-  font-weight: bold;
-  font-size: 2.0em;
-}
-
-.vertical-line {
-  width: 4px;
-  height: 100%;
-  background-color: var(--background-grey);
-  border: none;
-}
-
-.lifetime-section {
-  font-weight: bold;
-  font-size: 1.5em;
-}
-
-.lifetime-section p:nth-child(2){
-  font-weight: bold;
-  font-size: 2.0em;
-}
-
-.lifetime-wins-section {
-  font-weight: bold;
-  font-size: 1.5em;
-}
-
-.lifetime-wins-section p:nth-child(2){
-  font-weight: bold;
-  font-size: 2.0em;
-}
-
-
-.lifetime-wins-streak-section {
-  font-weight: bold;
-  font-size: 1.5em;
-}
-
-.lifetime-wins-streak-section p:nth-child(2){
-  font-weight: bold;
-  font-size: 2.0em;
-}
-

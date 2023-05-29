@@ -4,9 +4,9 @@ import UserData from '../data/user_data';
 
 const Avartar: React.FC<{ src: string, alt: string, width: number, height: number }> = ({ src, alt, width, height }) => {
     return (
-        <div>
+        <span className='icon-container'>
             <img className="avatar-image" src={src} alt={alt} width={width} height={height} />
-        </div>
+        </span>
     );
 };
 export default Avartar;

@@ -7,7 +7,7 @@ interface CustomButtonProps {
 const CustomButton: React.FC<CustomButtonProps> = ({ text }) => {
     return (
         <div>
-            <button className="bg-background-grey text-background-dark-grey">
+            <button className="login-button bg-background-grey text-background-dark-grey">
                 { text }
             </button>
         </div>

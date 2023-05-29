@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import UserData from '../data/user_data';
 import Logout from '../data/logout';
 import Avartar from '../header_icon/user_avatar';
-import { isConciseBody } from 'typescript';
+import './profile.css';
 
-const PongMain = () => {
+const PongMain: React.FC<any> = () => {
     
     const userData = UserData();
     if (!userData) {
@@ -18,30 +18,108 @@ const PongMain = () => {
     });
 
     return (
-      <div className="top-profile">
-        <div className='avatar-section'>
-          <Avartar src={ avatar } alt="user avartar"  width={200} height={200}/> 
+      <div className='profile-page'>
+        <div className='top-profile'>
+          <div className='avatar-section'>
+              <Avartar src={ avatar } alt='user avartar'  width={140} height={140}/> 
+              <div className='username'>
+                <p>{ username }</p>
+                <p className='text-myyellow'>Joined { joinDate } </p>
+              </div>
+          </div>
+          <div className='vertical-line'>
+          </div>
+          <div className='lifetime-section'>
+            <div className='total-games'>
+              <p>Total Games</p>
+              <p>25</p>
+            </div>
+            <div className='lifetime-wins'>
+              <p>Total Wins</p>
+              <p>{stat?.wins}</p>
+            </div>
+            <div className='lifetime-wins-streak'>
+              <p>Win Streaks</p>
+              <p>4</p>
+            </div>
+          </div>
+          <div className='vertical-line'>
+          </div>
+            <div className='achievement-section'>
+              <div className='avatar-row'>
+                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
+                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
+                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
+                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
+              </div>
+              <div className='avatar-row'>
+                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
+                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
+                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
+                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
+              </div>
+            </div>
         </div>
-        <div className='username-section'>
-          <p>{ username }</p>
-          <p>Joined { joinDate } </p>
+        <div className='bottom-content'>
+            <div className='match-history'>
+              <table>
+                <thead>
+                  <tr>
+                    <th style={{ width: '5.0%' }}></th>
+                    <th>Opponent</th>
+                    <th>Date</th>
+                    <th>Player Stat</th>
+                    <th>Opponent Stat</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className='spacer'>
+                  </tr>
+                  <tr className='row-win'>
+                    <td className='result-win'></td>
+                    <td>Super long long name guy</td>
+                    <td>2023-05-27</td>
+                    <td>10</td>
+                    <td>5</td>
+                  </tr>
+                  <tr className='row-lose'>
+                    <td className='result-lose'></td>
+                    <td>Nemesis</td>
+                    <td>2023-05-27</td>
+                    <td>10</td>
+                    <td>5</td>
+                  </tr>
+                  <tr className='row-win'>
+                    <td className='result-win'></td>
+                    <td>Mario</td>
+                    <td>2023-05-27</td>
+                    <td>10</td>
+                    <td>5</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className='match-making'>
+              <div className='circle-top'>
+                <div className='circle-content'>
+                    <p>MATCH MAKING ON<br/><span>200</span><br/>HIGHEST 200</p>
+                </div>
+              </div>
+              <div className='circle-bottom'>
+                <div className='circle-content'>
+                 <p>LIFETIME KILLS<br/><span>25</span><br/>DEATHS 10<br/>K/DR 2.50</p>
+                </div>
+              </div>
+              <div className='stats'>
+                <p>Smash Count <span>5</span></p>
+                <hr />
+                <p>Lights Out Count <span>5</span></p>
+              </div>
+            </div>
         </div>
-        <div className="vertical-line">
-        </div>
-        <div className="lifetime-section">
-          <p>Total Games</p>
-          <p>25</p>
-        </div>
-        <div className="lifetime-wins-section">
-          <p>Total Wins</p>
-          <p>8</p>
-        </div>
-        <div className="lifetime-wins-streak-section">
-          <p>Win Streak</p>
-          <p>4</p>
-        </div>
-        <div className="vertical-line">
-        </div>
+      </div>
+  );
+};
 
           {/* <img src={avatar} alt="User Avatar" style={{ width: '200px', height: '200px' }} /> */}
           {/* <p>Id: {id}</p>
@@ -53,9 +131,6 @@ const PongMain = () => {
           <p>Stat lose: {stat?.losses}</p>
           <p>Stat wins: {stat?.wins}</p>
           <p>Stat mmr: {stat?.mmr}</p>
-          <p>Achievement: {userAchievement[0] ? userAchievement[0]?.achievement?.name : 'no achievement'}</p> */}
-      </div>
-    );
-};
+        <p>Achievement: {userAchievement[0] ? userAchievement[0]?.achievement?.name : 'no achievement'}</p> */}
 
 export default PongMain;

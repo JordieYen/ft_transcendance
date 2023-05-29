@@ -1,13 +1,16 @@
 import Logo from "../header_icon/logo";
 import React from 'react';
-import RightLogo from "../header_icon/right_header_icon";
+import HeaderIcon from "../header_icon/header_icon";
 
-const Header = ({ showAdditionalIcon }: { showAdditionalIcon: boolean }) => {
-  
+interface HeaderProps {
+  showAdditionalIcon: boolean;
+}
+
+const Header = ({ showAdditionalIcon }: HeaderProps) => {
   return (
     <header>
         <Logo/>
-        { showAdditionalIcon && <RightLogo />}
+        { showAdditionalIcon && <HeaderIcon/>}
     </header>
   );
 };

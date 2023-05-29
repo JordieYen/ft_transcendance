@@ -20,10 +20,10 @@ const Logout = () => {
     }
 
     return (
-      <div>
+      <span className='icon-container'>
         {error && <p>{error}</p>}
         <Image onClick={handleLogout} src="/logout-icon.png" alt="gear" width={25} height={25}/>
-      </div>
+      </span>
     );
 };
 
