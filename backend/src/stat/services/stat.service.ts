@@ -70,7 +70,7 @@ export class StatService {
   }
 
   calculateMMR(wins: number, losses: number) : number {
-    return 0 + (wins * 10) - (losses * 10);
+    return (wins * 10) - (losses * 10);
   }
 
 
@@ -99,9 +99,9 @@ export class StatService {
       const user = await this.userService.findUsersById(updateStatDto.userId);
       stat.user = user;
     }
-    // stat.wins = updateStatDto.wins;
-    // stat.losses = updateStatDto.losses;
-    // stat.mmr = updateStatDto.mmr;
+    stat.wins = updateStatDto.wins;
+    stat.losses = updateStatDto.losses;
+    stat.mmr = updateStatDto.mmr;
     return await this.statRepository.save(stat);
   }
 

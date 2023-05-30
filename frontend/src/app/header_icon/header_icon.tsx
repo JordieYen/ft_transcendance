@@ -4,7 +4,7 @@ import UserData from "../data/user_data";
 import Crown from "./crown";
 import Mmr from "./mmr";
 import Setting from "./setting";
-import Avartar from "./user_avatar";
+import Avatar from "./user_avatar";
 
 const HeaderIcon = () => {
     const userData = UserData();
@@ -15,7 +15,7 @@ const HeaderIcon = () => {
     return (
         <nav className="horizontal-container">
             <Crown/>
-            <Avartar src={ avatar } alt="user avatar" width={25} height={25}/>
+            <Avatar src={ avatar } alt="user avatar" width={25} height={25}/>
             <p className='icon-container'>{ username }</p>
             <Mmr mmr={ stat?.mmr || 0 }/>
             <Setting/>

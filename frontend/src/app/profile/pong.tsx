@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import UserData from '../data/user_data';
 import Logout from '../data/logout';
-import Avartar from '../header_icon/user_avatar';
+import Avatar from '../header_icon/user_avatar';
 import './profile.css';
 import MatchHistory from './match_history';
 import formatDateMalaysia from '../utils/date';
+import Achievement from './achievement';
 
 const PongMain: React.FC<any> = () => {
     
@@ -19,7 +20,7 @@ const PongMain: React.FC<any> = () => {
       <div className='profile-page'>
         <div className='top-profile'>
           <div className='avatar-section'>
-              <Avartar src={ avatar } alt='user avartar'  width={140} height={140}/> 
+              <Avatar src={ avatar } alt='user avartar'  width={140} height={140}/> 
               <div className='username'>
                 <p>{ username }</p>
                 <p className='text-myyellow'>Joined { joinDate } </p>
@@ -43,20 +44,7 @@ const PongMain: React.FC<any> = () => {
           </div>
           <div className='vertical-line'>
           </div>
-            <div className='achievement-section'>
-              <div className='avatar-row'>
-                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
-                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
-                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
-                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
-              </div>
-              <div className='avatar-row'>
-                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
-                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
-                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
-                <Avartar src={ '/bracket.png' } alt='user avatar' width={50} height={50}/>
-              </div>
-            </div>
+            <Achievement achievement={userAchievement} />
         </div>
         <div className='bottom-content'>
             <MatchHistory p1_match={p1_match} p2_match={p2_match} userId={ id } />
