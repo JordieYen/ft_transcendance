@@ -15,7 +15,7 @@ const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 let MatchHistory = class MatchHistory {
     static _OPENAPI_METADATA_FACTORY() {
-        return { match_uid: { required: true, type: () => Number }, winner_uid: { required: true, type: () => Number }, p1_uid: { required: true, type: () => Number }, p2_uid: { required: true, type: () => Number }, p1_score: { required: true, type: () => Number }, p2_score: { required: true, type: () => Number }, data_of_creation: { required: true, type: () => Date } };
+        return { match_uid: { required: true, type: () => Number }, winner_uid: { required: true, type: () => Number }, p1_uid: { required: true, type: () => Number }, p2_uid: { required: true, type: () => Number }, p1_score: { required: true, type: () => Number }, p2_score: { required: true, type: () => Number }, date_of_creation: { required: true, type: () => Date } };
     }
 };
 __decorate([
@@ -49,7 +49,7 @@ __decorate([
         onUpdate: 'CURRENT_TIMESTAMP',
     }),
     __metadata("design:type", Date)
-], MatchHistory.prototype, "data_of_creation", void 0);
+], MatchHistory.prototype, "date_of_creation", void 0);
 MatchHistory = __decorate([
     (0, typeorm_1.Entity)()
 ], MatchHistory);

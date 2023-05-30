@@ -101,7 +101,11 @@ export class UsersService {
         'userAchievement.achievement',
         'stat',
         'p1_match',
+        'p1_match.p1_uid',
+        'p1_match.p2_uid',
         'p2_match',
+        'p2_match.p1_uid',
+        'p2_match.p2_uid',
         // 'friends',
       ],
       where: {

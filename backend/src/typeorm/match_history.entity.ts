@@ -26,5 +26,5 @@ export class MatchHistory {
         default: () => 'CURRENT_TIMESTAMP',
         onUpdate: 'CURRENT_TIMESTAMP',
     })
-    data_of_creation: Date;
+    date_of_creation: Date;
 }

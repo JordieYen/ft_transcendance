@@ -5,5 +5,5 @@ export declare class MatchHistory {
     p2_uid: number;
     p1_score: number;
     p2_score: number;
-    data_of_creation: Date;
+    date_of_creation: Date;
 }

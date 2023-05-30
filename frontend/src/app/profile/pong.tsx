@@ -3,6 +3,8 @@ import UserData from '../data/user_data';
 import Logout from '../data/logout';
 import Avartar from '../header_icon/user_avatar';
 import './profile.css';
+import MatchHistory from './match_history';
+import formatDateMalaysia from '../utils/date';
 
 const PongMain: React.FC<any> = () => {
     
@@ -10,12 +12,8 @@ const PongMain: React.FC<any> = () => {
     if (!userData) {
       return <div>Loading...</div>;
     }
-    const { avatar, createdAt, id, intra_uid, username, online, p1_match, stat, userAchievement } = userData;
-    const joinDate = new Date(createdAt).toLocaleDateString(undefined, {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
+    const { avatar, createdAt, id, intra_uid, username, online, p1_match, p2_match, stat, userAchievement } = userData;
+    const joinDate = formatDateMalaysia(new Date(createdAt));
 
     return (
       <div className='profile-page'>
@@ -61,7 +59,7 @@ const PongMain: React.FC<any> = () => {
             </div>
         </div>
         <div className='bottom-content'>
-            <div className='match-history'>
+            {/* <div className='match-history'>
               <table>
                 <thead>
                   <tr>
@@ -98,7 +96,8 @@ const PongMain: React.FC<any> = () => {
                   </tr>
                 </tbody>
               </table>
-            </div>
+            </div> */}
+            <MatchHistory p1_match={p1_match} p2_match={p2_match} userId={ id } />
             <div className='match-making'>
               <div className='circle-top'>
                 <div className='circle-content'>
