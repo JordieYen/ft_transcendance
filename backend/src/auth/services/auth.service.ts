@@ -146,6 +146,16 @@ export class AuthService {
         return token;
     }
 
+    // token verification and extraction
+    async verifyToken(token: string): Promise<number | null> {
+        try {
+            const payload = this.jwtService.verify(token);
+            return payload.sub;
+        } catch (error) {
+            return null;
+        }
+    }
+
     async getAuthUserProfile(id: number): Promise<User> {
         return await this.userService.findUsersByIdWithRelation(id);
     }

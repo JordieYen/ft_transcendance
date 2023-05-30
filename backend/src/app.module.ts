@@ -15,6 +15,7 @@ import { DataSource } from 'typeorm/data-source/DataSource';
 import { Repository } from 'typeorm';
 import { FriendModule } from './friend/friend.module';
 import { StatModule } from './stat/stat.module';
+import { UserSettingsModule } from './user-settings/user-settings.module';
 
 const configFactory = {
   isGlocal: true,
@@ -34,6 +35,7 @@ const configFactory = {
     UserAchievementModule,
     FriendModule,
     StatModule,
+    // UserSettingsModule,
   ],
   controllers: [AppController ],
   providers: [ 
