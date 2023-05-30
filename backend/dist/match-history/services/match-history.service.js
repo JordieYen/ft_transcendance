@@ -17,9 +17,11 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const match_history_entity_1 = require("../../typeorm/match_history.entity");
 const typeorm_2 = require("typeorm");
+const users_service_1 = require("../../users/services/users.service");
 let MatchHistoryService = class MatchHistoryService {
-    constructor(matchHistoryRepository) {
+    constructor(matchHistoryRepository, userService) {
         this.matchHistoryRepository = matchHistoryRepository;
+        this.userService = userService;
     }
     async getHistory() {
         return await this.matchHistoryRepository.find();
@@ -35,8 +37,8 @@ let MatchHistoryService = class MatchHistoryService {
         return await this.matchHistoryRepository.find({
             where: [
                 { winner_uid: uid },
-                { p1_uid: uid },
-                { p2_uid: uid }
+                { p1_uid: { id: uid } },
+                { p2_uid: { id: uid } }
             ]
         });
     }
@@ -48,11 +50,21 @@ let MatchHistoryService = class MatchHistoryService {
             ]
         });
     }
+    async getTotalGamesByPlayerUid(uid) {
+        const size = (await this.getByPlayerUid(uid)).length;
+        return (size);
+    }
     async create(createMatchHistoryDto) {
-        const newMatch = this.matchHistoryRepository.create(createMatchHistoryDto);
+        const newMatch = await this.matchHistoryRepository.create({
+            winner_uid: createMatchHistoryDto.winner_uid,
+            p1_uid: await this.userService.findUsersById(createMatchHistoryDto.p1_uid),
+            p2_uid: await this.userService.findUsersById(createMatchHistoryDto.p2_uid),
+            p1_score: createMatchHistoryDto.p1_score,
+            p2_score: createMatchHistoryDto.p2_score
+        });
         console.log(newMatch);
         try {
-            await this.matchHistoryRepository.save(createMatchHistoryDto);
+            await this.matchHistoryRepository.save(newMatch);
         }
         catch (error) {
             console.log('error=', error.message);
@@ -72,7 +84,8 @@ let MatchHistoryService = class MatchHistoryService {
 MatchHistoryService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(match_history_entity_1.MatchHistory)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        users_service_1.UsersService])
 ], MatchHistoryService);
 exports.MatchHistoryService = MatchHistoryService;
 //# sourceMappingURL=match-history.service.js.map

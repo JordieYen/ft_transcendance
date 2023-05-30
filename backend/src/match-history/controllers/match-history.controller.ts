@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Query } from '@nestjs/common';
 import { MatchHistoryService } from '../services/match-history.service';
 import { CreateMatchHistoryDto } from '../dto/create-match-history.dto';
 import { MatchHistory } from 'src/typeorm/match_history.entity';
@@ -25,6 +25,11 @@ export class MatchHistoryController {
   @Get('score')
   async getByScore(@Query('score') score: string): Promise<MatchHistory[]> {
     return this.matchHistoryService.getByScore(+score);
+  }
+
+  @Get('games')
+  async getTotalGamesByPlayerUid(@Query('uid') uid: string) {
+    return this.matchHistoryService.getTotalGamesByPlayerUid(+uid);
   }
 
   @Post()

@@ -1,14 +1,16 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException, Options } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateMatchHistoryDto } from '../dto/create-match-history.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MatchHistory } from 'src/typeorm/match_history.entity';
 import { Repository } from 'typeorm';
+import { UsersService } from 'src/users/services/users.service';
 
 @Injectable()
 export class MatchHistoryService {
   constructor(
     @InjectRepository(MatchHistory)
     private matchHistoryRepository: Repository<MatchHistory>,
+    private userService: UsersService
   ) {}
 
   // Return All Entries
@@ -30,8 +32,8 @@ export class MatchHistoryService {
     return await this.matchHistoryRepository.find({
       where: [
         {winner_uid: uid},
-        {p1_uid: uid},
-        {p2_uid: uid}
+        {p1_uid: {id: uid}},
+        {p2_uid: {id: uid}}
       ]
     });
   }
@@ -46,12 +48,23 @@ export class MatchHistoryService {
     });
   }
 
+  async getTotalGamesByPlayerUid(uid: number) {
+    const size = (await this.getByPlayerUid(uid)).length;
+    return (size)
+  }
+
   // Add new entry
   async create(createMatchHistoryDto: CreateMatchHistoryDto): Promise<void> {
-    const newMatch = this.matchHistoryRepository.create(createMatchHistoryDto);
+    const newMatch = await this.matchHistoryRepository.create({
+        winner_uid: createMatchHistoryDto.winner_uid,
+        p1_uid: await this.userService.findUsersById(createMatchHistoryDto.p1_uid),
+        p2_uid: await this.userService.findUsersById(createMatchHistoryDto.p2_uid),
+        p1_score: createMatchHistoryDto.p1_score,
+        p2_score: createMatchHistoryDto.p2_score
+    });
     console.log(newMatch);
     try {
-      await this.matchHistoryRepository.save(createMatchHistoryDto);
+      await this.matchHistoryRepository.save(newMatch);
     } catch (error) {
       console.log('error=', error.message);
       throw new InternalServerErrorException('Could not create user');

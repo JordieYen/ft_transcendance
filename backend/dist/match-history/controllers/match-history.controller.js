@@ -32,6 +32,9 @@ let MatchHistoryController = class MatchHistoryController {
     async getByScore(score) {
         return this.matchHistoryService.getByScore(+score);
     }
+    async getTotalGamesByPlayerUid(uid) {
+        return this.matchHistoryService.getTotalGamesByPlayerUid(+uid);
+    }
     async create(createMatchHistoryDto) {
         return this.matchHistoryService.create(createMatchHistoryDto);
     }
@@ -66,6 +69,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], MatchHistoryController.prototype, "getByScore", null);
+__decorate([
+    (0, common_1.Get)('games'),
+    __param(0, (0, common_1.Query)('uid')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MatchHistoryController.prototype, "getTotalGamesByPlayerUid", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

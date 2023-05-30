@@ -24,11 +24,11 @@ __decorate([
 ], MatchHistory.prototype, "winner_uid", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.p1_match, { nullable: false }),
-    __metadata("design:type", Number)
+    __metadata("design:type", user_entity_1.User)
 ], MatchHistory.prototype, "p1_uid", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.p2_match, { nullable: false }),
-    __metadata("design:type", Number)
+    __metadata("design:type", user_entity_1.User)
 ], MatchHistory.prototype, "p2_uid", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: 0 }),
