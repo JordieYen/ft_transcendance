@@ -6,7 +6,7 @@ export declare class UsersService {
     constructor(usersRepository: Repository<User>);
     createUser(createUserDto: CreateUserDto): Promise<User>;
     getUsers(): Promise<User[]>;
-    findUsersById(id: number): Promise<User | null>;
+    findUsersById(id: number): Promise<User>;
     findAll(): Promise<User[]>;
     deleteUserById(id: number): Promise<import("typeorm").DeleteResult>;
     findUsersByName(username: string): Promise<User>;
