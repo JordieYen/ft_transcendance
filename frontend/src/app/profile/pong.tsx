@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
 import UserData from '../data/user_data';
-import Logout from '../data/logout';
 import Avatar from '../header_icon/user_avatar';
 import './profile.css';
 import MatchHistory from './match_history';
