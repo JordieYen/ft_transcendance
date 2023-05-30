@@ -9,8 +9,9 @@ import Avatar from "../header_icon/user_avatar";
 // as the argument. then render the achievement component in the profile.tsx
 function renderAchievement(achievementLength: number) {
     const achievements = [];
+    const totalAchievement = 8;
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < totalAchievement; i++) {
         const imageSource = i < achievementLength ? "/bracket.png" : "/blank.png";
         achievements.push(<Avatar src={imageSource} alt="user avatar" width={50} height={50} />);
     }
