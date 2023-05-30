@@ -32,7 +32,9 @@ UsersModule = __decorate([
             platform_express_1.MulterModule.register(storageOptions),
         ],
         controllers: [users_controller_1.UsersController],
-        providers: [users_service_1.UsersService],
+        providers: [
+            users_service_1.UsersService,
+        ],
     })
 ], UsersModule);
 exports.UsersModule = UsersModule;

@@ -4,12 +4,18 @@ export class CreateStatDto {
     @IsNotEmpty()
     userId: number;
 
-    @IsNotEmpty()
-    wins: number;
+    // @IsNotEmpty()
+    // wins: number;
 
-    @IsNotEmpty()
-    losses: number;
+    // @IsNotEmpty()
+    // losses: number;
 
-    @IsNotEmpty()
-    mmr: number;
+    // @IsNotEmpty()
+    // mmr: number;
+
+    // @IsNotEmpty()
+    // totalGames: number;
+
+    // @IsNotEmpty()
+    // winStreak: number;
 }

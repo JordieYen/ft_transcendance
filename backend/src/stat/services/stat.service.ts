@@ -1,6 +1,8 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MatchHistory } from 'src/typeorm/match_history.entity';
 import { Stat } from 'src/typeorm/stats.entity';
+import { User } from 'src/typeorm/user.entity';
 import { UsersService } from 'src/users/services/users.service';
 import { Repository } from 'typeorm';
 import { CreateStatDto } from '../dto/create-stat.dto';
@@ -12,20 +14,65 @@ export class StatService {
     @InjectRepository(Stat) private statRepository: Repository<Stat>,
     private readonly userService: UsersService,
   ) {}
+
+  // async create(createStatDto: CreateStatDto) {
+  //   const user = await this.userService.findUsersById(createStatDto.userId);
+  //   const newStat = new Stat();
+  //   newStat.user = user;
+  //   newStat.wins = createStatDto.wins;
+  //   newStat.losses = createStatDto.losses;
+  //   newStat.mmr = createStatDto.mmr;
+  //   const stat = await this.statRepository.create(newStat);
+  //   try {
+  //     return await this.statRepository.save(stat);
+  //   } catch (error) {
+  //     throw new InternalServerErrorException('Could not create new stat');
+  //   }
+  // }
+
   async create(createStatDto: CreateStatDto) {
-    const user = await this.userService.findUsersById(createStatDto.userId);
+    const user = await this.userService.findUsersByIdWithRelation(createStatDto.userId);
+    console.log(user);
+    const matchHistory = [ ...user?.p1_match, ...user?.p2_match];
     const newStat = new Stat();
     newStat.user = user;
-    newStat.wins = createStatDto.wins;
-    newStat.losses = createStatDto.losses;
-    newStat.mmr = createStatDto.mmr;
+    newStat.total_games = matchHistory.length;
+    newStat.wins = matchHistory.filter((match) => match.winner_uid === user.id).length;
+    newStat.losses = newStat.total_games - newStat.wins;
+    newStat.winStreak = this.calculateWinStreak(matchHistory, user.id);
+    newStat.mmr = this.calculateMMR(newStat.wins, newStat.losses);
     const stat = await this.statRepository.create(newStat);
     try {
-      return await this.statRepository.save(stat);
+      // await this.userService.updateUser(user.id, updateDto)
+      await this.statRepository.save(stat);
+      return stat;
     } catch (error) {
       throw new InternalServerErrorException('Could not create new stat');
     }
   }
+
+
+  calculateWinStreak(matchHistory: MatchHistory[], userId: number): number {
+    let currentStreak = 0;
+    let longestStreak = 0;
+
+    for (const match of matchHistory) {
+      if (match.winner_uid === userId) {
+        currentStreak++;
+        if (currentStreak > longestStreak) {
+          longestStreak = currentStreak;
+        }
+      } else {
+        currentStreak = 0;
+      }
+    }
+    return longestStreak;
+  }
+
+  calculateMMR(wins: number, losses: number) : number {
+    return 0 + (wins * 10) - (losses * 10);
+  }
+
 
   async findAll() : Promise<Stat[]> {
     const stat =  await this.statRepository.find({
@@ -52,9 +99,9 @@ export class StatService {
       const user = await this.userService.findUsersById(updateStatDto.userId);
       stat.user = user;
     }
-    stat.wins = updateStatDto.wins;
-    stat.losses = updateStatDto.losses;
-    stat.mmr = updateStatDto.mmr;
+    // stat.wins = updateStatDto.wins;
+    // stat.losses = updateStatDto.losses;
+    // stat.mmr = updateStatDto.mmr;
     return await this.statRepository.save(stat);
   }
 

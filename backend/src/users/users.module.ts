@@ -6,6 +6,11 @@ import { User } from 'src/typeorm/user.entity';
 import { MulterModule, MulterModuleOptions } from '@nestjs/platform-express';
 import { HttpModule } from '@nestjs/axios';
 import { diskStorage } from 'multer';
+import { StatService } from 'src/stat/services/stat.service';
+import { Stat } from 'src/typeorm/stats.entity';
+import { MatchHistory } from 'src/typeorm/match_history.entity';
+import { MatchHistoryService } from 'src/match-history/services/match-history.service';
+import { Friend } from 'src/typeorm/friends.entity';
 
 const storageOptions: MulterModuleOptions = {
     storage: diskStorage({
@@ -25,7 +30,9 @@ const storageOptions: MulterModuleOptions = {
         MulterModule.register(storageOptions),
     ],
     controllers: [UsersController],
-    providers: [UsersService],
+    providers: [
+        UsersService,
+    ],
 
 })
 export class UsersModule {}

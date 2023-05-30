@@ -4,11 +4,12 @@ import { Repository } from 'typeorm';
 import { User } from 'src/typeorm/user.entity';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
+import { StatService } from 'src/stat/services/stat.service';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(User) private readonly usersRepository: Repository<User>,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -84,7 +85,7 @@ export class UsersService {
     }
     try {
       const updatedUserDto = {
-        ...UpdateUserDto,
+        ...updateUserDto,
         updatedAt: new Date(),
       }
       await this.usersRepository.update(id, updatedUserDto);

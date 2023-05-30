@@ -30,15 +30,15 @@ const PongMain: React.FC<any> = () => {
           <div className='lifetime-section'>
             <div className='total-games'>
               <p>Total Games</p>
-              <p>25</p>
+              <p>{ stat?.total_games || 0 }</p>
             </div>
             <div className='lifetime-wins'>
               <p>Total Wins</p>
-              <p>{stat?.wins}</p>
+              <p>{ stat?.wins || 0 }</p>
             </div>
             <div className='lifetime-wins-streak'>
               <p>Win Streaks</p>
-              <p>4</p>
+              <p>{ stat?.winStreak || 0}</p>
             </div>
           </div>
           <div className='vertical-line'>
@@ -59,44 +59,6 @@ const PongMain: React.FC<any> = () => {
             </div>
         </div>
         <div className='bottom-content'>
-            {/* <div className='match-history'>
-              <table>
-                <thead>
-                  <tr>
-                    <th style={{ width: '5.0%' }}></th>
-                    <th>Opponent</th>
-                    <th>Date</th>
-                    <th>Player Stat</th>
-                    <th>Opponent Stat</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className='spacer'>
-                  </tr>
-                  <tr className='row-win'>
-                    <td className='result-win'></td>
-                    <td>Super long long name guy</td>
-                    <td>2023-05-27</td>
-                    <td>10</td>
-                    <td>5</td>
-                  </tr>
-                  <tr className='row-lose'>
-                    <td className='result-lose'></td>
-                    <td>Nemesis</td>
-                    <td>2023-05-27</td>
-                    <td>10</td>
-                    <td>5</td>
-                  </tr>
-                  <tr className='row-win'>
-                    <td className='result-win'></td>
-                    <td>Mario</td>
-                    <td>2023-05-27</td>
-                    <td>10</td>
-                    <td>5</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div> */}
             <MatchHistory p1_match={p1_match} p2_match={p2_match} userId={ id } />
             <div className='match-making'>
               <div className='circle-top'>

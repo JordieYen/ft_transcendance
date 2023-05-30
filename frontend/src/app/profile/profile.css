@@ -159,11 +159,11 @@ td.result-lose {
     background-color: red;
 }
 
-tr:nth-child(odd) {
+tr:nth-child(even) {
     background-color: var(--background-dark);
 }
 
-tr:nth-child(even) {
+tr:nth-child(odd) {
     background-color: var(--background-light-dark);
 }
 

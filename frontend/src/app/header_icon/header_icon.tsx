@@ -17,7 +17,7 @@ const HeaderIcon = () => {
             <Crown/>
             <Avartar src={ avatar } alt="user avatar" width={25} height={25}/>
             <p className='icon-container'>{ username }</p>
-            <Mmr mmr={ stat?.mmr }/>
+            <Mmr mmr={ stat?.mmr || 0 }/>
             <Setting/>
             <Logout/>
         </nav>
