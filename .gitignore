@@ -4,10 +4,5 @@
 # *.js
 node_modules
 .DS_Store
-<<<<<<< HEAD
-# .env
 /*/dist
-=======
-.env
 transcendence.pdf
->>>>>>> 51302d246a1618b2dcfb8928729e5b8a3e47848a
