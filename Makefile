@@ -3,7 +3,7 @@ COMPOSE_YML = ./docker-compose.yml
 all: 		build_up
 
 build_up:
-			docker-compose --verbose -f $(COMPOSE_YML) up --build -d
+			docker-compose --verbose -f $(COMPOSE_YML) up --build #-d
 
 build:
 			docker-compose -f $(COMPOSE_YML) build --no-cache
