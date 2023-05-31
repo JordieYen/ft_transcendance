@@ -9,6 +9,7 @@ export declare class MatchHistoryController {
     getByPlayerUid(uid: string): Promise<MatchHistory[]>;
     getByScore(score: string): Promise<MatchHistory[]>;
     getTotalGamesByPlayerUid(uid: string): Promise<number>;
+    getTotalWinsByPlayerUid(uid: string): Promise<number>;
     create(createMatchHistoryDto: CreateMatchHistoryDto): Promise<void>;
     remove(uid: string): Promise<{
         message: string;

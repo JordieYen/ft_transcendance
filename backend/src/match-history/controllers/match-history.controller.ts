@@ -30,8 +30,13 @@ export class MatchHistoryController {
   }
 
   @Get('games')
-  async getTotalGamesByPlayerUid(@Query('uid') uid: string) {
+  async getTotalGamesByPlayerUid(@Query('uid') uid: string): Promise<number> {
     return this.matchHistoryService.getTotalGamesByPlayerUid(+uid);
+  }
+
+  @Get('wins')
+  async getTotalWinsByPlayerUid(@Query('uid') uid: string): Promise<number> {
+    return this.matchHistoryService.getTotalWinsByPlayerUid(+uid);
   }
 
   @Post()

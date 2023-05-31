@@ -8,9 +8,11 @@ export declare class MatchHistoryService {
     constructor(matchHistoryRepository: Repository<MatchHistory>, userService: UsersService);
     getHistory(): Promise<MatchHistory[]>;
     getByMatchUid(uid: number): Promise<MatchHistory[]>;
+    getWinsByPlayerUid(uid: number): Promise<MatchHistory[]>;
     getByPlayerUid(uid: number): Promise<MatchHistory[]>;
     getByScore(score: number): Promise<MatchHistory[]>;
     getTotalGamesByPlayerUid(uid: number): Promise<number>;
+    getTotalWinsByPlayerUid(uid: number): Promise<number>;
     create(createMatchHistoryDto: CreateMatchHistoryDto): Promise<void>;
     remove(uid: number): Promise<{
         message: string;
