@@ -1,12 +1,5 @@
-import { render } from "react-dom";
 import Avatar from "../header_icon/user_avatar";
 
-// write a renderAchievemnt funtion that take in achievement length and then based on the length,
-// render the bracket.png and fill the remaining achievement with blank.png. there is total only 8 achievements
-// so if the achievement length is 5, then render 5 bracket.png and 3 blank.png.
-//
-// then in the achievement.tsx, import the renderAchievement function and pass in the achievement.length
-// as the argument. then render the achievement component in the profile.tsx
 function renderAchievement(achievementLength: number) {
     const achievements = [];
     const totalAchievement = 8;

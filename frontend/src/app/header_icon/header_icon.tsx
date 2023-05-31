@@ -15,7 +15,7 @@ const HeaderIcon = () => {
     return (
         <nav className="horizontal-container">
             <Crown/>
-            <Avatar src={ avatar } alt="user avatar" width={25} height={25}/>
+            <Avatar src={ avatar } alt="user avatar" width={40} height={40}/>
             <p className='icon-container'>{ username }</p>
             <Mmr mmr={ stat?.mmr || 0 }/>
             <Setting/>
