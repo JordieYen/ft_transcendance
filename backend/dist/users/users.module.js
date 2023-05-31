@@ -35,6 +35,10 @@ UsersModule = __decorate([
         providers: [
             users_service_1.UsersService,
         ],
+        exports: [
+            users_service_1.UsersService,
+            typeorm_1.TypeOrmModule,
+        ]
     })
 ], UsersModule);
 exports.UsersModule = UsersModule;

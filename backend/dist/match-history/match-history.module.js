@@ -12,15 +12,18 @@ const match_history_service_1 = require("./services/match-history.service");
 const match_history_controller_1 = require("./controllers/match-history.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const match_history_entity_1 = require("../typeorm/match_history.entity");
-const users_service_1 = require("../users/services/users.service");
-const user_entity_1 = require("../typeorm/user.entity");
+const users_module_1 = require("../users/users.module");
 let MatchHistoryModule = class MatchHistoryModule {
 };
 MatchHistoryModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([match_history_entity_1.MatchHistory, user_entity_1.User])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([match_history_entity_1.MatchHistory]),
+            users_module_1.UsersModule
+        ],
         controllers: [match_history_controller_1.MatchHistoryController],
-        providers: [match_history_service_1.MatchHistoryService, users_service_1.UsersService]
+        providers: [match_history_service_1.MatchHistoryService],
+        exports: [match_history_service_1.MatchHistoryService, typeorm_1.TypeOrmModule]
     })
 ], MatchHistoryModule);
 exports.MatchHistoryModule = MatchHistoryModule;

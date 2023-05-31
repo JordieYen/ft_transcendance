@@ -1,4 +1,4 @@
-import Avatar from "../header_icon/user_avatar";
+import Avatar from "../component/header_icon/user_avatar";
 
 function renderAchievement(achievementLength: number) {
     const achievements = [];
@@ -6,7 +6,9 @@ function renderAchievement(achievementLength: number) {
 
     for (let i = 0; i < totalAchievement; i++) {
         const imageSource = i < achievementLength ? "/bracket.png" : "/blank.png";
-        achievements.push(<Avatar src={imageSource} alt="user avatar" width={50} height={50} />);
+        achievements.push(
+         <Avatar key={i} src={imageSource} alt="user avatar" width={50} height={50} />
+        );
     }
     return achievements;
 }

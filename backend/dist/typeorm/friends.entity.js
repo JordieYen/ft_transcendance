@@ -30,12 +30,12 @@ __decorate([
     __metadata("design:type", Number)
 ], Friend.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.friends),
     (0, typeorm_1.JoinColumn)({ name: 'sender_id' }),
     __metadata("design:type", user_entity_1.User)
 ], Friend.prototype, "sender", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.friends),
     (0, typeorm_1.JoinColumn)({ name: 'receiver_id' }),
     __metadata("design:type", user_entity_1.User)
 ], Friend.prototype, "receiver", void 0);

@@ -1,9 +1,10 @@
 import UserData from '../data/user_data';
-import Avatar from '../header_icon/user_avatar';
+import Avatar from '../component/header_icon/user_avatar';
 import './profile.css';
 import MatchHistory from './match_history';
 import formatDateMalaysia from '../utils/date';
 import Achievement from './achievement';
+import MatchMaking from './match_making';
 
 const PongMain: React.FC<any> = () => {
     
@@ -46,38 +47,10 @@ const PongMain: React.FC<any> = () => {
         </div>
         <div className='bottom-content'>
             <MatchHistory p1_match={p1_match} p2_match={p2_match} userId={ id } />
-            <div className='match-making'>
-              <div className='circle-top'>
-                <div className='circle-content'>
-                    <p>MATCH MAKING ON<br/><span>200</span><br/>HIGHEST 200</p>
-                </div>
-              </div>
-              <div className='circle-bottom'>
-                <div className='circle-content'>
-                 <p>LIFETIME KILLS<br/><span>25</span><br/>DEATHS 10<br/>K/DR 2.50</p>
-                </div>
-              </div>
-              <div className='stats'>
-                <p>Smash Count <span>5</span></p>
-                <hr />
-                <p>Lights Out Count <span>5</span></p>
-              </div>
-            </div>
+            <MatchMaking />
         </div>
       </div>
   );
 };
-
-          {/* <img src={avatar} alt="User Avatar" style={{ width: '200px', height: '200px' }} /> */}
-          {/* <p>Id: {id}</p>
-          <p>Intra_uid: {intra_uid}</p>
-          <p>Username: {username}</p>
-          <p>Online: {online ? 'online' : 'offline'}</p>
-          <p>P1 Match: {p1_match[0] ? 'match 1' : 'no match'}</p>
-          <p>P1 Score: {p1_match[0]?.p1_score}</p>
-          <p>Stat lose: {stat?.losses}</p>
-          <p>Stat wins: {stat?.wins}</p>
-          <p>Stat mmr: {stat?.mmr}</p>
-        <p>Achievement: {userAchievement[0] ? userAchievement[0]?.achievement?.name : 'no achievement'}</p> */}
 
 export default PongMain;

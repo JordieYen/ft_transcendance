@@ -62,11 +62,10 @@ async function bootstrap() {
   app.use((req, res, next) => {
       // req.session.user = req.user;
     var status = req.isAuthenticated() ? 'logged in' : 'logged out';
+    console.log('status:', status, '\n', 'path', req.path, '\n');
     console.log(
-      'status:', status, '\n',
     //   // 'session', req.session, '\n',
-      'path', req.path, '\n',
-      );
+    );
     // const isAuthRoute = (req.path == '/auth/login' 
     // || req.path == '/auth/callback' 
     // || req.path == '/auth/logout'

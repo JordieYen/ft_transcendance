@@ -21,6 +21,7 @@ AchievementModule = __decorate([
         ],
         controllers: [achievement_controller_1.AchievementController],
         providers: [achievement_service_1.AchievementService],
+        exports: [achievement_service_1.AchievementService, typeorm_1.TypeOrmModule]
     })
 ], AchievementModule);
 exports.AchievementModule = AchievementModule;

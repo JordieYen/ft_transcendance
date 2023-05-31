@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MatchHistoryService } from 'src/match-history/services/match-history.service';
 import { MatchHistory } from 'src/typeorm/match_history.entity';
 import { Stat } from 'src/typeorm/stats.entity';
 import { User } from 'src/typeorm/user.entity';
@@ -13,6 +14,7 @@ export class StatService {
   constructor(
     @InjectRepository(Stat) private statRepository: Repository<Stat>,
     private readonly userService: UsersService,
+    private readonly matchHistoryService: MatchHistoryService,
   ) {}
 
   // async create(createStatDto: CreateStatDto) {
@@ -31,19 +33,20 @@ export class StatService {
   // }
 
   async create(createStatDto: CreateStatDto) {
-    const user = await this.userService.findUsersByIdWithRelation(createStatDto.userId);
-    console.log(user);
-    const matchHistory = [ ...user?.p1_match, ...user?.p2_match];
+    // const user = await this.userService.findUsersByIdWithRelation(createStatDto.userId);
+    // console.log(user);
+    // const matchHistory = [ ...user?.p1_match, ...user?.p2_match];
+    const matchHistory = await this.matchHistoryService.getByPlayerUid(createStatDto.userId)
     const newStat = new Stat();
-    newStat.user = user;
+    // newStat.user = user;
+    newStat.userId = createStatDto.userId;
     newStat.total_games = matchHistory.length;
-    newStat.wins = matchHistory.filter((match) => match.winner_uid === user.id).length;
+    newStat.wins = matchHistory.filter((match) => match.winner_uid === createStatDto.userId).length;
     newStat.losses = newStat.total_games - newStat.wins;
-    newStat.winStreak = this.calculateWinStreak(matchHistory, user.id);
+    newStat.winStreak = this.calculateWinStreak(matchHistory, createStatDto.userId);
     newStat.mmr = this.calculateMMR(newStat.wins, newStat.losses);
     const stat = await this.statRepository.create(newStat);
     try {
-      // await this.userService.updateUser(user.id, updateDto)
       await this.statRepository.save(stat);
       return stat;
     } catch (error) {
@@ -95,13 +98,13 @@ export class StatService {
 
   async update(id: number, updateStatDto: UpdateStatDto) {
     const stat = await this.findOne(id);
-    if (updateStatDto.userId) {
-      const user = await this.userService.findUsersById(updateStatDto.userId);
-      stat.user = user;
+    if (updateStatDto?.userId) {
+      // const user = await this.userService.findUsersById(updateStatDto.userId);
+      stat.userId = updateStatDto?.userId;
     }
-    stat.wins = updateStatDto.wins;
-    stat.losses = updateStatDto.losses;
-    stat.mmr = updateStatDto.mmr;
+    stat.wins = updateStatDto?.wins;
+    stat.losses = updateStatDto?.losses;
+    stat.mmr = updateStatDto?.mmr;
     return await this.statRepository.save(stat);
   }
 

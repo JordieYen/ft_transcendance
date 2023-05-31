@@ -124,6 +124,8 @@ header {
 .match-history {
     width: 70%;
     flex: 2;
+    max-height: 600px;
+    overflow-y: auto;
     /* border: 10px solid blue; */
     /* background-color: var(--background-dark); */
 }
@@ -301,7 +303,10 @@ td:last-child {
 
     .match-history {
         width: 100%;
+        min-width: 570px;
+        max-height: 400px;
         box-sizing: border-box;
+        overflow-y: auto;
     }
 
     .match-making {

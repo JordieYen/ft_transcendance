@@ -79,6 +79,7 @@ __decorate([
 ], User.prototype, "p2_match", void 0);
 __decorate([
     (0, typeorm_1.ManyToMany)(() => friends_entity_1.Friend, friend => [friend.sender, friend.receiver]),
+    (0, typeorm_1.JoinTable)(),
     __metadata("design:type", Array)
 ], User.prototype, "friends", void 0);
 __decorate([

@@ -12,7 +12,7 @@ const Logout = () => {
         const response = await fetch('http://localhost:3000/auth/logout', {
                   credentials: 'include',
           });
-        console.log('logout response', response);
+        // console.log('logout response', response);
         router.push('/login');
       } catch (error) {
         setError('Error loggin out');

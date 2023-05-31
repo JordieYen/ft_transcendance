@@ -5,11 +5,13 @@ import { User } from 'src/typeorm/user.entity';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { StatService } from 'src/stat/services/stat.service';
+import { MatchHistoryService } from 'src/match-history/services/match-history.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
+    // private readonly statService: StatService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -107,7 +109,7 @@ export class UsersService {
         'p2_match',
         'p2_match.p1_uid',
         'p2_match.p2_uid',
-        // 'friends',
+        'friends',
       ],
       where: {
         id: id,

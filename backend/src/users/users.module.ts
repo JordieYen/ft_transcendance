@@ -4,13 +4,8 @@ import { UsersService } from './services/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/user.entity';
 import { MulterModule, MulterModuleOptions } from '@nestjs/platform-express';
-import { HttpModule } from '@nestjs/axios';
 import { diskStorage } from 'multer';
-import { StatService } from 'src/stat/services/stat.service';
-import { Stat } from 'src/typeorm/stats.entity';
-import { MatchHistory } from 'src/typeorm/match_history.entity';
-import { MatchHistoryService } from 'src/match-history/services/match-history.service';
-import { Friend } from 'src/typeorm/friends.entity';
+import { MatchHistoryModule } from 'src/match-history/match-history.module';
 
 const storageOptions: MulterModuleOptions = {
     storage: diskStorage({
@@ -22,8 +17,6 @@ const storageOptions: MulterModuleOptions = {
     }),
 };
 
-
-
 @Module({
     imports: [
         TypeOrmModule.forFeature([User]),
@@ -33,6 +26,10 @@ const storageOptions: MulterModuleOptions = {
     providers: [
         UsersService,
     ],
+    exports: [
+        UsersService,
+        TypeOrmModule,
+    ]
 
 })
 export class UsersModule {}

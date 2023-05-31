@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
@@ -9,10 +9,6 @@ import { MatchHistoryModule } from './match-history/match-history.module';
 import { AchievementModule } from './achievement/achievement.module';
 import { UserAchievementModule } from './user_achievement/user_achievement.module';
 import { configValidationSchema } from './config/config.schema';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { SessionEntity } from './typeorm/session.entity';
-import { DataSource } from 'typeorm/data-source/DataSource';
-import { Repository } from 'typeorm';
 import { FriendModule } from './friend/friend.module';
 import { StatModule } from './stat/stat.module';
 
