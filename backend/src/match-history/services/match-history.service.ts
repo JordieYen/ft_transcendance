@@ -27,17 +27,25 @@ export class MatchHistoryService {
     });
   }
 
+  // Return entries with {winner_uid}
+  async getWinsByPlayerUid(uid: number): Promise<MatchHistory[]> {
+    return await this.matchHistoryRepository.find({
+      where: {
+        winner_uid: uid
+      }
+    });
+  }
+
   // Return entries with {user_uid}
   async getByPlayerUid(uid: number): Promise<MatchHistory[]> {
     return await this.matchHistoryRepository.find({
       where: [
-        {winner_uid: uid},
         {p1_uid: {id: uid}},
         {p2_uid: {id: uid}}
       ]
     });
   }
-  
+
   // Return entries with {score}
   async getByScore(score: number): Promise<MatchHistory[]> {
     return await this.matchHistoryRepository.find({
@@ -48,9 +56,16 @@ export class MatchHistoryService {
     });
   }
 
-  async getTotalGamesByPlayerUid(uid: number) {
-    const size = (await this.getByPlayerUid(uid)).length;
-    return (size)
+  // Return total games played from a player
+  async getTotalGamesByPlayerUid(uid: number): Promise<number> {
+    const total = (await this.getByPlayerUid(uid)).length;
+    return (total);
+  }
+
+  // Return total wins from a player
+  async getTotalWinsByPlayerUid(uid: number): Promise<number> {
+    const total = (await this.getWinsByPlayerUid(uid)).length;
+    return (total);
   }
 
   // Add new entry

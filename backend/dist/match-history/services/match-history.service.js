@@ -33,10 +33,16 @@ let MatchHistoryService = class MatchHistoryService {
             }
         });
     }
+    async getWinsByPlayerUid(uid) {
+        return await this.matchHistoryRepository.find({
+            where: {
+                winner_uid: uid
+            }
+        });
+    }
     async getByPlayerUid(uid) {
         return await this.matchHistoryRepository.find({
             where: [
-                { winner_uid: uid },
                 { p1_uid: { id: uid } },
                 { p2_uid: { id: uid } }
             ]
@@ -51,8 +57,12 @@ let MatchHistoryService = class MatchHistoryService {
         });
     }
     async getTotalGamesByPlayerUid(uid) {
-        const size = (await this.getByPlayerUid(uid)).length;
-        return (size);
+        const total = (await this.getByPlayerUid(uid)).length;
+        return (total);
+    }
+    async getTotalWinsByPlayerUid(uid) {
+        const total = (await this.getWinsByPlayerUid(uid)).length;
+        return (total);
     }
     async create(createMatchHistoryDto) {
         const newMatch = await this.matchHistoryRepository.create({

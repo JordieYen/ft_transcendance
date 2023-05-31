@@ -37,6 +37,9 @@ let MatchHistoryController = class MatchHistoryController {
     async getTotalGamesByPlayerUid(uid) {
         return this.matchHistoryService.getTotalGamesByPlayerUid(+uid);
     }
+    async getTotalWinsByPlayerUid(uid) {
+        return this.matchHistoryService.getTotalWinsByPlayerUid(+uid);
+    }
     async create(createMatchHistoryDto) {
         return this.matchHistoryService.create(createMatchHistoryDto);
     }
@@ -83,6 +86,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], MatchHistoryController.prototype, "getTotalGamesByPlayerUid", null);
+__decorate([
+    (0, common_1.Get)('wins'),
+    openapi.ApiResponse({ status: 200, type: Number }),
+    __param(0, (0, common_1.Query)('uid')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MatchHistoryController.prototype, "getTotalWinsByPlayerUid", null);
 __decorate([
     (0, common_1.Post)(),
     openapi.ApiResponse({ status: 201 }),
