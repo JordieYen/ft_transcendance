@@ -1,5 +1,4 @@
-import CustomButton from "../../utils/button";
-import './profile.css';
+import CustomButton from "@/app/utils/button";
 
 const Login = () => {
   return (
