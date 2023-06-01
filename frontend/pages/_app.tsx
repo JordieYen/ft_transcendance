@@ -1,7 +1,7 @@
 import React from 'react';
 import type { AppProps } from 'next/app';
-import Header from '@/app/common/header';
-import Footer from '@/app/common/footer';
+import Header from '@/app/component/common/header';
+import Footer from '@/app/component/common/footer';
 import '../src/app/globals.css';
 import UserData from '@/app/data/user_data';
 
