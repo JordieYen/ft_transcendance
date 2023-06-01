@@ -1,5 +1,3 @@
-import './globals.css'
-
 interface CustomButtonProps {
     text: string;
 }
