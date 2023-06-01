@@ -32,15 +32,6 @@ body {
   background-color: var(--background-light-dark);
 }
 
-button {
-  background-color: var(--background-grey);
-  color: var(--background-light-grey);
-  outline: none;
-  border-radius: 5px;
-  border: 0px;
-  padding: 4px 8px;
-}
-
 h1, p, table {
   font-family: 'Roboto Mono', monospace;
   color: var(--background-grey);
