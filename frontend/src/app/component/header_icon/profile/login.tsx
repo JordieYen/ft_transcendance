@@ -1,4 +1,4 @@
-import CustomButton from "../button";
+import CustomButton from "../../../utils/button";
 
 const Login = () => {
   return (

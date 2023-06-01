@@ -1,8 +1,8 @@
-import UserData from '../data/user_data';
-import Avatar from '../component/header_icon/user_avatar';
+import UserData from '../../../data/user_data';
+import Avatar from '../user_avatar';
 import './profile.css';
 import MatchHistory from './match_history';
-import formatDateMalaysia from '../utils/date';
+import formatDateMalaysia from '../../../utils/date';
 import Achievement from './achievement';
 import MatchMaking from './match_making';
 
