@@ -29,6 +29,7 @@ module.exports = {
       },
       fontFamily: {
         'roboto': ['Roboto Mono', 'monospace'],
+        'pmarker': ['Permanent Marker', 'monospace'],
       },
     },
   },

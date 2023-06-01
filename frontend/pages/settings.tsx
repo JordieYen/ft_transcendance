@@ -1,4 +1,4 @@
-import SettingsComponent from "../src/components/Settings";
+import UserSettings from "../src/components/UserSettings";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
@@ -7,7 +7,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 export default function SettingsPage() {
   return (
     <div className="flex flex-col gap-6">
-      <SettingsComponent
+      <UserSettings
         title="Change account name"
         description="Change the name of your account."
         buttonDescArry={["update name"]}
@@ -15,7 +15,7 @@ export default function SettingsPage() {
         mode="button"
         icon={faUser}
       />
-      <SettingsComponent
+      <UserSettings
         title="Change avatar"
         description="Change the avatar of your account."
         buttonDescArry={["update avatar"]}
@@ -23,7 +23,7 @@ export default function SettingsPage() {
         mode="button"
         icon={faImage}
       />
-      <SettingsComponent
+      <UserSettings
         title="Enable 2FA"
         description="Enable Two-Factor-Authentication."
         buttonDescArry={["enable 2FA"]}
@@ -31,7 +31,7 @@ export default function SettingsPage() {
         mode="button"
         icon={faLock}
       />
-      <SettingsComponent
+      <UserSettings
         title="Delete account"
         description="Deletes your account and all data connected to it."
         warning="You can't undo this action!"
