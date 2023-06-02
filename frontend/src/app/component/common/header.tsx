@@ -1,6 +1,6 @@
-import Logo from "../header_icon/logo";
 import React from 'react';
-import HeaderIcon from "../header_icon/header_icon";
+import HeaderIcon from "../header_icon/HeaderIcon";
+import Logo from '../header_icon/Logo';
 
 interface HeaderProps {
   showAdditionalIcon: boolean;

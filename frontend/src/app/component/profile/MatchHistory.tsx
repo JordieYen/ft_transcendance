@@ -1,5 +1,5 @@
 import React from 'react';
-import formatDateMalaysia from '../../utils/date';
+import formatDateMalaysia from '../../utils/formatDateMalaysia';
 
 function renderMatchRows(matches: any, userId: number, isP1: boolean) {
     return matches.map((match: any) => {

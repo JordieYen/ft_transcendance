@@ -1,9 +1,9 @@
 import React from 'react';
 import type { AppProps } from 'next/app';
-import Header from '@/app/component/common/header';
-import Footer from '@/app/component/common/footer';
+import Header from '@/app/component/common/Header';
+import Footer from '@/app/component/common/Footer';
 import '../src/app/globals.css';
-import UserData from '@/app/data/user_data';
+import UserData from '@/app/webhook/user_data';
 
 
 const MyApp = ({ Component, pageProps, router }: AppProps) => {

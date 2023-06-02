@@ -1,4 +1,4 @@
-import Avatar from "../header_icon/user_avatar";
+import Avatar from "../header_icon/Avatar";
 
 function renderAchievement(achievementLength: number) {
     const achievements = [];

@@ -1,11 +1,9 @@
 import React from "react";
-import Logout from "../../data/logout";
-import UserData from "../../data/user_data";
-import Crown from "./crown";
-import Icon from "./icon";
-import Mmr from "./mmr";
-import Setting from "./setting";
-import Avatar from "./user_avatar";
+import Logout from "../../webhook/logout";
+import UserData from "../../webhook/user_data";
+import Avatar from "./Avatar";
+import Icon from "./Icon";
+import Mmr from "./Mmr";
 
 const HeaderIcon = () => {
     const userData = UserData();
@@ -17,7 +15,7 @@ const HeaderIcon = () => {
         <nav className="horizontal-container">
             <Icon filePath="/crown.png"/>
             <Avatar src={ avatar } alt="user avatar" width={40} height={40}/>
-            <p className='icon-container'>{ username }</p>
+            <p className='icon-container transform hover:scale-125'>{ username }</p>
             <Mmr mmr={ stat?.mmr || 0 }/>
             <Icon filePath="/gear.png"/>
             <Logout/>

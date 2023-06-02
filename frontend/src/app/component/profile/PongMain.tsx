@@ -1,10 +1,10 @@
-import UserData from '../../data/user_data';
-import Avatar from '../header_icon/user_avatar';
+import UserData from '../../webhook/user_data';
+import Avatar from '../header_icon/Avatar';
 import './profile.css';
-import MatchHistory from './match_history';
-import formatDateMalaysia from '../../utils/date';
-import Achievement from './achievement';
-import MatchMaking from './match_making';
+import MatchHistory from './MatchHistory';
+import formatDateMalaysia from '../../utils/formatDateMalaysia';
+import MatchMaking from './MatchMaking';
+import Achievement from './Achievement';
 
 const PongMain: React.FC<any> = () => {
     

@@ -22,7 +22,7 @@ const Logout = () => {
     return (
       <span className='icon-container'>
         {error && <p>{error}</p>}
-        <Image onClick={handleLogout} src="/logout-icon.png" alt="gear" width={40} height={40}/>
+        <Image className='transform hover:scale-125' onClick={handleLogout} src="/logout-icon.png" alt="gear" width={40} height={40}/>
       </span>
     );
 };
