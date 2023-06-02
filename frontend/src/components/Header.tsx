@@ -11,60 +11,61 @@ import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import "@/styles/globals.css";
 import "@/styles/styling.css";
 import { IconButton } from "./IconButton";
+import Logo from "@/app/header_icon/logo";
 
-const Header = () => {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/auth/logout", {
-        credentials: "include",
-      });
-      console.log("logout response", response);
-      router.push("/login");
-    } catch (error) {
-      setError("Error loggin out");
-    }
-  };
-  //   const userData = UserData();
-  //   if (!userData) {
-  //     return <div>Loading...</div>;
-  //   }
-  //   const {
-  //     avatar,
-  //     id,
-  //     intra_uid,
-  //     username,
-  //     online,
-  //     p1_match,
-  //     stat,
-  //     userAchievement,
-  //   } = userData;
+export const HeaderLogo = () => {
   return (
-    <nav className="flex mx-32 mt-5 mb-8 items-center gap-8">
-      <div className="flex flex-1 items-center gap-2">
-        <Image
-          className="object-contain"
-          src="/main-logo.svg"
-          alt="Logo"
-          width={120}
-          height={88}
-        />
-        {/* <img className="object-contain" src="/logo.png" alt="Logo" /> */}
-        <p className="text-3xl font-pmarker text-timberwolf">Pongmington</p>
-        {/* <img className="object-contain" src="/pongmington.png" alt="Pongminton"/> */}
-      </div>
+    <div className="flex flex-1 items-center gap-2">
+      <Image
+        className="object-contain"
+        src="/main-logo.svg"
+        alt="Logo"
+        width={120}
+        height={88}
+      />
+      {/* <img className="object-contain" src="/logo.png" alt="Logo" /> */}
+      <p className="text-3xl font-pmarker text-timberwolf">Pongmington</p>
+      {/* <img className="object-contain" src="/pongmington.png" alt="Pongminton"/> */}
+    </div>
+  );
+};
+
+export const HeaderIcon = () => {
+  const router = useRouter();
+  // const [error, setError] = useState<string | null>(null);
+
+  const handleLogout = () => {
+    console.log("loggingout");
+  };
+  // const handleLogout = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:3000/auth/logout", {
+  //       credentials: "include",
+  //     });
+  //     console.log("logout response", response);
+  //     router.push("/login");
+  //   } catch (error) {
+  //     setError("Error loggin out");
+  //   }
+  // };
+
+  return (
+    <>
+      {/* crown icon */}
       <IconButton onClick={() => router.push("/leaderboards")}>
         <FontAwesomeIcon icon={faCrown} size="lg" />
       </IconButton>
+
+      {/* profile avatar/name/mmr group */}
       <button
         className="flex items-center space-x-2 group"
         /* HANDLE PROFILE CLICK BELOW! */
         onClick={() => console.log("Header profile clicked")}
       >
-        <img
-          className="w-9 h-9 rounded-full object-cover"
+        <Image
+          width={36}
+          height={36}
+          style={{ borderRadius: "50%" }}
           /* UNCOMMENT BELOW WHEN BACKEND AVATAR IS READY */
           //   src={avatar}
           /* AND DELETE BELOW */
@@ -87,12 +88,27 @@ const Header = () => {
           <span className="font-xs font-roboto">{100}</span>
         </div>
       </button>
+
+      {/* gear icon */}
       <IconButton onClick={() => router.push("/settings")}>
         <FontAwesomeIcon icon={faGear} size="lg" />
       </IconButton>
+
+      {/* logout icon */}
       <IconButton onClick={handleLogout}>
         <FontAwesomeIcon icon={faRightFromBracket} size="lg" />
       </IconButton>
+    </>
+  );
+};
+
+const Header = () => {
+  const router = useRouter();
+  const currentPath = router.asPath;
+  return (
+    <nav className="flex mx-32 mt-5 mb-8 items-center gap-8">
+      <HeaderLogo />
+      {currentPath !== "/login" && <HeaderIcon />}
     </nav>
   );
 };

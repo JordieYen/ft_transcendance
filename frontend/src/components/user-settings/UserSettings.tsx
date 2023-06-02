@@ -29,6 +29,7 @@ const UserSettings = ({
       <div className="w-[400px] flex gap-2">
         {buttonDescArry.map((text, index) => (
           <button
+            key={index}
             className={`w-full flex items-center justify-center bg-jetblack border-2 ${
               warning ? "border-tomato" : "border-saffron"
             } text-timberwolf font-roboto rounded-lg cursor-pointer p-2 mb-2`}

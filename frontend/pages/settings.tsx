@@ -1,17 +1,30 @@
-import UserSettings from "../src/components/UserSettings";
+import ChangeAccountModal from "@/components/user-settings/ChangeAccountModal";
+import UserSettings from "../src/components/user-settings/UserSettings";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import React, { useState, useEffect, useRef } from "react";
+import useModal from "@/hooks/useModal";
 
 export default function SettingsPage() {
+  const [isAccOpen, openAccModal, closeAccModal, accRef] = useModal(false);
+  const [isPicOpen, openPicModal, closePicModal, picRef] = useModal(false);
+  const [isTFAOpen, openTFAModal, closeTFAModal, tfaRef] = useModal(false);
+  const [isDelOpen, openDelModal, closeDelModal, delRef] = useModal(false);
+
   return (
     <div className="flex flex-col gap-6">
+      <ChangeAccountModal
+        isOpen={isAccOpen}
+        closeModal={closeAccModal}
+        accRef={accRef}
+      />
       <UserSettings
         title="Change account name"
         description="Change the name of your account."
         buttonDescArry={["update name"]}
-        handleClick={(text) => console.log(text)}
+        handleClick={() => openAccModal()}
         mode="button"
         icon={faUser}
       />
