@@ -1,16 +1,17 @@
-import Logo from "../header_icon/logo";
-import React from 'react';
-import HeaderIcon from "../header_icon/header_icon";
+import React from "react";
+import { useRouter } from "next/router";
+// import Logo from "../header_icon/logo";
+import HeaderLogo from "@/components/Header";
+// import HeaderIcon from "../header_icon/header_icon";
+import HeaderIcon from "@/components/Header";
 
-interface HeaderProps {
-  showAdditionalIcon: boolean;
-}
-
-const Header = ({ showAdditionalIcon }: HeaderProps) => {
+const Header = () => {
+  const router = useRouter();
+  const currentPath = router.asPath;
   return (
     <header>
-        <Logo/>
-        { showAdditionalIcon && <HeaderIcon/>}
+      <HeaderLogo />
+      {currentPath !== "/login" && <HeaderIcon />}
     </header>
   );
 };
