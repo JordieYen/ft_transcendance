@@ -3,14 +3,15 @@ import { FriendService } from './services/friend.service';
 import { FriendController } from './controllers/friend.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Friend } from 'src/typeorm/friends.entity';
-import { UsersService } from 'src/users/services/users.service';
-import { User } from 'src/typeorm/user.entity';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Friend, User]),
+    TypeOrmModule.forFeature([Friend]),
+    UsersModule,
   ],
   controllers: [FriendController],
-  providers: [FriendService, UsersService]
+  providers: [FriendService],
+  exports: [FriendService, TypeOrmModule]
 })
 export class FriendModule {}

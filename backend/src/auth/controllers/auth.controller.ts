@@ -27,6 +27,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'login to start your pong game',
   })
+
   @Get('login')
   async login() {
   }

@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Query } from '@nestjs/common';
 import { MatchHistoryService } from '../services/match-history.service';
 import { CreateMatchHistoryDto } from '../dto/create-match-history.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { MatchHistory } from 'src/typeorm/match_history.entity';
 
 @Controller('match-history')
 @ApiTags('Match-history')
@@ -9,32 +10,42 @@ export class MatchHistoryController {
   constructor(private readonly matchHistoryService: MatchHistoryService) {}
 
   @Get()
-  getHistory() {
+  async getHistory(): Promise<MatchHistory[]> {
     return this.matchHistoryService.getHistory();
   }
 
   @Get('match')
-  getByMatchUid(@Query('uid') uid: string) {
+  async getByMatchUid(@Query('uid') uid: string): Promise<MatchHistory[]> {
     return this.matchHistoryService.getByMatchUid(+uid);
   }
 
   @Get('player')
-  getByPlayerUid(@Query('uid') uid: string) {
+  async getByPlayerUid(@Query('uid') uid: string): Promise<MatchHistory[]> {
     return this.matchHistoryService.getByPlayerUid(+uid);
   }
 
   @Get('score')
-  getByScore(@Query('score') score: string) {
+  async getByScore(@Query('score') score: string): Promise<MatchHistory[]> {
     return this.matchHistoryService.getByScore(+score);
   }
 
+  @Get('games')
+  async getTotalGamesByPlayerUid(@Query('uid') uid: string): Promise<number> {
+    return this.matchHistoryService.getTotalGamesByPlayerUid(+uid);
+  }
+
+  @Get('wins')
+  async getTotalWinsByPlayerUid(@Query('uid') uid: string): Promise<number> {
+    return this.matchHistoryService.getTotalWinsByPlayerUid(+uid);
+  }
+
   @Post()
-  create(@Body() createMatchHistoryDto: CreateMatchHistoryDto) {
+  async create(@Body() createMatchHistoryDto: CreateMatchHistoryDto): Promise<void> {
     return this.matchHistoryService.create(createMatchHistoryDto);
   }
 
   @Delete('match')
-  remove(@Query('uid') uid: string) {
-    return this.matchHistoryService.remove(+uid);
+  async remove(@Query('uid') uid: string) {
+    return await this.matchHistoryService.remove(+uid);
   }
 }

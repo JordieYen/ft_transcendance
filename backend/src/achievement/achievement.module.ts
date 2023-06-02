@@ -10,6 +10,7 @@ import { AchievementService } from './services/achievement.service';
   ],
   controllers: [AchievementController],
   providers: [AchievementService],
+  exports: [AchievementService, TypeOrmModule]
 
 })
 export class AchievementModule {}

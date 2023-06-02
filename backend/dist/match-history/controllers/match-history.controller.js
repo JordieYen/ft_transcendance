@@ -22,23 +22,29 @@ let MatchHistoryController = class MatchHistoryController {
     constructor(matchHistoryService) {
         this.matchHistoryService = matchHistoryService;
     }
-    getHistory() {
+    async getHistory() {
         return this.matchHistoryService.getHistory();
     }
-    getByMatchUid(uid) {
+    async getByMatchUid(uid) {
         return this.matchHistoryService.getByMatchUid(+uid);
     }
-    getByPlayerUid(uid) {
+    async getByPlayerUid(uid) {
         return this.matchHistoryService.getByPlayerUid(+uid);
     }
-    getByScore(score) {
+    async getByScore(score) {
         return this.matchHistoryService.getByScore(+score);
     }
-    create(createMatchHistoryDto) {
+    async getTotalGamesByPlayerUid(uid) {
+        return this.matchHistoryService.getTotalGamesByPlayerUid(+uid);
+    }
+    async getTotalWinsByPlayerUid(uid) {
+        return this.matchHistoryService.getTotalWinsByPlayerUid(+uid);
+    }
+    async create(createMatchHistoryDto) {
         return this.matchHistoryService.create(createMatchHistoryDto);
     }
-    remove(uid) {
-        return this.matchHistoryService.remove(+uid);
+    async remove(uid) {
+        return await this.matchHistoryService.remove(+uid);
     }
 };
 __decorate([
@@ -46,39 +52,55 @@ __decorate([
     openapi.ApiResponse({ status: 200, type: [require("../../typeorm/match_history.entity").MatchHistory] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], MatchHistoryController.prototype, "getHistory", null);
 __decorate([
     (0, common_1.Get)('match'),
-    openapi.ApiResponse({ status: 200, type: Object }),
+    openapi.ApiResponse({ status: 200, type: [require("../../typeorm/match_history.entity").MatchHistory] }),
     __param(0, (0, common_1.Query)('uid')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], MatchHistoryController.prototype, "getByMatchUid", null);
 __decorate([
     (0, common_1.Get)('player'),
-    openapi.ApiResponse({ status: 200, type: Object }),
+    openapi.ApiResponse({ status: 200, type: [require("../../typeorm/match_history.entity").MatchHistory] }),
     __param(0, (0, common_1.Query)('uid')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], MatchHistoryController.prototype, "getByPlayerUid", null);
 __decorate([
     (0, common_1.Get)('score'),
-    openapi.ApiResponse({ status: 200, type: Object }),
+    openapi.ApiResponse({ status: 200, type: [require("../../typeorm/match_history.entity").MatchHistory] }),
     __param(0, (0, common_1.Query)('score')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], MatchHistoryController.prototype, "getByScore", null);
+__decorate([
+    (0, common_1.Get)('games'),
+    openapi.ApiResponse({ status: 200, type: Number }),
+    __param(0, (0, common_1.Query)('uid')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MatchHistoryController.prototype, "getTotalGamesByPlayerUid", null);
+__decorate([
+    (0, common_1.Get)('wins'),
+    openapi.ApiResponse({ status: 200, type: Number }),
+    __param(0, (0, common_1.Query)('uid')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MatchHistoryController.prototype, "getTotalWinsByPlayerUid", null);
 __decorate([
     (0, common_1.Post)(),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_match_history_dto_1.CreateMatchHistoryDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], MatchHistoryController.prototype, "create", null);
 __decorate([
     (0, common_1.Delete)('match'),
@@ -86,7 +108,7 @@ __decorate([
     __param(0, (0, common_1.Query)('uid')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], MatchHistoryController.prototype, "remove", null);
 MatchHistoryController = __decorate([
     (0, common_1.Controller)('match-history'),

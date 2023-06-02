@@ -37,20 +37,6 @@ h1, p, table {
   color: var(--background-grey);
 }
 
-.login-button {
-  background-color: var(--background-grey);
-  color: var(--background-dark);
-  text-decoration: none;
-}
-
-.login-button:visited, .login-button:active {
-  color: var(--background-dark);
-}
-
-.icon-container:hover {
-  background-color: #000;
-}
-
 .wrapper {
   display: flex;
   flex-direction: column;

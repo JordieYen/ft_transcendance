@@ -1,0 +1,330 @@
+.login-button {
+    background-color: var(--background-grey);
+    color: var(--background-dark);
+    text-decoration: none;
+}
+
+.login-button:visited, .login-button:active {
+    color: var(--background-dark);
+}
+  
+.icon-container:hover {
+    background-color: #000;
+} 
+
+header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.avatar-image {
+    border-radius: 50%;
+}
+
+.mmr-container {
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ffffff;
+    background-color: var(--background-grey);
+}
+
+.trophy-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    /* position: relative; */
+    /* z-index: 1; */
+}
+
+.mmr-number {
+    font-weight: bold;
+    color: var(--background-dark);
+}
+
+.horizontal-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 15px;
+    margin: 0 80px;
+    /* box-sizing: border-box; */
+}
+
+.profile-page {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.top-profile {
+    display: flex;
+    padding: 30px;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--background-dark);
+    height: 200px;
+    /* width: 100%; */
+    border-radius: 50px;
+    overflow-x: auto;
+}
+
+.avatar-section,
+.lifetime-section,
+.achievement-section {
+  flex-basis: 33%;
+}
+
+.avatar-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;    
+    gap: 20px;
+    font-size: 1.2em;
+}
+
+.username p:first-child {
+    font-weight: bold;
+    font-size: 2.0em;
+}
+
+.vertical-line {
+    width: 4px;
+    height: 100%;
+    background-color: var(--background-grey);
+    margin: 0 30px;
+}
+
+.lifetime-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center; 
+    gap: 20px;
+    font-weight: bold;
+    font-size: 1.2em;
+    flex: 1;
+    text-align: center;
+}
+
+.lifetime-section p:nth-child(2){
+    font-weight: bold;
+    font-size: 2.0em;
+}
+
+.achievement-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    flex: 1;
+}
+
+.avatar-row {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.bottom-content {
+    padding: 20px;
+    margin-top: 50px;
+    display: flex;
+    gap: 50px;
+}
+
+.match-history {
+    width: 70%;
+    flex: 2;
+    max-height: 600px;
+    overflow-y: auto;
+    /* border: 10px solid blue; */
+    /* background-color: var(--background-dark); */
+}
+
+table {
+    width: 100%;
+    /* border-collapse: collapse; */
+    border-collapse: seperate;
+    border-spacing: 0;
+    overflow: auto;
+    table-layout: fixed;
+}
+
+th {
+    background-color: var(--background-light-dark);
+    color: var(--background-grey);
+    font-weight: 100;
+}
+
+td {
+    padding: 30px;
+    text-align: left;
+    color: var(--background-grey);
+    text-align: center;
+    border: none 1px var(--background-light-dark)
+}
+
+td.result-win {
+    background-color: green;
+}
+
+td.result-lose {
+    background-color: red;
+}
+
+tr:nth-child(even) {
+    background-color: var(--background-dark);
+}
+
+tr:nth-child(odd) {
+    background-color: var(--background-light-dark);
+}
+
+tr.row-win {
+    border-radius: 50px;
+}
+
+tr.row-lose {
+    border-radius: 50px;
+}
+
+td:first-child {
+    border-left-style: solid;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+td:last-child {
+    border-right-style: solid;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.match-making {
+    width: 30%;
+    flex: 1;
+    background-color: var(--background-dark);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 20px;
+}
+
+.circle-top, .circle-bottom {
+    min-width: 200px;
+    min-height: 200px;
+    border: 2px solid var(--background-grey);
+    border-radius: 50%;
+    display: flex;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    position: relative;
+}
+
+.circle-top:after, .circle-bottom:after {
+    content: "";
+    position: absolute;
+    top: auto;
+    left: auto;
+    width: 210px;
+    height: 210px;
+    border: 1px dashed var(--background-grey); /* Add additional border */
+    border-radius: 50%;
+}
+
+.circle-content {
+    text-align: center;
+}
+
+.circle-content span {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.stats p {
+    margin-left: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.stats span {
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+/* add space between thead and tbody */
+.spacer {
+    height: 20px;
+    visibility: hidden;
+}
+
+@media (max-width: 760px) {
+
+    header {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: maxmin(300px, auto);
+        align-items: center;
+        justify-content: left;
+        grid-gap: 10px;
+        padding-right: 20px;
+        
+    }
+    
+    .horizontal-container {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 50px;
+        margin-bottom: 20px;
+    }
+    
+    .top-profile {
+        width: 100%;
+        min-width: 550px;
+        display: grid;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        height: auto;
+    }
+
+    .achievement-section, .avatar-section{
+        gap: 40px;
+    }
+
+    .bottom-content {
+        width: 100%;
+        min-width: 570px;
+        box-sizing: border-box;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .match-history {
+        width: 100%;
+        min-width: 570px;
+        max-height: 400px;
+        box-sizing: border-box;
+        overflow-y: auto;
+    }
+
+    .match-making {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+  

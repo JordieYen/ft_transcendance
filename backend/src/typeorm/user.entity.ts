@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Achievement } from './achievement.entity';
 import { ChannelUser } from './channel_user.entity';
 import { Friend } from './friends.entity';
@@ -50,6 +50,7 @@ export class User {
     p2_match: MatchHistory[];
 
     @ManyToMany(() => Friend, friend => [friend.sender, friend.receiver])
+    @JoinTable()
     friends: Friend[];
 
     // @OneToMany(() => Friend, friend => friend.sender)

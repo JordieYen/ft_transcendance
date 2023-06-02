@@ -15,6 +15,7 @@ const UserData = () => {
             if (response.ok) {
                 const userData = await response.json();
                 setUserData(userData);
+                console.log('userData', userData);
             } else {
                 throw new Error('User not found');
             }
@@ -22,7 +23,6 @@ const UserData = () => {
             console.log('Error fetching user data:', error);
         }
     }; 
-    console.log(userData);
     if (!userData) {
         return null;
     }

@@ -13,11 +13,11 @@ export class Friend {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, user => user.friends)
     @JoinColumn({ name: 'sender_id' })
     sender: User;
     
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, user => user.friends)
     @JoinColumn({ name: 'receiver_id' })
     receiver: User;
 

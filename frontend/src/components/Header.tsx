@@ -11,7 +11,6 @@ import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import "@/styles/globals.css";
 import "@/styles/styling.css";
 import { IconButton } from "./IconButton";
-import Logo from "@/app/header_icon/logo";
 
 export const HeaderLogo = () => {
   return (
@@ -63,9 +62,9 @@ export const HeaderIcon = () => {
         onClick={() => console.log("Header profile clicked")}
       >
         <Image
-          width={36}
-          height={36}
-          style={{ borderRadius: "50%" }}
+          width={100}
+          height={100}
+          className="w-9 h-9 rounded-full object-cover"
           /* UNCOMMENT BELOW WHEN BACKEND AVATAR IS READY */
           //   src={avatar}
           /* AND DELETE BELOW */

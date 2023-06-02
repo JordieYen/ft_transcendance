@@ -6,4 +6,6 @@ export declare class Stat {
     wins: number;
     losses: number;
     mmr: number;
+    total_games: number;
+    winStreak: number;
 }

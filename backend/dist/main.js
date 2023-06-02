@@ -55,6 +55,7 @@ async function bootstrap() {
     app.use((req, res, next) => {
         var status = req.isAuthenticated() ? 'logged in' : 'logged out';
         console.log('status:', status, '\n', 'path', req.path, '\n');
+        console.log();
         next();
     });
     await app.listen(3000);

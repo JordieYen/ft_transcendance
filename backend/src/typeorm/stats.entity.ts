@@ -22,4 +22,10 @@ export class Stat {
 
     @Column({ default: 0 })
     mmr: number;
+
+    @Column({ default: 0 })
+    total_games: number;
+
+    @Column({ default: 0 })
+    winStreak: number;
 }

@@ -12,6 +12,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { FortyTwoStrategy } from './util/42.strategy';
 import { SessionEntity } from 'src/typeorm/session.entity';
 import { Jwt2faStrategy } from './util/jwt.strategy';
+import { UsersModule } from 'src/users/users.module';
 
 const jwtFactory = {
   imports: [ConfigModule],
@@ -33,15 +34,15 @@ const passportFactory = {
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([User]),
+    // TypeOrmModule.forFeature([User]),
     PassportModule.register(passportFactory),
     JwtModule.registerAsync(jwtFactory),
     HttpModule,
+    UsersModule,
   ],
   providers: [
     ConfigService,
     JwtService,
-    UsersService,
     AuthService,
     Jwt2faStrategy,
     FortyTwoStrategy,

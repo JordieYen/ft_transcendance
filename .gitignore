@@ -4,5 +4,8 @@
 # *.js
 node_modules
 .DS_Store
-# .env
-/*/dist
+.env
+transcendence.pdf
+/backend/shawn
+/backend/dist
+git s
