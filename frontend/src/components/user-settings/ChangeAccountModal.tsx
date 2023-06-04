@@ -26,6 +26,7 @@ const ChangeAccountModal = ({
       setIsNameUpdated(true);
       console.log(inputValue);
       toast.success("Name successfully updated!");
+      // backend upload here
     }
   };
 

@@ -6,6 +6,7 @@ import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useRef } from "react";
 import useModal from "@/hooks/useModal";
+import ChangeAvatarModal from "@/components/user-settings/ChangeAvatarModal";
 
 export default function SettingsPage() {
   const [isAccOpen, openAccModal, closeAccModal, accRef] = useModal(false);
@@ -28,11 +29,16 @@ export default function SettingsPage() {
         mode="button"
         icon={faUser}
       />
+      <ChangeAvatarModal
+        isOpen={isPicOpen}
+        closeModal={closePicModal}
+        picRef={picRef}
+      />
       <UserSettings
         title="Change avatar"
         description="Change the avatar of your account."
         buttonDescArry={["update avatar"]}
-        handleClick={(text) => console.log(text)}
+        handleClick={() => openPicModal()}
         mode="button"
         icon={faImage}
       />
