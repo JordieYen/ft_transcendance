@@ -19,6 +19,8 @@ var FriendStatus;
     FriendStatus["Pending"] = "pending";
     FriendStatus["Friended"] = "friended";
     FriendStatus["Blocked"] = "blocked";
+    FriendStatus["Decline"] = "decline";
+    FriendStatus["Cancel"] = "cancel";
 })(FriendStatus = exports.FriendStatus || (exports.FriendStatus = {}));
 let Friend = class Friend {
     static _OPENAPI_METADATA_FACTORY() {
@@ -30,13 +32,11 @@ __decorate([
     __metadata("design:type", Number)
 ], Friend.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.friends),
-    (0, typeorm_1.JoinColumn)({ name: 'sender_id' }),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.sentFriendRequest),
     __metadata("design:type", user_entity_1.User)
 ], Friend.prototype, "sender", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.friends),
-    (0, typeorm_1.JoinColumn)({ name: 'receiver_id' }),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.receiveFriendRequest),
     __metadata("design:type", user_entity_1.User)
 ], Friend.prototype, "receiver", void 0);
 __decorate([

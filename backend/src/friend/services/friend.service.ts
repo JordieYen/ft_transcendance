@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { send } from 'process';
-import { Friend } from 'src/typeorm/friends.entity';
+import { Friend, FriendStatus } from 'src/typeorm/friends.entity';
 import { UsersService } from 'src/users/services/users.service';
 import { Repository } from 'typeorm';
 import { CreateFriendDto } from '../dto/create-friend.dto';
@@ -9,6 +9,8 @@ import { UpdateFriendDto } from '../dto/update-friend.dto';
 
 @Injectable()
 export class FriendService {
+
+
   constructor(
     @InjectRepository(Friend) private friendRepository: Repository<Friend>,
     private readonly userService: UsersService,
@@ -59,7 +61,7 @@ export class FriendService {
     return (friend);
   }
 
-  async update(id: number, updateFriendDto: Partial<UpdateFriendDto>) {
+  async update(id: number, updateFriendDto: UpdateFriendDto) {
     if (!updateFriendDto || Object.keys(updateFriendDto).length === 0) {
       throw new BadRequestException('No update data provided');
     }
@@ -84,4 +86,96 @@ export class FriendService {
     }
     return await this.friendRepository.delete(id);
   }
+
+  async sendFriendRequest(senderId: number, receiverId: number) {
+    const sender = await this.userService.findUsersById(senderId);
+    const receiver = await this.userService.findUsersById(receiverId);
+    if (!sender || !receiver) {
+      throw new NotFoundException('Invalid sender or receiver');
+    }
+    if (sender === receiver) {
+      throw new ConflictException('sender and receiver same');
+    }
+    const existingFriend = await this.friendRepository.findOne({
+      where: {
+        sender: { id: senderId },
+        receiver: { id: receiverId },
+      },
+    });
+
+    if (existingFriend) {
+      throw new ConflictException('Friend already exists');
+    }
+
+    const friend = new Friend();
+    friend.sender = sender;
+    friend.receiver = receiver;
+    friend.status = FriendStatus.Pending;
+    return await this.friendRepository.save(friend);
+  }
+
+  async acceptFriendRequest(friendRequestId: number) {
+    return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Friended });
+  }
+
+  async declineFriendRequest(friendRequestId: number) {
+    return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Decline });
+  }
+
+  async cancelFriendRequest(friendRequestId: number) {
+    return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Cancel });
+  }
+
+  async getSentFriendRequest(senderId: number) {
+    const sentFriendRequest = await this.friendRepository.find({
+      where: {
+        sender: { id: senderId },
+        status: FriendStatus.Pending,
+      },
+      relations: ['sender', 'receiver'],
+    });
+    return sentFriendRequest;
+  }
+
+  async getReceivedFriendRequest(receiverId: number) {
+    const receivedFriendRequest = await this.friendRepository.find({
+      where: {
+        receiver: { id: receiverId },
+        status: FriendStatus.Friended,
+      },
+      relations: ['sender', 'receiver'],
+    });
+    return receivedFriendRequest;
+  }
+
+  async handleFriendRequestWebhook(body: any) {
+    const { event, data } = body;
+    const { senderId, receiverId } = data;
+    if (event === 'friend-request-sent') {
+      return await this.sendFriendRequest(senderId, receiverId);
+    } else if (event === 'friend-request-accepted') {
+      return await this.acceptFriendRequest(data.friendRequestId);
+    } else if (event === 'friend-request-declined') {
+      return await this.declineFriendRequest(data.friendRequestId);
+    } else if (event === 'friend-request-cancelled') {
+      return await this.cancelFriendRequest(data.friendRequestId);
+    } else {
+      throw new BadRequestException('Invalid event');
+    }
+  }
+
+  async getFriendRequests(userId: number) {
+    const sentFriendRequest = await this.getSentFriendRequest(userId);
+    const receivedFriendRequest = await this.getReceivedFriendRequest(userId);
+    const friendRequest = [];
+    if (sentFriendRequest.length > 0) {
+      friendRequest.push(...sentFriendRequest);
+    }
+    if (receivedFriendRequest.length > 0) {
+      friendRequest.push(...receivedFriendRequest);
+    }
+    return friendRequest;
+  }
+
+
 }

@@ -49,15 +49,15 @@ export class User {
     @OneToMany(() => MatchHistory, matchHistory => matchHistory.p2_uid)
     p2_match: MatchHistory[];
 
-    @ManyToMany(() => Friend, friend => [friend.sender, friend.receiver])
-    @JoinTable()
-    friends: Friend[];
+    // @ManyToMany(() => Friend, friend => [friend.sender, friend.receiver])
+    // @JoinTable()
+    // friends: Friend[];
 
-    // @OneToMany(() => Friend, friend => friend.sender)
-    // sentFriendRequest: Friend[];
+    @OneToMany(() => Friend, friend => friend.sender)
+    sentFriendRequest: Friend[];
 
-    // @OneToMany(() => Friend, friend => friend.receiver)
-    // receiveFriendRequest: Friend[];
+    @OneToMany(() => Friend, friend => friend.receiver)
+    receiveFriendRequest: Friend[];
 
     @OneToMany(() => ChannelUser, channelUser => channelUser.user)
     channelMember: ChannelUser[];

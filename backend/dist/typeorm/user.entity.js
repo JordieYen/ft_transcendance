@@ -23,7 +23,7 @@ let User = class User {
         this.updatedAt = new Date();
     }
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => Number }, intra_uid: { required: true, type: () => Number }, username: { required: true, type: () => String }, avatar: { required: true, type: () => String }, online: { required: true, type: () => Boolean }, createdAt: { required: true, type: () => Date }, updatedAt: { required: true, type: () => Date }, stat: { required: true, type: () => require("./stats.entity").Stat }, userAchievement: { required: true, type: () => [require("./user_achievement.entity").UserAchievement] }, p1_match: { required: true, type: () => [require("./match_history.entity").MatchHistory] }, p2_match: { required: true, type: () => [require("./match_history.entity").MatchHistory] }, friends: { required: true, type: () => [require("./friends.entity").Friend] }, channelMember: { required: true, type: () => [require("./channel_user.entity").ChannelUser] }, messages: { required: true, type: () => [require("./message.entity").Message] } };
+        return { id: { required: true, type: () => Number }, intra_uid: { required: true, type: () => Number }, username: { required: true, type: () => String }, avatar: { required: true, type: () => String }, online: { required: true, type: () => Boolean }, createdAt: { required: true, type: () => Date }, updatedAt: { required: true, type: () => Date }, stat: { required: true, type: () => require("./stats.entity").Stat }, userAchievement: { required: true, type: () => [require("./user_achievement.entity").UserAchievement] }, p1_match: { required: true, type: () => [require("./match_history.entity").MatchHistory] }, p2_match: { required: true, type: () => [require("./match_history.entity").MatchHistory] }, sentFriendRequest: { required: true, type: () => [require("./friends.entity").Friend] }, receiveFriendRequest: { required: true, type: () => [require("./friends.entity").Friend] }, channelMember: { required: true, type: () => [require("./channel_user.entity").ChannelUser] }, messages: { required: true, type: () => [require("./message.entity").Message] } };
     }
 };
 __decorate([
@@ -78,10 +78,13 @@ __decorate([
     __metadata("design:type", Array)
 ], User.prototype, "p2_match", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => friends_entity_1.Friend, friend => [friend.sender, friend.receiver]),
-    (0, typeorm_1.JoinTable)(),
+    (0, typeorm_1.OneToMany)(() => friends_entity_1.Friend, friend => friend.sender),
     __metadata("design:type", Array)
-], User.prototype, "friends", void 0);
+], User.prototype, "sentFriendRequest", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => friends_entity_1.Friend, friend => friend.receiver),
+    __metadata("design:type", Array)
+], User.prototype, "receiveFriendRequest", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => channel_user_entity_1.ChannelUser, channelUser => channelUser.user),
     __metadata("design:type", Array)

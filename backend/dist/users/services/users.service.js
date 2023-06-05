@@ -110,7 +110,8 @@ let UsersService = class UsersService {
                 'p2_match',
                 'p2_match.p1_uid',
                 'p2_match.p2_uid',
-                'friends',
+                'sentFriendRequest',
+                'receiveFriendRequest',
             ],
             where: {
                 id: id,

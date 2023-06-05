@@ -16,7 +16,8 @@ export declare class User {
     userAchievement: UserAchievement[];
     p1_match: MatchHistory[];
     p2_match: MatchHistory[];
-    friends: Friend[];
+    sentFriendRequest: Friend[];
+    receiveFriendRequest: Friend[];
     channelMember: ChannelUser[];
     messages: Message[];
     updateUpdatedAt(): void;

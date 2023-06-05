@@ -3,7 +3,9 @@ export declare enum FriendStatus {
     Invited = "invited",
     Pending = "pending",
     Friended = "friended",
-    Blocked = "blocked"
+    Blocked = "blocked",
+    Decline = "decline",
+    Cancel = "cancel"
 }
 export declare class Friend {
     id: number;

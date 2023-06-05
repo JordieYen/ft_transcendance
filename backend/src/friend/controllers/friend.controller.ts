@@ -33,4 +33,40 @@ export class FriendController {
   remove(@Param('id') id: string) {
     return this.friendService.remove(+id);
   }
+
+  @Post('friend-request/:senderId/:receiverId')
+  sendFriendRequest(@Param('senderId') senderId: number, @Param('receiverId') receiverId: number) {
+    return this.friendService.sendFriendRequest(senderId, receiverId);
+  }
+
+  @Post('accept-friend-request/:friendRequestId')
+  acceptFriendRequest(@Param('friendRequestId') friendRequestId: number) {
+    return this.friendService.acceptFriendRequest(friendRequestId);
+  }
+
+  @Post('decline-friend-request/:friendRequestId')
+  declineFriendRequest(@Param('friendRequestId') friendRequestId: number) {
+    return this.friendService.declineFriendRequest(friendRequestId);
+  }
+
+  @Get('sent/:senderId')
+  getSentFriendRequest(@Param('senderId') senderId: number) {
+    return this.friendService.getSentFriendRequest(senderId);
+  }
+
+  @Get('received/:receiverId')
+  getReceivedFriendRequest(@Param('receiverId') receiverId: number) {
+    return this.friendService.getReceivedFriendRequest(receiverId);
+  }
+
+  @Post('webhook/friend-request')
+  handleFriendRequestWebhook(@Body() body: any) {
+    return this.friendService.handleFriendRequestWebhook(body);
+  }
+
+  @Get('friend-requests/:userId')
+  getFriendRequests(@Param('userId') userId: number) {
+    return this.friendService.getFriendRequests(userId);
+  }
+
 }
