@@ -1,15 +1,15 @@
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { any } from 'joi';
 import { send } from 'process';
 import { Friend, FriendStatus } from 'src/typeorm/friends.entity';
 import { UsersService } from 'src/users/services/users.service';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateFriendDto } from '../dto/create-friend.dto';
 import { UpdateFriendDto } from '../dto/update-friend.dto';
 
 @Injectable()
 export class FriendService {
-
 
   constructor(
     @InjectRepository(Friend) private friendRepository: Repository<Friend>,
@@ -104,7 +104,14 @@ export class FriendService {
     });
 
     if (existingFriend) {
-      throw new ConflictException('Friend already exists');
+      if (existingFriend.status === FriendStatus.Pending || 
+          existingFriend.status === FriendStatus.Friended) {
+        throw new ConflictException('Friend request already exists');
+      } else if (existingFriend.status === FriendStatus.Cancel ||
+          existingFriend.status === FriendStatus.Decline) {
+        existingFriend.status = FriendStatus.Pending;
+        return await this.friendRepository.save(existingFriend);
+      }
     }
 
     const friend = new Friend();
@@ -130,7 +137,7 @@ export class FriendService {
     const sentFriendRequest = await this.friendRepository.find({
       where: {
         sender: { id: senderId },
-        status: FriendStatus.Pending,
+        // status: FriendStatus.Pending,
       },
       relations: ['sender', 'receiver'],
     });
@@ -177,5 +184,11 @@ export class FriendService {
     return friendRequest;
   }
 
-
+  async deleteAll() {
+    try {
+      await this.friendRepository.clear();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to delete all friend', error);
+    }
+  }
 }

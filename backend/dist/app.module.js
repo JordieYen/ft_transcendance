@@ -20,6 +20,7 @@ const user_achievement_module_1 = require("./user_achievement/user_achievement.m
 const config_schema_1 = require("./config/config.schema");
 const friend_module_1 = require("./friend/friend.module");
 const stat_module_1 = require("./stat/stat.module");
+const gateway_module_1 = require("./gateway/gateway.module");
 const configFactory = {
     isGlocal: true,
     envFilePath: '../.env',
@@ -40,6 +41,7 @@ AppModule = __decorate([
             user_achievement_module_1.UserAchievementModule,
             friend_module_1.FriendModule,
             stat_module_1.StatModule,
+            gateway_module_1.GatewayModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

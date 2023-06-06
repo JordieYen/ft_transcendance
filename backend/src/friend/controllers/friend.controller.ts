@@ -49,6 +49,11 @@ export class FriendController {
     return this.friendService.declineFriendRequest(friendRequestId);
   }
 
+  @Post('cancel-friend-request/:friendRequestId')
+  cancelFriendRequest(@Param('friendRequestId') friendRequestId: number) {
+    return this.friendService.cancelFriendRequest(friendRequestId);
+  }
+
   @Get('sent/:senderId')
   getSentFriendRequest(@Param('senderId') senderId: number) {
     return this.friendService.getSentFriendRequest(senderId);
@@ -68,5 +73,11 @@ export class FriendController {
   getFriendRequests(@Param('userId') userId: number) {
     return this.friendService.getFriendRequests(userId);
   }
+
+  @Delete('delete-all/:id')
+  deleteAll() {
+    return this.friendService.deleteAll();
+  }
+
 
 }

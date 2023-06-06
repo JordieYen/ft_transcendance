@@ -11,10 +11,6 @@ interface FriendRequestData {
 
 const FriendRequest = ( {userId } : FriendRequestProps) => {
     const [friendRequests, setFriendRequests] = useState<any[]>([]);
-    // const [friendRequests, setFriendRequests] = useState<FriendRequestData>({
-    //     sentFriendRequest: [],
-    //     receivedFriendRequest: [],
-    // });
 
     useEffect(() => {
         fetchFriendRequests();
@@ -28,7 +24,6 @@ const FriendRequest = ( {userId } : FriendRequestProps) => {
             if (response.ok) {
                 const friendRequests = await response.json();
                 console.log('requests', friendRequests);
-                
                 setFriendRequests(friendRequests);
             } else {
                 throw new Error('Failed to fetch friend requests');
@@ -41,7 +36,6 @@ const FriendRequest = ( {userId } : FriendRequestProps) => {
     return (
         <div className="friend-request">
           <h1>Friend Requests</h1>
-          <h2>Sent Friend Requests</h2>
           { friendRequests.length > 0 ? (
             friendRequests.map((friendRequest) => (
             <div key={friendRequest.id}>
