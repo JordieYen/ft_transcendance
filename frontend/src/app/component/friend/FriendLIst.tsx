@@ -14,6 +14,7 @@ const FriendList = () => {
     // const [friendRequestSent, setFriendRequestSent] = useState(false);
     const [friendRequestsSent, setFriendRequestsSent] = useState<number[]>([]);
     const [friendRequest, setFriendRequest] = useState<any>(null);
+    const socket = io('http://localhost:3000');
 
     let userData: any = {};
     if (typeof window !== "undefined") {
@@ -22,32 +23,39 @@ const FriendList = () => {
     }
 
     React.useEffect(() => {
-       
+        // const socket = io("http://localhost:3000");
+        
         fetchUsersList();
-        establishSocketConnection();
+        // socket.on('friend-request-received', (friendRequest: any) => {
+        //     console.log('friendRequest on socket', friendRequest);
+        //     setFriendRequest(friendRequest);
+        //     setFriendRequestsSent((prev) => [...prev, friendRequest.id]); 
+        //     console.log('after emit XXXXXXX');
+        // });
+
+        return () => {
+            socket.off('friend-request-sent');
+        };
+        // establishSocketConnection();
     }, []);
     
-    const establishSocketConnection = () => {
-        const socket = io('http://localhost:3000'); 
-        // add event listeners
-        socket.on('friend-request-received', handleFriendRequestReceived)
+    // const establishSocketConnection = () => {
+        // const socket = io('http://localhost:3000'); 
+        // socket.on('friend-request-received', handleFriendRequestReceived)
+        // return () => {
+        //     socket.off('friend-request-received', handleFriendRequestReceived)
+        //     socket.disconnect()
+        // }
+    // };
 
-        // clean up the event listeners on component unmount
-        return () => {
-            socket.off('friend-request-received', handleFriendRequestReceived)
-            socket.disconnect()
-        }
-    };
-
-    const handleFriendRequestReceived = (senderId: any) => {
-        // Handle the friend request received event
-        console.log('Friend request received from user:', senderId);
-    };
+    // const handleFriendRequestReceived = (senderId: any) => {
+    //     // Handle the friend request received event
+    //     console.log('Friend request received from user:', senderId);
+    // };
     
     const fetchUsersList = async () => {
         try {
             console.log('userData in friend', userData);
-            
             const response = await fetch('http://localhost:3000/users', {
                 credentials: 'include',
             });
@@ -75,41 +83,41 @@ const FriendList = () => {
         }
     };
 
-    const sendFriendRequest = async (senderId: number, receiverId: number) => {
-        try {
-            const response = await fetch(`http://localhost:3000/friend/friend-request/${senderId}/${receiverId}`, {
-                method: 'POST',
-                credentials: 'include',
-            });
-            if (response.ok) {
-                const friendRequest = await response.json();
-                console.log('friendRequest', friendRequest);
-                setFriendRequestsSent([...friendRequestsSent, friendRequest.id]);
-                setFriendRequest(friendRequest);
-            } else {
-                throw new Error('Failed to send friend request');
-            }
-        } catch (error) {
-            console.log('Error fetching friend request:', error);
-        }
-    };
+    // const sendFriendRequest = async (senderId: number, receiverId: number) => {
+    //     try {
+    //         const response = await fetch(`http://localhost:3000/friend/friend-request/${senderId}/${receiverId}`, {
+    //             method: 'POST',
+    //             credentials: 'include',
+    //         });
+    //         if (response.ok) {
+    //             const friendRequest = await response.json();
+    //             console.log('friendRequest', friendRequest);
+    //             setFriendRequestsSent([...friendRequestsSent, friendRequest.id]);
+    //             setFriendRequest(friendRequest);
+    //         } else {
+    //             throw new Error('Failed to send friend request');
+    //         }
+    //     } catch (error) {
+    //         console.log('Error fetching friend request:', error);
+    //     }
+    // };
 
-    const cancelFriendRequest = async (friendRequestId: number) => {
-        try {
-            const response = await fetch(`http://localhost:3000/friend/cancel-friend-request/${friendRequestId}`, {
-                method: 'POST',
-                credentials: 'include',
-            });
-            if (response.ok) {
-                setFriendRequestsSent(friendRequestsSent.filter((id) => id !== friendRequestId));
-                setFriendRequest(null);
-            } else {
-                throw new Error('Failed to cancel friend request');
-            }
-        } catch (error) {
-            console.log('Error fetching friend request:', error);
-        }
-    };
+    // const cancelFriendRequest = async (friendRequestId: number) => {
+    //     try {
+    //         const response = await fetch(`http://localhost:3000/friend/cancel-friend-request/${friendRequestId}`, {
+    //             method: 'POST',
+    //             credentials: 'include',
+    //         });
+    //         if (response.ok) {
+    //             setFriendRequestsSent(friendRequestsSent.filter((id) => id !== friendRequestId));
+    //             setFriendRequest(null);
+    //         } else {
+    //             throw new Error('Failed to cancel friend request');
+    //         }
+    //     } catch (error) {
+    //         console.log('Error fetching friend request:', error);
+    //     }
+    // };
 
     // const handleClick = (friendRequestId: number, userId: number) => {
     //     if (friendRequestsSent.includes(friendRequestId)) {
@@ -120,19 +128,31 @@ const FriendList = () => {
     //     }
     // };
 
-    const handleClick = (friendRequestId: number, userId: number) => {
+    const handleClick = (userId: number) => {
 
-        const socket = io("http://localhost:3000");
-
-        if (friendRequestsSent.includes(friendRequestId)) {
-            socket.emit("cancel-friend-request", friendRequestId);
-            setFriendRequestsSent(friendRequestsSent.filter((id) => id !== friendRequestId));
+        // const socket = io('http://localhost:3000');
+        console.log('friendRequestsSent', friendRequestsSent);
+        console.log('friendRequest', friendRequest);
+        console.log('friendRequest.id', friendRequest?.id);
+        // (friendRequestsSent.includes(friendRequest?.id) )? 'yes' : 'no';
+        if (friendRequestsSent.includes(friendRequest?.id)) {
+            socket.emit("cancel-friend-request", { senderId: userData.id, friendRequestId: friendRequest.id});
+            setFriendRequestsSent(friendRequestsSent.filter((id) => id !== friendRequest.id));
             setFriendRequest(null);
         } else {
+            console.log('enter here XXXXXXX');
             socket.emit("friend-request-sent", { senderId: userData.id, receiverId: userId});
-            setFriendRequestsSent([...friendRequestsSent, friendRequestId]);
+        
+            socket.on('friend-request-received', (friendRequest: any) => {
+                console.log('friendRequest on socket', friendRequest);
+                console.log('friendRequest on socket id', friendRequest.id);
+                setFriendRequest(friendRequest);
+                setFriendRequestsSent((prev) => [...prev, friendRequest.id]);
+            });
+            console.log('friendRequest on socket', friendRequest);
         }
     };
+
 
     return (
         <div className='friend-page'>
@@ -147,20 +167,20 @@ const FriendList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredUsersList.map(user => (
+                    { filteredUsersList.map(user => user.id !== userData.id && (
                         <tr key={ user?.id }>
                             <td>
                                 <Avatar src={ user?.avatar } alt="user avatar" width={40} height={40}/>
                             </td>
                             <td> { user?.username }</td>
                             <td>
-                                {/* {friendRequestsSent && friendRequest?.receiver.id === user.id ? ( */}
-                                {friendRequestsSent.includes(friendRequest?.id) && friendRequest?.receiver?.id === user.id ? (
-                                    <button className="text-black" onClick={() => handleClick(friendRequest.id, 0)}>
+                                {/* {   friendRequestsSent && friendRequest?.receiver?.id === user.id ? ( */}
+                                {   friendRequestsSent && friendRequest?.receiver?.id === user.id ? (
+                                    <button className="text-black" onClick={() => handleClick(user.id)}>
                                     Cancel Friend Request
                                     </button>
                                 ) : (
-                                    <button className="bg-black" onClick={() => handleClick(0, user.id)}>
+                                    <button className="bg-black" onClick={() => handleClick(user.id)}>
                                     Add Friend
                                     </button>
                                 )}
@@ -171,11 +191,8 @@ const FriendList = () => {
             </table>
             <div className='friend-page'>
                 {/* {friendRequestsSent && <FriendRequestNotification friendRequest={ friendRequest } />} */}
-                <FriendRequest userId={ userData.id } />
+                <FriendRequest userId={ userData.id }/>
             </div>
-            {/* <button onClick={ handleClick }>
-                {friendRequestsSent ? 'Cancel Request' : 'Send Request'}
-            </button> */}
         </div>
     );
 };

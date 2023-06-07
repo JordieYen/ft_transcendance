@@ -93,7 +93,7 @@ export class FriendService {
     if (!sender || !receiver) {
       throw new NotFoundException('Invalid sender or receiver');
     }
-    if (sender === receiver) {
+    if (sender.id === receiver.id) {
       throw new ConflictException('sender and receiver same');
     }
     const existingFriend = await this.friendRepository.findOne({
