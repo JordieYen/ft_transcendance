@@ -1,16 +1,7 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-interface FriendRequestProps {
-    userId: any;
-}
-
-interface FriendRequestData {
-    sentFriendRequest: any[];
-    receivedFriendRequest: any[];
-}
-
-const FriendRequest = ( {userId } : FriendRequestProps) => {
+const FriendRequest = ( {userId } : any) => {
     const [friendRequests, setFriendRequests] = useState<any[]>([]);
 
     useEffect(() => {

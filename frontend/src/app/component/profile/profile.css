@@ -326,5 +326,13 @@ td:last-child {
         width: 100%;
         box-sizing: border-box;
     }
+
+    .add-button {
+        background-color: black;
+    }
+
+    .cancel-button {
+        color: black;
+    }
 }
   

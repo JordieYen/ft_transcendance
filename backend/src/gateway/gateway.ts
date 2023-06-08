@@ -60,12 +60,13 @@ export class MyGateway implements OnModuleInit {
         }
     }
 
-    @SubscribeMessage('friend-request-received')
+    // @SubscribeMessage('friend-request-received')
     async sendFriendRequest(senderId: number, receiverId: number) {
         console.log('send friend request');
         const friendRequest = await this.friendService.sendFriendRequest(senderId, receiverId);
         console.log('friend', friendRequest);
         this.server.emit('friend-request-received', friendRequest);
+
     }
 
     @SubscribeMessage('friend-request')

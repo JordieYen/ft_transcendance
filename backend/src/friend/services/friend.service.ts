@@ -110,6 +110,8 @@ export class FriendService {
       } else if (existingFriend.status === FriendStatus.Cancel ||
           existingFriend.status === FriendStatus.Decline) {
         existingFriend.status = FriendStatus.Pending;
+        existingFriend.sender = sender;
+        existingFriend.receiver = receiver;
         return await this.friendRepository.save(existingFriend);
       }
     }

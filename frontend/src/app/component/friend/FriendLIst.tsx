@@ -1,69 +1,57 @@
-import { useRouter } from "next/router";
 import React from "react";
 import { useState, useEffect } from "react";
 import Avatar from "../header_icon/Avatar";
 import '../profile/profile.css';
 import SearchBar from "../search_bar/SearchBar";
 import FriendRequest from "./FriendRequest";
-import io from 'socket.io-client';
+import { io, Socket }  from 'socket.io-client';
 
 
 const FriendList = () => {
-    const [usersList, setUser] = useState<any[]>([]);
+    const [usersList, setUserList] = useState<any[]>([]);
     const [filteredUsersList, setFilteredUsersList] = useState<any[]>([]);
-    // const [friendRequestSent, setFriendRequestSent] = useState(false);
-    const [friendRequestsSent, setFriendRequestsSent] = useState<number[]>([]);
+    const [friendRequestArray, setFriendRequestArray] = useState<number[]>([]);
     const [friendRequest, setFriendRequest] = useState<any>(null);
-    const socket = io('http://localhost:3000');
-
+    const [socket, setSocket] = useState<Socket | null>(null);
+    const [friendRequestStatus, setFriendRequestStatus] = useState<{ [key: number]: boolean }>({});
+    
     let userData: any = {};
     if (typeof window !== "undefined") {
         const userDataString = localStorage?.getItem("userData");
         userData = userDataString ? JSON.parse(userDataString) : {};
     }
 
-    React.useEffect(() => {
-        // const socket = io("http://localhost:3000");
-        
+    useEffect(() => {
+        const newSocket = io("http://localhost:3000");
+        setSocket(newSocket);
         fetchUsersList();
-        // socket.on('friend-request-received', (friendRequest: any) => {
-        //     console.log('friendRequest on socket', friendRequest);
-        //     setFriendRequest(friendRequest);
-        //     setFriendRequestsSent((prev) => [...prev, friendRequest.id]); 
-        //     console.log('after emit XXXXXXX');
-        // });
-
+        newSocket.on("friend-request-received", (friendRequest: any) => {
+            setFriendRequest(friendRequest);
+            setFriendRequestArray((prevArray) => [...prevArray, friendRequest.id]);
+        });
+        console.log('friendRequest', friendRequest);
+        console.log('friendRequestArray', friendRequestArray);
+        
         return () => {
-            socket.off('friend-request-sent');
+            newSocket.off('friend-request-sent');
+            newSocket.off('friend-request-received');
+            newSocket.disconnect(); 
         };
-        // establishSocketConnection();
     }, []);
-    
-    // const establishSocketConnection = () => {
-        // const socket = io('http://localhost:3000'); 
-        // socket.on('friend-request-received', handleFriendRequestReceived)
-        // return () => {
-        //     socket.off('friend-request-received', handleFriendRequestReceived)
-        //     socket.disconnect()
-        // }
-    // };
 
-    // const handleFriendRequestReceived = (senderId: any) => {
-    //     // Handle the friend request received event
-    //     console.log('Friend request received from user:', senderId);
-    // };
-    
     const fetchUsersList = async () => {
         try {
-            console.log('userData in friend', userData);
             const response = await fetch('http://localhost:3000/users', {
                 credentials: 'include',
             });
             if (response.ok) {
                 const usersList = await response.json();
-                setUser(usersList);
+                const statusMap: { [key: number]: boolean } = {};
+                setFriendRequestStatus(statusMap);
+                setUserList(usersList);
                 setFilteredUsersList(usersList);
                 console.log('usersList', usersList);
+                
             } else {
                 throw new Error('User not found');
             }
@@ -80,79 +68,31 @@ const FriendList = () => {
                 return user.username.toLowerCase().includes(searchQuery.toLowerCase());
             });
             setFilteredUsersList(filteredList);
+
         }
     };
 
-    // const sendFriendRequest = async (senderId: number, receiverId: number) => {
-    //     try {
-    //         const response = await fetch(`http://localhost:3000/friend/friend-request/${senderId}/${receiverId}`, {
-    //             method: 'POST',
-    //             credentials: 'include',
-    //         });
-    //         if (response.ok) {
-    //             const friendRequest = await response.json();
-    //             console.log('friendRequest', friendRequest);
-    //             setFriendRequestsSent([...friendRequestsSent, friendRequest.id]);
-    //             setFriendRequest(friendRequest);
-    //         } else {
-    //             throw new Error('Failed to send friend request');
-    //         }
-    //     } catch (error) {
-    //         console.log('Error fetching friend request:', error);
-    //     }
-    // };
+    const cancelFriendRequest = (userId: number) => {
+        socket?.emit("cancel-friend-request", {
+            senderId: userData.id,
+            friendRequestId: friendRequest?.id
+        });
+        setFriendRequestArray(friendRequestArray.filter((id) => id !== friendRequest?.id));
+        setFriendRequest(null);
+        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: false }));
+        console.log('cancel friendRequestStatus', friendRequestStatus);
 
-    // const cancelFriendRequest = async (friendRequestId: number) => {
-    //     try {
-    //         const response = await fetch(`http://localhost:3000/friend/cancel-friend-request/${friendRequestId}`, {
-    //             method: 'POST',
-    //             credentials: 'include',
-    //         });
-    //         if (response.ok) {
-    //             setFriendRequestsSent(friendRequestsSent.filter((id) => id !== friendRequestId));
-    //             setFriendRequest(null);
-    //         } else {
-    //             throw new Error('Failed to cancel friend request');
-    //         }
-    //     } catch (error) {
-    //         console.log('Error fetching friend request:', error);
-    //     }
-    // };
-
-    // const handleClick = (friendRequestId: number, userId: number) => {
-    //     if (friendRequestsSent.includes(friendRequestId)) {
-    //         cancelFriendRequest(friendRequest.id);
-    //     } else {
-    //         sendFriendRequest(userData.id, userId);
-    //         establishSocketConnection();
-    //     }
-    // };
-
-    const handleClick = (userId: number) => {
-
-        // const socket = io('http://localhost:3000');
-        console.log('friendRequestsSent', friendRequestsSent);
-        console.log('friendRequest', friendRequest);
-        console.log('friendRequest.id', friendRequest?.id);
-        // (friendRequestsSent.includes(friendRequest?.id) )? 'yes' : 'no';
-        if (friendRequestsSent.includes(friendRequest?.id)) {
-            socket.emit("cancel-friend-request", { senderId: userData.id, friendRequestId: friendRequest.id});
-            setFriendRequestsSent(friendRequestsSent.filter((id) => id !== friendRequest.id));
-            setFriendRequest(null);
-        } else {
-            console.log('enter here XXXXXXX');
-            socket.emit("friend-request-sent", { senderId: userData.id, receiverId: userId});
-        
-            socket.on('friend-request-received', (friendRequest: any) => {
-                console.log('friendRequest on socket', friendRequest);
-                console.log('friendRequest on socket id', friendRequest.id);
-                setFriendRequest(friendRequest);
-                setFriendRequestsSent((prev) => [...prev, friendRequest.id]);
-            });
-            console.log('friendRequest on socket', friendRequest);
-        }
     };
 
+    const sendFriendRequest = (userId: number) => {
+        socket?.emit("friend-request-sent", {
+            senderId: userData.id,
+            receiverId: userId
+        });
+        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: true }));
+        console.log('send friendRequestStatus', friendRequestStatus);
+
+    }
 
     return (
         <div className='friend-page'>
@@ -174,23 +114,35 @@ const FriendList = () => {
                             </td>
                             <td> { user?.username }</td>
                             <td>
-                                {/* {   friendRequestsSent && friendRequest?.receiver?.id === user.id ? ( */}
-                                {   friendRequestsSent && friendRequest?.receiver?.id === user.id ? (
-                                    <button className="text-black" onClick={() => handleClick(user.id)}>
-                                    Cancel Friend Request
+                                    {/* { friendRequest?.receiver.id === user.id ? (
+                                    // <button className="text-black" onClick={() => handleClick(user.id)}>
+                                    <button className="text-black cancel-button" onClick={() => cancelFriendRequest(user.id)}>
+                                    Cancel { friendRequest  && friendRequest?.receiver?.id }
                                     </button>
                                 ) : (
-                                    <button className="bg-black" onClick={() => handleClick(user.id)}>
+                                    // <button className="bg-black" onClick={() => handleClick(user.id)}>
+                                    <button className="bg-black add-button" onClick={() => sendFriendRequest(user.id)}>
                                     Add Friend
                                     </button>
-                                )}
+                                )} */}
+                                <button
+                                    className={friendRequestStatus[user.id] ? "cancel-button" : "add-button"}
+                                    onClick={() =>
+                                        friendRequestStatus[user.id]
+                                        ? cancelFriendRequest(user.id)
+                                        : sendFriendRequest(user.id)
+                                    }
+                                    >
+                                    {friendRequestStatus[user.id] ? "Cancel" : "Add Friend"}
+                                </button>
+
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
             <div className='friend-page'>
-                {/* {friendRequestsSent && <FriendRequestNotification friendRequest={ friendRequest } />} */}
+                {/* {friendRequestArray && <FriendRequestNotification friendRequest={ friendRequest } />} */}
                 <FriendRequest userId={ userData.id }/>
             </div>
         </div>
