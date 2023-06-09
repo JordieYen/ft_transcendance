@@ -15,7 +15,13 @@ export class UsersService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
+<<<<<<< HEAD
+    console.log(createUserDto);
+    const newUser = this.usersRepository.create(createUserDto);
+    console.log('test', newUser);
+=======
     const newUser = await this.usersRepository.create(createUserDto);
+>>>>>>> master
     try {
       return await this.usersRepository.save(newUser);
     } catch (error) {

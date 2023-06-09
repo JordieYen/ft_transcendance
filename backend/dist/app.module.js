@@ -15,6 +15,7 @@ const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
 const config_module_1 = require("@nestjs/config/dist/config.module");
 const match_history_module_1 = require("./match-history/match-history.module");
+const channel_module_1 = require("./chat/channel/channel.module");
 const achievement_module_1 = require("./achievement/achievement.module");
 const user_achievement_module_1 = require("./user_achievement/user_achievement.module");
 const config_schema_1 = require("./config/config.schema");

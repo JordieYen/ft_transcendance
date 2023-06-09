@@ -12,9 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Channel = void 0;
 const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
-const bcrypt = require("bcrypt");
 const channel_user_entity_1 = require("./channel_user.entity");
 const message_entity_1 = require("./message.entity");
+const class_validator_1 = require("class-validator");
 var ChannelType;
 (function (ChannelType) {
     ChannelType["Public"] = "public";
@@ -33,18 +33,21 @@ let Channel = class Channel {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], Channel.prototype, "channel_uid", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], Channel.prototype, "channel_name", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], Channel.prototype, "channel_type", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], Channel.prototype, "channel_hash", void 0);
 __decorate([
@@ -58,12 +61,6 @@ __decorate([
     }),
     __metadata("design:type", Date)
 ], Channel.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.BeforeInsert)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], Channel.prototype, "hashPassword", null);
 __decorate([
     (0, typeorm_1.OneToMany)(() => message_entity_1.Message, message => message.channel),
     __metadata("design:type", Array)
