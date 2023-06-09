@@ -12,13 +12,33 @@ const users_controller_1 = require("./controllers/users.controller");
 const users_service_1 = require("./services/users.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("../typeorm/user.entity");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const storageOptions = {
+    storage: (0, multer_1.diskStorage)({
+        destination: './public/avatar',
+        filename: (req, file, callback) => {
+            const originalname = file.originalname;
+            callback(null, originalname);
+        },
+    }),
+};
 let UsersModule = class UsersModule {
 };
 UsersModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),
+            platform_express_1.MulterModule.register(storageOptions),
+        ],
         controllers: [users_controller_1.UsersController],
-        providers: [users_service_1.UsersService],
+        providers: [
+            users_service_1.UsersService,
+        ],
+        exports: [
+            users_service_1.UsersService,
+            typeorm_1.TypeOrmModule,
+        ]
     })
 ], UsersModule);
 exports.UsersModule = UsersModule;

@@ -9,6 +9,8 @@ import { AchievementService } from './services/achievement.service';
     TypeOrmModule.forFeature([Achievement])
   ],
   controllers: [AchievementController],
-  providers: [AchievementService]
+  providers: [AchievementService],
+  exports: [AchievementService, TypeOrmModule]
+
 })
 export class AchievementModule {}

@@ -6,6 +6,11 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --background-light-dark: #323437;
+  --background-dark: #2C2E31;
+  --background-grey: #D1D0C5;
+  --background-yellow: #E2B714;
+  --background-dark-grey: #646669;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,11 +22,28 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
+  /* color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
-    rgb(var(--background-start-rgb));
+    rgb(var(--background-start-rgb)); */
+  background-color: var(--background-light-dark);
+}
+
+button {
+  @apply bg-[var(--background-grey)] text-[var(--background-light-grey)] rounded-md px-2 py-1;
+}
+
+h1, p, table {
+  font-family: 'Roboto Mono', monospace;
+  color: var(--background-grey);
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }

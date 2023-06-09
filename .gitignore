@@ -5,4 +5,7 @@
 node_modules
 .DS_Store
 .env
-/*/dist
+transcendence.pdf
+/backend/shawn
+/backend/dist
+git s

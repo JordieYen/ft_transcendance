@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Server Build",
+        "type": "npm",
+        "script": "start:debug",
+        "path": "backend",
+      },
+      {
+        "label": "Client Build",
+        "type": "npm",
+        "script": "debug",
+        "path": "frontend"
+      },
+      {
+        "label": "Build",
+        "dependsOn": ["Client Build", "Server Build"]
+      }
+    ]
+}
+  

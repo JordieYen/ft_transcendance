@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Achievement } from './achievement.entity';
 import { ChannelUser } from './channel_user.entity';
 import { Friend } from './friends.entity';
@@ -37,7 +37,7 @@ export class User {
     })
     updatedAt: Date;
 
-    @OneToOne(() => Stat)
+    @OneToOne(() => Stat, stat => stat.user)
     stat: Stat;
 
     @OneToMany(() => UserAchievement, userAchievement => userAchievement.user)
@@ -49,13 +49,25 @@ export class User {
     @OneToMany(() => MatchHistory, matchHistory => matchHistory.p2_uid)
     p2_match: MatchHistory[];
 
-    @ManyToMany(() => Friend, friend => [friend.user1, friend.user2])
-    friends: Friend[];
+    // @ManyToMany(() => Friend, friend => [friend.sender, friend.receiver])
+    // @JoinTable()
+    // friends: Friend[];
+
+    @OneToMany(() => Friend, friend => friend.sender)
+    sentFriendRequest: Friend[];
+
+    @OneToMany(() => Friend, friend => friend.receiver)
+    receiveFriendRequest: Friend[];
 
     @OneToMany(() => ChannelUser, channelUser => channelUser.user)
     channelMember: ChannelUser[];
 
     @OneToMany(() => Message, message => message.sender)
     messages: Message[];
+
+    @BeforeInsert()
+    updateUpdatedAt() {
+        this.updatedAt = new Date();
+    }
 
 }

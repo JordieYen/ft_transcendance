@@ -18,7 +18,7 @@ const entities = [
     friends_entity_1.Friend,
     channel_entity_1.Channel,
     channel_user_entity_1.ChannelUser,
-    message_entity_1.Message
+    message_entity_1.Message,
 ];
 exports.default = entities;
 //# sourceMappingURL=index.js.map

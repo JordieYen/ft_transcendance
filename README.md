@@ -63,6 +63,10 @@ $ initdb -D /path/to/data/directory
 ```
 
 
+#login page idea
+1. soundtrack when landing
+2. backquotes atari pong quote?
+3. shoule be simple minimalistic
 
 
 # Reference
@@ -70,3 +74,5 @@ $ initdb -D /path/to/data/directory
 2. [TypeOrmCoreModule dependencies issue](https://www.youtube.com/watch?v=O0fzKqswwJs)
 3. [42 API](https://api.intra.42.fr/apidoc/guides/web_application_flow)
 4. [Notion](https://www.notion.so/a615f8244a264c3d8cd42a9a0159d34d?v=b19aec694fe74401af8ad859f3b31a15&p=021309324ca745a0ac61fac8f57e57a9&pm=s)
+5. [JWT Passport Strategy](https://betterprogramming.pub/jwt-and-passport-jwt-strategy-for-your-nestjs-rest-api-project-cafa9dd59890)
+6. [42 Passport Strategy](https://github.com/ykoh42/42OAuth-NestJS)

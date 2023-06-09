@@ -22,31 +22,104 @@ let UsersService = class UsersService {
         this.usersRepository = usersRepository;
     }
     async createUser(createUserDto) {
-        console.log(createUserDto);
-        const newUser = this.usersRepository.create(createUserDto);
-        console.log('test', newUser);
+        const newUser = await this.usersRepository.create(createUserDto);
         try {
             return await this.usersRepository.save(newUser);
         }
         catch (error) {
-            console.log('error=', error.message);
             throw new common_1.InternalServerErrorException('Could not create user');
         }
     }
-    getUsers() {
-        return this.usersRepository.find();
+    async getUsers() {
+        return await this.usersRepository.find();
     }
-    findUsersById(id) {
-        return this.usersRepository.findOneBy({ id });
+    async findUsersById(id) {
+        if (id === undefined) {
+            return null;
+        }
+        const user = await this.usersRepository.findOne({
+            where: {
+                id: id
+            }
+        });
+        if (!user)
+            throw new common_1.InternalServerErrorException('User not found');
+        return (user);
     }
-    findAll() {
-        return this.usersRepository.find();
+    async findUsersByIntraId(intra_uid) {
+        const user = await this.usersRepository.findOne({
+            where: {
+                intra_uid: intra_uid
+            }
+        });
+        if (!user)
+            return null;
+        return user;
+    }
+    async findAll() {
+        return await this.usersRepository.find();
     }
     async deleteUserById(id) {
+        const user = await this.findUsersById(id);
+        if (!user)
+            throw new common_1.NotFoundException(`User with ID ${id} not found`);
         return await this.usersRepository.delete(id);
     }
     async findUsersByName(username) {
-        return await this.usersRepository.findOneBy({ username });
+        const user = await this.usersRepository.findOne({
+            where: {
+                username: username
+            }
+        });
+        if (!user)
+            throw new common_1.NotFoundException(`User with username: ${username} not found`);
+        return await user;
+    }
+    async uploadAvatar(id, avatar) {
+        try {
+            const user = await this.findUsersById(id);
+            user.avatar = avatar;
+            return await this.usersRepository.save(user);
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Could not upload avatar');
+        }
+    }
+    async updateUser(id, updateUserDto) {
+        if (!updateUserDto || Object.keys(updateUserDto).length === 0) {
+            throw new common_1.BadRequestException('No update data provided');
+        }
+        try {
+            const updatedUserDto = Object.assign(Object.assign({}, updateUserDto), { updatedAt: new Date() });
+            await this.usersRepository.update(id, updatedUserDto);
+            return await this.findUsersById(id);
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Failed to update user');
+        }
+    }
+    async findUsersByIdWithRelation(id) {
+        const user = await this.usersRepository.findOne({
+            relations: [
+                'userAchievement',
+                'userAchievement.achievement',
+                'stat',
+                'p1_match',
+                'p1_match.p1_uid',
+                'p1_match.p2_uid',
+                'p2_match',
+                'p2_match.p1_uid',
+                'p2_match.p2_uid',
+                'sentFriendRequest',
+                'receiveFriendRequest',
+            ],
+            where: {
+                id: id,
+            }
+        });
+        if (!user)
+            throw new common_1.NotFoundException(`User with ID ${id} not found`);
+        return await user;
     }
 };
 UsersService = __decorate([

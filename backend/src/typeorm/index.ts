@@ -4,6 +4,7 @@ import { ChannelUser } from "./channel_user.entity";
 import { Friend } from "./friends.entity";
 import { MatchHistory } from "./match_history.entity";
 import { Message } from "./message.entity";
+import { SessionEntity } from "./session.entity";
 import { Stat } from "./stats.entity";
 import { User } from "./user.entity";
 import { UserAchievement } from "./user_achievement.entity";
@@ -17,8 +18,8 @@ const entities = [
     Friend,
     Channel,
     ChannelUser,
-    Message
+    Message,
+    // SessionEntity
 ];
 
-// export {Users, MatchHistory};
 export default entities;

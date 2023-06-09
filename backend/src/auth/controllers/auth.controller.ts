@@ -1,14 +1,21 @@
-import { Body, Controller, Get, Logger, Post, Req, Res, Session, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query, Req, Res, Session, UseGuards } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from '../util/local.guard';
-import { RequestWithSessionUser } from '../request_with_session_user';
+import { AuthenticatedUser, RequestWithSessionUser } from '../util/user_interface';
 import { FortyTwoAuthGuard } from '../util/42-auth.guard';
 import { User } from 'src/users/decorators/user.decorator';
 import { InvalidOtpException } from '../util/invalid_otp_exception';
 import { JwtService } from '@nestjs/jwt/dist/jwt.service';
+import { User as userEntity } from 'src/typeorm/user.entity';
+import session from 'express-session';
+import { JwtAuthGuard } from '../util/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UsersService } from 'src/users/services/users.service';
 
 @Controller('auth')
+@ApiTags('Auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -17,18 +24,18 @@ export class AuthController {
 
   // Using 42 Passport
   @UseGuards(FortyTwoAuthGuard)
+  @ApiOperation({
+    summary: 'login to start your pong game',
+  })
+
   @Get('login')
-  async login() {}
-  
+  async login() {
+  }
 
   // req.user contains token
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
-  async callback(@Req() req, @Res() res: Response) {
-    req.session.accessToken = req.user.accessToken;
-    req.session.refreshToken = req.user.refreshToken;
-    const existingUser = await this.authService.findOneOrCreate(req.user);
-    req.session.user = existingUser;
+  async callback(@Req() req: Request, @Res() res: Response) : Promise<void> {
     return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
   }
 
@@ -42,62 +49,79 @@ export class AuthController {
   // compare user entered with generated OTP
   // if match, user authnticated.
 
-  // @UseGuards(FortyTwoAuthGuard)
+  // @UseGuards(AuthenticatedGuard)
   @Get('2fa')
-  async enableTwoFactorAuth(@Req() req: RequestWithSessionUser, @Res() res: Response) {
-    console.log('2fa', req.user);
-    
+  async enableTwoFactorAuth(@Req() req: Request, @Res() res: Response) : Promise<void> {
     const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(req.user);
     await this.authService.displayQrCode(res, otpAuthUrl);
   }
 
+  // JWT containe Header, Payload, Signature
+  // @UseGuards(AuthenticatedGuard)
   @Post('otp')
-  async verifyOtp(@Req() req: RequestWithSessionUser, @Body() body: { otp: string }) {
+  async verifyOtp(@Req() req: Request, @Res() res: Response, @Body() body: { otp: string }) {
     const isValid = await this.authService.verifyOtp(body.otp);
-    console.log(req.user);
-    console.log('secret: ', process.env.JWT_SECRET);
     if (isValid) {
-      const payload = {
-        sub: 'shawn',
-      };
-      const token = this.jwtService.sign(payload, { secret: 'secret' });
-      return token;
+      const payload = await this.authService.createPayload(req.user);
+      const token = await this.authService.createToken(payload);
+      res.setHeader('Authorization', `Bearer ${token}`);
+      return res.send(token);
     }
     throw new InvalidOtpException();
   }
   
-  @UseGuards(AuthenticatedGuard)
   @Get('session')
-  async getAuthSession(@Session() session: Record<string, any>) {
-    return [session, session.id];
+  async getAuthSession(@Session() session: Record<string, any>) : Promise<Record<string, any> > {
+    return await [session, session.id];
     // return ({session: session, sessionId: session.id});
   }
+<<<<<<< HEAD
   
   @UseGuards(AuthenticatedGuard)
   @Get('profile')
   async getProfile(@User() user: RequestWithSessionUser) {
       console.log('user', user);
       return user;
+=======
+
+  @UseGuards(JwtAuthGuard)
+  // @UseGuards(AuthGuard('jwt-2fa'))
+  @Get('jwt')
+  async getJwt() {
+    return { msg: 'enter jwt guard'};
+>>>>>>> master
   }
+  
+  // @UseGuards(AuthenticatedGuard)
+  @Get('profile')
+  async getProfile(@User() user) {
+      const returnUser = await this.authService.getAuthUserProfile(user.id);
+      return await returnUser;
+  }
+  // @Get('profile')
+  // async getProfile(@User() user) {
+  //     return await user;
+  // }
 
   @Get('logout')
-  logout(@Req() req) {
-      req.user = null;
-      req.session.destroy();
-      return {
-        msg: 'The user session has ended. '
-      }
+  async logout(@Req() req: Request, @Res() res: Response) {
+    if (req.user) {
+      await this.authService.logout(req.user);
+      await this.authService.clearUserSession(req);
+      await this.authService.clearUserCookies(res);
+      req.logout(() => {});
+    }
+    res.json({ message: 'User logout' });
   }
 
   // Manual approach
-  // @Get('logins')
+  // @Get('login')
   // login(@Res() res: Response) {
   //   console.log('loging backend');
   //   return (this.authService.redirectTo42OAuth(res));
   // }
     
-  // @UseGuards(FortyTwoAuthGuard)
-  // @Get('callbacks')
+  // @Get('callback')
   // async callback(@Query('code') code: string, @Req() req: RequestWithSessionUser, @Res() res: Response) {
   //   try {
   //     console.log(req.user);

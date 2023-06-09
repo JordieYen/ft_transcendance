@@ -17,10 +17,12 @@ const axios_1 = require("axios");
 const user_entity_1 = require("../../typeorm/user.entity");
 const otplib_1 = require("otplib");
 const qrcode = require("qrcode");
+const jwt_1 = require("@nestjs/jwt");
 let AuthService = class AuthService {
-    constructor(userService, configService) {
+    constructor(userService, configService, jwtService) {
         this.userService = userService;
         this.configService = configService;
+        this.jwtService = jwtService;
     }
     async redirectTo42OAuth(res) {
         const client_id = this.configService.get('CLIENT_ID');
@@ -56,18 +58,14 @@ let AuthService = class AuthService {
             user.online = false;
             let existingUser = await this.userService.findUsersByName(user.username);
             if (!existingUser) {
-                console.log('CREATE USER');
                 existingUser = await this.userService.createUser(user);
             }
             req.session.user = existingUser;
-            console.log(req.session.user);
             return existingUser;
         }
         catch (error) {
             if (error.response) {
                 console.log('RESPONSE', error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
             }
             else if (error.request) {
                 console.log('REQUEST', error.request);
@@ -84,11 +82,17 @@ let AuthService = class AuthService {
             return (user);
         return (null);
     }
-    async findOneOrCreate(user) {
-        let existingUser = this.userService.findUsersByName(user.username);
-        if (!existingUser)
-            this.userService.createUser(user);
-        return (existingUser);
+    async findOneOrCreate(profile) {
+        let returnUser = await this.userService.findUsersByIntraId(+profile.id);
+        if (!returnUser) {
+            const newUser = new user_entity_1.User();
+            newUser.intra_uid = +profile.id;
+            newUser.username = profile.username;
+            newUser.avatar = profile._json.image.link;
+            newUser.online = true;
+            returnUser = await this.userService.createUser(newUser);
+        }
+        return (returnUser);
     }
     async generateTwoFactorAuthSecret(user) {
         this.secret = otplib_1.authenticator.generateSecret();
@@ -99,15 +103,49 @@ let AuthService = class AuthService {
         const qrCode = await qrcode.toFileStream(res, otpAuthUrl);
     }
     async verifyOtp(otp) {
-        console.log('otp', otp);
-        console.log('secret', this.secret);
         return otplib_1.authenticator.check(otp, this.secret);
+    }
+    async logout(user) {
+        return await this.userService.updateUser(user.id, { online: false });
+    }
+    async clearUserSession(req) {
+        return await new Promise((resolve, reject) => {
+            req.session.destroy((err) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve();
+                }
+            });
+        });
+    }
+    async clearUserCookies(res) {
+        res.clearCookie('ft_transcendence_session_id');
+        res.clearCookie('jwt');
+    }
+    async createPayload(user) {
+        const payload = {
+            sub: user.id.toString(),
+            username: user.username,
+        };
+        return payload;
+    }
+    async createToken(payload) {
+        const token = await this.jwtService.sign(payload, {
+            secret: process.env.JWT_SECRET,
+        });
+        return token;
+    }
+    async getAuthUserProfile(id) {
+        return await this.userService.findUsersByIdWithRelation(id);
     }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [users_service_1.UsersService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        jwt_1.JwtService])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

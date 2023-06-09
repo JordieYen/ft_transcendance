@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/services/users.service';
 import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import axios from 'axios';
 import { User } from 'src/typeorm/user.entity';
-import { RequestWithSessionUser } from '../request_with_session_user';
+import { AuthenticatedUser, RequestWithSessionUser } from '../util/user_interface';
 import { authenticator } from 'otplib';
 import * as qrcode from 'qrcode';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from 'jsonwebtoken';
+import { Profile } from 'passport-42';
+
 
 @Injectable()
 export class AuthService {
@@ -15,6 +19,7 @@ export class AuthService {
     constructor(
         private readonly userService: UsersService,
         private readonly configService: ConfigService,
+        private readonly jwtService: JwtService,
         ) {}
         
     async redirectTo42OAuth(res: Response) {
@@ -56,17 +61,13 @@ export class AuthService {
             user.online = false;
             let existingUser = await this.userService.findUsersByName(user.username);
             if (!existingUser) {
-                console.log('CREATE USER');
                 existingUser = await this.userService.createUser(user);
             }
             req.session.user = existingUser;
-            console.log(req.session.user);
             return existingUser;
         } catch (error) {
             if (error.response) {
                 console.log('RESPONSE', error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
             } else if (error.request) {
                 console.log('REQUEST', error.request);
             } else {
@@ -75,21 +76,35 @@ export class AuthService {
         };
     }
 
-    async validateUser(username: string): Promise<any> {
+    async validateUser(username: string): Promise<User> {
         const user = await this.userService.findUsersByName(username);
         if (user)
             return (user);
         return (null);
     }
 
+<<<<<<< HEAD
     async findOneOrCreate(user: any): Promise<User> {
         let existingUser = this.userService.findUsersByName(user.username);        
         if (!existingUser)
             this.userService.createUser(user);
         return (existingUser);
+=======
+    async findOneOrCreate(profile: Profile): Promise<User> {
+        let returnUser = await this.userService.findUsersByIntraId(+profile.id);
+        if (!returnUser) {
+            const newUser = new User(); 
+            newUser.intra_uid = +profile.id;
+            newUser.username = profile.username;
+            newUser.avatar = profile._json.image.link;
+            newUser.online = true;
+            returnUser = await this.userService.createUser(newUser);
+        }
+        return (returnUser);
+>>>>>>> master
     }
 
-    async generateTwoFactorAuthSecret(user: any) : Promise<string> {
+    async generateTwoFactorAuthSecret(user: AuthenticatedUser) : Promise<string> {
         this.secret = authenticator.generateSecret();
         const otpAuthUrl = authenticator.keyuri(user.username, 'MyApp', this.secret);
         return otpAuthUrl;
@@ -100,9 +115,46 @@ export class AuthService {
     }
 
     async verifyOtp(otp: string) {
-        console.log('otp', otp);
-        console.log('secret', this.secret);
         return authenticator.check(otp, this.secret)
     }
 
+    async logout(user: AuthenticatedUser) : Promise<User> {
+        return await this.userService.updateUser(user.id, { online: false });
+    }
+
+    async clearUserSession(req: Request): Promise<void> {
+        return await new Promise<void>((resolve, reject) => {
+            req.session.destroy((err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+    async clearUserCookies(res: Response): Promise<void> {
+        res.clearCookie('ft_transcendence_session_id');
+        res.clearCookie('jwt');
+    }
+
+    async createPayload(user: AuthenticatedUser): Promise<JwtPayload> {
+        const payload = {
+            sub: user.id.toString(),
+            username: user.username,
+        }
+        return payload;
+    }
+
+    async createToken(payload: JwtPayload): Promise<string> {
+        const token = await this.jwtService.sign(payload, {
+             secret: process.env.JWT_SECRET, 
+            });
+        return token;
+    }
+
+    async getAuthUserProfile(id: number): Promise<User> {
+        return await this.userService.findUsersByIdWithRelation(id);
+    }
  }

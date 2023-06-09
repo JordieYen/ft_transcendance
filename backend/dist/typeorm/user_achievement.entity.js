@@ -10,10 +10,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserAchievement = void 0;
+const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 const achievement_entity_1 = require("./achievement.entity");
 const user_entity_1 = require("./user.entity");
 let UserAchievement = class UserAchievement {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { id: { required: true, type: () => Number }, user: { required: true, type: () => require("./user.entity").User }, achievement: { required: true, type: () => require("./achievement.entity").Achievement }, createdAt: { required: true, type: () => Date } };
+    }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),

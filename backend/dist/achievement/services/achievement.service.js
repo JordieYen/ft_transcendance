@@ -22,27 +22,34 @@ let AchievementService = class AchievementService {
         this.achievementRepository = achievementRepository;
     }
     async create(createAchievementDto) {
-        const newAchievement = this.achievementRepository.create(createAchievementDto);
-        return this.achievementRepository.save(newAchievement);
+        try {
+            const newAchievement = this.achievementRepository.create(createAchievementDto);
+            return await this.achievementRepository.save(newAchievement);
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Could not create achhievement');
+        }
     }
     async findAll() {
-        return this.achievementRepository.find();
+        return await this.achievementRepository.find();
     }
     async findOne(id) {
-        return this.achievementRepository.findOneBy({ id });
+        const achievement = await this.achievementRepository.findOneBy({ id });
+        if (!achievement) {
+            throw new common_1.NotFoundException(`Achievement with ID ${id} not found`);
+        }
+        return achievement;
     }
     async update(id, updateAchievementDto) {
         const achievement = await this.achievementRepository.findOneBy({ id });
         if (!achievement)
             throw new Error(`Achievement with id ${id} not found`);
         const updateAchievement = Object.assign(Object.assign({}, achievement), updateAchievementDto);
-        return this.achievementRepository.save(updateAchievement);
+        return await this.achievementRepository.save(updateAchievement);
     }
     async remove(id) {
-        const achievement = await this.achievementRepository.findOneBy({ id });
-        if (!achievement)
-            throw new Error(`Achievement with id ${id} not found`);
-        await this.achievementRepository.remove(achievement);
+        const achievement = await this.findOne(id);
+        await await this.achievementRepository.remove(achievement);
     }
 };
 AchievementService = __decorate([

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity()
@@ -7,15 +7,25 @@ export class Stat {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
+    userId: number;
+
     @OneToOne(() => User, user => user.stat)
+    @JoinColumn({ name: 'userId' })
     user: User;
 
-    @Column()
+    @Column({ default: 0 })
     wins: number;
 
-    @Column()
+    @Column({ default: 0 })
     losses: number;
 
-    @Column()
+    @Column({ default: 0 })
     mmr: number;
+
+    @Column({ default: 0 })
+    total_games: number;
+
+    @Column({ default: 0 })
+    winStreak: number;
 }

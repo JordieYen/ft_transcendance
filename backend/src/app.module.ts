@@ -11,14 +11,25 @@ import { AchievementModule } from './achievement/achievement.module';
 import { UserAchievementModule } from './user_achievement/user_achievement.module';
 import { ChannelUserModule } from './chat/channel-user/channel-user.module';
 import { MessageModule } from './chat/message/message.module';
+import { AchievementModule } from './achievement/achievement.module';
+import { UserAchievementModule } from './user_achievement/user_achievement.module';
+import { configValidationSchema } from './config/config.schema';
+import { FriendModule } from './friend/friend.module';
+import { StatModule } from './stat/stat.module';
+import { GatewayModule } from './gateway/gateway.module';
+import { MyGateway } from './gateway/gateway';
+
+const configFactory = {
+  isGlocal: true,
+  envFilePath: '../.env',
+  validationSchema: configValidationSchema,
+  cache: true,
+}
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ 
-        isGlobal: true,
-        envFilePath: '../.env'
-    }),
     DatabaseModule,
+    ConfigModule.forRoot(configFactory),
     UsersModule,
     AuthModule,
     MatchHistoryModule,
@@ -30,7 +41,14 @@ import { MessageModule } from './chat/message/message.module';
   ],
   controllers: [AppController],
   providers: [ AppService ],
+    FriendModule,
+    StatModule,
+    GatewayModule,
+  ],
+  controllers: [AppController ],
+  providers: [ 
+    AppService,
+   ],
 })
-export class AppModule {
-  constructor() {}
-}
+
+export class AppModule {}

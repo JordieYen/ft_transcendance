@@ -10,12 +10,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Users = void 0;
+const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 const class_validator_1 = require("class-validator");
 const bcrypt = require("bcrypt");
 let Users = class Users {
     hashPassword() {
         this.password = bcrypt.hashSync(this.password, 10);
+    }
+    static _OPENAPI_METADATA_FACTORY() {
+        return { id: { required: true, type: () => Number }, username: { required: true, type: () => String }, boolean: { required: true, type: () => Boolean }, password: { required: true, type: () => String }, email: { required: true, type: () => String }, role: { required: true, type: () => String }, createdAt: { required: true, type: () => Date }, updatedAt: { required: true, type: () => Date } };
     }
 };
 __decorate([

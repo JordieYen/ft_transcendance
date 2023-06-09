@@ -20,7 +20,8 @@ AchievementModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([achievement_entity_1.Achievement])
         ],
         controllers: [achievement_controller_1.AchievementController],
-        providers: [achievement_service_1.AchievementService]
+        providers: [achievement_service_1.AchievementService],
+        exports: [achievement_service_1.AchievementService, typeorm_1.TypeOrmModule]
     })
 ], AchievementModule);
 exports.AchievementModule = AchievementModule;
