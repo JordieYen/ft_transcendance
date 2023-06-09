@@ -22,6 +22,7 @@ const channel_module_1 = require("./chat/channel/channel.module");
 const achievement_module_1 = require("./achievement/achievement.module");
 const user_achievement_module_1 = require("./user_achievement/user_achievement.module");
 const channel_user_module_1 = require("./chat/channel-user/channel-user.module");
+const message_module_1 = require("./chat/message/message.module");
 let AppModule = class AppModule {
     constructor() { }
 };
@@ -39,7 +40,8 @@ AppModule = __decorate([
             achievement_module_1.AchievementModule,
             user_achievement_module_1.UserAchievementModule,
             channel_module_1.ChannelModule,
-            channel_user_module_1.ChannelUserModule
+            channel_user_module_1.ChannelUserModule,
+            message_module_1.MessageModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

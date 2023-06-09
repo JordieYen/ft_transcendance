@@ -29,6 +29,14 @@ export class ChannelService {
 			})
 		}
 
+		async findChannelsByUserId(user_id: number) {
+			return await this.channelsRepository.find({
+				where: {
+					channelUser: {user: {id: user_id}}
+				} 
+			})
+		}
+
 		async findChannelsByChannelType(channel_type: string) {
 			console.log('in type');
 			return await this.channelsRepository.findOne({
@@ -123,6 +131,37 @@ export class ChannelService {
 		}
 	}
 
+	async leaveChannel(dto: JoinChannelDto, user: User) {
+		try {
+			this.validateUser(user);
+			//checking if channel id given is valid
+			const channel = await this.findChannelById(dto.channel_uid);
+			if (!channel) {
+				throw new ForbiddenException(
+					'Channel not found',
+				);
+			}
+			// checking if user is already in channel
+			const existingChannelUser = await this.channelUsersRepository.findOne({
+				where: {
+					channel: {channel_uid: channel.channel_uid},
+					user: {id: user.id}
+				}
+			});
+			if (!existingChannelUser) {
+				throw new ForbiddenException(
+					'User not in channel',
+				);
+			}
+			// deleteting channel user
+			this.channelUserService.deleteAllChannelUserByChannelIdAndUserId(channel.channel_uid, user.id);
+		} catch (error) {
+			console.log('error=', error.message);
+			throw error;
+			throw new InternalServerErrorException('Channel not found');
+		}
+	}
+
 	async deleteChannel(channelId: number, user: User) {
 		try {
 			this.validateUser(user);
@@ -150,7 +189,7 @@ export class ChannelService {
 				);
 			}
 			// checking if user is owner of channel
-			if (channelOwner.role != Role.Owner) {
+			if (channelOwner.role != Role.Owner && channelOwner.role != Role.Admin) {
 				throw new ForbiddenException(
 					'User is not owner',
 				);

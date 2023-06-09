@@ -10,6 +10,7 @@ import { ChannelModule } from './chat/channel/channel.module';
 import { AchievementModule } from './achievement/achievement.module';
 import { UserAchievementModule } from './user_achievement/user_achievement.module';
 import { ChannelUserModule } from './chat/channel-user/channel-user.module';
+import { MessageModule } from './chat/message/message.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { ChannelUserModule } from './chat/channel-user/channel-user.module';
     AchievementModule,
     UserAchievementModule,
     ChannelModule,
-    ChannelUserModule
+    ChannelUserModule,
+    MessageModule
   ],
   controllers: [AppController],
   providers: [ AppService ],
