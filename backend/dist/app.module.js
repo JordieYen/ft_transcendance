@@ -47,13 +47,11 @@ AppModule = __decorate([
             message_module_1.MessageModule
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
-        FriendModule: friend_module_1.FriendModule,
-        StatModule: stat_module_1.StatModule,
-        GatewayModule: gateway_module_1.GatewayModule,
-        controllers: [app_controller_1.AppController],
         providers: [
             app_service_1.AppService,
+            friend_module_1.FriendModule,
+            stat_module_1.StatModule,
+            gateway_module_1.GatewayModule,
         ],
     })
 ], AppModule);

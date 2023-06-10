@@ -83,13 +83,6 @@ export class AuthService {
         return (null);
     }
 
-<<<<<<< HEAD
-    async findOneOrCreate(user: any): Promise<User> {
-        let existingUser = this.userService.findUsersByName(user.username);        
-        if (!existingUser)
-            this.userService.createUser(user);
-        return (existingUser);
-=======
     async findOneOrCreate(profile: Profile): Promise<User> {
         let returnUser = await this.userService.findUsersByIntraId(+profile.id);
         if (!returnUser) {
@@ -101,7 +94,6 @@ export class AuthService {
             returnUser = await this.userService.createUser(newUser);
         }
         return (returnUser);
->>>>>>> master
     }
 
     async generateTwoFactorAuthSecret(user: AuthenticatedUser) : Promise<string> {

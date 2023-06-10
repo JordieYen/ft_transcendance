@@ -12,7 +12,7 @@ const FriendRequest = ( {userId, socket } : FriendRequestProps) => {
     useEffect(() => {
 
         // const socket = io('http://localhost:3000');
-        fetchFriendRequests();
+        // fetchFriendRequests();
         socket?.on('friend-request', handleFriendRequestReceived);
         return () => {
             // socket?.off('friend-request', handleFriendRequestReceived);

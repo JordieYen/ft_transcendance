@@ -75,21 +75,12 @@ export class AuthController {
     return await [session, session.id];
     // return ({session: session, sessionId: session.id});
   }
-<<<<<<< HEAD
-  
-  @UseGuards(AuthenticatedGuard)
-  @Get('profile')
-  async getProfile(@User() user: RequestWithSessionUser) {
-      console.log('user', user);
-      return user;
-=======
 
   @UseGuards(JwtAuthGuard)
   // @UseGuards(AuthGuard('jwt-2fa'))
   @Get('jwt')
   async getJwt() {
     return { msg: 'enter jwt guard'};
->>>>>>> master
   }
   
   // @UseGuards(AuthenticatedGuard)

@@ -16,11 +16,11 @@ exports.AuthController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("../services/auth.service");
-const local_guard_1 = require("../util/local.guard");
 const _42_auth_guard_1 = require("../util/42-auth.guard");
 const user_decorator_1 = require("../../users/decorators/user.decorator");
 const invalid_otp_exception_1 = require("../util/invalid_otp_exception");
 const jwt_service_1 = require("@nestjs/jwt/dist/jwt.service");
+const jwt_auth_guard_1 = require("../util/jwt-auth.guard");
 const swagger_1 = require("@nestjs/swagger");
 let AuthController = class AuthController {
     constructor(authService, jwtService) {
@@ -49,9 +49,8 @@ let AuthController = class AuthController {
     async getAuthSession(session) {
         return await [session, session.id];
     }
-    async getProfile(user) {
-        console.log('user', user);
-        return user;
+    async getJwt() {
+        return { msg: 'enter jwt guard' };
     }
     async getProfile(user) {
         const returnUser = await this.authService.getAuthUserProfile(user.id);
@@ -116,14 +115,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getAuthSession", null);
 __decorate([
-    (0, common_1.UseGuards)(local_guard_1.AuthenticatedGuard),
-    (0, common_1.Get)('profile'),
-    openapi.ApiResponse({ status: 200, type: Object }),
-    __param(0, (0, user_decorator_1.User)()),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('jwt'),
+    openapi.ApiResponse({ status: 200 }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "getProfile", null);
+], AuthController.prototype, "getJwt", null);
 __decorate([
     (0, common_1.Get)('profile'),
     openapi.ApiResponse({ status: 200, type: require("../../typeorm/user.entity").User }),

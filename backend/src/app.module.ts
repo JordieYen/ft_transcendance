@@ -11,8 +11,6 @@ import { AchievementModule } from './achievement/achievement.module';
 import { UserAchievementModule } from './user_achievement/user_achievement.module';
 import { ChannelUserModule } from './chat/channel-user/channel-user.module';
 import { MessageModule } from './chat/message/message.module';
-import { AchievementModule } from './achievement/achievement.module';
-import { UserAchievementModule } from './user_achievement/user_achievement.module';
 import { configValidationSchema } from './config/config.schema';
 import { FriendModule } from './friend/friend.module';
 import { StatModule } from './stat/stat.module';
@@ -39,15 +37,12 @@ const configFactory = {
     ChannelUserModule,
     MessageModule
   ],
-  controllers: [AppController],
-  providers: [ AppService ],
-    FriendModule,
-    StatModule,
-    GatewayModule,
-  ],
   controllers: [AppController ],
   providers: [ 
     AppService,
+    FriendModule,
+    StatModule,
+    GatewayModule,
    ],
 })
 
