@@ -12,9 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Channel = void 0;
 const openapi = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
-const bcrypt = require("bcrypt");
 const channel_user_entity_1 = require("./channel_user.entity");
 const message_entity_1 = require("./message.entity");
+const class_validator_1 = require("class-validator");
 var ChannelType;
 (function (ChannelType) {
     ChannelType["Public"] = "public";
@@ -23,28 +23,27 @@ var ChannelType;
     ChannelType["Direct"] = "direct";
 })(ChannelType || (ChannelType = {}));
 let Channel = class Channel {
-    hashPassword() {
-        if (this.channel_type === ChannelType.Private || this.channel_type === ChannelType.Protected)
-            this.channel_hash = bcrypt.hashSync(this.channel_hash, 10);
-    }
     static _OPENAPI_METADATA_FACTORY() {
-        return { channel_uid: { required: true, type: () => String }, channel_name: { required: true, type: () => String }, channel_type: { required: true, enum: ChannelType }, channel_hash: { required: true, type: () => String }, channelUser: { required: true, type: () => [require("./channel_user.entity").ChannelUser] }, createdAt: { required: true, type: () => Date }, messages: { required: true, type: () => [require("./message.entity").Message] } };
+        return { channel_uid: { required: true, type: () => Number }, channel_name: { required: true, type: () => String }, channel_type: { required: true, type: () => String }, channel_hash: { required: true, type: () => String }, channelUser: { required: true, type: () => [require("./channel_user.entity").ChannelUser] }, createdAt: { required: true, type: () => Date }, messages: { required: true, type: () => [require("./message.entity").Message] } };
     }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], Channel.prototype, "channel_uid", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], Channel.prototype, "channel_name", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], Channel.prototype, "channel_type", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], Channel.prototype, "channel_hash", void 0);
 __decorate([
@@ -58,12 +57,6 @@ __decorate([
     }),
     __metadata("design:type", Date)
 ], Channel.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.BeforeInsert)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], Channel.prototype, "hashPassword", null);
 __decorate([
     (0, typeorm_1.OneToMany)(() => message_entity_1.Message, message => message.channel),
     __metadata("design:type", Array)

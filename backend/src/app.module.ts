@@ -6,6 +6,11 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { MatchHistoryModule } from './match-history/match-history.module';
+import { ChannelModule } from './chat/channel/channel.module';
+import { AchievementModule } from './achievement/achievement.module';
+import { UserAchievementModule } from './user_achievement/user_achievement.module';
+import { ChannelUserModule } from './chat/channel-user/channel-user.module';
+import { MessageModule } from './chat/message/message.module';
 import { AchievementModule } from './achievement/achievement.module';
 import { UserAchievementModule } from './user_achievement/user_achievement.module';
 import { configValidationSchema } from './config/config.schema';
@@ -30,6 +35,12 @@ const configFactory = {
     MatchHistoryModule,
     AchievementModule,
     UserAchievementModule,
+    ChannelModule,
+    ChannelUserModule,
+    MessageModule
+  ],
+  controllers: [AppController],
+  providers: [ AppService ],
     FriendModule,
     StatModule,
     GatewayModule,

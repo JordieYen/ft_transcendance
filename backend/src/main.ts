@@ -4,6 +4,17 @@ import session, * as ExpressSession from 'express-session';
 import { ConfigService } from '@nestjs/config'
 import { setupSwagger } from 'src/swagger.config';
 import * as passport from 'passport';
+<<<<<<< HEAD
+import { SessionSerializer } from './auth/util/session_serializer';
+import { ValidationPipe } from '@nestjs/common';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true
+  }) );
+  const configService = app.get(ConfigService);
+=======
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -15,6 +26,7 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+>>>>>>> master
   app.enableCors({
     origin: process.env.NEXT_HOST,
     methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],

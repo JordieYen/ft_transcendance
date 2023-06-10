@@ -7,5 +7,5 @@ import { Message } from "./message.entity";
 import { Stat } from "./stats.entity";
 import { User } from "./user.entity";
 import { UserAchievement } from "./user_achievement.entity";
-declare const entities: (typeof Message | typeof Channel | typeof User | typeof ChannelUser | typeof Friend | typeof MatchHistory | typeof Stat | typeof UserAchievement | typeof Achievement)[];
+declare const entities: (typeof Channel | typeof ChannelUser | typeof Message | typeof User | typeof MatchHistory | typeof Stat | typeof UserAchievement | typeof Achievement | typeof Friend)[];
 export default entities;

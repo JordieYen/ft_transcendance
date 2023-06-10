@@ -5,7 +5,6 @@ import { User } from 'src/typeorm/user.entity';
 import { AuthenticatedUser, RequestWithSessionUser } from '../util/user_interface';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'jsonwebtoken';
-import { Profile } from 'passport-42';
 export declare class AuthService {
     private readonly userService;
     private readonly configService;
@@ -15,7 +14,7 @@ export declare class AuthService {
     redirectTo42OAuth(res: Response): Promise<void>;
     authenticateUser(code: string, req: RequestWithSessionUser): Promise<User>;
     validateUser(username: string): Promise<User>;
-    findOneOrCreate(profile: Profile): Promise<User>;
+    findOneOrCreate(user: any): Promise<User>;
     generateTwoFactorAuthSecret(user: AuthenticatedUser): Promise<string>;
     displayQrCode(res: Response, otpAuthUrl: string): Promise<void>;
     verifyOtp(otp: string): Promise<boolean>;

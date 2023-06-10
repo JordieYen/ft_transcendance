@@ -22,7 +22,9 @@ let UsersService = class UsersService {
         this.usersRepository = usersRepository;
     }
     async createUser(createUserDto) {
-        const newUser = await this.usersRepository.create(createUserDto);
+        console.log(createUserDto);
+        const newUser = this.usersRepository.create(createUserDto);
+        console.log('test', newUser);
         try {
             return await this.usersRepository.save(newUser);
         }
