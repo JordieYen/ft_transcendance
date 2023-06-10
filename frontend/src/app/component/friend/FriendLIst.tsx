@@ -5,12 +5,15 @@ import '../profile/profile.css';
 import SearchBar from "../search_bar/SearchBar";
 import FriendRequest from "./FriendRequest";
 import { io, Socket }  from 'socket.io-client';
+import redis from "redis";
+
 
 
 const FriendList = () => {
     const [usersList, setUserList] = useState<any[]>([]);
     const [filteredUsersList, setFilteredUsersList] = useState<any[]>([]);
-    const [friendRequestArray, setFriendRequestArray] = useState<number[]>([]);
+    // const [friendRequestArray, setFriendRequestArray] = useState<number[]>([]);
+    const [friendRequestArray, setFriendRequestArray] = useState<{ userId: number, requestId: number }[]>([]);
     const [friendRequest, setFriendRequest] = useState<any>(null);
     const [socket, setSocket] = useState<Socket | null>(null);
     const [friendRequestStatus, setFriendRequestStatus] = useState<{ [key: number]: boolean }>({});
@@ -24,21 +27,49 @@ const FriendList = () => {
     useEffect(() => {
         const newSocket = io("http://localhost:3000");
         setSocket(newSocket);
-        fetchUsersList();
-        newSocket.on("friend-request-received", (friendRequest: any) => {
-            setFriendRequest(friendRequest);
-            setFriendRequestArray((prevArray) => [...prevArray, friendRequest.id]);
+        newSocket.on("friend-request-received", (receivedFriendRequest: any) => {
+            console.log('receivedFriendRequest socket', receivedFriendRequest);
+            setFriendRequest(receivedFriendRequest);
+            setFriendRequestArray((prevArray) => [
+                ...prevArray,
+                { userId: receivedFriendRequest?.receiver?.id, requestId: receivedFriendRequest.id }
+            ]);
         });
-        console.log('friendRequest', friendRequest);
-        console.log('friendRequestArray', friendRequestArray);
-        
+        const storedStatus = localStorage.getItem("friendRequestStatus");
+        if (storedStatus) {
+            console.log('storedStatus', storedStatus);
+            setFriendRequestStatus(JSON.parse(storedStatus));
+        }
+        const storedFriendRequests = localStorage.getItem("friendRequestArray");
+        if (storedFriendRequests) {
+          setFriendRequestArray(JSON.parse(storedFriendRequests));
+        }
+        fetchUsersList();
         return () => {
-            newSocket.off('friend-request-sent');
-            newSocket.off('friend-request-received');
-            newSocket.disconnect(); 
+            // newSocket.off('friend-request-sent');
+            // newSocket.off('friend-request-received');
+            // newSocket.disconnect(); 
         };
     }, []);
 
+    useEffect(() => {
+        console.log('saving state to local storage');
+        localStorage.setItem("friendRequestStatus", JSON.stringify(friendRequestStatus));
+        localStorage.setItem("friendRequestArray", JSON.stringify(friendRequestArray));
+
+    }, [friendRequestStatus, friendRequestArray]);
+
+    // useEffect(() => {
+    //     const storedFriendRequests = localStorage.getItem("friendRequestArray");
+    //     if (storedFriendRequests) {
+    //       setFriendRequestArray(JSON.parse(storedFriendRequests));
+    //     }
+    // }, []);
+
+    // useEffect(() => {
+    //     localStorage.setItem("friendRequestArray", JSON.stringify(friendRequestArray));
+    // }, [friendRequestArray]);
+      
     const fetchUsersList = async () => {
         try {
             const response = await fetch('http://localhost:3000/users', {
@@ -46,8 +77,15 @@ const FriendList = () => {
             });
             if (response.ok) {
                 const usersList = await response.json();
-                const statusMap: { [key: number]: boolean } = {};
-                setFriendRequestStatus(statusMap);
+                // const statusMap: { [key: number]: boolean } = {};
+                // setFriendRequestStatus(statusMap);
+                // const storedStatus = localStorage.getItem("friendRequestStatus");
+                // if (storedStatus) {
+                //   setFriendRequestStatus(JSON.parse(storedStatus));
+                // } else {
+                //   const statusMap: { [key: number]: boolean } = {};
+                //   setFriendRequestStatus(statusMap);
+                // }
                 setUserList(usersList);
                 setFilteredUsersList(usersList);
                 console.log('usersList', usersList);
@@ -73,11 +111,17 @@ const FriendList = () => {
     };
 
     const cancelFriendRequest = (userId: number) => {
+        console.log('friend array', friendRequestArray);
+        
+        const friendRequests = friendRequestArray.find((request) => request.userId === userId);
+        console.log('friendRequests in cancel', friendRequests);
         socket?.emit("cancel-friend-request", {
             senderId: userData.id,
-            friendRequestId: friendRequest?.id
+            // friendRequestId: friendRequest?.id
+            friendRequestId: friendRequests?.requestId
         });
-        setFriendRequestArray(friendRequestArray.filter((id) => id !== friendRequest?.id));
+        // setFriendRequestArray(friendRequestArray.filter((id) => id !== friendRequest?.id));
+        setFriendRequestArray(friendRequestArray.filter((request) => request.userId !== userId));
         setFriendRequest(null);
         setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: false }));
         console.log('cancel friendRequestStatus', friendRequestStatus);
@@ -91,6 +135,10 @@ const FriendList = () => {
         });
         setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: true }));
         console.log('send friendRequestStatus', friendRequestStatus);
+        // socket?.on("friend-request-received", (friendRequest: any) => {
+        //     setFriendRequest(friendRequest);
+        //     setFriendRequestArray((prevArray) => [...prevArray, friendRequest.id]);
+        // });
 
     }
 
@@ -134,6 +182,7 @@ const FriendList = () => {
                                     }
                                     >
                                     {friendRequestStatus[user.id] ? "Cancel" : "Add Friend"}
+                                    { user.id }
                                 </button>
 
                             </td>
@@ -143,7 +192,7 @@ const FriendList = () => {
             </table>
             <div className='friend-page'>
                 {/* {friendRequestArray && <FriendRequestNotification friendRequest={ friendRequest } />} */}
-                <FriendRequest userId={ userData.id }/>
+                <FriendRequest userId={ userData.id } socket={ socket }/>
             </div>
         </div>
     );

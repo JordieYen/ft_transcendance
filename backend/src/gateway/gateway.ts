@@ -50,21 +50,20 @@ export class MyGateway implements OnModuleInit {
     @SubscribeMessage('cancel-friend-request')
     async handleCancelFriendRequest(client: Socket, data: {senderId: number, friendRequestId: number} ) {
         try {
-            console.log('cancel friend request');
-            
             const { senderId, friendRequestId } = data;
-            await this.friendService.cancelFriendRequest(friendRequestId);
+            const cancelRequest = await this.friendService.cancelFriendRequest(friendRequestId);
+            this.server.emit('friend-request-received', friendRequestId);
             await this.getFriendRequest(senderId);
         } catch (error) {
             console.error('Error canceling friend request gateway', error);
         }
     }
 
-    // @SubscribeMessage('friend-request-received')
+    @SubscribeMessage('friend-request-received')
     async sendFriendRequest(senderId: number, receiverId: number) {
         console.log('send friend request');
         const friendRequest = await this.friendService.sendFriendRequest(senderId, receiverId);
-        console.log('friend', friendRequest);
+        // console.log('friend', friendRequest);
         this.server.emit('friend-request-received', friendRequest);
 
     }
@@ -73,7 +72,7 @@ export class MyGateway implements OnModuleInit {
     async getFriendRequest(senderId: number) {
         console.log('get friend request');
         const friendRequests = await this.friendService.getFriendRequests(senderId);
-        console.log('friends', friendRequests);
+        // console.log('friends', friendRequests);
         this.server.emit('friend-request', friendRequests);
     }
     

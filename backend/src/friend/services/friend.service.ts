@@ -132,6 +132,7 @@ export class FriendService {
   }
 
   async cancelFriendRequest(friendRequestId: number) {
+    console.log('id', friendRequestId);
     return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Cancel });
   }
 
@@ -150,7 +151,7 @@ export class FriendService {
     const receivedFriendRequest = await this.friendRepository.find({
       where: {
         receiver: { id: receiverId },
-        status: FriendStatus.Friended,
+        // status: FriendStatus.Friended,
       },
       relations: ['sender', 'receiver'],
     });

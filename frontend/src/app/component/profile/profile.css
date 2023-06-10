@@ -327,12 +327,12 @@ td:last-child {
         box-sizing: border-box;
     }
 
-    .add-button {
-        background-color: black;
-    }
-
-    .cancel-button {
-        color: black;
-    }
 }
-  
+
+.add-button {
+    color: black;
+}
+
+.cancel-button {
+    background-color: black;
+}
