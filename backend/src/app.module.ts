@@ -35,14 +35,14 @@ const configFactory = {
     UserAchievementModule,
     ChannelModule,
     ChannelUserModule,
-    MessageModule
+    MessageModule,
+    FriendModule,
+    StatModule,
+    GatewayModule,
   ],
   controllers: [AppController ],
   providers: [ 
     AppService,
-    FriendModule,
-    StatModule,
-    GatewayModule,
    ],
 })
 

@@ -75,5 +75,31 @@ export class MyGateway implements OnModuleInit {
         // console.log('friends', friendRequests);
         this.server.emit('friend-request', friendRequests);
     }
+
+
+    @SubscribeMessage('accept-friend-request')
+    async acceptFriendRequest(client: Socket, data: { userId: number, friendRequestId: number }) {
+        try {
+            const { userId, friendRequestId } = data;
+            console.log('gateway', friendRequestId);
+            const acceptedRequest = await this.friendService.acceptFriendRequest(friendRequestId);
+            // this.server.emit('friend-request-accepted', acceptedRequest);
+            this.getFriendRequest(userId);
+
+        } catch (error) {
+            console.error('Error accepting friend request gateway', error);
+        };
+    }
+
+    @SubscribeMessage('decline-friend-request')
+    async declineFriendRequest(client: Socket, data: { userId: number, friendRequestId: number }) {
+        try {
+            const { userId, friendRequestId } = data;
+            const declinedRequest = await this.friendService.declineFriendRequest(friendRequestId);
+            this.getFriendRequest(userId);
+        } catch (error) {
+            console.error('Error declining friend request gateway', error);
+        }
+    }
     
 }

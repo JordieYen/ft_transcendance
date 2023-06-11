@@ -124,6 +124,9 @@ export class FriendService {
   }
 
   async acceptFriendRequest(friendRequestId: number) {
+    // await this.friendRepository.update(friendRequestId, { status: FriendStatus.Friended });
+    // const updatedFriendRequest = await this.findOne(friendRequestId);
+    // return updatedFriendRequest;
     return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Friended });
   }
 
@@ -140,7 +143,8 @@ export class FriendService {
     const sentFriendRequest = await this.friendRepository.find({
       where: {
         sender: { id: senderId },
-        // status: FriendStatus.Pending,
+        // status: FriendStatus.Friended,
+        status: Not(FriendStatus.Cancel),
       },
       relations: ['sender', 'receiver'],
     });
@@ -152,6 +156,7 @@ export class FriendService {
       where: {
         receiver: { id: receiverId },
         // status: FriendStatus.Friended,
+        status: Not(FriendStatus.Cancel),
       },
       relations: ['sender', 'receiver'],
     });

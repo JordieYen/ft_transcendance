@@ -44,14 +44,14 @@ AppModule = __decorate([
             user_achievement_module_1.UserAchievementModule,
             channel_module_1.ChannelModule,
             channel_user_module_1.ChannelUserModule,
-            message_module_1.MessageModule
+            message_module_1.MessageModule,
+            friend_module_1.FriendModule,
+            stat_module_1.StatModule,
+            gateway_module_1.GatewayModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [
             app_service_1.AppService,
-            friend_module_1.FriendModule,
-            stat_module_1.StatModule,
-            gateway_module_1.GatewayModule,
         ],
     })
 ], AppModule);

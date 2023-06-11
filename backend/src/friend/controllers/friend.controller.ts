@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { FriendService } from '../services/friend.service';
 import { CreateFriendDto } from '../dto/create-friend.dto';
 import { UpdateFriendDto } from '../dto/update-friend.dto';
@@ -39,12 +39,12 @@ export class FriendController {
     return this.friendService.sendFriendRequest(senderId, receiverId);
   }
 
-  @Post('accept-friend-request/:friendRequestId')
+  @Put('accept-friend-request/:friendRequestId')
   acceptFriendRequest(@Param('friendRequestId') friendRequestId: number) {
     return this.friendService.acceptFriendRequest(friendRequestId);
   }
 
-  @Post('decline-friend-request/:friendRequestId')
+  @Put('decline-friend-request/:friendRequestId')
   declineFriendRequest(@Param('friendRequestId') friendRequestId: number) {
     return this.friendService.declineFriendRequest(friendRequestId);
   }

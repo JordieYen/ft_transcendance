@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import Avatar from "../header_icon/Avatar";
-import '../profile/profile.css';
+import './friend.css';
 import SearchBar from "../search_bar/SearchBar";
 import FriendRequest from "./FriendRequest";
 import { io, Socket }  from 'socket.io-client';
@@ -192,7 +192,13 @@ const FriendList = () => {
             </table>
             <div className='friend-page'>
                 {/* {friendRequestArray && <FriendRequestNotification friendRequest={ friendRequest } />} */}
-                <FriendRequest userId={ userData.id } socket={ socket }/>
+                <FriendRequest 
+                userId={ userData.id }
+                socket={ socket }
+                friendRequestArray={ friendRequestArray }
+                friendRequestStatus={ friendRequestStatus }
+                setFriendRequestStatus={ setFriendRequestStatus }
+                />
             </div>
         </div>
     );
