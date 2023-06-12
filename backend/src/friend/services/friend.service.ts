@@ -4,7 +4,7 @@ import { any } from 'joi';
 import { send } from 'process';
 import { Friend, FriendStatus } from 'src/typeorm/friends.entity';
 import { UsersService } from 'src/users/services/users.service';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { CreateFriendDto } from '../dto/create-friend.dto';
 import { UpdateFriendDto } from '../dto/update-friend.dto';
 
@@ -124,19 +124,24 @@ export class FriendService {
   }
 
   async acceptFriendRequest(friendRequestId: number) {
-    // await this.friendRepository.update(friendRequestId, { status: FriendStatus.Friended });
-    // const updatedFriendRequest = await this.findOne(friendRequestId);
-    // return updatedFriendRequest;
-    return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Friended });
+    await this.friendRepository.update(friendRequestId, { status: FriendStatus.Friended });
+    const updatedFriendRequest = await this.findOne(friendRequestId);
+    return updatedFriendRequest;
+    // return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Friended });
   }
 
   async declineFriendRequest(friendRequestId: number) {
-    return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Decline });
+    await this.friendRepository.update(friendRequestId, { status: FriendStatus.Decline });
+    const updatedFriendRequest = await this.findOne(friendRequestId);
+    return updatedFriendRequest;
+    // return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Decline });
   }
 
   async cancelFriendRequest(friendRequestId: number) {
-    console.log('id', friendRequestId);
-    return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Cancel });
+    await this.friendRepository.update(friendRequestId, { status: FriendStatus.Cancel });
+    const updatedFriendRequest = await this.findOne(friendRequestId);
+    return updatedFriendRequest;
+    // return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Cancel });
   }
 
   async getSentFriendRequest(senderId: number) {
@@ -144,7 +149,7 @@ export class FriendService {
       where: {
         sender: { id: senderId },
         // status: FriendStatus.Friended,
-        status: Not(FriendStatus.Cancel),
+        status: Not(In([FriendStatus.Cancel, FriendStatus.Decline])),
       },
       relations: ['sender', 'receiver'],
     });
@@ -156,7 +161,7 @@ export class FriendService {
       where: {
         receiver: { id: receiverId },
         // status: FriendStatus.Friended,
-        status: Not(FriendStatus.Cancel),
+        status: Not(In([FriendStatus.Cancel, FriendStatus.Decline])),
       },
       relations: ['sender', 'receiver'],
     });

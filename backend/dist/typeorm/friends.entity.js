@@ -24,7 +24,7 @@ var FriendStatus;
 })(FriendStatus = exports.FriendStatus || (exports.FriendStatus = {}));
 let Friend = class Friend {
     static _OPENAPI_METADATA_FACTORY() {
-        return { id: { required: true, type: () => Number }, sender: { required: true, type: () => require("./user.entity").User }, receiver: { required: true, type: () => require("./user.entity").User }, status: { required: true, enum: require("./friends.entity").FriendStatus } };
+        return { id: { required: true, type: () => Number }, '': { required: true, type: () => Object }, sender: { required: true, type: () => require("./user.entity").User }, receiver: { required: true, type: () => require("./user.entity").User }, status: { required: true, enum: require("./friends.entity").FriendStatus } };
     }
 };
 __decorate([

@@ -9,6 +9,7 @@ export declare enum FriendStatus {
 }
 export declare class Friend {
     id: number;
+    '': any;
     sender: User;
     receiver: User;
     status: FriendStatus;

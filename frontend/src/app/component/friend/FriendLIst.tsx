@@ -5,15 +5,11 @@ import './friend.css';
 import SearchBar from "../search_bar/SearchBar";
 import FriendRequest from "./FriendRequest";
 import { io, Socket }  from 'socket.io-client';
-import redis from "redis";
-
-
 
 const FriendList = () => {
     const [usersList, setUserList] = useState<any[]>([]);
     const [filteredUsersList, setFilteredUsersList] = useState<any[]>([]);
-    // const [friendRequestArray, setFriendRequestArray] = useState<number[]>([]);
-    const [friendRequestArray, setFriendRequestArray] = useState<{ userId: number, requestId: number }[]>([]);
+    const [friendRequestArray, setFriendRequestArray] = useState<{ userId: number, requestId: number, status: string }[]>([]);
     const [friendRequest, setFriendRequest] = useState<any>(null);
     const [socket, setSocket] = useState<Socket | null>(null);
     const [friendRequestStatus, setFriendRequestStatus] = useState<{ [key: number]: boolean }>({});
@@ -32,8 +28,9 @@ const FriendList = () => {
             setFriendRequest(receivedFriendRequest);
             setFriendRequestArray((prevArray) => [
                 ...prevArray,
-                { userId: receivedFriendRequest?.receiver?.id, requestId: receivedFriendRequest.id }
+                { userId: receivedFriendRequest?.receiver?.id, requestId: receivedFriendRequest.id, status: receivedFriendRequest.status }
             ]);
+            
         });
         const storedStatus = localStorage.getItem("friendRequestStatus");
         if (storedStatus) {
@@ -45,6 +42,7 @@ const FriendList = () => {
           setFriendRequestArray(JSON.parse(storedFriendRequests));
         }
         fetchUsersList();
+
         return () => {
             // newSocket.off('friend-request-sent');
             // newSocket.off('friend-request-received');
@@ -56,6 +54,9 @@ const FriendList = () => {
         console.log('saving state to local storage');
         localStorage.setItem("friendRequestStatus", JSON.stringify(friendRequestStatus));
         localStorage.setItem("friendRequestArray", JSON.stringify(friendRequestArray));
+        console.log('friendRequestArray', friendRequestArray);
+        console.log('friendRequestStatus', friendRequestStatus);
+        
 
     }, [friendRequestStatus, friendRequestArray]);
 
@@ -77,15 +78,6 @@ const FriendList = () => {
             });
             if (response.ok) {
                 const usersList = await response.json();
-                // const statusMap: { [key: number]: boolean } = {};
-                // setFriendRequestStatus(statusMap);
-                // const storedStatus = localStorage.getItem("friendRequestStatus");
-                // if (storedStatus) {
-                //   setFriendRequestStatus(JSON.parse(storedStatus));
-                // } else {
-                //   const statusMap: { [key: number]: boolean } = {};
-                //   setFriendRequestStatus(statusMap);
-                // }
                 setUserList(usersList);
                 setFilteredUsersList(usersList);
                 console.log('usersList', usersList);
@@ -129,6 +121,17 @@ const FriendList = () => {
     };
 
     const sendFriendRequest = (userId: number) => {
+
+        // handle each both user send friend request to each other
+        if (isFriended(userId)) {
+            return;
+        }
+        
+        if (friendRequestStatus[userId]) {
+            cancelFriendRequest(userId);
+            return;
+        }
+
         socket?.emit("friend-request-sent", {
             senderId: userData.id,
             receiverId: userId
@@ -139,8 +142,14 @@ const FriendList = () => {
         //     setFriendRequest(friendRequest);
         //     setFriendRequestArray((prevArray) => [...prevArray, friendRequest.id]);
         // });
-
     }
+
+    const isFriended = (userId: number) => {
+        const friendRequest = friendRequestArray.find(
+            (request) => request.userId === userId && request.status === "friended"
+        );
+        return friendRequest;
+    };
 
     return (
         <div className='friend-page'>
@@ -151,6 +160,7 @@ const FriendList = () => {
                     <tr>
                         <th>Avatar</th>
                         <th>username</th>
+                        <th>Status</th>
                         <th>action</th>
                     </tr>
                 </thead>
@@ -161,6 +171,9 @@ const FriendList = () => {
                                 <Avatar src={ user?.avatar } alt="user avatar" width={40} height={40}/>
                             </td>
                             <td> { user?.username }</td>
+                            <td>
+                                { user?.online ? 'online' : 'offline' }
+                            </td>
                             <td>
                                     {/* { friendRequest?.receiver.id === user.id ? (
                                     // <button className="text-black" onClick={() => handleClick(user.id)}>
@@ -176,12 +189,17 @@ const FriendList = () => {
                                 <button
                                     className={friendRequestStatus[user.id] ? "cancel-button" : "add-button"}
                                     onClick={() =>
-                                        friendRequestStatus[user.id]
+                                        friendRequestStatus[user.id] && isFriended(user.id)
+                                        ? cancelFriendRequest(user.id)
+                                        : friendRequestStatus[user.id]
                                         ? cancelFriendRequest(user.id)
                                         : sendFriendRequest(user.id)
                                     }
                                     >
-                                    {friendRequestStatus[user.id] ? "Cancel" : "Add Friend"}
+                                    { friendRequestStatus[user.id] && isFriended(user.id) 
+                                        ? "unfriend"
+                                        : friendRequestStatus[user.id]
+                                        ? "Cancel" : "Add Friend"}
                                     { user.id }
                                 </button>
 

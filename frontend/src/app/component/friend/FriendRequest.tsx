@@ -90,13 +90,18 @@ const FriendRequest = ( {userId, socket, friendRequestArray, friendRequestStatus
   //   }
   // };
 
-  const acceptFriendRequest = async (friendRequestId: number) => {
+  const acceptFriendRequest = async (friendRequestId: number, accepterId: number) => {
     try {
-      console.log('friendRequestId', userId, friendRequestId);
-      socket?.emit('accept-friend-request', {
-        userId: userId,
-        friendRequestId: friendRequestId,
-      });
+      const confirmation = window.confirm('Are you sure you want to accept this friend request?');
+      if (confirmation) {
+        console.log('friendRequestId', userId, friendRequestId);
+        socket?.emit('accept-friend-request', {
+          userId: userId,
+          friendRequestId: friendRequestId,
+        });
+        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [accepterId]: true }));
+      }
+
     } catch (error) {
       console.log('Error accepting friend request:', error);
     }
@@ -121,6 +126,21 @@ const FriendRequest = ( {userId, socket, friendRequestArray, friendRequestStatus
       console.log('Error declining friend request:', error);
     }
   };
+
+  const unfriendFriendRequest = async (friendRequestId: number, unfrienderId: number) => {
+    try {
+      const confirmation = window.confirm('Are you sure you want to unfriend this friend?');
+      if (confirmation) {
+        socket?.emit('cancel-friend-request', {
+          senderId: userId,
+          friendRequestId: friendRequestId,
+        });
+        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [unfrienderId]: false }));
+      }
+    } catch (error) {
+      console.log('Error unfriending friend:', error);
+    }
+  };
     
   return (
       <div className="friend-request flex-col">
@@ -133,11 +153,19 @@ const FriendRequest = ( {userId, socket, friendRequestArray, friendRequestStatus
             <p>Receiver: {friendRequest?.receiver?.username}</p>
             <p>Status: {friendRequest?.status}</p>
             <div className="flex gap-5 my-5">
-              <button onClick={ () => acceptFriendRequest(friendRequest.id) }
+              <button onClick={ () => acceptFriendRequest(friendRequest.id, friendRequest.receiver.id) }
               disabled={ friendRequest.status === 'friended'}
-              className={friendRequest.status === 'friended' ? 'disabled-button' : ''}
+              className={friendRequest.status === 'friended' || friendRequest.status === 'decline' ? 'disabled-button' : ''}
               >Accept</button>
-              <button onClick={ () => declineFriendRequest(friendRequest.id, friendRequest.receiver.id) }>Decline</button>
+              <button onClick={ () => declineFriendRequest(friendRequest.id, friendRequest.receiver.id) }
+              disabled={ friendRequest.status === 'decline'}
+              className={friendRequest.status === 'decline' || friendRequest.status === 'friended'? 'disabled-button' : ''}
+              >Decline</button>
+              <button
+              onClick={ () => unfriendFriendRequest(friendRequest.id, friendRequest.receiver.id) }
+              disabled={ friendRequest.status !== 'friended'}
+              className={friendRequest.status !== 'friended' ? 'disabled-button' : ''}
+              >Unfriend</button>
             </div>
           </div>
         ))) : (

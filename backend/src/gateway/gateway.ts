@@ -52,7 +52,7 @@ export class MyGateway implements OnModuleInit {
         try {
             const { senderId, friendRequestId } = data;
             const cancelRequest = await this.friendService.cancelFriendRequest(friendRequestId);
-            this.server.emit('friend-request-received', friendRequestId);
+            this.server.emit('friend-request-received', cancelRequest);
             await this.getFriendRequest(senderId);
         } catch (error) {
             console.error('Error canceling friend request gateway', error);
@@ -84,6 +84,7 @@ export class MyGateway implements OnModuleInit {
             console.log('gateway', friendRequestId);
             const acceptedRequest = await this.friendService.acceptFriendRequest(friendRequestId);
             // this.server.emit('friend-request-accepted', acceptedRequest);
+            this.server.emit('friend-request-received', acceptedRequest);
             this.getFriendRequest(userId);
 
         } catch (error) {
@@ -96,6 +97,7 @@ export class MyGateway implements OnModuleInit {
         try {
             const { userId, friendRequestId } = data;
             const declinedRequest = await this.friendService.declineFriendRequest(friendRequestId);
+            this.server.emit('friend-request-received', declinedRequest);
             this.getFriendRequest(userId);
         } catch (error) {
             console.error('Error declining friend request gateway', error);
