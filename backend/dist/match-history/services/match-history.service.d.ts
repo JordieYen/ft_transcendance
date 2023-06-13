@@ -13,6 +13,8 @@ export declare class MatchHistoryService {
     getByScore(score: number): Promise<MatchHistory[]>;
     getTotalGamesByPlayerUid(uid: number): Promise<number>;
     getTotalWinsByPlayerUid(uid: number): Promise<number>;
+    getTotalLossByPlayerUid(uid: number): Promise<number>;
+    getMmrByPlayerUid(uid: number): Promise<number>;
     create(createMatchHistoryDto: CreateMatchHistoryDto): Promise<void>;
     remove(uid: number): Promise<{
         message: string;

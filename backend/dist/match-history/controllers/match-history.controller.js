@@ -40,6 +40,12 @@ let MatchHistoryController = class MatchHistoryController {
     async getTotalWinsByPlayerUid(uid) {
         return this.matchHistoryService.getTotalWinsByPlayerUid(+uid);
     }
+    async getTotalLossByPlayerUid(uid) {
+        return this.matchHistoryService.getTotalLossByPlayerUid(+uid);
+    }
+    async getMmrsByPlayerUid(uid) {
+        return this.matchHistoryService.getMmrByPlayerUid(+uid);
+    }
     async create(createMatchHistoryDto) {
         return this.matchHistoryService.create(createMatchHistoryDto);
     }
@@ -94,6 +100,22 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], MatchHistoryController.prototype, "getTotalWinsByPlayerUid", null);
+__decorate([
+    (0, common_1.Get)('loss'),
+    openapi.ApiResponse({ status: 200, type: Number }),
+    __param(0, (0, common_1.Query)('uid')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MatchHistoryController.prototype, "getTotalLossByPlayerUid", null);
+__decorate([
+    (0, common_1.Get)('mmr'),
+    openapi.ApiResponse({ status: 200, type: Number }),
+    __param(0, (0, common_1.Query)('uid')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MatchHistoryController.prototype, "getMmrsByPlayerUid", null);
 __decorate([
     (0, common_1.Post)(),
     openapi.ApiResponse({ status: 201 }),

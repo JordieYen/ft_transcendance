@@ -39,6 +39,16 @@ export class MatchHistoryController {
     return this.matchHistoryService.getTotalWinsByPlayerUid(+uid);
   }
 
+  @Get('loss')
+  async getTotalLossByPlayerUid(@Query('uid') uid: string): Promise<number> {
+    return this.matchHistoryService.getTotalLossByPlayerUid(+uid);
+  }
+
+  @Get('mmr')
+  async getMmrsByPlayerUid(@Query('uid') uid: string): Promise<number> {
+    return this.matchHistoryService.getMmrByPlayerUid(+uid);
+  }
+
   @Post()
   async create(@Body() createMatchHistoryDto: CreateMatchHistoryDto): Promise<void> {
     return this.matchHistoryService.create(createMatchHistoryDto);

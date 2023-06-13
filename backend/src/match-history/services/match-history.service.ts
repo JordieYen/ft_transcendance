@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateMatchHistoryDto } from '../dto/create-match-history.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MatchHistory } from 'src/typeorm/match_history.entity';
@@ -68,6 +68,21 @@ export class MatchHistoryService {
     return (total);
   }
 
+  // Return total loss from a player
+  async getTotalLossByPlayerUid(uid: number): Promise<number> {
+    const totalMatches = await this.getTotalGamesByPlayerUid(uid);
+    const totalWins = await this.getTotalWinsByPlayerUid(uid);
+    const total = totalMatches - totalWins;
+    return (total);
+  }
+
+  // Return MMR for a player
+  async getMmrByPlayerUid(uid: number): Promise<number> {
+    const totalWins = await this.getTotalWinsByPlayerUid(uid);
+    const totalLoss = await this.getTotalLossByPlayerUid(uid);
+    return (1000 + (totalWins * 10 - totalLoss * 5));
+  }
+
   // Add new entry
   async create(createMatchHistoryDto: CreateMatchHistoryDto): Promise<void> {
     const newMatch = await this.matchHistoryRepository.create({
@@ -82,7 +97,7 @@ export class MatchHistoryService {
       await this.matchHistoryRepository.save(newMatch);
     } catch (error) {
       console.log('error=', error.message);
-      throw new InternalServerErrorException('Could not create user');
+      throw new InternalServerErrorException('Could not create match-history');
     }
   }
 
@@ -90,7 +105,7 @@ export class MatchHistoryService {
   async remove(uid: number) {
     try {
       await this.matchHistoryRepository.delete(uid);
-      return {message: 'User with uid ${uid} has been deleted successfully'};
+      return {message: 'Match with uid ${uid} has been deleted successfully'};
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

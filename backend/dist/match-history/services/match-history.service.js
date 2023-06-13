@@ -64,6 +64,19 @@ let MatchHistoryService = class MatchHistoryService {
         const total = (await this.getWinsByPlayerUid(uid)).length;
         return (total);
     }
+    async getTotalLossByPlayerUid(uid) {
+        const totalMatches = await this.getTotalGamesByPlayerUid(uid);
+        const totalWins = await this.getTotalWinsByPlayerUid(uid);
+        const total = totalMatches - totalWins;
+        return (total);
+    }
+    async getMmrByPlayerUid(uid) {
+        const totalWins = await this.getTotalWinsByPlayerUid(uid);
+        const totalLoss = await this.getTotalLossByPlayerUid(uid);
+        if (this.userService.findUsersById(uid) === null)
+            throw new common_1.NotFoundException('user not found');
+        return (1000 + (totalWins * 10 - totalLoss * 5));
+    }
     async create(createMatchHistoryDto) {
         const newMatch = await this.matchHistoryRepository.create({
             winner_uid: createMatchHistoryDto.winner_uid,
@@ -78,13 +91,13 @@ let MatchHistoryService = class MatchHistoryService {
         }
         catch (error) {
             console.log('error=', error.message);
-            throw new common_1.InternalServerErrorException('Could not create user');
+            throw new common_1.InternalServerErrorException('Could not create match-history');
         }
     }
     async remove(uid) {
         try {
             await this.matchHistoryRepository.delete(uid);
-            return { message: 'User with uid ${uid} has been deleted successfully' };
+            return { message: 'Match with uid ${uid} has been deleted successfully' };
         }
         catch (err) {
             throw new common_1.HttpException(err.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
