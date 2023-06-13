@@ -14,6 +14,8 @@ import { IconButton } from "./IconButton";
 import { Router } from "react-router-dom";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import useModal from "@/hooks/useModal";
+import LeaderboardsModal from "@/components/LeaderboardsModal"
 
 interface HeaderLogoProps {
   currentPath: string;
@@ -59,29 +61,32 @@ interface HeaderLogoProps {
 /* Version-2: Logo still clickable in login page, but will do nothing */
 export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
   return (
-    <Link
-      className="flex flex-1 items-center gap-2"
-      // onClick={() => {
-      //   if (currentPath !== "/login") router.push("/pong-main");
-      // }}
-      href={currentPath !== "/login" ? "/pong-main" : ""}
-    >
-      <Image
-        className="object-contain"
-        src="/main-logo.svg"
-        alt="Logo"
-        width={120}
-        height={88}
-      />
-      {/* <img className="object-contain" src="/logo.png" alt="Logo" /> */}
-      <p className="text-3xl font-pmarker text-timberwolf">Pongmington</p>
-      {/* <img className="object-contain" src="/pongmington.png" alt="Pongminton"/> */}
-    </Link>
+    <div className="flex flex-1 items-center">
+      <Link
+        className="flex items-center gap-2"
+        // onClick={() => {
+        //   if (currentPath !== "/login") router.push("/pong-main");
+        // }}
+        href={currentPath !== "/login" ? "/pong-main" : ""}
+      >
+        <Image
+          className="object-contain"
+          src="/main-logo.svg"
+          alt="Logo"
+          width={120}
+          height={88}
+        />
+        {/* <img className="object-contain" src="/logo.png" alt="Logo" /> */}
+        <p className="text-3xl font-pmarker text-timberwolf">Pongmington</p>
+        {/* <img className="object-contain" src="/pongmington.png" alt="Pongminton"/> */}
+      </Link>
+    </div>
   );
 };
 
 export const HeaderIcon = () => {
   const router = useRouter();
+  const [isLeaderboardOpen, openLeaderboardModal, closeLeaderboardModal, leaderboardRef] = useModal(false);
   // const [error, setError] = useState<string | null>(null);
 
   const handleLogout = () => {
@@ -116,7 +121,12 @@ export const HeaderIcon = () => {
   return (
     <>
       {/* crown icon */}
-      <IconButton onClick={() => router.push("/leaderboards")}>
+      <LeaderboardsModal
+        isOpen={isLeaderboardOpen}
+        closeModal={closeLeaderboardModal}
+        accRef={leaderboardRef}
+      />
+      <IconButton onClick={() => openLeaderboardModal()}>
         <FontAwesomeIcon icon={faCrown} size="lg" />
       </IconButton>
 
