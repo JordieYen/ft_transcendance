@@ -14,12 +14,13 @@ const ChangeAccountModal = ({
 }: ChangeAccountModalProps) => {
   const [inputValue, setInputValue] = useState("");
   const [isNameUpdated, setIsNameUpdated] = useState(false);
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
+
   const handleNameUpdate = (inputValue: string) => {
     if (inputValue === "") {
-      closeModal();
       toast.error("Failed to change name: Name is not allowed to be empty!");
     } else {
       closeModal();

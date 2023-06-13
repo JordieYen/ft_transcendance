@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import { useState } from "react";
 import Logout from "@/app/data/logout";
 import UserData from "@/app/data/user_data";
@@ -11,10 +11,61 @@ import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import "@/styles/globals.css";
 import "@/styles/styling.css";
 import { IconButton } from "./IconButton";
+import { Router } from "react-router-dom";
+import Link from "next/link";
+import toast from "react-hot-toast";
 
-export const HeaderLogo = () => {
+interface HeaderLogoProps {
+  currentPath: string;
+}
+
+// export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
+//   return (
+//     <div className="flex flex-1 items-center gap-2">
+//       {currentPath === "/login" ? (
+//         <div className="flex flex-1 items-center gap-2">
+//           <Image
+//             className="object-contain"
+//             src="/main-logo.svg"
+//             alt="Logo"
+//             width={120}
+//             height={88}
+//           />
+//           <p className="text-3xl font-pmarker text-timberwolf">Pongmington</p>
+//         </div>
+//       ) : (
+//         <div className="flex flex-1 items-center gap-2">
+//           <button
+//             className="flex items-center gap-2"
+//             onClick={() => router.push("/pong-main")}
+//           >
+//             <Image
+//               className="object-contain"
+//               src="/main-logo.svg"
+//               alt="Logo"
+//               width={120}
+//               height={88}
+//             />
+//             {/* <img className="object-contain" src="/logo.png" alt="Logo" /> */}
+//             <p className="text-3xl font-pmarker text-timberwolf">Pongmington</p>
+//             {/* <img className="object-contain" src="/pongmington.png" alt="Pongminton"/> */}
+//           </button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+/* Version-2: Logo still clickable in login page, but will do nothing */
+export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
   return (
-    <div className="flex flex-1 items-center gap-2">
+    <Link
+      className="flex flex-1 items-center gap-2"
+      // onClick={() => {
+      //   if (currentPath !== "/login") router.push("/pong-main");
+      // }}
+      href={currentPath !== "/login" ? "/pong-main" : ""}
+    >
       <Image
         className="object-contain"
         src="/main-logo.svg"
@@ -25,7 +76,7 @@ export const HeaderLogo = () => {
       {/* <img className="object-contain" src="/logo.png" alt="Logo" /> */}
       <p className="text-3xl font-pmarker text-timberwolf">Pongmington</p>
       {/* <img className="object-contain" src="/pongmington.png" alt="Pongminton"/> */}
-    </div>
+    </Link>
   );
 };
 
@@ -35,6 +86,20 @@ export const HeaderIcon = () => {
 
   const handleLogout = () => {
     console.log("loggingout");
+    router.push("/login").then(() => {
+      toast((t) => (
+        <div className="flex flex-1 items-center justify-start border-saffron">
+          <div className="flex flex-col items-center justify-center text-timberwolf">
+            <FontAwesomeIcon icon={faRightFromBracket} size="lg" />
+          </div>
+          <div className="mx-[10px] my-1">
+            <p className="text-timberwolf font-roboto text-base">
+              Logout successful
+            </p>
+          </div>
+        </div>
+      ));
+    });
   };
   // const handleLogout = async () => {
   //   try {
@@ -56,10 +121,10 @@ export const HeaderIcon = () => {
       </IconButton>
 
       {/* profile avatar/name/mmr group */}
-      <button
+      <Link
         className="flex items-center space-x-2 group"
         /* HANDLE PROFILE CLICK BELOW! */
-        onClick={() => console.log("Header profile clicked")}
+        href={"/profile"}
       >
         <Image
           width={100}
@@ -86,12 +151,14 @@ export const HeaderIcon = () => {
           {/* AND DELETE BELOW */}
           <span className="font-xs font-roboto">{100}</span>
         </div>
-      </button>
+      </Link>
 
       {/* gear icon */}
-      <IconButton onClick={() => router.push("/settings")}>
-        <FontAwesomeIcon icon={faGear} size="lg" />
-      </IconButton>
+      <Link href={"/settings"}>
+        <IconButton>
+          <FontAwesomeIcon icon={faGear} size="lg" />
+        </IconButton>
+      </Link>
 
       {/* logout icon */}
       <IconButton onClick={handleLogout}>
@@ -106,7 +173,7 @@ const Header = () => {
   const currentPath = router.asPath;
   return (
     <nav className="flex mx-32 mt-5 mb-8 items-center gap-8">
-      <HeaderLogo />
+      <HeaderLogo currentPath={currentPath} />
       {currentPath !== "/login" && <HeaderIcon />}
     </nav>
   );

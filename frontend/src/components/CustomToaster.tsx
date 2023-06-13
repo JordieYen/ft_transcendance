@@ -7,6 +7,15 @@ const CustomToaster = () => {
       position="top-right"
       reverseOrder={false}
       toastOptions={{
+        style: {
+          width: "400px",
+          border: "2px solid #646669",
+          backgroundColor: "#2C2E31",
+          padding: "24px 32px",
+          color: "#D1D0C5",
+          fontFamily: "Roboto Mono",
+          fontSize: "1rem",
+        },
         success: {
           duration: 3000,
           iconTheme: {
@@ -14,12 +23,13 @@ const CustomToaster = () => {
             secondary: "#2C2E31",
           },
           style: {
-            width: "300px",
-            border: "2px solid #305029",
-            borderColor: "#E2B714",
+            width: "400px",
+            border: "2px solid #E2B714",
             backgroundColor: "#2C2E31",
-            padding: "20px 28px",
+            padding: "24px 32px",
             color: "#D1D0C5",
+            fontFamily: "Roboto Mono",
+            fontSize: "1rem",
           },
         },
         error: {
@@ -29,12 +39,13 @@ const CustomToaster = () => {
             secondary: "#305029",
           },
           style: {
-            width: "300px",
-            border: "2px solid #305029",
-            borderColor: "#CA4754",
+            width: "400px",
+            border: "2px solid #CA4754",
             backgroundColor: "#2C2E31",
-            padding: "20px 28px",
+            padding: "24px 32px",
             color: "#D1D0C5",
+            fontFamily: "Roboto Mono",
+            fontSize: "1rem",
           },
         },
       }}

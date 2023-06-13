@@ -44,7 +44,7 @@ const UserSettings = ({
   return (
     <div className="w-full px-32 flex items-center justify-center">
       <div className="flex-1">
-        <p className="text-textsecondary mb-1">
+        <p className="text-dimgrey mb-1">
           <FontAwesomeIcon icon={icon} className="pr-2" />
           {title}
         </p>

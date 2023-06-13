@@ -1,4 +1,3 @@
-import ChangeAccountModal from "@/components/user-settings/ChangeAccountModal";
 import UserSettings from "../src/components/user-settings/UserSettings";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
@@ -6,7 +5,10 @@ import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useRef } from "react";
 import useModal from "@/hooks/useModal";
+import ChangeAccountModal from "@/components/user-settings/ChangeAccountModal";
 import ChangeAvatarModal from "@/components/user-settings/ChangeAvatarModal";
+import ChangeTFAModal from "@/components/user-settings/ChangeTFAModal";
+import DeleteAccountModal from "@/components/user-settings/DeleteAccountModal";
 
 export default function SettingsPage() {
   const [isAccOpen, openAccModal, closeAccModal, accRef] = useModal(false);
@@ -42,20 +44,31 @@ export default function SettingsPage() {
         mode="button"
         icon={faImage}
       />
+      <ChangeTFAModal
+        isOpen={isTFAOpen}
+        closeModal={closePicModal}
+        tfaRef={tfaRef}
+      />
       <UserSettings
         title="Enable 2FA"
         description="Enable Two-Factor-Authentication."
         buttonDescArry={["enable 2FA"]}
         handleClick={(text) => console.log(text)}
+        // handleClick={(text) => openTFAModal()}
         mode="button"
         icon={faLock}
+      />
+      <DeleteAccountModal
+        isOpen={isDelOpen}
+        closeModal={closeDelModal}
+        delRef={delRef}
       />
       <UserSettings
         title="Delete account"
         description="Deletes your account and all data connected to it."
         warning="You can't undo this action!"
         buttonDescArry={["delete account"]}
-        handleClick={(text) => console.log(text)}
+        handleClick={() => openDelModal()}
         mode="button"
         icon={faTrash}
       />
