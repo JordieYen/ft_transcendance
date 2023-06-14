@@ -19,6 +19,10 @@ header {
 
 .avatar-image {
     border-radius: 50%;
+    max-height: 100px;
+    width: auto;
+    height: auto;
+    object-fit: cover;
 }
 
 .mmr-container {

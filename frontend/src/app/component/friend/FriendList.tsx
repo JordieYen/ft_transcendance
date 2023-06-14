@@ -1,10 +1,11 @@
+import './friend.css';
 import React from "react";
 import { useState, useEffect } from "react";
 import Avatar from "../header_icon/Avatar";
-import './friend.css';
 import SearchBar from "../search_bar/SearchBar";
 import FriendRequest from "./FriendRequest";
 import { io, Socket }  from 'socket.io-client';
+import Friend from "./Friend";
 
 const FriendList = () => {
     const [usersList, setUserList] = useState<any[]>([]);
@@ -13,6 +14,7 @@ const FriendList = () => {
     const [friendRequest, setFriendRequest] = useState<any>(null);
     const [socket, setSocket] = useState<Socket | null>(null);
     const [friendRequestStatus, setFriendRequestStatus] = useState<{ [key: number]: boolean }>({});
+    const [isSendRequestDisabled, setIsSendRequestDisabled] = useState<{[key: number]: boolean }>({});
     
     let userData: any = {};
     if (typeof window !== "undefined") {
@@ -139,6 +141,9 @@ const FriendList = () => {
         });
         setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: true }));
         console.log('send friendRequestStatus', friendRequestStatus);
+        setIsSendRequestDisabled((prevStatus) => ({ ...prevStatus, [userId]: true }));
+        console.log('send isSendRequestDisabled', isSendRequestDisabled);
+        
         // socket?.on("friend-request-received", (friendRequest: any) => {
         //     setFriendRequest(friendRequest);
         //     setFriendRequestArray((prevArray) => [...prevArray, friendRequest.id]);
@@ -223,50 +228,68 @@ const FriendList = () => {
     // );
 
     return (
-        <div className='friend-page'>
-            <SearchBar onSearch={ handleSearch } onReset={ fetchUsersList }/>
-            <h1 className="flex justify-center mb-10">Friend List</h1>
-            <div className="card-container">
-                { filteredUsersList.map(user => user.id !== userData.id && (
-                    <div className="card" key={user?.id}>
-                        <div className="card-avatar">
-                            <Avatar src={ user?.avatar } alt="user avatar" width={40} height={40}/>
-                        </div>
-                        <div className="card-details">
-                            <div className="card-username">{user?.username}</div>
-                            <div className="card-status">{ user?.online ? 'online' : 'offline' }</div>
-                        </div>
-                        <div className="card-actions">
-                            <button
-                                className={friendRequestStatus[user.id] ? "cancel-button" : "add-button"}
-                                onClick={() =>
-                                    friendRequestStatus[user.id] && isFriended(user.id)
-                                    ? cancelFriendRequest(user.id)
-                                    : friendRequestStatus[user.id]
-                                    ? cancelFriendRequest(user.id)
-                                    : sendFriendRequest(user.id)
-                                }
-                                >
-                                { friendRequestStatus[user.id] && isFriended(user.id) 
-                                    ? "unfriend"
-                                    : friendRequestStatus[user.id]
-                                    ? "Cancel" : "Add Friend"}
-                                { user.id }
-                            </button>
+        <div className='friend-page w-full flex'>
+            <div className='friend-section w-1/3 bg-green-800'>
+                <Friend userDataId={userData.id}/>
+
+            </div>
+            <div className='users-list w-2/3'>
+                <div className='flex flex-col h-full'>
+                    <div className='px-4 py-2'>
+                        <SearchBar onSearch={handleSearch} onReset={fetchUsersList} />
+                    </div>                
+                    <div className="flex-2 overflow-y-auto px-4 py-2">
+
+                        <h1 className="flex justify-center mb-10">Users List</h1>
+                        <div className="card-container gap-4">
+                            { filteredUsersList.map(user => user.id !== userData.id && (
+                                <div className="card" key={user?.id}>
+                                    <div className="card-avatar">
+                                        <Avatar src={ user?.avatar } alt="user avatar" width={100} height={125}/>
+                                    </div>
+                                    <div className="card-details">
+                                        <p className="card-username">{user?.username}</p>
+                                        <div className={`card-status ${user?.online ? 'online' : 'offline'}`}>
+                                            {user?.online ? <div className='green-dot'></div> : <div className='red-dot'></div>}
+                                            <span className="card-status">{ user?.online ? 'online' : 'offline' }</span>
+                                        </div>
+                                    </div>
+                                    <div className="card-actions">
+                                        <button
+                                            className={friendRequestStatus[user.id] ? "cancel-button" : "add-button"}
+                                            onClick={() =>
+                                                friendRequestStatus[user.id] && isFriended(user.id)
+                                                ? cancelFriendRequest(user.id)
+                                                : friendRequestStatus[user.id]
+                                                ? cancelFriendRequest(user.id)
+                                                : sendFriendRequest(user.id)
+                                            }
+                                            disabled={isSendRequestDisabled[user.id] === true}
+                                            >
+                                            { friendRequestStatus[user.id] && isFriended(user.id) 
+                                                ? "unfriend"
+                                                : friendRequestStatus[user.id]
+                                                ? "Cancel " : "Add Friend "}
+                                             { user.id }
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
-                ))}
+                    <div className="friend-page bg-black">
+                        <FriendRequest
+                        userId={ userData.id }
+                        currUser={ userData }
+                        socket={ socket }
+                        friendRequestArray={ friendRequestArray }
+                        friendRequestStatus={ friendRequestStatus }
+                        setFriendRequestStatus={ setFriendRequestStatus }
+                        />
+                    </div>
+                </div>
             </div>
-            <div className="friend-page">
-                <FriendRequest
-                userId={ userData.id }
-                currUser={ userData }
-                socket={ socket }
-                friendRequestArray={ friendRequestArray }
-                friendRequestStatus={ friendRequestStatus }
-                setFriendRequestStatus={ setFriendRequestStatus }
-                />
-            </div>
+
         </div>
 
     );

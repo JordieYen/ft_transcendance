@@ -80,5 +80,10 @@ export class FriendController {
     return this.friendService.deleteAll();
   }
 
+  @Get('friends/:userId')
+  getFriends(@Param('userId') userId: number) {
+    return this.friendService.getFriends(userId);
+  }
+
 
 }

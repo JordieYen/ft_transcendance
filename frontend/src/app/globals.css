@@ -47,3 +47,21 @@ h1, p, table {
   height: 100vh;
   overflow: hidden;
 }
+
+.avatar-image {
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .friend-page {
+    flex-direction: column;
+  }
+
+  .friend-section,
+  .users-list {
+    flex: initial;
+    width: 100%;
+  }
+}

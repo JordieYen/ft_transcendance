@@ -105,6 +105,7 @@ const FriendRequest = ( {userId, currUser, socket, friendRequestArray, friendReq
           friendRequestId: friendRequestId,
         });
         setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [accepterId]: true }));
+        setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
       }
 
     } catch (error) {
@@ -141,6 +142,7 @@ const FriendRequest = ( {userId, currUser, socket, friendRequestArray, friendReq
           friendRequestId: friendRequestId,
         });
         setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [unfrienderId]: false }));
+        setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
       }
     } catch (error) {
       console.log('Error unfriending friend:', error);
@@ -153,6 +155,7 @@ const FriendRequest = ( {userId, currUser, socket, friendRequestArray, friendReq
         { friendRequests?.length > 0 ? (
           friendRequests
           // .filter((friendRequest) => friendRequest?.receiver?.id === userData?.id)
+          // .filter((friendRequest) => friendRequest?.status !== 'friended')
           .map((friendRequest) => (
             <div key={friendRequest?.id}>
             <p>Id: {friendRequest?.id}</p>

@@ -206,4 +206,24 @@ export class FriendService {
       throw new InternalServerErrorException('Failed to delete all friend', error);
     }
   }
+
+  async getFriends(userId: number) {
+    const friends = await this.friendRepository.find({
+      where: [
+        {
+          sender: { id: userId },
+          status: FriendStatus.Friended,
+        },
+        {
+          receiver: { id: userId },
+          status: FriendStatus.Friended,
+        },
+      ],
+      relations: ['sender', 'receiver'],
+    });
+    console.log('getFriends', friends);
+    
+    return friends;
+  }
+
 }
