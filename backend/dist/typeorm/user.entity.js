@@ -39,7 +39,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "username", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 'default_avatar.png' }),
+    (0, typeorm_1.Column)({ default: 'http://localhost:3000/public/default_avatar.png', nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "avatar", void 0);
 __decorate([

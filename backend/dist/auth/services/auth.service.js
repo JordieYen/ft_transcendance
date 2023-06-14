@@ -88,7 +88,7 @@ let AuthService = class AuthService {
             const newUser = new user_entity_1.User();
             newUser.intra_uid = +profile.id;
             newUser.username = profile.username;
-            newUser.avatar = profile._json.image.link;
+            newUser.avatar = profile._json.image.link || 'http://localhost:3000/public/default_avatar.png';
             newUser.online = true;
             returnUser = await this.userService.createUser(newUser);
         }

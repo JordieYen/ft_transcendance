@@ -1,23 +1,26 @@
+import UserData from "@/app/webhook/user_data";
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import './friend.css';
 
 interface FriendRequestProps {
   userId: number;
+  currUser: any;
   socket: Socket | null;
   friendRequestArray: { userId: number; requestId: number }[];
   friendRequestStatus: { [key: number]: boolean };
   setFriendRequestStatus: React.Dispatch<React.SetStateAction<{ [key: number]: boolean }>>;
 }
 
-const FriendRequest = ( {userId, socket, friendRequestArray, friendRequestStatus, setFriendRequestStatus } : FriendRequestProps) => {
+const FriendRequest = ( {userId, currUser, socket, friendRequestArray, friendRequestStatus, setFriendRequestStatus } : FriendRequestProps) => {
   const [friendRequests, setFriendRequests] = useState<any[]>([]);
+  const userData = UserData();
 
   useEffect(() => {
 
       // const socket = io('http://localhost:3000');
-      fetchFriendRequests();
       socket?.on('friend-request', handleFriendRequestReceived);
+      fetchFriendRequests();
       // socket?.on('friend-request-accepted', handleFriendRequestAccepted);
       return () => {
           socket?.off('friend-request', handleFriendRequestReceived);
@@ -44,10 +47,12 @@ const FriendRequest = ( {userId, socket, friendRequestArray, friendRequestStatus
   };
 
   const handleFriendRequestReceived = (friendRequest: any) => {
-    setFriendRequests( () => {
-      const updatedRequest = [...friendRequest];;
+    setFriendRequests(() => {
+    //   console.log('handleFriendRequestReceived', friendRequest);
+      const updatedRequest = [...friendRequest];
       return updatedRequest.sort((a, b) => a.id - b.id);
-    })
+      // return updatedRequest;
+    })    
   };
 
   const handleFriendRequestAccepted = (friendRequest: any) => {
@@ -145,8 +150,10 @@ const FriendRequest = ( {userId, socket, friendRequestArray, friendRequestStatus
   return (
       <div className="friend-request flex-col">
         <h1>Friend Requests</h1>
-        { friendRequests.length > 0 ? (
-          friendRequests.map((friendRequest) => (
+        { friendRequests?.length > 0 ? (
+          friendRequests
+          // .filter((friendRequest) => friendRequest?.receiver?.id === userData?.id)
+          .map((friendRequest) => (
             <div key={friendRequest?.id}>
             <p>Id: {friendRequest?.id}</p>
             <p>Sender: {friendRequest?.sender?.username}</p>
@@ -173,6 +180,39 @@ const FriendRequest = ( {userId, socket, friendRequestArray, friendRequestStatus
         )}
       </div>
   );
+
+  // return ( 
+  //     <div className="friend-request flex-col">
+  //       <h1>Friend Requests</h1>
+  //       { userData?.receiveFriendRequest && userData?.receiveFriendRequest.length > 0 ? (
+  //         userData?.receiveFriendRequest
+  //           .filter((friendRequest: any) => friendRequest.status !== 'cancel')
+  //           .map((friendRequest: any) => (
+  //             <div key={friendRequest?.id}>
+  //               <p>Id: {friendRequest?.id}</p>
+  //               <p>Sender: {friendRequest?.sender?.username}</p>
+  //               <p>Status: {friendRequest?.status}</p>
+  //             </div>
+  //         ))) :
+  //         <p>No friend requests received</p>
+  //       }
+  //     </div>
+  //   );
+
+      {/* { currUser?.receiveFriendRequest && currUser?.receiveFriendRequest.length > 0 ? (
+        currUser?.receiveFriendRequest
+          .filter((friendRequest: any) => friendRequest.status !== 'cancel')
+          .map((friendRequest: any) => (
+            <div key={friendRequest?.id}>
+              <p>Id: {friendRequest?.id}</p>
+              <p>Sender: {friendRequest?.sender?.username}</p>
+              <p>Status: {friendRequest?.status}</p>
+            </div>
+          ))
+      ) : (
+        <p>No friend requests received</p>
+      )} */}
+  
 };
 
 export default FriendRequest;

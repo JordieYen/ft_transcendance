@@ -21,6 +21,8 @@ export class UsersService {
     try {
       return await this.usersRepository.save(newUser);
     } catch (error) {
+      console.error(error);
+      
       throw new InternalServerErrorException('Could not create user');
     }
   }
@@ -112,7 +114,11 @@ export class UsersService {
         'p2_match.p1_uid',
         'p2_match.p2_uid',
         'sentFriendRequest',
+        'sentFriendRequest.receiver',
+        'sentFriendRequest.sender',
         'receiveFriendRequest',
+        'receiveFriendRequest.receiver',
+        'receiveFriendRequest.sender',
       ],
       where: {
         id: id,

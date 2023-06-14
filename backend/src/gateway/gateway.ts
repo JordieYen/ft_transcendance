@@ -61,7 +61,7 @@ export class MyGateway implements OnModuleInit {
 
     @SubscribeMessage('friend-request-received')
     async sendFriendRequest(senderId: number, receiverId: number) {
-        console.log('send friend request');
+        console.log('friend request received');
         const friendRequest = await this.friendService.sendFriendRequest(senderId, receiverId);
         // console.log('friend', friendRequest);
         this.server.emit('friend-request-received', friendRequest);
@@ -71,8 +71,10 @@ export class MyGateway implements OnModuleInit {
     @SubscribeMessage('friend-request')
     async getFriendRequest(senderId: number) {
         console.log('get friend request');
-        const friendRequests = await this.friendService.getFriendRequests(senderId);
-        // console.log('friends', friendRequests);
+        // const friendRequests = await this.friendService.getFriendRequests(senderId);
+        // here need to change idea to send
+        const friendRequests = await this.friendService.getReceivedFriendRequest(senderId);
+        console.log('friends', friendRequests);
         this.server.emit('friend-request', friendRequests);
     }
 

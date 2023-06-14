@@ -1,6 +1,6 @@
-.disabled-button {
-    opacity: 0.3; /* Reduce the opacity to make it appear greyed out */
-    cursor: not-allowed; /* Change the cursor to indicate it's disabled */
+/* .disabled-button {
+    opacity: 0.3;
+    cursor: not-allowed;
 }
 
 .add-button {
@@ -9,12 +9,11 @@
 
 .cancel-button {
     background-color: black;
-}
+} */
 
-
+/* 
 table {
     width: 100%;
-    /* border-collapse: collapse; */
     border-collapse: seperate;
     border-spacing: 0;
     overflow: auto;
@@ -69,7 +68,7 @@ td:last-child {
     border-right-style: solid;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
-}
+} */
 
 .avatar-image {
     border-radius: 50%;

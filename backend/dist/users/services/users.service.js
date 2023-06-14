@@ -29,6 +29,7 @@ let UsersService = class UsersService {
             return await this.usersRepository.save(newUser);
         }
         catch (error) {
+            console.error(error);
             throw new common_1.InternalServerErrorException('Could not create user');
         }
     }
@@ -113,7 +114,11 @@ let UsersService = class UsersService {
                 'p2_match.p1_uid',
                 'p2_match.p2_uid',
                 'sentFriendRequest',
+                'sentFriendRequest.receiver',
+                'sentFriendRequest.sender',
                 'receiveFriendRequest',
+                'receiveFriendRequest.receiver',
+                'receiveFriendRequest.sender',
             ],
             where: {
                 id: id,

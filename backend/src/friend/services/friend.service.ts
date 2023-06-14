@@ -157,6 +157,8 @@ export class FriendService {
   }
 
   async getReceivedFriendRequest(receiverId: number) {
+    console.log('receiverId', receiverId);
+    
     const receivedFriendRequest = await this.friendRepository.find({
       where: {
         receiver: { id: receiverId },

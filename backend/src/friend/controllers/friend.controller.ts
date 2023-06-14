@@ -71,7 +71,8 @@ export class FriendController {
 
   @Get('friend-requests/:userId')
   getFriendRequests(@Param('userId') userId: number) {
-    return this.friendService.getFriendRequests(userId);
+    // return this.friendService.getFriendRequests(userId);
+    return this.friendService.getReceivedFriendRequest(userId);
   }
 
   @Delete('delete-all/:id')

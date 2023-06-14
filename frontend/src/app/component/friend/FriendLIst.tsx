@@ -51,11 +51,11 @@ const FriendList = () => {
     }, []);
 
     useEffect(() => {
-        console.log('saving state to local storage');
+        // console.log('saving state to local storage');
         localStorage.setItem("friendRequestStatus", JSON.stringify(friendRequestStatus));
         localStorage.setItem("friendRequestArray", JSON.stringify(friendRequestArray));
-        console.log('friendRequestArray', friendRequestArray);
-        console.log('friendRequestStatus', friendRequestStatus);
+        // console.log('friendRequestArray', friendRequestArray);
+        // console.log('friendRequestStatus', friendRequestStatus);
         
 
     }, [friendRequestStatus, friendRequestArray]);
@@ -124,6 +124,7 @@ const FriendList = () => {
 
         // handle each both user send friend request to each other
         if (isFriended(userId)) {
+            console.log('both send friend request to each other');
             return;
         }
         
@@ -134,7 +135,7 @@ const FriendList = () => {
 
         socket?.emit("friend-request-sent", {
             senderId: userData.id,
-            receiverId: userId
+            receiverId: userId,
         });
         setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: true }));
         console.log('send friendRequestStatus', friendRequestStatus);
@@ -151,67 +152,115 @@ const FriendList = () => {
         return friendRequest;
     };
 
+    // return (
+    //     <div className='friend-page'>
+    //         <SearchBar onSearch={ handleSearch } onReset={ fetchUsersList }/>
+    //         <h1 className="flex justify-center mb-10">Friend List</h1>
+    //         <table>
+    //             <thead>
+    //                 <tr>
+    //                     <th>Avatar</th>
+    //                     <th>username</th>
+    //                     <th>Status</th>
+    //                     <th>action</th>
+    //                 </tr>
+    //             </thead>
+    //             <tbody>
+    //                 { filteredUsersList.map(user => user.id !== userData.id && (
+    //                     <tr key={ user?.id }>
+    //                         <td>
+    //                             <Avatar src={ user?.avatar } alt="user avatar" width={40} height={40}/>
+    //                         </td>
+    //                         <td> { user?.username }</td>
+    //                         <td>
+    //                             { user?.online ? 'online' : 'offline' }
+    //                         </td>
+    //                         <td>
+    //                                 {/* { friendRequest?.receiver.id === user.id ? (
+    //                                 // <button className="text-black" onClick={() => handleClick(user.id)}>
+    //                                 <button className="text-black cancel-button" onClick={() => cancelFriendRequest(user.id)}>
+    //                                 Cancel { friendRequest  && friendRequest?.receiver?.id }
+    //                                 </button>
+    //                             ) : (
+    //                                 // <button className="bg-black" onClick={() => handleClick(user.id)}>
+    //                                 <button className="bg-black add-button" onClick={() => sendFriendRequest(user.id)}>
+    //                                 Add Friend
+    //                                 </button>
+    //                             )} */}
+    //                             <button
+    //                                 className={friendRequestStatus[user.id] ? "cancel-button" : "add-button"}
+    //                                 onClick={() =>
+    //                                     friendRequestStatus[user.id] && isFriended(user.id)
+    //                                     ? cancelFriendRequest(user.id)
+    //                                     : friendRequestStatus[user.id]
+    //                                     ? cancelFriendRequest(user.id)
+    //                                     : sendFriendRequest(user.id)
+    //                                 }
+    //                                 >
+    //                                 { friendRequestStatus[user.id] && isFriended(user.id) 
+    //                                     ? "unfriend"
+    //                                     : friendRequestStatus[user.id]
+    //                                     ? "Cancel" : "Add Friend"}
+    //                                 { user.id }
+    //                             </button>
+
+    //                         </td>
+    //                     </tr>
+    //                 ))}
+    //             </tbody>
+    //         </table>
+    //         <div className='friend-page'>
+    //             <FriendRequest 
+    //             userId={ userData.id }
+    //             currUser={ userData }
+    //             socket={ socket }
+    //             friendRequestArray={ friendRequestArray }
+    //             friendRequestStatus={ friendRequestStatus }
+    //             setFriendRequestStatus={ setFriendRequestStatus }
+    //             />
+    //         </div>
+    //     </div>
+    // );
+
     return (
         <div className='friend-page'>
             <SearchBar onSearch={ handleSearch } onReset={ fetchUsersList }/>
             <h1 className="flex justify-center mb-10">Friend List</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Avatar</th>
-                        <th>username</th>
-                        <th>Status</th>
-                        <th>action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    { filteredUsersList.map(user => user.id !== userData.id && (
-                        <tr key={ user?.id }>
-                            <td>
-                                <Avatar src={ user?.avatar } alt="user avatar" width={40} height={40}/>
-                            </td>
-                            <td> { user?.username }</td>
-                            <td>
-                                { user?.online ? 'online' : 'offline' }
-                            </td>
-                            <td>
-                                    {/* { friendRequest?.receiver.id === user.id ? (
-                                    // <button className="text-black" onClick={() => handleClick(user.id)}>
-                                    <button className="text-black cancel-button" onClick={() => cancelFriendRequest(user.id)}>
-                                    Cancel { friendRequest  && friendRequest?.receiver?.id }
-                                    </button>
-                                ) : (
-                                    // <button className="bg-black" onClick={() => handleClick(user.id)}>
-                                    <button className="bg-black add-button" onClick={() => sendFriendRequest(user.id)}>
-                                    Add Friend
-                                    </button>
-                                )} */}
-                                <button
-                                    className={friendRequestStatus[user.id] ? "cancel-button" : "add-button"}
-                                    onClick={() =>
-                                        friendRequestStatus[user.id] && isFriended(user.id)
-                                        ? cancelFriendRequest(user.id)
-                                        : friendRequestStatus[user.id]
-                                        ? cancelFriendRequest(user.id)
-                                        : sendFriendRequest(user.id)
-                                    }
-                                    >
-                                    { friendRequestStatus[user.id] && isFriended(user.id) 
-                                        ? "unfriend"
-                                        : friendRequestStatus[user.id]
-                                        ? "Cancel" : "Add Friend"}
-                                    { user.id }
-                                </button>
-
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            <div className='friend-page'>
-                {/* {friendRequestArray && <FriendRequestNotification friendRequest={ friendRequest } />} */}
-                <FriendRequest 
+            <div className="card-container">
+                { filteredUsersList.map(user => user.id !== userData.id && (
+                    <div className="card" key={user?.id}>
+                        <div className="card-avatar">
+                            <Avatar src={ user?.avatar } alt="user avatar" width={40} height={40}/>
+                        </div>
+                        <div className="card-details">
+                            <div className="card-username">{user?.username}</div>
+                            <div className="card-status">{ user?.online ? 'online' : 'offline' }</div>
+                        </div>
+                        <div className="card-actions">
+                            <button
+                                className={friendRequestStatus[user.id] ? "cancel-button" : "add-button"}
+                                onClick={() =>
+                                    friendRequestStatus[user.id] && isFriended(user.id)
+                                    ? cancelFriendRequest(user.id)
+                                    : friendRequestStatus[user.id]
+                                    ? cancelFriendRequest(user.id)
+                                    : sendFriendRequest(user.id)
+                                }
+                                >
+                                { friendRequestStatus[user.id] && isFriended(user.id) 
+                                    ? "unfriend"
+                                    : friendRequestStatus[user.id]
+                                    ? "Cancel" : "Add Friend"}
+                                { user.id }
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <div className="friend-page">
+                <FriendRequest
                 userId={ userData.id }
+                currUser={ userData }
                 socket={ socket }
                 friendRequestArray={ friendRequestArray }
                 friendRequestStatus={ friendRequestStatus }
@@ -219,6 +268,7 @@ const FriendList = () => {
                 />
             </div>
         </div>
+
     );
 };
 
