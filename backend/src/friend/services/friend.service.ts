@@ -97,10 +97,16 @@ export class FriendService {
       throw new ConflictException('sender and receiver same');
     }
     const existingFriend = await this.friendRepository.findOne({
-      where: {
-        sender: { id: senderId },
-        receiver: { id: receiverId },
-      },
+      where: [
+        {
+          sender: { id: senderId },
+          receiver: { id: receiverId },
+        },
+        {
+          sender: { id: receiverId },
+          receiver: { id: senderId },
+        }
+      ]
     });
 
     if (existingFriend) {
@@ -163,7 +169,7 @@ export class FriendService {
       where: {
         receiver: { id: receiverId },
         // status: FriendStatus.Friended,
-        status: Not(In([FriendStatus.Cancel, FriendStatus.Decline])),
+        status: Not(In([FriendStatus.Cancel, FriendStatus.Decline, FriendStatus.Friended])),
       },
       relations: ['sender', 'receiver'],
     });
@@ -221,9 +227,16 @@ export class FriendService {
       ],
       relations: ['sender', 'receiver'],
     });
-    console.log('getFriends', friends);
-    
-    return friends;
+
+    const filteredFriends = friends.map(friend => {
+      
+      if (friend.sender.id === userId) {
+        return friend.receiver;
+      } else  {
+        return friend.sender;
+      }
+    });
+    return filteredFriends;
   }
 
 }

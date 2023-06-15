@@ -1,36 +1,45 @@
 import './friend.css';
-import React from "react";
+import React, { useContext } from "react";
 import { useState, useEffect } from "react";
 import Avatar from "../header_icon/Avatar";
 import SearchBar from "../search_bar/SearchBar";
 import FriendRequest from "./FriendRequest";
-import { io, Socket }  from 'socket.io-client';
 import Friend from "./Friend";
+import { SocketContext } from '@/app/socket/SocketProvider';
+import UserData, { UserContext } from '@/app/webhook/UserContext';
 
 const FriendList = () => {
     const [usersList, setUserList] = useState<any[]>([]);
     const [filteredUsersList, setFilteredUsersList] = useState<any[]>([]);
-    const [friendRequestArray, setFriendRequestArray] = useState<{ userId: number, requestId: number, status: string }[]>([]);
+    const [friendRequestArray, setFriendRequestArray] = useState<{ 
+        requestId: number, 
+        senderId: number, 
+        receiverId: number, 
+        status: string 
+    }[]>([]);
     const [friendRequest, setFriendRequest] = useState<any>(null);
-    const [socket, setSocket] = useState<Socket | null>(null);
     const [friendRequestStatus, setFriendRequestStatus] = useState<{ [key: number]: boolean }>({});
-    const [isSendRequestDisabled, setIsSendRequestDisabled] = useState<{[key: number]: boolean }>({});
     
+    // const userData = useContext(UserContext);
+    // const userData = UserData();
     let userData: any = {};
     if (typeof window !== "undefined") {
         const userDataString = localStorage?.getItem("userData");
         userData = userDataString ? JSON.parse(userDataString) : {};
     }
+    const socket = useContext(SocketContext);
 
     useEffect(() => {
-        const newSocket = io("http://localhost:3000");
-        setSocket(newSocket);
-        newSocket.on("friend-request-received", (receivedFriendRequest: any) => {
+        socket?.on("friend-request-received", (receivedFriendRequest: any) => {
             console.log('receivedFriendRequest socket', receivedFriendRequest);
             setFriendRequest(receivedFriendRequest);
             setFriendRequestArray((prevArray) => [
                 ...prevArray,
-                { userId: receivedFriendRequest?.receiver?.id, requestId: receivedFriendRequest.id, status: receivedFriendRequest.status }
+                { 
+                    requestId: receivedFriendRequest.id, 
+                    senderId: receivedFriendRequest?.sender?.id,
+                    receiverId: receivedFriendRequest?.receiver?.id, 
+                    status: receivedFriendRequest.status }
             ]);
             
         });
@@ -46,9 +55,8 @@ const FriendList = () => {
         fetchUsersList();
 
         return () => {
-            // newSocket.off('friend-request-sent');
-            // newSocket.off('friend-request-received');
-            // newSocket.disconnect(); 
+            socket?.off('friend-request-sent');
+            socket?.off('friend-request-received');
         };
     }, []);
 
@@ -56,22 +64,11 @@ const FriendList = () => {
         // console.log('saving state to local storage');
         localStorage.setItem("friendRequestStatus", JSON.stringify(friendRequestStatus));
         localStorage.setItem("friendRequestArray", JSON.stringify(friendRequestArray));
-        // console.log('friendRequestArray', friendRequestArray);
+        console.log('friendRequestArray', friendRequestArray);
         // console.log('friendRequestStatus', friendRequestStatus);
         
 
     }, [friendRequestStatus, friendRequestArray]);
-
-    // useEffect(() => {
-    //     const storedFriendRequests = localStorage.getItem("friendRequestArray");
-    //     if (storedFriendRequests) {
-    //       setFriendRequestArray(JSON.parse(storedFriendRequests));
-    //     }
-    // }, []);
-
-    // useEffect(() => {
-    //     localStorage.setItem("friendRequestArray", JSON.stringify(friendRequestArray));
-    // }, [friendRequestArray]);
       
     const fetchUsersList = async () => {
         try {
@@ -107,15 +104,14 @@ const FriendList = () => {
     const cancelFriendRequest = (userId: number) => {
         console.log('friend array', friendRequestArray);
         
-        const friendRequests = friendRequestArray.find((request) => request.userId === userId);
+        const friendRequests = friendRequestArray.find((request) => request.receiverId === userId);
         console.log('friendRequests in cancel', friendRequests);
         socket?.emit("cancel-friend-request", {
             senderId: userData.id,
             // friendRequestId: friendRequest?.id
             friendRequestId: friendRequests?.requestId
         });
-        // setFriendRequestArray(friendRequestArray.filter((id) => id !== friendRequest?.id));
-        setFriendRequestArray(friendRequestArray.filter((request) => request.userId !== userId));
+        setFriendRequestArray(friendRequestArray.filter((request) => request.receiverId !== userId));
         setFriendRequest(null);
         setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: false }));
         console.log('cancel friendRequestStatus', friendRequestStatus);
@@ -125,112 +121,53 @@ const FriendList = () => {
     const sendFriendRequest = (userId: number) => {
 
         // handle each both user send friend request to each other
-        if (isFriended(userId)) {
+        if (isSent(userId)) {
             console.log('both send friend request to each other');
             return;
         }
-        
-        if (friendRequestStatus[userId]) {
-            cancelFriendRequest(userId);
-            return;
-        }
-
         socket?.emit("friend-request-sent", {
             senderId: userData.id,
             receiverId: userId,
         });
         setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: true }));
         console.log('send friendRequestStatus', friendRequestStatus);
-        setIsSendRequestDisabled((prevStatus) => ({ ...prevStatus, [userId]: true }));
-        console.log('send isSendRequestDisabled', isSendRequestDisabled);
-        
         // socket?.on("friend-request-received", (friendRequest: any) => {
         //     setFriendRequest(friendRequest);
         //     setFriendRequestArray((prevArray) => [...prevArray, friendRequest.id]);
         // });
     }
 
-    const isFriended = (userId: number) => {
+    const isSent = (userId: number) => {
         const friendRequest = friendRequestArray.find(
-            (request) => request.userId === userId && request.status === "friended"
+            (request) => 
+            request.receiverId === userData.id && 
+            request.status === "pending" &&
+            request.senderId === userId
         );
-        return friendRequest;
+        console.log('isSent friendRequest', friendRequest);
+        
+        return !!friendRequest;
     };
 
-    // return (
-    //     <div className='friend-page'>
-    //         <SearchBar onSearch={ handleSearch } onReset={ fetchUsersList }/>
-    //         <h1 className="flex justify-center mb-10">Friend List</h1>
-    //         <table>
-    //             <thead>
-    //                 <tr>
-    //                     <th>Avatar</th>
-    //                     <th>username</th>
-    //                     <th>Status</th>
-    //                     <th>action</th>
-    //                 </tr>
-    //             </thead>
-    //             <tbody>
-    //                 { filteredUsersList.map(user => user.id !== userData.id && (
-    //                     <tr key={ user?.id }>
-    //                         <td>
-    //                             <Avatar src={ user?.avatar } alt="user avatar" width={40} height={40}/>
-    //                         </td>
-    //                         <td> { user?.username }</td>
-    //                         <td>
-    //                             { user?.online ? 'online' : 'offline' }
-    //                         </td>
-    //                         <td>
-    //                                 {/* { friendRequest?.receiver.id === user.id ? (
-    //                                 // <button className="text-black" onClick={() => handleClick(user.id)}>
-    //                                 <button className="text-black cancel-button" onClick={() => cancelFriendRequest(user.id)}>
-    //                                 Cancel { friendRequest  && friendRequest?.receiver?.id }
-    //                                 </button>
-    //                             ) : (
-    //                                 // <button className="bg-black" onClick={() => handleClick(user.id)}>
-    //                                 <button className="bg-black add-button" onClick={() => sendFriendRequest(user.id)}>
-    //                                 Add Friend
-    //                                 </button>
-    //                             )} */}
-    //                             <button
-    //                                 className={friendRequestStatus[user.id] ? "cancel-button" : "add-button"}
-    //                                 onClick={() =>
-    //                                     friendRequestStatus[user.id] && isFriended(user.id)
-    //                                     ? cancelFriendRequest(user.id)
-    //                                     : friendRequestStatus[user.id]
-    //                                     ? cancelFriendRequest(user.id)
-    //                                     : sendFriendRequest(user.id)
-    //                                 }
-    //                                 >
-    //                                 { friendRequestStatus[user.id] && isFriended(user.id) 
-    //                                     ? "unfriend"
-    //                                     : friendRequestStatus[user.id]
-    //                                     ? "Cancel" : "Add Friend"}
-    //                                 { user.id }
-    //                             </button>
+    // Function to check if two users are already friends
+    const areFriends = (user1: any, user2: any) => {
+        const friendship = friendRequestArray.find(
+            (request) => 
+            ((request.senderId === user1.id && request.receiverId === user2.id) ||
+            (request.senderId === user2.id && request.receiverId === user1.id)) &&
+            request.status === "friended"
 
-    //                         </td>
-    //                     </tr>
-    //                 ))}
-    //             </tbody>
-    //         </table>
-    //         <div className='friend-page'>
-    //             <FriendRequest 
-    //             userId={ userData.id }
-    //             currUser={ userData }
-    //             socket={ socket }
-    //             friendRequestArray={ friendRequestArray }
-    //             friendRequestStatus={ friendRequestStatus }
-    //             setFriendRequestStatus={ setFriendRequestStatus }
-    //             />
-    //         </div>
-    //     </div>
-    // );
+        );
+        return !!friendship;
+    };
+
+    // Filter out users who are already friends with the current user
+    const filteredUsers = filteredUsersList.filter(user => !areFriends(userData, user));
 
     return (
         <div className='friend-page w-full flex'>
             <div className='friend-section w-1/3 bg-green-800'>
-                <Friend userDataId={userData.id}/>
+                <Friend userDataId={userData?.id}/>
 
             </div>
             <div className='users-list w-2/3'>
@@ -242,7 +179,9 @@ const FriendList = () => {
 
                         <h1 className="flex justify-center mb-10">Users List</h1>
                         <div className="card-container gap-4">
-                            { filteredUsersList.map(user => user.id !== userData.id && (
+                            {/* { filteredUsersList */}
+                            { filteredUsers
+                            .map(user => user.id !== userData?.id && (
                                 <div className="card" key={user?.id}>
                                     <div className="card-avatar">
                                         <Avatar src={ user?.avatar } alt="user avatar" width={100} height={125}/>
@@ -258,18 +197,17 @@ const FriendList = () => {
                                         <button
                                             className={friendRequestStatus[user.id] ? "cancel-button" : "add-button"}
                                             onClick={() =>
-                                                friendRequestStatus[user.id] && isFriended(user.id)
-                                                ? cancelFriendRequest(user.id)
-                                                : friendRequestStatus[user.id]
+                                                friendRequestStatus[user.id]
                                                 ? cancelFriendRequest(user.id)
                                                 : sendFriendRequest(user.id)
                                             }
-                                            disabled={isSendRequestDisabled[user.id] === true}
+                                            disabled={ isSent(user.id) === true }
                                             >
-                                            { friendRequestStatus[user.id] && isFriended(user.id) 
-                                                ? "unfriend"
-                                                : friendRequestStatus[user.id]
-                                                ? "Cancel " : "Add Friend "}
+                                            { friendRequestStatus[user.id]
+                                                ? "Cancel"
+                                                : isSent(user.id)
+                                                ? "Friend Request Pending " 
+                                                : "Add Friend "}
                                              { user.id }
                                         </button>
                                     </div>
@@ -277,11 +215,10 @@ const FriendList = () => {
                             ))}
                         </div>
                     </div>
-                    <div className="friend-page bg-black">
+                    <div className="friend-page bg-black" style={ {backgroundColor: "red"}}>
                         <FriendRequest
-                        userId={ userData.id }
+                        userId={ userData?.id }
                         currUser={ userData }
-                        socket={ socket }
                         friendRequestArray={ friendRequestArray }
                         friendRequestStatus={ friendRequestStatus }
                         setFriendRequestStatus={ setFriendRequestStatus }

@@ -82,7 +82,7 @@ export class FriendController {
 
   @Get('friends/:userId')
   getFriends(@Param('userId') userId: number) {
-    return this.friendService.getFriends(userId);
+    return this.friendService.getFriends(+userId);
   }
 
 

@@ -6,6 +6,8 @@ import { User } from 'src/typeorm/user.entity';
 import { MulterModule, MulterModuleOptions } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { MatchHistoryModule } from 'src/match-history/match-history.module';
+import { Friend } from 'src/typeorm/friends.entity';
+import { FriendModule } from 'src/friend/friend.module';
 
 const storageOptions: MulterModuleOptions = {
     storage: diskStorage({

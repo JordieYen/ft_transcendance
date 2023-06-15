@@ -1,13 +1,15 @@
-import UserData from '../../webhook/user_data';
+import UserData, { UserContext } from '../../webhook/UserContext';
 import Avatar from '../header_icon/Avatar';
 import './profile.css';
 import MatchHistory from './MatchHistory';
 import formatDateMalaysia from '../../utils/formatDateMalaysia';
 import MatchMaking from './MatchMaking';
 import Achievement from './Achievement';
+import { useContext } from 'react';
 
 const PongMain: React.FC<any> = () => {
     
+    // const userData = useContext(UserContext);
     const userData = UserData();
     if (!userData) {
       return <div>Loading...</div>;

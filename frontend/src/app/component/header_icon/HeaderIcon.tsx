@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import Logout from "../../webhook/logout";
-import UserData from "../../webhook/user_data";
+import UserData, { UserContext } from "../../webhook/UserContext";
 import Avatar from "./Avatar";
 import Icon from "./Icon";
 import Mmr from "./Mmr";
@@ -11,7 +11,7 @@ const HeaderIcon = () => {
     if (!userData) {
         return <div>Loading...</div>;
     }
-    const { avatar, id, intra_uid, username, online, p1_match, stat, userAchievement } = userData;
+    const { avatar, username, stat } = userData;
     localStorage.setItem('userData', JSON.stringify(userData));
     return (
         <nav className="horizontal-container">

@@ -27,25 +27,30 @@ const Friend = ( { userDataId }: { userDataId: number }) => {
         }
     }
 
+    const unfriend = async (friendId: number) => {
+        try {
+            const confirmation = window.confirm('Are you sure you want to unfriend this friend?');
+            if (confirmation) {
+            }
+        } catch (error) {
+            console.log('Error unfriending friend:', error);
+        }
+    }
+
+
     return (
         <div className="friend flex-col">
             <h1>Friends</h1>
-            {friends.map((friend) => {
-                const isCurrentUserSender = userDataId === friend.sender.id;
-                const avatarSrc = isCurrentUserSender ? friend.receiver.avatar : friend.sender.avatar;
-                console.log('avatarSrc', avatarSrc);
-                
-                const friendUsername = isCurrentUserSender ? friend.receiver.username : friend.sender.username;
-                return (
-                    <div className='flex items-center gap-10 p-10' key={friend.id}>
-                        <div className='h-22 w-20 overflow-hidden'>
-                            <Avatar src={ avatarSrc } alt="user avatar" width={50} height={50}/>
-
-                        </div>
-                        <p>{friendUsername}</p>
+            {friends.map((friend) => (
+                <div className='flex items-center gap-10 p-10' key={friend?.id}>
+                    <div className='h-22 w-20 overflow-hidden'>
+                       <Avatar src={ friend?.avatar } alt="user avatar" width={50} height={50}/>
                     </div>
-                );
-            })}
+                    <p>{friend?.username}</p>
+                    <button onClick={ () => unfriend(friend?.id)}>Unfriend</button>
+                    <button>Block</button>
+                </div>
+            ))}
         </div>
     );
 }

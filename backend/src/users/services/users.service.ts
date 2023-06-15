@@ -6,6 +6,7 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { StatService } from 'src/stat/services/stat.service';
 import { MatchHistoryService } from 'src/match-history/services/match-history.service';
+import { FriendService } from 'src/friend/services/friend.service';
 
 @Injectable()
 export class UsersService {

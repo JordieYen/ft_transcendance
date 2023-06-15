@@ -1,30 +1,29 @@
-import UserData from "@/app/webhook/user_data";
-import { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { SocketContext } from "@/app/socket/SocketProvider";
+import UserData, { UserContext } from "@/app/webhook/UserContext";
+import { useContext, useEffect, useState } from "react";
 import './friend.css';
 
 interface FriendRequestProps {
   userId: number;
   currUser: any;
-  socket: Socket | null;
-  friendRequestArray: { userId: number; requestId: number }[];
+  friendRequestArray: { requestId: number, senderId: number, receiverId: number, status: string }[];
   friendRequestStatus: { [key: number]: boolean };
   setFriendRequestStatus: React.Dispatch<React.SetStateAction<{ [key: number]: boolean }>>;
 }
 
-const FriendRequest = ( {userId, currUser, socket, friendRequestArray, friendRequestStatus, setFriendRequestStatus } : FriendRequestProps) => {
+// const FriendRequest = ( {userId, currUser, socket, friendRequestArray, friendRequestStatus, setFriendRequestStatus } : FriendRequestProps) => {
+const FriendRequest = ( {userId, currUser, friendRequestArray, friendRequestStatus, setFriendRequestStatus } : FriendRequestProps) => {
   const [friendRequests, setFriendRequests] = useState<any[]>([]);
   const userData = UserData();
+  // const userData = useContext(UserContext);
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
 
-      // const socket = io('http://localhost:3000');
       socket?.on('friend-request', handleFriendRequestReceived);
       fetchFriendRequests();
-      // socket?.on('friend-request-accepted', handleFriendRequestAccepted);
       return () => {
           socket?.off('friend-request', handleFriendRequestReceived);
-          // socket?.disconnect();
       };
   }, [socket]);
 
@@ -65,35 +64,6 @@ const FriendRequest = ( {userId, currUser, socket, friendRequestArray, friendReq
     //   })
     // );
   };
-
-  // const handleFriendRequestReceived = (friendRequest: any) => {
-  //       setFriendRequests([...friendRequest]);
-        // setFriendRequests((prevFriendRequests) => [...prevFriendRequests, friendRequest]);
-        // console.log('here friendRequest', friendRequest);
-  // };
-
-  // const acceptFriendRequest = async (friendRequest: number) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:3000/friend/accept-friend-request/${friendRequest}`, {
-  //       method: 'PUT',
-  //       credentials: 'include',
-  //     });
-  //     if (response.ok) {
-  //       setFriendRequests((prevFriendRequests) => 
-  //       prevFriendRequests.map((friendRequest) => {
-  //         if (friendRequest.id === friendRequest) {
-  //           return { ...friendRequest, status: 'accepted' };
-  //         }
-  //         return friendRequest;
-  //       })
-  //       );
-  //     } else {
-  //       throw new Error('Failed to accept friend request');
-  //     }
-  //   } catch (error) {
-  //     console.log('Error accepting friend request:', error);
-  //   }
-  // };
 
   const acceptFriendRequest = async (friendRequestId: number, accepterId: number) => {
     try {
@@ -155,7 +125,7 @@ const FriendRequest = ( {userId, currUser, socket, friendRequestArray, friendReq
         { friendRequests?.length > 0 ? (
           friendRequests
           // .filter((friendRequest) => friendRequest?.receiver?.id === userData?.id)
-          // .filter((friendRequest) => friendRequest?.status !== 'friended')
+          .filter((friendRequest) => friendRequest?.status !== 'friended')
           .map((friendRequest) => (
             <div key={friendRequest?.id}>
             <p>Id: {friendRequest?.id}</p>
@@ -171,11 +141,6 @@ const FriendRequest = ( {userId, currUser, socket, friendRequestArray, friendReq
               disabled={ friendRequest.status === 'decline'}
               className={friendRequest.status === 'decline' || friendRequest.status === 'friended'? 'disabled-button' : ''}
               >Decline</button>
-              <button
-              onClick={ () => unfriendFriendRequest(friendRequest.id, friendRequest.receiver.id) }
-              disabled={ friendRequest.status !== 'friended'}
-              className={friendRequest.status !== 'friended' ? 'disabled-button' : ''}
-              >Unfriend</button>
             </div>
           </div>
         ))) : (
@@ -183,39 +148,6 @@ const FriendRequest = ( {userId, currUser, socket, friendRequestArray, friendReq
         )}
       </div>
   );
-
-  // return ( 
-  //     <div className="friend-request flex-col">
-  //       <h1>Friend Requests</h1>
-  //       { userData?.receiveFriendRequest && userData?.receiveFriendRequest.length > 0 ? (
-  //         userData?.receiveFriendRequest
-  //           .filter((friendRequest: any) => friendRequest.status !== 'cancel')
-  //           .map((friendRequest: any) => (
-  //             <div key={friendRequest?.id}>
-  //               <p>Id: {friendRequest?.id}</p>
-  //               <p>Sender: {friendRequest?.sender?.username}</p>
-  //               <p>Status: {friendRequest?.status}</p>
-  //             </div>
-  //         ))) :
-  //         <p>No friend requests received</p>
-  //       }
-  //     </div>
-  //   );
-
-      {/* { currUser?.receiveFriendRequest && currUser?.receiveFriendRequest.length > 0 ? (
-        currUser?.receiveFriendRequest
-          .filter((friendRequest: any) => friendRequest.status !== 'cancel')
-          .map((friendRequest: any) => (
-            <div key={friendRequest?.id}>
-              <p>Id: {friendRequest?.id}</p>
-              <p>Sender: {friendRequest?.sender?.username}</p>
-              <p>Status: {friendRequest?.status}</p>
-            </div>
-          ))
-      ) : (
-        <p>No friend requests received</p>
-      )} */}
-  
 };
 
 export default FriendRequest;
