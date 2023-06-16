@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { FriendService } from '../services/friend.service';
 import { CreateFriendDto } from '../dto/create-friend.dto';
 import { UpdateFriendDto } from '../dto/update-friend.dto';
@@ -33,4 +33,57 @@ export class FriendController {
   remove(@Param('id') id: string) {
     return this.friendService.remove(+id);
   }
+
+  @Post('friend-request/:senderId/:receiverId')
+  sendFriendRequest(@Param('senderId') senderId: number, @Param('receiverId') receiverId: number) {
+    return this.friendService.sendFriendRequest(senderId, receiverId);
+  }
+
+  @Put('accept-friend-request/:friendRequestId')
+  acceptFriendRequest(@Param('friendRequestId') friendRequestId: number) {
+    return this.friendService.acceptFriendRequest(friendRequestId);
+  }
+
+  @Put('decline-friend-request/:friendRequestId')
+  declineFriendRequest(@Param('friendRequestId') friendRequestId: number) {
+    return this.friendService.declineFriendRequest(friendRequestId);
+  }
+
+  @Post('cancel-friend-request/:friendRequestId')
+  cancelFriendRequest(@Param('friendRequestId') friendRequestId: number) {
+    return this.friendService.cancelFriendRequest(friendRequestId);
+  }
+
+  @Get('sent/:senderId')
+  getSentFriendRequest(@Param('senderId') senderId: number) {
+    return this.friendService.getSentFriendRequest(senderId);
+  }
+
+  @Get('received/:receiverId')
+  getReceivedFriendRequest(@Param('receiverId') receiverId: number) {
+    return this.friendService.getReceivedFriendRequest(receiverId);
+  }
+
+  @Post('webhook/friend-request')
+  handleFriendRequestWebhook(@Body() body: any) {
+    return this.friendService.handleFriendRequestWebhook(body);
+  }
+
+  @Get('friend-requests/:userId')
+  getFriendRequests(@Param('userId') userId: number) {
+    // return this.friendService.getFriendRequests(userId);
+    return this.friendService.getReceivedFriendRequest(userId);
+  }
+
+  @Delete('delete-all/:id')
+  deleteAll() {
+    return this.friendService.deleteAll();
+  }
+
+  @Get('friends/:userId')
+  getFriends(@Param('userId') userId: number) {
+    return this.friendService.getFriends(+userId);
+  }
+
+
 }

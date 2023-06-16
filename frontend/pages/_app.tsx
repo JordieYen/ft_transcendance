@@ -1,10 +1,9 @@
 import React from 'react';
 import type { AppProps } from 'next/app';
-import Header from '@/app/common/header';
-import Footer from '@/app/common/footer';
+import Header from '@/app/component/common/Header';
+import Footer from '@/app/component/common/Footer';
 import '../src/app/globals.css';
-import UserData from '@/app/data/user_data';
-
+import { SocketProvider } from '@/app/socket/SocketProvider';
 
 const MyApp = ({ Component, pageProps, router }: AppProps) => {
 
@@ -12,13 +11,16 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
 
   const allowPages = [ '/pong-main'];
   const showAdditionalIcon = allowPages.includes(currentPath);
+  const userData = pageProps.login;
+
   return (
-    <div>
-        <Header showAdditionalIcon={showAdditionalIcon}/>
-          <Component {...pageProps} />
-          <Footer />
-        <Footer />
-    </div>
+    <SocketProvider>
+      <div>
+          <Header showAdditionalIcon={showAdditionalIcon}/>
+              <Component {...pageProps} />
+              <Footer />
+     </div>
+    </SocketProvider>
   );
 };
 

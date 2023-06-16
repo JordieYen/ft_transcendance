@@ -12,19 +12,17 @@ import { AchievementModule } from 'src/achievement/achievement.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      UserAchievement,
-      User,
-      Achievement
-    ]),
+    TypeOrmModule.forFeature([UserAchievement]),
     UsersModule,
     AchievementModule
   ],
   controllers: [UserAchievementController],
   providers: [
     UserAchievementService,
-    AchievementService,
-    UsersService
   ],
+  exports: [
+    UserAchievementService,
+    TypeOrmModule,
+  ]
 })
 export class UserAchievementModule {}

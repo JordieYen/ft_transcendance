@@ -33,12 +33,7 @@ body {
 }
 
 button {
-  background-color: var(--background-grey);
-  color: var(--background-light-grey);
-  outline: none;
-  border-radius: 5px;
-  border: 0px;
-  padding: 4px 8px;
+  @apply bg-[var(--background-grey)] text-[var(--background-light-grey)] rounded-md px-2 py-1;
 }
 
 h1, p, table {
@@ -46,23 +41,28 @@ h1, p, table {
   color: var(--background-grey);
 }
 
-.login-button {
-  background-color: var(--background-grey);
-  color: var(--background-dark);
-  text-decoration: none;
-}
-
-.login-button:visited, .login-button:active {
-  color: var(--background-dark);
-}
-
-.icon-container:hover {
-  background-color: #000;
-}
-
 .wrapper {
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+}
+
+.avatar-image {
+  border-radius: 50%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .friend-page {
+    flex-direction: column;
+  }
+
+  .friend-section,
+  .users-list {
+    flex: initial;
+    width: 100%;
+  }
 }

@@ -5,18 +5,25 @@ import { User } from 'src/typeorm/user.entity';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { StatService } from 'src/stat/services/stat.service';
+import { MatchHistoryService } from 'src/match-history/services/match-history.service';
+import { FriendService } from 'src/friend/services/friend.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
+    // private readonly statService: StatService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    const newUser = await this.usersRepository.create(createUserDto);
+    console.log(createUserDto);
+    const newUser = this.usersRepository.create(createUserDto);
+    console.log('test', newUser);
     try {
       return await this.usersRepository.save(newUser);
     } catch (error) {
+      console.error(error);
+      
       throw new InternalServerErrorException('Could not create user');
     }
   }
@@ -107,7 +114,12 @@ export class UsersService {
         'p2_match',
         'p2_match.p1_uid',
         'p2_match.p2_uid',
-        // 'friends',
+        'sentFriendRequest',
+        'sentFriendRequest.receiver',
+        'sentFriendRequest.sender',
+        'receiveFriendRequest',
+        'receiveFriendRequest.receiver',
+        'receiveFriendRequest.sender',
       ],
       where: {
         id: id,
