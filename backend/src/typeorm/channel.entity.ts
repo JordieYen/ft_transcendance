@@ -2,6 +2,7 @@ import { BeforeInsert, Column, Entity, OneToMany, PrimaryColumn, PrimaryGenerate
 import * as bcrypt from 'bcrypt';
 import { ChannelUser } from "./channel_user.entity";
 import { Message } from "./message.entity";
+import { IsNotEmpty, IsOptional } from "class-validator";
 
 enum ChannelType {
     Public = 'public',
@@ -13,15 +14,19 @@ enum ChannelType {
 @Entity()
 export class Channel {
     @PrimaryGeneratedColumn()
-    channel_uid: string;
+    channel_uid: number;
 
     @Column()
+    @IsNotEmpty()
     channel_name: string;
 
     @Column()
-    channel_type: ChannelType;
+    @IsNotEmpty()
+    // channel_type: ChannelType;
+    channel_type: string;
 
     @Column()
+    @IsOptional()
     channel_hash: string;
 
     @OneToMany( () => ChannelUser, channelUser => channelUser.channel)
@@ -33,11 +38,11 @@ export class Channel {
     })
     createdAt: Date;
 
-    @BeforeInsert()
-    hashPassword() {
-        if (this.channel_type === ChannelType.Private || this.channel_type === ChannelType.Protected)
-            this.channel_hash = bcrypt.hashSync(this.channel_hash, 10);
-    }
+    // @BeforeInsert()
+    // hashPassword() {
+    //     if (this.channel_type === ChannelType.Private || this.channel_type === ChannelType.Protected)
+    //         this.channel_hash = bcrypt.hashSync(this.channel_hash, 10);
+    // }
 
     @OneToMany( () => Message, message => message.channel)
     messages: Message[];

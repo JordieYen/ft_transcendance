@@ -15,10 +15,14 @@ export class UsersService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    const newUser = await this.usersRepository.create(createUserDto);
+    console.log(createUserDto);
+    const newUser = this.usersRepository.create(createUserDto);
+    console.log('test', newUser);
     try {
       return await this.usersRepository.save(newUser);
     } catch (error) {
+      console.error(error);
+      
       throw new InternalServerErrorException('Could not create user');
     }
   }
@@ -109,7 +113,12 @@ export class UsersService {
         'p2_match',
         'p2_match.p1_uid',
         'p2_match.p2_uid',
-        'friends',
+        'sentFriendRequest',
+        'sentFriendRequest.receiver',
+        'sentFriendRequest.sender',
+        'receiveFriendRequest',
+        'receiveFriendRequest.receiver',
+        'receiveFriendRequest.sender',
       ],
       where: {
         id: id,

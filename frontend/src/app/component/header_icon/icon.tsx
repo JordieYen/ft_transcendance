@@ -5,7 +5,7 @@ interface IconProps {
 }
 const Icon = ( { filePath } : IconProps) => {
   return (
-    <span className='icon-container'>
+    <span className='icon-container transform hover:scale-125'>
         <Image src={ filePath } alt="gear" width={40} height={40}/>
     </span>
   )

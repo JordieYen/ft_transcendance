@@ -3,6 +3,8 @@ import toast from "react-hot-toast";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import useUserStore from "@/hooks/useUserStore";
 
 interface ChangeAvatarModalProps {
   isOpen: boolean;
@@ -20,6 +22,10 @@ const ChangeAvatarModal = ({
   const [previewPic, setPreviewPic] = useState<string | null>(null);
   const [isPicUpdated, setIsPicUpdated] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -51,8 +57,18 @@ const ChangeAvatarModal = ({
     if (selectedPic) {
       console.log("Uploading image:", selectedPic);
       closeModal();
-      toast.success("Avatar successfully updated!");
-      // backend upload here
+      const file = {
+        username: inputValue,
+      };
+      axios
+        .patch(`/users/${userData?.id}`, updateUserDto)
+        .then(() => {
+          setUserData({ ...userData, username: inputValue });
+          toast.success("Name successfully updated!");
+        })
+        .catch(() => {
+          toast.error("Name update failed! Please try again later");
+        });
       setSelectedPic(null);
       setPreviewPic(null);
     }

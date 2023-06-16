@@ -1,5 +1,7 @@
+import useUserStore from "@/hooks/useUserStore";
 import React, { useState, useEffect, RefObject } from "react";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 interface ChangeAccountModalProps {
   isOpen: boolean;
@@ -14,6 +16,10 @@ const ChangeAccountModal = ({
 }: ChangeAccountModalProps) => {
   const [inputValue, setInputValue] = useState("");
   const [isNameUpdated, setIsNameUpdated] = useState(false);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -26,8 +32,18 @@ const ChangeAccountModal = ({
       closeModal();
       setIsNameUpdated(true);
       console.log(inputValue);
-      toast.success("Name successfully updated!");
-      // backend upload here
+      const updateUserDto = {
+        username: inputValue,
+      };
+      axios
+        .patch(`/users/${userData?.id}`, updateUserDto)
+        .then(() => {
+          setUserData({ ...userData, username: inputValue });
+          toast.success("Name successfully updated!");
+        })
+        .catch(() => {
+          toast.error("Name update failed! Please try again later");
+        });
     }
   };
 
