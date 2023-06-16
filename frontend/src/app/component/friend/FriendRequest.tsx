@@ -11,21 +11,22 @@ interface FriendRequestProps {
   setFriendRequestStatus: React.Dispatch<React.SetStateAction<{ [key: number]: boolean }>>;
 }
 
-// const FriendRequest = ( {userId, currUser, socket, friendRequestArray, friendRequestStatus, setFriendRequestStatus } : FriendRequestProps) => {
 const FriendRequest = ( {userId, currUser, friendRequestArray, friendRequestStatus, setFriendRequestStatus } : FriendRequestProps) => {
+
   const [friendRequests, setFriendRequests] = useState<any[]>([]);
   const userData = UserData();
   // const userData = useContext(UserContext);
   const socket = useContext(SocketContext);
 
   useEffect(() => {
-
+      socket?.emit('join', userId);
       socket?.on('friend-request', handleFriendRequestReceived);
       fetchFriendRequests();
       return () => {
+          socket?.emit('leave-room', `${userId}`);
           socket?.off('friend-request', handleFriendRequestReceived);
       };
-  }, [socket]);
+  }, [socket, userId]);
 
 
   const fetchFriendRequests = async () => {
@@ -35,7 +36,6 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, friendRequestStat
           });
           if (response.ok) {
               const friendRequests = await response.json() as any[];
-              console.log('requests', friendRequests);
               setFriendRequests(friendRequests);
           } else {
               throw new Error('Failed to fetch friend requests');
@@ -47,29 +47,18 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, friendRequestStat
 
   const handleFriendRequestReceived = (friendRequest: any) => {
     setFriendRequests(() => {
-    //   console.log('handleFriendRequestReceived', friendRequest);
+      console.log('friendRequest XXXXX', friendRequest);
+      
       const updatedRequest = [...friendRequest];
       return updatedRequest.sort((a, b) => a.id - b.id);
       // return updatedRequest;
     })    
   };
 
-  const handleFriendRequestAccepted = (friendRequest: any) => {
-    // setFriendRequests((prevFriendRequests) =>
-    //   prevFriendRequests.map((friendRequest) => {
-    //     if (friendRequest.id === friendRequest.id) {
-    //       return { ...friendRequest, status: 'accepted' };
-    //     }
-    //     return friendRequest;
-    //   })
-    // );
-  };
-
   const acceptFriendRequest = async (friendRequestId: number, accepterId: number) => {
     try {
       const confirmation = window.confirm('Are you sure you want to accept this friend request?');
       if (confirmation) {
-        console.log('friendRequestId', userId, friendRequestId);
         socket?.emit('accept-friend-request', {
           userId: userId,
           friendRequestId: friendRequestId,
@@ -85,18 +74,13 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, friendRequestStat
 
   const declineFriendRequest = async (friendRequestId: number, declinerId: number) => {
     try {
-      console.log('declinerId', declinerId);
-      
       const confirmation = window.confirm('Are you sure you want to decline this friend request?');
       if (confirmation) {
         socket?.emit('decline-friend-request', {
           userId: userId,
           friendRequestId: friendRequestId,
         });
-        console.log('decline id', friendRequestId);
         setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [declinerId]: false }));
-        console.log('friendRequestStatus', friendRequestStatus);
-        console.log('friendRequestArray', friendRequestArray);
       }
     } catch (error) {
       console.log('Error declining friend request:', error);
@@ -144,7 +128,7 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, friendRequestStat
             </div>
           </div>
         ))) : (
-          <p>No friend requests sent</p>
+          <p>No friend requests received</p>
         )}
       </div>
   );

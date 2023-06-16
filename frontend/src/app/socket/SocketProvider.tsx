@@ -13,7 +13,7 @@ export const SocketContext = createContext<SocketContextType>(null);
 
 export const SocketProvider =  ({ children }: SocketProviderProps) => {
     const [socket, setSocket] = useState<SocketContextType>(null);
-
+    
     useEffect(() => {
         const socket = io('http://localhost:3000');
         socket.on('connect', () => {

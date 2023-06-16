@@ -154,8 +154,8 @@ export class FriendService {
     const sentFriendRequest = await this.friendRepository.find({
       where: {
         sender: { id: senderId },
-        // status: FriendStatus.Friended,
-        status: Not(In([FriendStatus.Cancel, FriendStatus.Decline])),
+        status: FriendStatus.Pending,
+        // status: Not(In([FriendStatus.Cancel, FriendStatus.Decline, FriendStatus.Friended])),
       },
       relations: ['sender', 'receiver'],
     });
@@ -163,13 +163,11 @@ export class FriendService {
   }
 
   async getReceivedFriendRequest(receiverId: number) {
-    console.log('receiverId', receiverId);
-    
     const receivedFriendRequest = await this.friendRepository.find({
       where: {
         receiver: { id: receiverId },
-        // status: FriendStatus.Friended,
-        status: Not(In([FriendStatus.Cancel, FriendStatus.Decline, FriendStatus.Friended])),
+        status: FriendStatus.Pending,
+        // status: Not(In([FriendStatus.Cancel, FriendStatus.Decline, FriendStatus.Friended])),
       },
       relations: ['sender', 'receiver'],
     });

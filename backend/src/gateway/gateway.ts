@@ -19,41 +19,39 @@ export class MyGateway implements OnModuleInit {
         private readonly friendService: FriendService,
     ) {}
 
-    onModuleInit() {
+    async onModuleInit() {
         this.server.on('connection', (socket) => {
             console.log(socket.id);
             console.log('connected');
+
+            socket.on('join', async (userId) => {
+                console.log("User joined room: " + userId);
+                socket.join(userId);
+                const friendRequests = await this.friendService.getReceivedFriendRequest(userId);
+                socket.to(userId).emit('friend-request', friendRequests);
+            });
         });
     }
-
-    // sendFriendRequest(senderId: number, receiverId: number) {
-    //     const senderSocket = this.server.sockets.sockets.get(senderId.toString());
-    //     const receiverSocket = this.server.sockets.sockets.get(receiverId.toString());
-    //     receiverSocket.emit('friend-request-received', receiverId);
-    //     senderSocket.emit('friend-request-sent', senderId);
-    // }
 
     @SubscribeMessage('friend-request-sent')
     async handleFriendRequestSent(client: Socket, data: { senderId: number, receiverId: number }) {
         try {
             console.log('friend request sent');
-            
             const { senderId, receiverId } = data;
             await this.sendFriendRequest(senderId, receiverId);
-            await this.getFriendRequest(senderId);
-
+            // await this.getReceiveFriendRequest(receiverId);
         } catch (error) {
             console.error('Error sending friend request gateway', error);
         }
     }
 
-    @SubscribeMessage('cancel-friend-request')
+    @SubscribeMessage('friend-request-cancel')
     async handleCancelFriendRequest(client: Socket, data: {senderId: number, friendRequestId: number} ) {
         try {
             const { senderId, friendRequestId } = data;
             const cancelRequest = await this.friendService.cancelFriendRequest(friendRequestId);
             this.server.emit('friend-request-received', cancelRequest);
-            await this.getFriendRequest(senderId);
+            // await this.getReceiveFriendRequest(senderId);
         } catch (error) {
             console.error('Error canceling friend request gateway', error);
         }
@@ -63,21 +61,31 @@ export class MyGateway implements OnModuleInit {
     async sendFriendRequest(senderId: number, receiverId: number) {
         console.log('friend request received');
         const friendRequest = await this.friendService.sendFriendRequest(senderId, receiverId);
-        // console.log('friend', friendRequest);
         this.server.emit('friend-request-received', friendRequest);
+    }
 
+    async getSentFriendRequest(senderId: number) {
+        console.log('get sent friend request');
+        const friendRequests = await this.friendService.getSentFriendRequest(senderId);
+        this.server.emit('friend-request-received', friendRequests);
     }
 
     @SubscribeMessage('friend-request')
-    async getFriendRequest(senderId: number) {
-        console.log('get friend request');
-        // const friendRequests = await this.friendService.getFriendRequests(senderId);
-        // here need to change idea to send
-        const friendRequests = await this.friendService.getReceivedFriendRequest(senderId);
-        console.log('friends', friendRequests);
-        this.server.emit('friend-request', friendRequests);
+    async getReceiveFriendRequest(receiverId: number) {
+        console.log('get friend request', receiverId);
+        const friendRequests = await this.friendService.getReceivedFriendRequest(receiverId);
+        // this.server.emit('friend-request', friendRequests);
+        this.server.to(`${receiverId}`).emit('friend-request', friendRequests);
     }
 
+    @SubscribeMessage('user-friend-request')
+    async getUserReceiveFriendRequest(client: Socket, data: { userId: number }) {
+        const { userId } = data;
+        console.log('get friend request', userId);
+        const friendRequests = await this.friendService.getReceivedFriendRequest(userId);
+        // this.server.emit('friend-request', friendRequests);
+        this.server.to(`${userId}`).emit('friend-request', friendRequests);
+    }
 
     @SubscribeMessage('accept-friend-request')
     async acceptFriendRequest(client: Socket, data: { userId: number, friendRequestId: number }) {
@@ -85,9 +93,8 @@ export class MyGateway implements OnModuleInit {
             const { userId, friendRequestId } = data;
             console.log('gateway', friendRequestId);
             const acceptedRequest = await this.friendService.acceptFriendRequest(friendRequestId);
-            // this.server.emit('friend-request-accepted', acceptedRequest);
             this.server.emit('friend-request-received', acceptedRequest);
-            this.getFriendRequest(userId);
+            this.getReceiveFriendRequest(userId);
 
         } catch (error) {
             console.error('Error accepting friend request gateway', error);
@@ -100,7 +107,7 @@ export class MyGateway implements OnModuleInit {
             const { userId, friendRequestId } = data;
             const declinedRequest = await this.friendService.declineFriendRequest(friendRequestId);
             this.server.emit('friend-request-received', declinedRequest);
-            this.getFriendRequest(userId);
+            this.getReceiveFriendRequest(userId);
         } catch (error) {
             console.error('Error declining friend request gateway', error);
         }

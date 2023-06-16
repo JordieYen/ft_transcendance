@@ -17,7 +17,6 @@ const Friend = ( { userDataId }: { userDataId: number }) => {
             });
             if (response.ok) {
                 const friends = await response.json();
-                console.log('friends', friends);
                 setFriends(friends);
             } else {
                 throw new Error('Failed to fetch friends');
@@ -46,9 +45,13 @@ const Friend = ( { userDataId }: { userDataId: number }) => {
                     <div className='h-22 w-20 overflow-hidden'>
                        <Avatar src={ friend?.avatar } alt="user avatar" width={50} height={50}/>
                     </div>
-                    <p>{friend?.username}</p>
-                    <button onClick={ () => unfriend(friend?.id)}>Unfriend</button>
-                    <button>Block</button>
+                    <div className='flex-col gap-1'>
+                        <p>{friend?.username}</p>
+                        <div className='flex gap-2'>
+                            <button onClick={ () => unfriend(friend?.id)}>Unfriend</button>
+                            <button>Block</button>
+                        </div>
+                    </div>
                 </div>
             ))}
         </div>

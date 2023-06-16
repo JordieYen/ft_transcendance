@@ -12,65 +12,6 @@
     color: var(--background-grey);
 }
 
-/* 
-table {
-    width: 100%;
-    border-collapse: seperate;
-    border-spacing: 0;
-    overflow: auto;
-    table-layout: fixed;
-}
-
-th {
-    background-color: var(--background-light-dark);
-    color: var(--background-grey);
-    font-weight: 100;
-}
-
-td {
-    padding: 30px;
-    text-align: left;
-    color: var(--background-grey);
-    text-align: center;
-    border: none 1px var(--background-light-dark)
-}
-
-td.result-win {
-    background-color: green;
-}
-
-td.result-lose {
-    background-color: red;
-}
-
-tr:nth-child(even) {
-    background-color: var(--background-dark);
-}
-
-tr:nth-child(odd) {
-    background-color: var(--background-light-dark);
-}
-
-tr.row-win {
-    border-radius: 50px;
-}
-
-tr.row-lose {
-    border-radius: 50px;
-}
-
-td:first-child {
-    border-left-style: solid;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-}
-
-td:last-child {
-    border-right-style: solid;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-} */
-
 .avatar-image {
     border-radius: 50%;
     width: 100px;
@@ -101,7 +42,7 @@ p, span {
     border: 10px solid darkgrey;
     margin: 10px;
     padding: 10px;
-    width: 350px;
+    width: 300px;
     height: 300px;
     flex-direction: column;
     justify-content: center;
