@@ -90,7 +90,7 @@ export class AuthService {
             newUser.intra_uid = +profile.id;
             newUser.username = profile.username;
             newUser.avatar = profile._json.image.link || 'http://localhost:3000/public/default_avatar.png';
-            newUser.online = true;
+            newUser.online = false;
             returnUser = await this.userService.createUser(newUser);
         }
         return (returnUser);

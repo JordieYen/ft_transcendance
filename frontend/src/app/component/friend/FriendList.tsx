@@ -7,6 +7,7 @@ import FriendRequest from "./FriendRequest";
 import Friend from "./Friend";
 import { SocketContext } from '@/app/socket/SocketProvider';
 import { io, Socket } from 'socket.io-client';
+import Block from './Block';
 
 const FriendList = () => {
     const [usersList, setUserList] = useState<any[]>([]);
@@ -29,11 +30,10 @@ const FriendList = () => {
     }
 
     useEffect(() => {
-        
         socket?.on("friend-request-received", (receivedFriendRequest: any) => {
             console.log('friend-request-received socket', receivedFriendRequest);
             setFriendRequestArray((prevArray) => [
-                ...prevArray,
+                // ...prevArray,
                 { 
                     requestId: receivedFriendRequest.id, 
                     senderId: receivedFriendRequest?.sender?.id,
@@ -41,6 +41,12 @@ const FriendList = () => {
                     status: receivedFriendRequest.status 
                 }
             ]);
+            if (receivedFriendRequest?.status === "decline") {
+                setFriendRequestStatus((prevStatus) => ({
+                    ...prevStatus,
+                    [receivedFriendRequest?.receiver?.id]: false,
+                }));
+            }
         });
         const storedStatus = localStorage.getItem("friendRequestStatus");
         if (storedStatus) {
@@ -132,12 +138,12 @@ const FriendList = () => {
     };
 
     // Function to check if two users are already friends
-    const areFriends = (user1: any, user2: any) => {
+    const areFriendsOrBlocks = (user1: any, user2: any) => {
         const friendship = friendRequestArray.find(
             (request) => 
             ((request.senderId === user1.id && request.receiverId === user2.id) ||
             (request.senderId === user2.id && request.receiverId === user1.id)) &&
-            request.status === "friended"
+            (request.status === "friended" ||  request.status === "blocked")
 
         );
         return !!friendship;
@@ -146,18 +152,27 @@ const FriendList = () => {
     return (
         <div className='friend-page w-full flex'>
             <div className='friend-section w-1/3 bg-green-800'>
-                <div className="friend-page bg-red-600">
+                <div className="friend-request-page bg-red-600">
                         <FriendRequest
                         userId={ userData?.id }
                         currUser={ userData }
                         friendRequestArray={ friendRequestArray }
+                        setFriendRequestArray={ setFriendRequestArray }
                         friendRequestStatus={ friendRequestStatus }
                         setFriendRequestStatus={ setFriendRequestStatus }
                         />
                 </div>
-                <div className='bg-green-800 flex'>
-                    <Friend userDataId={userData?.id}/>
+                <div className='friend-page bg-green-800 flex'>
+                    <Friend
+                    userDataId={userData?.id}
+                    setFriendRequestArray={setFriendRequestArray }
+                    setFriendRequestStatus={setFriendRequestStatus }
+                    />
                 </div>
+                <div className='block-page bg-slate-800'>
+                    <Block />
+                </div>
+
             </div>
             <div className='users-list w-2/3'>
                 <div className='flex flex-col h-full'>
@@ -168,7 +183,7 @@ const FriendList = () => {
                         <h1 className="flex justify-center">Users List</h1>
                         <div className="card-container">
                             { filteredUsersList
-                            .filter(user => !areFriends(userData, user))
+                            .filter(user => !areFriendsOrBlocks(userData, user))
                             .map(user => user.id !== userData?.id && (
                                 <div className="card" key={user?.id}>
                                     <div className="card-avatar">
