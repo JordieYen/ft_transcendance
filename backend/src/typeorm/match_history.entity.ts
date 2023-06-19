@@ -9,11 +9,11 @@ export class MatchHistory {
     @Column()
     winner_uid: number; 
 
-    @ManyToOne(() => User, user => user.p1_match, { nullable: false})
-    p1_uid: User;
+    @Column()
+    p1_uid: number;
 
-    @ManyToOne(() => User, user => user.p2_match, { nullable: false })
-    p2_uid: User;
+    @Column()
+    p2_uid: number;
 
     @Column({ default: 0 })
     p1_score: number;

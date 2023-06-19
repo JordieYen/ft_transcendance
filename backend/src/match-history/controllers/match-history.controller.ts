@@ -45,8 +45,18 @@ export class MatchHistoryController {
   }
 
   @Get('mmr')
-  async getMmrsByPlayerUid(@Query('uid') uid: string): Promise<number> {
+  async getMmrByPlayerUid(@Query('uid') uid: string): Promise<number> {
     return this.matchHistoryService.getMmrByPlayerUid(+uid);
+  }
+
+  @Get('current-winstreak')
+  async getCurrentWinstreakByPlayerUid(@Query('uid') uid: string): Promise<number> {
+    return this.matchHistoryService.getCurrentWinstreakByPlayerUid(+uid);
+  }
+
+  @Get('longest-winstreak')
+  async getLongestWinstreakByPlayerUid(@Query('uid') uid: string): Promise<number> {
+    return this.matchHistoryService.getLongestWinstreakByPlayerUid(+uid);
   }
 
   @Post()

@@ -3,14 +3,12 @@ import { CreateMatchHistoryDto } from '../dto/create-match-history.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MatchHistory } from 'src/typeorm/match_history.entity';
 import { Repository } from 'typeorm';
-import { UsersService } from 'src/users/services/users.service';
 
 @Injectable()
 export class MatchHistoryService {
   constructor(
     @InjectRepository(MatchHistory)
-    private matchHistoryRepository: Repository<MatchHistory>,
-    private userService: UsersService
+    private matchHistoryRepository: Repository<MatchHistory>
   ) {}
 
   // Return All Entries
@@ -40,8 +38,8 @@ export class MatchHistoryService {
   async getByPlayerUid(uid: number): Promise<MatchHistory[]> {
     return await this.matchHistoryRepository.find({
       where: [
-        {p1_uid: {id: uid}},
-        {p2_uid: {id: uid}}
+        {p1_uid: uid},
+        {p2_uid: uid}
       ]
     });
   }
@@ -75,20 +73,53 @@ export class MatchHistoryService {
     const total = totalMatches - totalWins;
     return (total);
   }
-
+  
   // Return MMR for a player
   async getMmrByPlayerUid(uid: number): Promise<number> {
     const totalWins = await this.getTotalWinsByPlayerUid(uid);
     const totalLoss = await this.getTotalLossByPlayerUid(uid);
-    return (1000 + (totalWins * 10 - totalLoss * 5));
+    const total = 1000 + (totalWins * 10 - totalLoss * 5);
+    return (total);
+  }
+  
+    // Return current winstreak of a player
+    async getCurrentWinstreakByPlayerUid(uid: number): Promise<number> {
+      let winstreak = 0;
+      const matchHistory = await this.getByPlayerUid(uid);
+  
+      for (const match of matchHistory) {
+        if (match.winner_uid === uid)
+          ++winstreak;
+        else
+          winstreak = 0;
+      }
+      return (winstreak);
+    }
+
+  // Return longest winstreak of a player
+  async getLongestWinstreakByPlayerUid(uid: number): Promise<number> {
+    let currentWinstreak = 0;
+    let longestWinstreak = 0;
+    const matchHistory = await this.getByPlayerUid(uid);
+
+    for (const match of matchHistory) {
+      if (match.winner_uid === uid) {
+        ++currentWinstreak;
+        if (currentWinstreak > longestWinstreak)
+          longestWinstreak = currentWinstreak;
+      }
+      else
+        currentWinstreak = 0;
+    }
+    return (longestWinstreak);
   }
 
   // Add new entry
   async create(createMatchHistoryDto: CreateMatchHistoryDto): Promise<void> {
     const newMatch = await this.matchHistoryRepository.create({
         winner_uid: createMatchHistoryDto.winner_uid,
-        p1_uid: await this.userService.findUsersById(createMatchHistoryDto.p1_uid),
-        p2_uid: await this.userService.findUsersById(createMatchHistoryDto.p2_uid),
+        p1_uid: createMatchHistoryDto.p1_uid,
+        p2_uid: createMatchHistoryDto.p2_uid,
         p1_score: createMatchHistoryDto.p1_score,
         p2_score: createMatchHistoryDto.p2_score
     });
