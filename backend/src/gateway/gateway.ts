@@ -68,18 +68,21 @@ export class MyGateway implements OnModuleInit {
             const { senderId, receiverId } = data;
             await this.sendFriendRequest(senderId, receiverId);
             await this.getReceiveFriendRequest(receiverId);
+            // await this.getSentFriendRequest(senderId);
+
         } catch (error) {
             console.error('Error sending friend request gateway', error);
         }
     }
 
     @SubscribeMessage('friend-request-cancel')
-    async handleCancelFriendRequest(client: Socket, data: {senderId: number, friendRequestId: number} ) {
+    async handleCancelFriendRequest(client: Socket, data: {senderId: number, receiverId: number, friendRequestId: number} ) {
         try {
-            const { senderId, friendRequestId } = data;
+            const { senderId, receiverId, friendRequestId } = data;
             const cancelRequest = await this.friendService.cancelFriendRequest(friendRequestId);
             this.server.emit('friend-request-received', cancelRequest);
-            // await this.getReceiveFriendRequest(senderId);
+            // this.server.to(`${receiverId}`).emit('friend-request', null);
+            await this.getReceiveFriendRequest(receiverId);
         } catch (error) {
             console.error('Error canceling friend request gateway', error);
         }
@@ -95,7 +98,8 @@ export class MyGateway implements OnModuleInit {
     async getSentFriendRequest(senderId: number) {
         console.log('get sent friend request');
         const friendRequests = await this.friendService.getSentFriendRequest(senderId);
-        this.server.emit('friend-request-received', friendRequests);
+        // this.server.emit('friend-request-received', friendRequests);
+        this.server.to(`${senderId}`).emit('friend-request', friendRequests);
     }
 
     @SubscribeMessage('friend-request')
@@ -162,6 +166,7 @@ export class MyGateway implements OnModuleInit {
             this.server.to(`${friendId}`).emit('block', blockListReceiver);
             this.server.to(`${userId}`).emit('block', blockListSender);
             this.server.to(`${friendId}`).emit('unfriend', userId);
+            this.server.to(`${userId}`).emit('unfriend', friendId);
             this.server.emit('friend-request-received', blockRequest);
 
         } catch (error) {
@@ -177,11 +182,13 @@ export class MyGateway implements OnModuleInit {
             const acceptRequest = await this.friendService.acceptFriendRequest(unblockRequest.id);
             const friendsForAccepter = await this.friendService.getFriends(userId);
             const friendsForSender = await this.friendService.getFriends(blockId);
-            this.server.emit('friend-request-received', acceptRequest);
             this.server.to(`${userId}`).emit('friend', friendsForAccepter);
             this.server.to(`${blockId}`).emit('friend', friendsForSender);
-            this.server.emit('friend-request-received', unblockRequest);
             this.server.to(`${blockId}`).emit('unblock', userId);
+            this.server.to(`${userId}`).emit('unblock', blockId);
+            // this.server.to(`${blockId}`).emit('block', null);
+            this.server.emit('friend-request-received', acceptRequest);
+            // this.server.emit('friend-request-received', unblockRequest);
 
         } catch (error) {
             console.error('Error unblocking gateway', error);

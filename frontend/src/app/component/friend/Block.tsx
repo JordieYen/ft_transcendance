@@ -7,9 +7,9 @@ import Avatar from "../header_icon/Avatar";
 const Block = () => {
     const [ blocks, setBlocks ] = useState<any[]>([]);
     
-    const userData = UserData();
-
     const socket = useContext(SocketContext);
+    const userData = UserData();
+    
     useEffect(() => {
         socket?.on('block', (block: any) => {
             console.log('block', block);
@@ -19,10 +19,28 @@ const Block = () => {
 
         socket?.on('unblock', (friendId: number) => {
             setBlocks((prevBlocks) => prevBlocks.filter((block) => block.id !== friendId));
-          });
-    }, [socket]);
+        });
+        fetchBlockUsers();
+    }, [socket, userData]);
 
-const unBlock = async (blockId: number) => {
+    const fetchBlockUsers = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/friend/blocked/${userData?.id}`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+            if (response.ok) {
+                const blocks = await response.json();
+                setBlocks(blocks);
+            } else {
+                throw new Error('Failed to fetch blocks');
+            }
+        } catch (error) {
+            console.log('Error fetching blocks:', error);
+        }
+    };
+
+    const unBlock = async (blockId: number) => {
         try {
             const confirmation = confirm('Are you sure you want to unblock this user?');
             if (confirmation) {
@@ -41,7 +59,7 @@ const unBlock = async (blockId: number) => {
     return (
         <div>
             <h1>Block</h1>
-            {blocks && blocks.map((block) => (
+            { blocks && blocks.map((block) => (
                 <div className='flex items-center gap-10 p-10' key={block?.id}>
                 <div className='h-22 w-20 overflow-hidden'>
                    <Avatar src={ block?.avatar } alt="user avatar" width={50} height={50}/>

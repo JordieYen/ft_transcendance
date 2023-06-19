@@ -257,10 +257,12 @@ export class FriendService {
         }
       ]
     });
-    return friendship;
+    return friendship || null;
   }
 
   async getBlockedUsers(userId: number) {
+    console.log('id block', userId);
+    
     const blockList = await this.friendRepository.find({
       where: [
         {
@@ -283,6 +285,8 @@ export class FriendService {
         }
       }
     );
+    console.log('filteredBlockList', filteredBlockList);
+    
     return filteredBlockList;
   }
 }

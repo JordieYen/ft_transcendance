@@ -92,8 +92,15 @@ export class FriendController {
 
   @Get('blocked/:userId')
   getBlockedUsers(@Param('userId') userId: number) {
+    console.log('userId', userId);
     return this.friendService.getBlockedUsers(+userId);
   }
+
+  @Get('check-relationship/:userId/:friendId')
+  isFriend(@Param('userId') userId: number, @Param('friendId') friendId: number) {
+    return this.friendService.findFriendship(+userId, +friendId);
+  }
+
 
 
 }
