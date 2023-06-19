@@ -1,7 +1,6 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
 
 export class CreateMatchHistoryDto {
-
 	@IsNotEmpty()
 	winner_uid : number;
 	
