@@ -14,20 +14,20 @@ export class StatController {
     return this.statService.create(createStatDto);
   }
 
-  @Get()
-  findAll() {
-    return this.statService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.statService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.statService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.statService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStatDto: UpdateStatDto) {
-    return this.statService.update(+id, updateStatDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateStatDto: UpdateStatDto) {
+  //   return this.statService.update(+id, updateStatDto);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

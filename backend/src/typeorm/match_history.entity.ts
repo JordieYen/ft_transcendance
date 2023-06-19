@@ -21,6 +21,18 @@ export class MatchHistory {
     @Column({ default: 0 })
     p2_score: number;
 
+    @Column({ default: 0 })
+    p1_smashes: number;
+
+    @Column({ default: 0 })
+    p2_smashes: number;
+
+    @Column({ default: 1000 })
+    p1_mmr: number;
+
+    @Column({ default: 1000 })
+    p2_mmr: number;
+
     @Column({
         type: 'timestamp',
         default: () => 'CURRENT_TIMESTAMP',
