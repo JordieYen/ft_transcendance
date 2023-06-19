@@ -3,6 +3,7 @@ import { CreateMatchHistoryDto } from '../dto/create-match-history.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MatchHistory } from 'src/typeorm/match_history.entity';
 import { Repository } from 'typeorm';
+import { UpdateMatchHistoryDto } from '../dto/update-match-history.dto';
 
 @Injectable()
 export class MatchHistoryService {
@@ -54,19 +55,19 @@ export class MatchHistoryService {
     });
   }
 
-  // Return total games played from a player
+  // Return total games played by a player
   async getTotalGamesByPlayerUid(uid: number): Promise<number> {
     const total = (await this.getByPlayerUid(uid)).length;
     return (total);
   }
 
-  // Return total wins from a player
+  // Return total wins by a player
   async getTotalWinsByPlayerUid(uid: number): Promise<number> {
     const total = (await this.getWinsByPlayerUid(uid)).length;
     return (total);
   }
 
-  // Return total loss from a player
+  // Return total loss by a player
   async getTotalLossByPlayerUid(uid: number): Promise<number> {
     const totalMatches = await this.getTotalGamesByPlayerUid(uid);
     const totalWins = await this.getTotalWinsByPlayerUid(uid);
@@ -74,34 +75,38 @@ export class MatchHistoryService {
     return (total);
   }
   
-  // Return MMR for a player
+  // Return MMR of a player
   async getMmrByPlayerUid(uid: number): Promise<number> {
     const totalWins = await this.getTotalWinsByPlayerUid(uid);
     const totalLoss = await this.getTotalLossByPlayerUid(uid);
     const total = 1000 + (totalWins * 10 - totalLoss * 5);
     return (total);
   }
-  
-    // Return current winstreak of a player
-    async getCurrentWinstreakByPlayerUid(uid: number): Promise<number> {
-      let winstreak = 0;
-      const matchHistory = await this.getByPlayerUid(uid);
-  
-      for (const match of matchHistory) {
-        if (match.winner_uid === uid)
-          ++winstreak;
-        else
-          winstreak = 0;
-      }
-      return (winstreak);
-    }
 
-  // Return longest winstreak of a player
-  async getLongestWinstreakByPlayerUid(uid: number): Promise<number> {
-    let currentWinstreak = 0;
-    let longestWinstreak = 0;
+  // Return lifetime MMR of a player
+  async getHighestMmrByPlayerUid(uid: number): Promise<number> {
     const matchHistory = await this.getByPlayerUid(uid);
 
+    let best = 1000;
+    for (const match of matchHistory) {
+      if (match.p1_uid === uid) {
+        if (match.p1_mmr > best)
+          best = match.p1_mmr;
+      }
+      else {
+        if (match.p2_mmr > best)
+          best = match.p2_mmr;
+      }
+    }
+    return (best);
+  }
+
+  // Return lifetime winstreak of a player
+  async getLifetimeWinstreakByPlayerUid(uid: number): Promise<number> {
+    const matchHistory = await this.getByPlayerUid(uid);
+    
+    let currentWinstreak = 0;
+    let longestWinstreak = 0;
     for (const match of matchHistory) {
       if (match.winner_uid === uid) {
         ++currentWinstreak;
@@ -111,7 +116,69 @@ export class MatchHistoryService {
       else
         currentWinstreak = 0;
     }
+
     return (longestWinstreak);
+  }
+
+  // Return lifetime kills of a player
+  async getLifetimeKillsByPlayerUid(uid: number): Promise<number> {
+    const matchHistory = await this.getByPlayerUid(uid);
+
+    let total = 0;
+    for (const match of matchHistory) {
+      if (match.p1_uid === uid)
+        total += match.p1_score;
+      else
+        total += match.p2_score;
+    }
+
+    return (total);
+  }
+
+  // Return lifetime deaths from a player
+  async getLifetimeDeathsByPlayerUid(uid: number): Promise<number> {
+    const matchHistory = await this.getByPlayerUid(uid);
+
+    let total = 0;
+    for (const match of matchHistory) {
+      if (match.p1_uid === uid)
+        total += match.p2_score;
+      else
+        total += match.p1_score;
+    }
+
+    return (total);
+  }
+
+  // Return k/d ratio of a player
+  async getKillDeathRatioByPlayerUid(uid: number): Promise<string> {
+    const totalKills = await this.getLifetimeKillsByPlayerUid(uid);
+    const totalDeaths = await this.getLifetimeDeathsByPlayerUid(uid);
+    const total = totalKills / totalDeaths;
+    return (total.toFixed(2));
+  }
+
+  // Return lifetime smashes of a player
+  async getLifetimeSmashesByPlayerUid(uid: number): Promise<number> {
+    const matchHistory = await this.getByPlayerUid(uid);
+    
+    let total = 0;
+    for (const match of matchHistory) {
+      if (match.p1_uid === uid)
+        total += match.p1_smashes;
+      else
+        total += match.p2_smashes;
+    }
+
+    return (total);
+  }
+
+  // Update Mmr value by match_uid
+  async updateMmr(uid: number, updateMatchHistoryDto: UpdateMatchHistoryDto) {
+    const matchHistory = await this.getByMatchUid(uid);
+    matchHistory[0].p1_mmr = await this.getMmrByPlayerUid(matchHistory[0].p1_uid);
+    matchHistory[0].p2_mmr = await this.getMmrByPlayerUid(matchHistory[0].p2_uid);
+    return await this.matchHistoryRepository.save(matchHistory);
   }
 
   // Add new entry
@@ -121,11 +188,17 @@ export class MatchHistoryService {
         p1_uid: createMatchHistoryDto.p1_uid,
         p2_uid: createMatchHistoryDto.p2_uid,
         p1_score: createMatchHistoryDto.p1_score,
-        p2_score: createMatchHistoryDto.p2_score
+        p2_score: createMatchHistoryDto.p2_score,
+        p1_smashes: createMatchHistoryDto.p1_smashes,
+        p2_smashes: createMatchHistoryDto.p2_smashes,
+        p1_mmr: createMatchHistoryDto.p1_mmr,
+        p2_mmr: createMatchHistoryDto.p2_mmr
     });
     console.log(newMatch);
     try {
+      const dto = new UpdateMatchHistoryDto;
       await this.matchHistoryRepository.save(newMatch);
+      await this.updateMmr(newMatch.match_uid, dto);
     } catch (error) {
       console.log('error=', error.message);
       throw new InternalServerErrorException('Could not create match-history');
