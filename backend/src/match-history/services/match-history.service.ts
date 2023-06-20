@@ -4,12 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MatchHistory } from 'src/typeorm/match_history.entity';
 import { Repository } from 'typeorm';
 import { UpdateMatchHistoryDto } from '../dto/update-match-history.dto';
+import { StatService } from 'src/stat/services/stat.service';
 
 @Injectable()
 export class MatchHistoryService {
   constructor(
     @InjectRepository(MatchHistory)
-    private matchHistoryRepository: Repository<MatchHistory>
+    private matchHistoryRepository: Repository<MatchHistory>,
+    private readonly statService: StatService
   ) {}
 
   // Return All Entries
@@ -199,6 +201,26 @@ export class MatchHistoryService {
       const dto = new UpdateMatchHistoryDto;
       await this.matchHistoryRepository.save(newMatch);
       await this.updateMmr(newMatch.match_uid, dto);
+      await this.statService.updateStat(newMatch.p1_uid, {
+        wins: await this.getTotalWinsByPlayerUid(newMatch.p1_uid),
+        losses: await this.getTotalLossByPlayerUid(newMatch.p1_uid),
+        kills: await this.getLifetimeKillsByPlayerUid(newMatch.p1_uid),
+        deaths: await this.getLifetimeDeathsByPlayerUid(newMatch.p1_uid),
+        smashes: await this.getLifetimeSmashesByPlayerUid(newMatch.p1_uid),
+        winstreak: await this.getLifetimeWinstreakByPlayerUid(newMatch.p1_uid),
+        current_mmr: await this.getMmrByPlayerUid(newMatch.p1_uid),
+        best_mmr: await this.getHighestMmrByPlayerUid(newMatch.p1_uid),
+      });
+      await this.statService.updateStat(newMatch.p2_uid, {
+        wins: await this.getTotalWinsByPlayerUid(newMatch.p2_uid),
+        losses: await this.getTotalLossByPlayerUid(newMatch.p2_uid),
+        kills: await this.getLifetimeKillsByPlayerUid(newMatch.p2_uid),
+        deaths: await this.getLifetimeDeathsByPlayerUid(newMatch.p2_uid),
+        smashes: await this.getLifetimeSmashesByPlayerUid(newMatch.p2_uid),
+        winstreak: await this.getLifetimeWinstreakByPlayerUid(newMatch.p2_uid),
+        current_mmr: await this.getMmrByPlayerUid(newMatch.p2_uid),
+        best_mmr: await this.getHighestMmrByPlayerUid(newMatch.p2_uid),
+      });
     } catch (error) {
       console.log('error=', error.message);
       throw new InternalServerErrorException('Could not create match-history');
