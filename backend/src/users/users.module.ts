@@ -8,6 +8,7 @@ import { diskStorage } from 'multer';
 import { MatchHistoryModule } from 'src/match-history/match-history.module';
 import { Friend } from 'src/typeorm/friends.entity';
 import { FriendModule } from 'src/friend/friend.module';
+import { StatModule } from 'src/stat/stat.module';
 
 const storageOptions: MulterModuleOptions = {
     storage: diskStorage({
@@ -23,15 +24,11 @@ const storageOptions: MulterModuleOptions = {
     imports: [
         TypeOrmModule.forFeature([User]),
         MulterModule.register(storageOptions),
+        // StatModule
     ],
     controllers: [UsersController],
-    providers: [
-        UsersService,
-    ],
-    exports: [
-        UsersService,
-        TypeOrmModule,
-    ]
+    providers: [UsersService],
+    exports: [UsersService,TypeOrmModule]
 
 })
 export class UsersModule {}

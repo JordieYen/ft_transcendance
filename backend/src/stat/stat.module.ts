@@ -10,6 +10,6 @@ import { Stat } from 'src/typeorm/stats.entity';
   ],
   controllers: [StatController],
   providers: [StatService],
-  exports: [StatService, TypeOrmModule],
+  exports: [StatService, TypeOrmModule]
 })
 export class StatModule {}

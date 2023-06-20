@@ -70,9 +70,9 @@ export class StatController {
     return this.statService.getHighestMmrByPlayerUid(+uid);
   }
 
-  @Post()
-  async create(@Body() createStatDto: CreateStatDto): Promise<void> {
-    return await this.statService.create(createStatDto);
+  @Post('player')
+  async create(@Query('uid') uid: string, @Body() createStatDto: CreateStatDto): Promise<void> {
+    return await this.statService.create(+uid, createStatDto);
   }
 
   // @Patch('player')

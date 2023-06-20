@@ -113,9 +113,9 @@ export class StatService {
   }
 
   // Add new entry
-  async create(createStatDto: CreateStatDto) {
+  async create(uid: number, createStatDto: CreateStatDto) {
     const newStat = await this.statRepository.create({
-      uid: createStatDto.uid,
+      uid: uid,
       wins: createStatDto.wins,
       losses: createStatDto.losses,
       kills: createStatDto.kills,
