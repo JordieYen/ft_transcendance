@@ -40,7 +40,9 @@ export class MatchHistoryController {
   }
 
   @Post()
-  async create(@Body() createMatchHistoryDto: CreateMatchHistoryDto): Promise<void> {
+  async create(
+    @Body() createMatchHistoryDto: CreateMatchHistoryDto,
+  ): Promise<void> {
     return this.matchHistoryService.create(createMatchHistoryDto);
   }
 

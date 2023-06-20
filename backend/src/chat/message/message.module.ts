@@ -13,6 +13,6 @@ import { ChannelUser } from 'src/typeorm/channel_user.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Message, User, Channel, ChannelUser])],
   controllers: [MessageController],
-  providers: [MessageService, UsersService, ChannelService, ChannelUserService]
+  providers: [MessageService, UsersService, ChannelService, ChannelUserService],
 })
 export class MessageModule {}

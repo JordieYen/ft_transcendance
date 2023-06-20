@@ -1,0 +1,21 @@
+.chat-box {
+	background-color: aliceblue;
+	/* opacity: 0.5;
+	top: 0;
+	left: 0; */
+	width: 25%;
+	height: 100%;
+	/* position: fixed; */
+}
+
+.chat-name {
+	color: gray;
+}
+
+.chat {
+	text-align: center;
+	position: absolute;
+	bottom: 0;
+	/* right: 0; */
+	background-color: greenyellow;
+}

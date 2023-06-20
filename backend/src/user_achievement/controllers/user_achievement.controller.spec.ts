@@ -11,7 +11,9 @@ describe('UserAchievementController', () => {
       providers: [UserAchievementService],
     }).compile();
 
-    controller = module.get<UserAchievementController>(UserAchievementController);
+    controller = module.get<UserAchievementController>(
+      UserAchievementController,
+    );
   });
 
   it('should be defined', () => {

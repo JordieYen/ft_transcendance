@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/typeorm/user.entity';
@@ -12,8 +17,8 @@ import { FriendService } from 'src/friend/services/friend.service';
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
-    // private readonly statService: StatService,
-  ) {}
+  ) // private readonly statService: StatService,
+  {}
 
   async createUser(createUserDto: CreateUserDto) {
     console.log(createUserDto);
@@ -23,7 +28,7 @@ export class UsersService {
       return await this.usersRepository.save(newUser);
     } catch (error) {
       console.error(error);
-      
+
       throw new InternalServerErrorException('Could not create user');
     }
   }
@@ -32,26 +37,26 @@ export class UsersService {
     return await this.usersRepository.find();
   }
 
-  async findUsersById(id: number) : Promise<User | null> {
+  async findUsersById(id: number): Promise<User | null> {
     if (id === undefined) {
       return null;
     }
-    const user = await this.usersRepository.findOne({ 
-      where: { 
-        id: id 
-      }});
-    if (!user)
-       throw new InternalServerErrorException('User not found');
-    return (user);
-  }
-
-  async findUsersByIntraId(intra_uid: number) : Promise<User | null> {
     const user = await this.usersRepository.findOne({
       where: {
-        intra_uid: intra_uid
-      }});
-    if (!user)
-      return null;
+        id: id,
+      },
+    });
+    if (!user) throw new InternalServerErrorException('User not found');
+    return user;
+  }
+
+  async findUsersByIntraId(intra_uid: number): Promise<User | null> {
+    const user = await this.usersRepository.findOne({
+      where: {
+        intra_uid: intra_uid,
+      },
+    });
+    if (!user) return null;
     return user;
   }
 
@@ -61,16 +66,16 @@ export class UsersService {
 
   async deleteUserById(id: number) {
     const user = await this.findUsersById(id);
-    if (!user)
-      throw new NotFoundException(`User with ID ${id} not found`);
+    if (!user) throw new NotFoundException(`User with ID ${id} not found`);
     return await this.usersRepository.delete(id);
   }
 
-  async findUsersByName(username: string):  Promise<User | null> {
-    const user = await this.usersRepository.findOne({ 
-      where: { 
-        username : username
-      }});
+  async findUsersByName(username: string): Promise<User | null> {
+    const user = await this.usersRepository.findOne({
+      where: {
+        username: username,
+      },
+    });
     if (!user)
       throw new NotFoundException(`User with username: ${username} not found`);
     return await user;
@@ -78,15 +83,15 @@ export class UsersService {
 
   async uploadAvatar(id: number, avatar: string) {
     try {
-      const user = await this.findUsersById(id)
+      const user = await this.findUsersById(id);
       user.avatar = avatar;
       return await this.usersRepository.save(user);
     } catch (error) {
-        throw new InternalServerErrorException('Could not upload avatar');
+      throw new InternalServerErrorException('Could not upload avatar');
     }
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto) : Promise<User> {
+  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     if (!updateUserDto || Object.keys(updateUserDto).length === 0) {
       throw new BadRequestException('No update data provided');
     }
@@ -94,7 +99,7 @@ export class UsersService {
       const updatedUserDto = {
         ...updateUserDto,
         updatedAt: new Date(),
-      }
+      };
       await this.usersRepository.update(id, updatedUserDto);
       return await this.findUsersById(id);
     } catch (error) {
@@ -123,10 +128,9 @@ export class UsersService {
       ],
       where: {
         id: id,
-      }
-    })
-    if (!user)
-      throw new NotFoundException(`User with ID ${id} not found`);
+      },
+    });
+    if (!user) throw new NotFoundException(`User with ID ${id} not found`);
     return await user;
-   }
+  }
 }

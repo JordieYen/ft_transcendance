@@ -22,7 +22,7 @@ const configFactory = {
   envFilePath: '../.env',
   validationSchema: configValidationSchema,
   cache: true,
-}
+};
 
 @Module({
   imports: [
@@ -40,10 +40,7 @@ const configFactory = {
     StatModule,
     GatewayModule,
   ],
-  controllers: [AppController ],
-  providers: [ 
-    AppService,
-   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
-
 export class AppModule {}

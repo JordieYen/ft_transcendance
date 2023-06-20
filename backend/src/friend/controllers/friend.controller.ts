@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Put,
+} from '@nestjs/common';
 import { FriendService } from '../services/friend.service';
 import { CreateFriendDto } from '../dto/create-friend.dto';
 import { UpdateFriendDto } from '../dto/update-friend.dto';
@@ -25,7 +34,10 @@ export class FriendController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateFriendDto: Partial<UpdateFriendDto>) {
+  update(
+    @Param('id') id: number,
+    @Body() updateFriendDto: Partial<UpdateFriendDto>,
+  ) {
     return this.friendService.update(id, updateFriendDto);
   }
 
@@ -35,7 +47,10 @@ export class FriendController {
   }
 
   @Post('friend-request/:senderId/:receiverId')
-  sendFriendRequest(@Param('senderId') senderId: number, @Param('receiverId') receiverId: number) {
+  sendFriendRequest(
+    @Param('senderId') senderId: number,
+    @Param('receiverId') receiverId: number,
+  ) {
     return this.friendService.sendFriendRequest(senderId, receiverId);
   }
 
@@ -94,6 +109,4 @@ export class FriendController {
   getBlockedUsers(@Param('userId') userId: number) {
     return this.friendService.getBlockedUsers(+userId);
   }
-
-
 }

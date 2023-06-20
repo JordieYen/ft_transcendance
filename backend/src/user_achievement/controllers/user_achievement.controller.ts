@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Put,
+} from '@nestjs/common';
 import { UserAchievementService } from '../services/user_achievement.service';
 import { CreateUserAchievementDto } from '../dto/create-user_achievement.dto';
 import { UpdateUserAchievementDto } from '../dto/update-user_achievement.dto';
@@ -7,7 +16,9 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('user-achievement')
 @ApiTags('User-achievement')
 export class UserAchievementController {
-  constructor(private readonly userAchievementService: UserAchievementService) {}
+  constructor(
+    private readonly userAchievementService: UserAchievementService,
+  ) {}
 
   @Post('create')
   async create(@Body() createUserAchievementDto: CreateUserAchievementDto) {
@@ -25,13 +36,19 @@ export class UserAchievementController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateUserAchievementDto: Partial<UpdateUserAchievementDto>) {
-    return await this.userAchievementService.update(id, updateUserAchievementDto);
+  async update(
+    @Param('id') id: number,
+    @Body() updateUserAchievementDto: Partial<UpdateUserAchievementDto>,
+  ) {
+    return await this.userAchievementService.update(
+      id,
+      updateUserAchievementDto,
+    );
   }
 
   @Delete(':id')
   async remove(@Param('id') id: number) {
     await this.userAchievementService.remove(id);
-    return { message: ` User achievement with ${id} was deleted.`};
+    return { message: ` User achievement with ${id} was deleted.` };
   }
 }

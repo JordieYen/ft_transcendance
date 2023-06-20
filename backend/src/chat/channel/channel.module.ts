@@ -11,6 +11,6 @@ import { ChannelUserService } from '../channel-user/channel-user.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Channel, ChannelUser, User])],
   controllers: [ChannelController],
-  providers: [ChannelService, UsersService, ChannelUserService]
+  providers: [ChannelService, UsersService, ChannelUserService],
 })
 export class ChannelModule {}

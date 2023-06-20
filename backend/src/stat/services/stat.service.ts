@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MatchHistoryService } from 'src/match-history/services/match-history.service';
 import { MatchHistory } from 'src/typeorm/match_history.entity';
@@ -36,14 +40,21 @@ export class StatService {
     // const user = await this.userService.findUsersByIdWithRelation(createStatDto.userId);
     // console.log(user);
     // const matchHistory = [ ...user?.p1_match, ...user?.p2_match];
-    const matchHistory = await this.matchHistoryService.getByPlayerUid(createStatDto.userId)
+    const matchHistory = await this.matchHistoryService.getByPlayerUid(
+      createStatDto.userId,
+    );
     const newStat = new Stat();
     // newStat.user = user;
     newStat.userId = createStatDto.userId;
     newStat.total_games = matchHistory.length;
-    newStat.wins = matchHistory.filter((match) => match.winner_uid === createStatDto.userId).length;
+    newStat.wins = matchHistory.filter(
+      (match) => match.winner_uid === createStatDto.userId,
+    ).length;
     newStat.losses = newStat.total_games - newStat.wins;
-    newStat.winStreak = this.calculateWinStreak(matchHistory, createStatDto.userId);
+    newStat.winStreak = this.calculateWinStreak(
+      matchHistory,
+      createStatDto.userId,
+    );
     newStat.mmr = this.calculateMMR(newStat.wins, newStat.losses);
     const stat = await this.statRepository.create(newStat);
     try {
@@ -53,7 +64,6 @@ export class StatService {
       throw new InternalServerErrorException('Could not create new stat');
     }
   }
-
 
   calculateWinStreak(matchHistory: MatchHistory[], userId: number): number {
     let currentStreak = 0;
@@ -72,27 +82,25 @@ export class StatService {
     return longestStreak;
   }
 
-  calculateMMR(wins: number, losses: number) : number {
-    return (wins * 10) - (losses * 10);
+  calculateMMR(wins: number, losses: number): number {
+    return wins * 10 - losses * 10;
   }
 
-
-  async findAll() : Promise<Stat[]> {
-    const stat =  await this.statRepository.find({
-      relations: [ 'user' ]
+  async findAll(): Promise<Stat[]> {
+    const stat = await this.statRepository.find({
+      relations: ['user'],
     });
     return stat;
   }
 
   async findOne(id: number) {
     const stat = await this.statRepository.findOne({
-      relations: [ 'user'],
+      relations: ['user'],
       where: {
         id: id,
-      }
-    })
-    if (!stat)
-      throw new NotFoundException(`Stat with ${id} is not found`);
+      },
+    });
+    if (!stat) throw new NotFoundException(`Stat with ${id} is not found`);
     return stat;
   }
 

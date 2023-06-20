@@ -1,8 +1,23 @@
-import { Body, Controller, Get, Logger, Param, Post, Query, Req, Res, Session, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Param,
+  Post,
+  Query,
+  Req,
+  Res,
+  Session,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from '../util/local.guard';
-import { AuthenticatedUser, RequestWithSessionUser } from '../util/user_interface';
+import {
+  AuthenticatedUser,
+  RequestWithSessionUser,
+} from '../util/user_interface';
 import { FortyTwoAuthGuard } from '../util/42-auth.guard';
 import { User } from 'src/users/decorators/user.decorator';
 import { InvalidOtpException } from '../util/invalid_otp_exception';
@@ -27,15 +42,13 @@ export class AuthController {
   @ApiOperation({
     summary: 'login to start your pong game',
   })
-
   @Get('login')
-  async login() {
-  }
+  async login() {}
 
   // req.user contains token
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
-  async callback(@Req() req: Request, @Res() res: Response) : Promise<void> {
+  async callback(@Req() req: Request, @Res() res: Response): Promise<void> {
     return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
   }
 
@@ -51,15 +64,24 @@ export class AuthController {
 
   // @UseGuards(AuthenticatedGuard)
   @Get('2fa')
-  async enableTwoFactorAuth(@Req() req: Request, @Res() res: Response) : Promise<void> {
-    const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(req.user);
+  async enableTwoFactorAuth(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
+      req.user,
+    );
     await this.authService.displayQrCode(res, otpAuthUrl);
   }
 
   // JWT containe Header, Payload, Signature
   // @UseGuards(AuthenticatedGuard)
   @Post('otp')
-  async verifyOtp(@Req() req: Request, @Res() res: Response, @Body() body: { otp: string }) {
+  async verifyOtp(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() body: { otp: string },
+  ) {
     const isValid = await this.authService.verifyOtp(body.otp);
     if (isValid) {
       const payload = await this.authService.createPayload(req.user);
@@ -69,9 +91,11 @@ export class AuthController {
     }
     throw new InvalidOtpException();
   }
-  
+
   @Get('session')
-  async getAuthSession(@Session() session: Record<string, any>) : Promise<Record<string, any> > {
+  async getAuthSession(
+    @Session() session: Record<string, any>,
+  ): Promise<Record<string, any>> {
     return await [session, session.id];
     // return ({session: session, sessionId: session.id});
   }
@@ -80,14 +104,14 @@ export class AuthController {
   // @UseGuards(AuthGuard('jwt-2fa'))
   @Get('jwt')
   async getJwt() {
-    return { msg: 'enter jwt guard'};
+    return { msg: 'enter jwt guard' };
   }
-  
+
   // @UseGuards(AuthenticatedGuard)
   @Get('profile')
   async getProfile(@User() user) {
-      const returnUser = await this.authService.getAuthUserProfile(user.id);
-      return await returnUser;
+    const returnUser = await this.authService.getAuthUserProfile(user.id);
+    return await returnUser;
   }
   // @Get('profile')
   // async getProfile(@User() user) {
@@ -111,7 +135,7 @@ export class AuthController {
   //   console.log('loging backend');
   //   return (this.authService.redirectTo42OAuth(res));
   // }
-    
+
   // @Get('callback')
   // async callback(@Query('code') code: string, @Req() req: RequestWithSessionUser, @Res() res: Response) {
   //   try {

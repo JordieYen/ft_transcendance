@@ -8,12 +8,9 @@ import { User } from 'src/typeorm/user.entity';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([MatchHistory]),
-    UsersModule
-  ],
+  imports: [TypeOrmModule.forFeature([MatchHistory]), UsersModule],
   controllers: [MatchHistoryController],
   providers: [MatchHistoryService],
-  exports: [MatchHistoryService, TypeOrmModule]
+  exports: [MatchHistoryService, TypeOrmModule],
 })
 export class MatchHistoryModule {}

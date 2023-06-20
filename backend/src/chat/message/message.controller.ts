@@ -7,20 +7,20 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('message')
 @Controller('message')
 export class MessageController {
-	constructor (private messageService: MessageService) {}
+  constructor(private messageService: MessageService) {}
 
-	// @Get()
-	// test() {
-	// 	return this.messageService.test();
-	// }
+  // @Get()
+  // test() {
+  // 	return this.messageService.test();
+  // }
 
-	@Get()
-	getAllMessages() {
-		return this.messageService.getAllMessages();
-	}
+  @Get()
+  getAllMessages() {
+    return this.messageService.getAllMessages();
+  }
 
-	@Post('create')
-	createMessage(@Body() dto: CreateMessageDto, @User() sender) {
-		return this.messageService.createMessage(dto, sender);
-	}
+  @Post('create')
+  createMessage(@Body() dto: CreateMessageDto, @User() sender) {
+    return this.messageService.createMessage(dto, sender);
+  }
 }

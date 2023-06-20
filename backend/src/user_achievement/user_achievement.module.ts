@@ -14,15 +14,10 @@ import { AchievementModule } from 'src/achievement/achievement.module';
   imports: [
     TypeOrmModule.forFeature([UserAchievement]),
     UsersModule,
-    AchievementModule
+    AchievementModule,
   ],
   controllers: [UserAchievementController],
-  providers: [
-    UserAchievementService,
-  ],
-  exports: [
-    UserAchievementService,
-    TypeOrmModule,
-  ]
+  providers: [UserAchievementService],
+  exports: [UserAchievementService, TypeOrmModule],
 })
 export class UserAchievementModule {}

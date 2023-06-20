@@ -7,11 +7,7 @@ import { MatchHistoryModule } from 'src/match-history/match-history.module';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Stat]),
-    MatchHistoryModule,
-    UsersModule
-  ],
+  imports: [TypeOrmModule.forFeature([Stat]), MatchHistoryModule, UsersModule],
   controllers: [StatController],
   providers: [StatService],
   exports: [StatService, TypeOrmModule],

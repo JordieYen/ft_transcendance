@@ -1,17 +1,27 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UserAchievement } from './user_achievement.entity';
 
 @Entity()
 export class Achievement {
-    @PrimaryGeneratedColumn()
-    id: number;
-    
-    @Column()
-    name: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    description: string;
+  @Column()
+  name: string;
 
-    @OneToMany(() => UserAchievement, userAchievement => userAchievement.achievement, { cascade: true })
-    userAchievements: UserAchievement[];
+  @Column()
+  description: string;
+
+  @OneToMany(
+    () => UserAchievement,
+    (userAchievement) => userAchievement.achievement,
+    { cascade: true },
+  )
+  userAchievements: UserAchievement[];
 }

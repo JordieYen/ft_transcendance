@@ -49,6 +49,6 @@ const passportFactory = {
     SessionSerializer,
   ],
   controllers: [AuthController],
-  exports: [AuthService]
+  exports: [AuthService],
 })
 export class AuthModule {}
