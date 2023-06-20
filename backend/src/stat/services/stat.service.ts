@@ -13,39 +13,106 @@ export class StatService {
     @InjectRepository(Stat)
     private statRepository: Repository<Stat>
   ) {}
-  
-  // async findAll() : Promise<Stat[]> {
-  //   const stat =  await this.statRepository.find({
-  //     relations: [ 'user' ]
-  //   });
-  //   return stat;
-  // }
-  
-  // async findOne(id: number) {
-  //   const stat = await this.statRepository.findOne({
-  //     relations: [ 'user'],
-  //     where: {
-  //       id: id,
-  //     }
-  //   })
-  //   if (!stat)
-  //   throw new NotFoundException(`Stat with ${id} is not found`);
-  //   return stat;
-  // }
-  
-  // async update(id: number, updateStatDto: UpdateStatDto) {
-  //   const stat = await this.findOne(id);
-  //   if (updateStatDto?.userId) {
-  //     // const user = await this.userService.findUsersById(updateStatDto.userId);
-  //     stat.userId = updateStatDto?.userId;
-  //   }
-  //   stat.wins = updateStatDto?.wins;
-  //   stat.losses = updateStatDto?.losses;
-  //   stat.mmr = updateStatDto?.mmr;
-  //   return await this.statRepository.save(stat);
-  // }
 
-  // add new entry
+  // Return All Entries
+  async getStat(): Promise<Stat[]> {
+    return await this.statRepository.find();
+  }
+
+  // Return entries with {uid}
+  async getByPlayerUid(uid: number): Promise<Stat[]> {
+    return await this.statRepository.find({
+      where: {
+        uid: uid
+      }
+    });
+  }
+
+  // Return total games by player
+  async getTotalGamesByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    const total = stat[0].wins + stat[0].losses;
+    return (total);
+  }
+
+  // Return total wins by player
+  async getTotalWinsByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return (stat[0].wins);
+  }
+
+  // Return total losses by player
+  async getTotalLossByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return (stat[0].losses);
+  }
+
+  // Return total kills by player
+  async getLifetimeKillsByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return (stat[0].kills);
+  }
+
+  // Return total deaths by player
+  async getLifetimeDeathsByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return (stat[0].deaths);
+  }
+
+  // Return k/d ratio of a player
+  async getKillDeathRatioByPlayerUid(uid: number): Promise<string> {
+    const stat = await this.getByPlayerUid(uid);
+    const total = stat[0].kills / stat[0].deaths;
+    return (total.toFixed(2));
+  }
+
+  // Return total smashes by player
+  async getLifetimeSmashesByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return (stat[0].smashes);
+  }
+
+  // Return lifetime winstreak of a player
+  async getLifetimeWinstreakByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return (stat[0].winstreak);
+  }
+
+  // Return MMR of a player
+  async getMmrByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return (stat[0].current_mmr);
+  }
+
+  // Return MMR of a player
+  async getHighestMmrByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return (stat[0].best_mmr);
+  }
+
+  // Update existing Stat
+  async updateStat(uid: number, updateStatDto: UpdateStatDto) {
+    const stat = await this.getByPlayerUid(uid);
+    if (updateStatDto?.wins)
+      stat[0].wins = updateStatDto?.wins;
+    if (updateStatDto?.losses)
+      stat[0].losses = updateStatDto?.losses;
+    if (updateStatDto?.kills)
+      stat[0].kills = updateStatDto?.kills;
+    if (updateStatDto?.deaths)
+      stat[0].deaths = updateStatDto?.deaths;
+    if (updateStatDto?.smashes)
+      stat[0].smashes = updateStatDto?.smashes;
+    if (updateStatDto?.winstreak)
+      stat[0].winstreak = updateStatDto?.winstreak;
+    if (updateStatDto?.current_mmr)
+      stat[0].current_mmr = updateStatDto?.current_mmr;
+    if (updateStatDto?.best_mmr)
+      stat[0].best_mmr = updateStatDto?.best_mmr;
+    return await this.statRepository.save(stat);
+  }
+
+  // Add new entry
   async create(createStatDto: CreateStatDto) {
     const newStat = await this.statRepository.create({
       uid: createStatDto.uid,
