@@ -39,8 +39,8 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
 
 
   useEffect(() => {
-    localStorage.setItem("friendRequestStatus", JSON.stringify(friendRequestStatus));
-    localStorage.setItem("friendRequestArray", JSON.stringify(friendRequestArray));
+    sessionStorage.setItem("friendRequestStatus", JSON.stringify(friendRequestStatus));
+    sessionStorage.setItem("friendRequestArray", JSON.stringify(friendRequestArray));
 }, [friendRequestArray, friendRequestStatus]);
 
 
@@ -79,7 +79,7 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
           senderId: senderId,
 
         });
-        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [accepterId]: true }));
+        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [accepterId]: false }));
         setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
       }
 

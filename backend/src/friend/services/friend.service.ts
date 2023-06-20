@@ -289,4 +289,23 @@ export class FriendService {
     
     return filteredBlockList;
   }
+
+  async blocker(blockerId: number, blockedUserId: number) {
+    const blockedUser = await this.friendRepository.findOne({
+      where: [
+        { sender: { id: blockerId }, receiver: { id: blockedUserId } },
+        { sender: { id: blockedUserId }, receiver: { id: blockerId } },
+      ],
+    });
+  
+    if (!blockedUser) {
+      const newBlockedUser = this.friendRepository.create({
+        sender: { id: blockerId }, // Set the blocker ID
+        receiver: { id: blockedUserId },
+        status: FriendStatus.Blocked,
+      });
+      await this.friendRepository.save(newBlockedUser);
+    }
+  }
+
 }

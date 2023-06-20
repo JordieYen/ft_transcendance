@@ -27,7 +27,6 @@ const Friend = ( { userDataId, setFriendRequestArray, setFriendRequestStatus }: 
         });
         socket?.on('unfriend', (friendId: number) => {
             console.log('unfriend', friendId);
-            
             setFriends((prevFriends) => prevFriends.filter((friend) => friend.id !== friendId));
             setFriendRequestStatus((prevStatus) => {
                 return {
@@ -90,7 +89,7 @@ const Friend = ( { userDataId, setFriendRequestArray, setFriendRequestStatus }: 
             const confirmation = window.confirm('Are you sure you want to block this friend?');
             if (confirmation) {
                 socket?.emit('block', {
-                    userId: userDataId,
+                    blockerId: userDataId,
                     friendId: friendId,
                 });
                 setFriends((prevFriends) => prevFriends.filter((friend) => friend.id !== friendId));

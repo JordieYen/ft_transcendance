@@ -8,43 +8,77 @@ import Friend from "./Friend";
 import { SocketContext } from '@/app/socket/SocketProvider';
 import { io, Socket } from 'socket.io-client';
 import Block from './Block';
+import useSessionStorageState from '@/app/utils/useSessionStorageState';
+import UserData from '@/app/webhook/UserContext';
 
 const FriendList = () => {
     const [usersList, setUserList] = useState<any[]>([]);
     const [filteredUsersList, setFilteredUsersList] = useState<any[]>([]);
-    const [friendRequestArray, setFriendRequestArray] = useState<{ 
-        requestId: number, 
-        senderId: number, 
-        receiverId: number, 
-        status: string 
-    }[]>([]);
-    const [friendRequestStatus, setFriendRequestStatus] = useState<{ [key: number]: boolean }>({});
-    const [pendingStatus, setPending] = useState<{ [key: number]: string }>({});
-    
+    const [friendRequestArray, setFriendRequestArray] = useSessionStorageState({
+        name: 'friendRequestArray',
+        initialValue: [] as {
+            requestId: number,
+            senderId: number,
+            receiverId: number,
+            status: string
+        }[],
+    })
+    const [friendRequestStatus, setFriendRequestStatus] = useSessionStorageState({
+        name: 'friendRequestStatus',
+        initialValue: {} as { 
+            [key: number]: boolean
+        },
+    })
     const socket = useContext(SocketContext);
     // const userData = UserData();
-
     let userData: any = {};
     if (typeof window !== "undefined") {
-        const userDataString = localStorage?.getItem("userData");
+        const userDataString = sessionStorage?.getItem('userData');
         userData = userDataString ? JSON.parse(userDataString) : {};
     }
 
-
     useEffect(() => {
+        socket?.emit('join', `${userData?.id}`);
         socket?.on("friend-request-received", (receivedFriendRequest: any) => {
             console.log('friend-request-received socket', receivedFriendRequest);
-            setFriendRequestArray((prevArray) => [
-                // ...prevArray,
-                { 
-                    requestId: receivedFriendRequest.id, 
+            // setFriendRequestArray((prevArray: any) => [
+            //     ...prevArray,
+            //     { 
+            //         requestId: receivedFriendRequest.id, 
+            //         senderId: receivedFriendRequest?.sender?.id,
+            //         receiverId: receivedFriendRequest?.receiver?.id, 
+            //         status: receivedFriendRequest.status 
+            //     }
+            // ]);
+            setFriendRequestArray((prevArray: any) => {
+                const existingRequest = prevArray.find(
+                  (request: any) => request.requestId === receivedFriendRequest.id
+                );
+              
+                if (existingRequest) {
+                  const updatedArray = prevArray.map((request: any) => {
+                    if (request.requestId === receivedFriendRequest.id) {
+                      return {
+                        ...request,
+                        status: receivedFriendRequest.status,
+                      };
+                    }
+                    return request;
+                  });
+                  return updatedArray;
+                } else {
+                  const newRequest = {
+                    requestId: receivedFriendRequest.id,
                     senderId: receivedFriendRequest?.sender?.id,
-                    receiverId: receivedFriendRequest?.receiver?.id, 
-                    status: receivedFriendRequest.status 
+                    receiverId: receivedFriendRequest?.receiver?.id,
+                    status: receivedFriendRequest.status,
+                  };
+              
+                  return [...prevArray, newRequest];
                 }
-            ]);
+            });
             if (receivedFriendRequest?.status === "decline") {
-                setFriendRequestStatus((prevStatus) => ({
+                setFriendRequestStatus((prevStatus: any) => ({
                     ...prevStatus,
                     [receivedFriendRequest?.receiver?.id]: false,
                 }));
@@ -59,29 +93,7 @@ const FriendList = () => {
             socket?.off('friend-request-cancel');
         };
     }, [socket]);
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            const storedStatus = localStorage.getItem("friendRequestStatus");
-            if (storedStatus) {
-                setFriendRequestStatus(JSON.parse(storedStatus));
-            }
-            const storedFriendRequests = localStorage.getItem("friendRequestArray");
-            if (storedFriendRequests) {
-                setFriendRequestArray(JSON.parse(storedFriendRequests));
-            }
-        }
-    }, []);
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            localStorage.setItem("friendRequestStatus", JSON.stringify(friendRequestStatus));
-            localStorage.setItem("friendRequestArray", JSON.stringify(friendRequestArray));
-            console.log('friendRequestStatus', friendRequestStatus);
-        }
-        
-    }, [friendRequestArray, friendRequestStatus, friendRequestStatus]);
-
+    
     const fetchFriendRequests = async (userId: number) => {
         try {
             const response = await fetch(`http://localhost:3000/friend/check-relationship/${userId}/${userData.id}`, {
@@ -94,12 +106,6 @@ const FriendList = () => {
             console.log('response', response);
             if (response.ok) {
                 const friendRequest = await response.json();
-                if (friendRequest.status === "pending") {
-                    setPending((prevStatus) => ({
-                        ...prevStatus,
-                        [userId]: friendRequest.status,
-                    }));
-                }
             }
             console.log('friendRequestStatus after fetch', friendRequestStatus);
         } catch (error) {
@@ -108,28 +114,6 @@ const FriendList = () => {
         }
     };
 
-
-    // const fetchFriendRequests = async (userId: number) => {
-    //     try {
-    //       const response = await fetch(`http://localhost:3000/friend/check-relationship/${userId}/${userData.id}`, {
-    //             method: 'GET',
-    //             credentials: 'include',
-    //         });
-    //         if (!response.ok) {
-    //             throw new Error(`Request failed with status ${response.status}`);
-    //         }
-    //         const friendRequest = await response.json();
-    //         setPending((prevStatus) => ({
-    //                 ...prevStatus,
-    //                 [userId]:  friendRequest.status,
-    //         }));
-    //     } catch (error) {
-    //       console.log('Error fetching friend request:', error);
-    //     }
-    // };
-
-
-      
     const fetchUsersList = async () => {
         try {
             const response = await fetch('http://localhost:3000/users', {
@@ -167,7 +151,7 @@ const FriendList = () => {
     };
 
     const cancelFriendRequest =  (userId: number) => {
-        const friendRequests = friendRequestArray.find((request) => request.receiverId === userId);
+        const friendRequests = friendRequestArray.find((request: any) => request.receiverId === userId);
         console.log('friendRequests in cancel', friendRequests);
         
         socket?.emit("friend-request-cancel", {
@@ -176,8 +160,8 @@ const FriendList = () => {
             // friendRequestId: friendRequest?.id
             friendRequestId: friendRequests?.requestId
         });
-        setFriendRequestArray(friendRequestArray.filter((request) => request.receiverId !== userId));
-        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: false }));
+        setFriendRequestArray(friendRequestArray.filter((request: any) => request.receiverId !== userId));
+        setFriendRequestStatus((prevStatus: any) => ({ ...prevStatus, [userId]: false }));
     };
 
     const sendFriendRequest = (userId: number) => {
@@ -185,18 +169,17 @@ const FriendList = () => {
             senderId: userData.id,
             receiverId: userId,
         });
-        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: true }));
-        fetchFriendRequests(userId);
+        setFriendRequestStatus((prevStatus: any) => ({ ...prevStatus, [userId]: true }));
+        // fetchFriendRequests(userId);
     }
 
     const isSent = (userId: number) => {
         const friendRequest = friendRequestArray.find(
-            (request) => 
+            (request: any) => 
             request.receiverId === userData.id && 
             request.status === "pending" &&
             request.senderId === userId
         );
-        localStorage.setItem('friendRequestStatus', JSON.stringify(friendRequestStatus))
         return !!friendRequest;
     };
 

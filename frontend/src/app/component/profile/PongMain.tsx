@@ -18,7 +18,7 @@ const PongMain: React.FC<any> = () => {
       return;
     }
     const { id } = userData;
-    socket?.emit('join', `${id}`);
+    // socket?.emit('join', `${id}`);
   }, [userData, socket]);
   
   if (!userData) {

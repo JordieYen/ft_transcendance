@@ -6,22 +6,44 @@ import Avatar from "../header_icon/Avatar";
 
 const Block = () => {
     const [ blocks, setBlocks ] = useState<any[]>([]);
+    const [ blockerIdArray, setBlockerId ] = useState<number[]>([]);
     
     const socket = useContext(SocketContext);
-    const userData = UserData();
+    let userData: any = {};
+    if (typeof window !== "undefined") {
+        const userDataString = sessionStorage?.getItem('userData');
+        userData = userDataString ? JSON.parse(userDataString) : {};
+    }
+
     
     useEffect(() => {
         socket?.on('block', (block: any) => {
-            console.log('block', block);
-            setBlocks(block);
+            const { user, BlockerId } = block;
+            console.log('blockUser', user);
+            console.log('blocked', BlockerId);
+            setBlocks(user);
+            // setBlockerId(BlockerId);
+            setBlockerId((prevBlockerIds) => [...prevBlockerIds, BlockerId]);
+            console.log('blockerIdArray', blockerIdArray);
+            
             // setBlocks((prevBlocks) => prevBlocks.filter((block) => block.id !== blockId));
         });
-
         socket?.on('unblock', (friendId: number) => {
             setBlocks((prevBlocks) => prevBlocks.filter((block) => block.id !== friendId));
+            setBlockerId((prevBlockerIds) => prevBlockerIds.filter((blockerId) => blockerId !== friendId));
         });
         fetchBlockUsers();
-    }, [socket, userData]);
+
+        return () => {
+            socket?.off('block');
+            socket?.off('unblock');
+        }
+    }, [socket]);
+
+    useEffect(() => {
+        console.log('blockerIdArray:', blockerIdArray);
+    }, [blockerIdArray]);
+
 
     const fetchBlockUsers = async () => {
         try {
@@ -32,6 +54,8 @@ const Block = () => {
             if (response.ok) {
                 const blocks = await response.json();
                 setBlocks(blocks);
+                console.log('fetch block', blocks);
+            
             } else {
                 throw new Error('Failed to fetch blocks');
             }
@@ -45,10 +69,11 @@ const Block = () => {
             const confirmation = confirm('Are you sure you want to unblock this user?');
             if (confirmation) {
                 socket?.emit('unblock', {
-                    userId: userData?.id,
+                    unBlockerId: userData?.id,
                     blockId: blockId,
                 });
                 setBlocks((prevBlocks) => prevBlocks.filter((block) => block.id !== blockId));
+                setBlockerId((prevBlockerIds) => prevBlockerIds.filter((blockerId) => blockerId !== blockId));
             }
         } catch (error) {
             console.log('Error unblocking:', error);
@@ -67,7 +92,13 @@ const Block = () => {
                 <div className='flex-col gap-1'>
                     <p>{block?.username}</p>
                     <div className='flex gap-2'>
+                    {
+                        blockerIdArray
+                        .includes(userData?.id) === true ?
                         <button onClick={ () => unBlock(block?.id)}>Unblock</button>
+                        : 
+                        <button disabled>Only blocker can unblock</button>
+                    }
                     </div>
                 </div>
             </div>

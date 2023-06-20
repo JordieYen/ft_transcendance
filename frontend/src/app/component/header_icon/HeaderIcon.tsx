@@ -13,7 +13,7 @@ const HeaderIcon = () => {
         return <div>Loading...</div>;
     }
     const { avatar, username, stat } = userData;
-    localStorage.setItem('userData', JSON.stringify(userData));
+    sessionStorage.setItem('userData', JSON.stringify(userData));
     return (
         <nav className="horizontal-container">
             <Icon filePath="/crown.png"/>
