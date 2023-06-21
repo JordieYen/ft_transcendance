@@ -13,8 +13,7 @@ import { IconButton } from "./IconButton";
 import { Router } from "react-router-dom";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import UserData from "@/hooks/userData";
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore, { UserData } from "@/hooks/useUserStore";
 
 interface HeaderLogoProps {
   currentPath: string;
@@ -85,9 +84,84 @@ export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
   );
 };
 
-export const HeaderIcon = () => {
+export const LogoutIcon = () => {
   const router = useRouter();
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/auth/logout", {
+        credentials: "include",
+      });
+      router.push("/login").then(() => {
+        toast((t) => (
+          <div className="flex flex-1 items-center justify-start border-saffron">
+            <div className="flex flex-col items-center justify-center text-timberwolf">
+              <FontAwesomeIcon icon={faRightFromBracket} size="lg" />
+            </div>
+            <div className="mx-[10px] my-1">
+              <p className="text-timberwolf font-roboto text-base">
+                Logout successful
+              </p>
+            </div>
+          </div>
+        ));
+      });
+    } catch (error) {
+      toast.error("Error logging out! Try again later");
+    }
+  };
+  return (
+    <IconButton onClick={handleLogout}>
+      <FontAwesomeIcon icon={faRightFromBracket} size="lg" />
+    </IconButton>
+  );
+};
 
+export const SettingsIcon = () => {
+  return (
+    <Link href={"/settings"}>
+      <IconButton>
+        <FontAwesomeIcon icon={faGear} size="lg" />
+      </IconButton>
+    </Link>
+  );
+};
+
+export const ProfileIconGroup = ({ user }: { user: UserData }) => {
+  return (
+    <Link
+      className="flex items-center space-x-2 group"
+      /* HANDLE PROFILE CLICK BELOW! */
+      href={"/profile"}
+    >
+      <img
+        width={100}
+        height={100}
+        className="w-9 h-9 rounded-full object-cover"
+        src={user.avatar}
+        alt="user avatar"
+      />
+      <p className="hidden lg:block text-dimgrey group-hover:text-timberwolf">
+        {user.username}
+      </p>
+      <div className="flex items-center rounded-lg bg-dimgrey py-1 px-2 gap-1 text-onyxgrey group-hover:bg-timberwolf">
+        <FontAwesomeIcon icon={faTrophy} size="sm" />
+        <span className="text-onyxgrey font-roboto">
+          {user.stat === null ? 0 : user.stat.mmr}
+        </span>
+      </div>
+    </Link>
+  );
+};
+
+export const LeaderboardsIcon = () => {
+  return (
+    <IconButton onClick={() => console.log("leaderboards")}>
+      <FontAwesomeIcon icon={faCrown} size="lg" />
+    </IconButton>
+  );
+};
+
+export const HeaderIcon = () => {
   const userData = useUserStore((state) => state.userData);
   const setUserData = useUserStore((state) => state.setUserData);
 
@@ -107,7 +181,6 @@ export const HeaderIcon = () => {
         if (response.ok) {
           const userData = await response.json();
           setUserData(userData);
-          console.log("userData", userData);
         } else {
           throw new Error("User not found");
         }
@@ -133,70 +206,12 @@ export const HeaderIcon = () => {
     userAchievement,
   } = userData;
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/auth/logout", {
-        credentials: "include",
-      });
-      router.push("/login").then(() => {
-        toast((t) => (
-          <div className="flex flex-1 items-center justify-start border-saffron">
-            <div className="flex flex-col items-center justify-center text-timberwolf">
-              <FontAwesomeIcon icon={faRightFromBracket} size="lg" />
-            </div>
-            <div className="mx-[10px] my-1">
-              <p className="text-timberwolf font-roboto text-base">
-                Logout successful
-              </p>
-            </div>
-          </div>
-        ));
-      });
-    } catch (error) {
-      toast.error("Error logging out! Try again later");
-    }
-  };
-
   return (
     <>
-      {/* crown icon */}
-      <IconButton onClick={() => router.push("/leaderboards")}>
-        <FontAwesomeIcon icon={faCrown} size="lg" />
-      </IconButton>
-
-      {/* profile avatar/name/mmr group */}
-      <Link
-        className="flex items-center space-x-2 group"
-        /* HANDLE PROFILE CLICK BELOW! */
-        href={"/profile"}
-      >
-        <Image
-          width={100}
-          height={100}
-          className="w-9 h-9 rounded-full object-cover"
-          src={avatar}
-          alt="user avatar"
-        />
-        <p className="hidden lg:block">{username}</p>
-        <div className="flex items-center rounded-lg bg-dimgrey py-1 px-2 gap-1 text-onyxgrey group-hover:bg-timberwolf">
-          <FontAwesomeIcon icon={faTrophy} size="sm" />
-          <span className="text-onyxgrey font-roboto">
-            {stat === null ? 0 : stat.mmr}
-          </span>
-        </div>
-      </Link>
-
-      {/* gear icon */}
-      <Link href={"/settings"}>
-        <IconButton>
-          <FontAwesomeIcon icon={faGear} size="lg" />
-        </IconButton>
-      </Link>
-
-      {/* logout icon */}
-      <IconButton onClick={handleLogout}>
-        <FontAwesomeIcon icon={faRightFromBracket} size="lg" />
-      </IconButton>
+      <LeaderboardsIcon />
+      <ProfileIconGroup user={userData} />
+      <SettingsIcon />
+      <LogoutIcon />
     </>
   );
 };

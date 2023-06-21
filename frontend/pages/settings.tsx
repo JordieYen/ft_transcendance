@@ -31,6 +31,7 @@ export default function SettingsPage() {
         mode="button"
         icon={faUser}
       />
+
       <ChangeAvatarModal
         isOpen={isPicOpen}
         closeModal={closePicModal}
@@ -44,20 +45,22 @@ export default function SettingsPage() {
         mode="button"
         icon={faImage}
       />
+
       <ChangeTFAModal
         isOpen={isTFAOpen}
-        closeModal={closePicModal}
+        closeModal={closeTFAModal}
         tfaRef={tfaRef}
       />
       <UserSettings
         title="Enable 2FA"
         description="Enable Two-Factor-Authentication."
         buttonDescArry={["enable 2FA"]}
-        handleClick={(text) => console.log(text)}
-        // handleClick={(text) => openTFAModal()}
+        // handleClick={(text) => console.log(text)}
+        handleClick={() => openTFAModal()}
         mode="button"
         icon={faLock}
       />
+
       <DeleteAccountModal
         isOpen={isDelOpen}
         closeModal={closeDelModal}

@@ -19,7 +19,7 @@ const ChangeAvatarModal = ({
 }: ChangeAvatarModalProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [selectedPic, setSelectedPic] = useState<File | null>(null);
-  const [previewPic, setPreviewPic] = useState<string | null>(null);
+  const [previewPic, setPreviewPic] = useState<string>("");
   const [isPicUpdated, setIsPicUpdated] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [userData, setUserData] = useUserStore((state) => [
@@ -47,7 +47,9 @@ const ChangeAvatarModal = ({
     const file = event.target.files?.[0] ?? null;
     setSelectedPic(file);
     if (file) {
-      setPreviewPic(URL.createObjectURL(file));
+      const imageURL = URL.createObjectURL(file);
+      // setPreviewPic(URL.createObjectURL(file));
+      setPreviewPic(imageURL);
     }
   };
 
@@ -55,22 +57,25 @@ const ChangeAvatarModal = ({
     if (!selectedPic)
       toast.error("Failed to change avatar: No new image detected!");
     if (selectedPic) {
-      console.log("Uploading image:", selectedPic);
       closeModal();
-      const file = {
-        username: inputValue,
-      };
+      const formData = new FormData();
+      formData.append("file", selectedPic);
+      if (userData.id !== null) formData.append("id", userData.id?.toString());
       axios
-        .patch(`/users/${userData?.id}`, updateUserDto)
-        .then(() => {
-          setUserData({ ...userData, username: inputValue });
-          toast.success("Name successfully updated!");
+        .patch("users/upload", formData)
+        .then((response) => {
+          console.log(response.data);
+          setUserData({
+            ...userData,
+            avatar: response.data.avatarURL,
+          });
+          toast.success("Avatar successfully updated!");
         })
         .catch(() => {
-          toast.error("Name update failed! Please try again later");
+          toast.error("Avatar update failed! Please try again later");
         });
       setSelectedPic(null);
-      setPreviewPic(null);
+      setPreviewPic("");
     }
   };
 
@@ -78,7 +83,7 @@ const ChangeAvatarModal = ({
     if (isOpen === false) setSelectedPic(null);
     setIsPicUpdated(false);
     setSelectedPic(null);
-    setPreviewPic(null);
+    setPreviewPic("");
   }, [isOpen]);
 
   return (

@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { TIMEOUT } from "dns";
+import axios from "axios";
+import useUserStore from "@/hooks/useUserStore";
 
 interface DeleteAccountModalProps {
   isOpen: boolean;
@@ -18,6 +20,10 @@ const DeleteAccountModal = ({
 }: DeleteAccountModalProps) => {
   const [inputValue, setInputValue] = useState("");
   const router = useRouter();
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -28,20 +34,27 @@ const DeleteAccountModal = ({
       toast.error("Failed to delete account: string does not match!");
     } else {
       closeModal();
-      router.push("/login").then(() => {
-        toast((t) => (
-          <div className="flex flex-1 items-center justify-start">
-            <div className="flex flex-col items-center justify-center text-timberwolf">
-              <FontAwesomeIcon icon={faTrash} size="lg" />
-            </div>
-            <div className="mx-[10px] my-1">
-              <p className="text-timberwolf font-roboto text-base">
-                Delete successful
-              </p>
-            </div>
-          </div>
-        ));
-      });
+      axios
+        .delete(`users/${userData?.id}`)
+        .then(() => {
+          router.push("/login").then(() => {
+            toast((t) => (
+              <div className="flex flex-1 items-center justify-start">
+                <div className="flex flex-col items-center justify-center text-timberwolf">
+                  <FontAwesomeIcon icon={faTrash} size="lg" />
+                </div>
+                <div className="mx-[10px] my-1">
+                  <p className="text-timberwolf font-roboto text-base">
+                    Delete successful
+                  </p>
+                </div>
+              </div>
+            ));
+          });
+        })
+        .catch(() => {
+          toast.error("Delete failed! Please try again later");
+        });
     }
   };
 
@@ -60,7 +73,7 @@ const DeleteAccountModal = ({
             <h2 className="flex flex-col">
               <p className="text-2xl text-dimgrey">Delete account</p>
               <p className="text-lg text-tomato">
-                This action is not reversible!
+                This action is not reversible! All will be lost!
               </p>
             </h2>
             <input
