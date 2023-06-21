@@ -5,6 +5,7 @@ import Avatar from "./Avatar";
 import Icon from "./Icon";
 import Mmr from "./Mmr";
 import NextLink from "next/link";
+import { Link } from 'react-router-dom'
 
 const HeaderIcon = () => {
     const userData = UserData();
@@ -12,7 +13,7 @@ const HeaderIcon = () => {
         return <div>Loading...</div>;
     }
     const { avatar, username, stat } = userData;
-    localStorage.setItem('userData', JSON.stringify(userData));
+    sessionStorage.setItem('userData', JSON.stringify(userData));
     return (
         <nav className="horizontal-container">
             <Icon filePath="/crown.png"/>
@@ -20,6 +21,9 @@ const HeaderIcon = () => {
             <p className='icon-container transform hover:scale-125'>{ username }</p>
             <Mmr mmr={ stat?.mmr || 0 }/>
             <Icon filePath="/gear.png"/>
+            {/* <Link to='/friend'>
+                <p>To Friend</p>
+            </Link> */}
             <NextLink href="/friend">
                 <Icon filePath="/user.png"/>
             </NextLink>

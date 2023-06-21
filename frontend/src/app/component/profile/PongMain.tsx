@@ -5,17 +5,27 @@ import MatchHistory from './MatchHistory';
 import formatDateMalaysia from '../../utils/formatDateMalaysia';
 import MatchMaking from './MatchMaking';
 import Achievement from './Achievement';
-import { useContext } from 'react';
+import { use, useContext, useEffect } from 'react';
+import { SocketContext } from '@/app/socket/SocketProvider';
 
 const PongMain: React.FC<any> = () => {
     
-    // const userData = useContext(UserContext);
-    const userData = UserData();
+  const userData = UserData();
+  const socket = useContext(SocketContext);
+  
+  useEffect(() => {
     if (!userData) {
-      return <div>Loading...</div>;
+      return;
     }
-    const { avatar, createdAt, id, intra_uid, username, online, p1_match, p2_match, stat, userAchievement } = userData;
-    const joinDate = formatDateMalaysia(new Date(createdAt));
+    const { id } = userData;
+    // socket?.emit('join', `${id}`);
+  }, [userData, socket]);
+  
+  if (!userData) {
+    return <div>Loading...</div>;
+  }
+  const { avatar, createdAt, id, intra_uid, username, online, p1_match, p2_match, stat, userAchievement } = userData;
+  const joinDate = formatDateMalaysia(new Date(createdAt));
 
     return (
       <div className='profile-page'>

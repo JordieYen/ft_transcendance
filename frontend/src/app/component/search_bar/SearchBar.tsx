@@ -20,7 +20,7 @@ const SearchBar = ( { onSearch, onReset } : SearchBarProps ) => {
     };
 
     return (
-        <div className="search-bar flex justify-center mb-10">
+        <div className="search-bar flex justify-center mb-2">
             <input type="text"
             placeholder="Search by username"
             value={ searchQuery } 
