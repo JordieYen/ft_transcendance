@@ -24,7 +24,7 @@ const storageOptions: MulterModuleOptions = {
     imports: [
         TypeOrmModule.forFeature([User]),
         MulterModule.register(storageOptions),
-        // StatModule
+        StatModule
     ],
     controllers: [UsersController],
     providers: [UsersService],

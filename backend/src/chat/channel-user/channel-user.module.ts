@@ -7,9 +7,13 @@ import { Channel } from 'src/typeorm/channel.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/services/users.service';
 import { ChannelService } from '../channel/channel.service';
+import { StatModule } from 'src/stat/stat.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Channel, ChannelUser, User])],
+  imports: [
+    TypeOrmModule.forFeature([Channel, ChannelUser, User]),
+    StatModule
+  ],
   controllers: [ChannelUserController],
   providers: [ChannelUserService, UsersService]
 })

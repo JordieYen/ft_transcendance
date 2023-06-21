@@ -13,7 +13,7 @@ import { CreateStatDto } from 'src/stat/dto/create-stat.dto';
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
-    // private readonly statService: StatService
+    private readonly statService: StatService
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -21,9 +21,9 @@ export class UsersService {
     const newUser = this.usersRepository.create(createUserDto);
     console.log('test', newUser);
     try {
-      // const dto = new CreateStatDto;
+      const dto = new CreateStatDto;
       const returnUser = await this.usersRepository.save(newUser);
-      // await this.statService.create(newUser.id, dto);
+      await this.statService.create(newUser.id, dto);
       return (returnUser);
     } catch (error) {
       console.error(error);
