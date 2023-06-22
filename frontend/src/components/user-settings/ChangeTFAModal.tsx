@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, RefObject } from "react";
+import Image from "next/image";
 import axios from "axios";
 import QRCode from "qrcode";
 import toast from "react-hot-toast";
@@ -14,7 +15,6 @@ export const SixDigitVerification = () => {
 
   useEffect(() => {
     const completed = verCode.every((digit) => digit !== "");
-    console.log(completed);
     setIsCodeComplete(completed);
   }, [verCode]);
 
@@ -59,8 +59,47 @@ export const SixDigitVerification = () => {
     }
   };
 
+  const handleInputPaste = (
+    event: React.ClipboardEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    event.preventDefault();
+    const pastedData = event.clipboardData.getData("Text").trim();
+    const newVerCode = [...verCode];
+    const digits = pastedData.split("").slice(0, 6); // Limit to 6 digits if needed
+
+    if (!/^\d+$/.test(pastedData.slice(0, 6)))
+      toast.error("Paste error! Clipboard Data contains non-numerical values!");
+    else {
+      digits.forEach((digit, i) => {
+        if (index + i < 6) {
+          newVerCode[index + i] = digit;
+        }
+      });
+
+      setVerCode(newVerCode);
+      verInput.current[5].focus();
+    }
+  };
+
   const handleVerSubmit = () => {
-    console.log("Verification code submitted:", verCode.join(""));
+    const otpCode = verCode.join("");
+    console.log(otpCode);
+    axios
+      .post(
+        "auth/otp",
+        { otp: otpCode },
+        {
+          withCredentials: true,
+        },
+      )
+      .then((response) => {
+        console.log(response);
+        toast.success("Authentication success!");
+      })
+      .catch(() => {
+        toast.error("Authentication failed!");
+      });
   };
 
   return (
@@ -68,7 +107,7 @@ export const SixDigitVerification = () => {
       <div className="flex space-x-4">
         {verCode.map((digit, index) => (
           <input
-            className={`w-[59px] h-[59px] border-2 rounded-xl outline-none bg-transparent font-roboto text-timberwolf text-xl text-center ${
+            className={`w-[59px] h-[59px] border-2 rounded-xl outline-none caret-transparent bg-transparent font-roboto text-timberwolf text-2xl text-center ${
               digit ? `border-saffron` : `border-dimgrey`
             }`}
             key={index}
@@ -77,6 +116,7 @@ export const SixDigitVerification = () => {
             onChange={(event) => handleInputChange(event, index)}
             onKeyDown={(event) => handleInputKeyDown(event, index)}
             onMouseDown={handleInputMouseDown}
+            onPaste={(event) => handleInputPaste(event, index)}
             ref={(input) =>
               (verInput.current[index] = input as HTMLInputElement)
             }
@@ -123,7 +163,6 @@ const ChangeTFAModal = ({
         const response = await axios.get("/auth/2fa", {
           withCredentials: true,
         });
-        console.log(response);
         const qrCodeUrl = response.data;
 
         const canvas = document.createElement("canvas");
@@ -151,7 +190,7 @@ const ChangeTFAModal = ({
               <p className="text-2xl text-dimgrey">Update 2FA</p>
             </h2>
             <div className="flex flex-col space-y-1">
-              <p className="text-sm text-dimgrey">
+              <p className="text-md text-dimgrey">
                 Two factor authentication adds an extra layer of security to
                 your account. Scan this QR Code with your Authenticator App and
                 enter the verification code below.
@@ -159,17 +198,18 @@ const ChangeTFAModal = ({
             </div>
             <div className="flex rounded-lg border-[3px] border-saffron bg-white items-center justify-center">
               {qrCodeImg ? (
-                <img
-                  className="w-[150px] h-[150px]"
+                <Image
                   src={qrCodeImg}
                   alt="2FA QR Code"
+                  width={150}
+                  height={150}
                 />
               ) : (
                 <p>Loading QR Code...</p>
               )}
             </div>
             <hr className="border-dimgrey"></hr>
-            <p className="text-sm">Verification Code:</p>
+            <p className="text-md">Verification Code:</p>
             <SixDigitVerification />
           </div>
         </div>
