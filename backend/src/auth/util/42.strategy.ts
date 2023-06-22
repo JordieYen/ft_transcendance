@@ -23,8 +23,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
 
     async validate(accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback): Promise<void> {
         let authUser = await this.authService.findOneOrCreate(profile);
-    // if (!authUser.online)
-    //         authUser = await this.userService.updateUser(authUser.id, { online: true });
         done(null, authUser);
     }
 

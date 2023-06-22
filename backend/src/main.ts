@@ -60,22 +60,19 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use((req, res, next) => {
-      // req.session.user = req.user;
     var status = req.isAuthenticated() ? 'logged in' : 'logged out';
     console.log('status:', status, '\n', 'path', req.path, '\n');
-    console.log(
-    //   // 'session', req.session, '\n',
-    );
-    // const isAuthRoute = (req.path == '/auth/login' 
-    // || req.path == '/auth/callback' 
-    // || req.path == '/auth/logout'
-    // || req.path == '/api');
-    // if (isAuthRoute)
-    //   next;
-    // if (!req.isAuthenticated() && !isAuthRoute) {
-    //     console.log('enter');
-    //     return res.redirect(`${process.env.NEXT_HOST}/login`)
-    // }
+    // console.log('session', req.session, '\n');
+    const isAuthRoute = (req.path == '/auth/login' 
+    || req.path == '/auth/callback' 
+    || req.path == '/auth/logout'
+    || req.path == '/api');
+    if (isAuthRoute)
+      next;
+    if (!req.isAuthenticated() && !isAuthRoute) {
+        console.log('enter');
+        return res.redirect(`${process.env.NEXT_HOST}/login`)
+    }
       next();
   });
 

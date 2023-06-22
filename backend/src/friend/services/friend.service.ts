@@ -150,11 +150,31 @@ export class FriendService {
     // return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Cancel });
   }
 
-  async blockUser(friendRequestId: number) {
-    await this.friendRepository.update(friendRequestId, { status: FriendStatus.Blocked });
-    const updatedFriendRequest = await this.findOne(friendRequestId);
-    return updatedFriendRequest;
+  // async blockUser(friendRequestId: number) {
+  //   await this.friendRepository.update(friendRequestId, { status: FriendStatus.Blocked });
+  //   const updatedFriendRequest = await this.findOne(friendRequestId);
+  //   return updatedFriendRequest;
     // return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Blocked });
+  // }
+  async blockUser(friendRequestId: number, blockerId: number,  blockedId: number) {
+    const friendRequest = await this.friendRepository.findOne({
+      where: {
+        id: friendRequestId,
+      },
+      relations: ['sender', 'receiver'],
+    });
+
+    const blocker = await this.userService.findUsersById(blockerId);
+    const blocked = await this.userService.findUsersById(blockedId);
+
+    if (friendRequest) {
+      friendRequest.status = FriendStatus.Blocked;
+      friendRequest.sender = blocker;
+      friendRequest.receiver = blocked;
+    }
+
+    await this.friendRepository.save(friendRequest);
+    return friendRequest;
   }
 
   async getSentFriendRequest(senderId: number) {
@@ -260,35 +280,63 @@ export class FriendService {
     return friendship || null;
   }
 
-  async getBlockedUsers(userId: number) {
-    console.log('id block', userId);
+  // async getBlockedUsers(userId: number) {
+  //   console.log('id block', userId);
     
+  //   const blockList = await this.friendRepository.find({
+  //     where: [
+  //       {
+  //         sender: { id: userId },
+  //         status: FriendStatus.Blocked,
+  //       },
+  //       {
+  //         receiver: { id: userId },
+  //         status: FriendStatus.Blocked,
+  //       },
+  //     ],
+  //     relations: ['sender', 'receiver'],
+  //   });
+
+  //   const filteredBlockList = blockList.map(block => {
+  //       if (block.sender.id === userId) {
+  //         return block.receiver;
+  //       } else  {
+  //         return block.sender;
+  //       }
+  //     }
+  //   );
+  //   console.log('filteredBlockList', filteredBlockList);
+    
+  //   return filteredBlockList;
+  // }
+
+  async getBlockedUsers(userId: number) {
     const blockList = await this.friendRepository.find({
-      where: [
-        {
+      where: {
           sender: { id: userId },
           status: FriendStatus.Blocked,
         },
-        {
+        relations: ['sender', 'receiver'],
+      });
+
+    const blockedList = await this.friendRepository.find({
+      where: {
           receiver: { id: userId },
           status: FriendStatus.Blocked,
         },
-      ],
-      relations: ['sender', 'receiver'],
-    });
+        relations: ['sender', 'receiver'],
+      });
 
-    const filteredBlockList = blockList.map(block => {
-        if (block.sender.id === userId) {
-          return block.receiver;
-        } else  {
-          return block.sender;
-        }
-      }
-    );
-    console.log('filteredBlockList', filteredBlockList);
+    console.log('blockList', blockList);
+    console.log('blockedList', blockedList);
     
-    return filteredBlockList;
+
+    return {
+      blockList,
+      blockedList
+    };
   }
+
 
   async blocker(blockerId: number, blockedUserId: number) {
     const blockedUser = await this.friendRepository.findOne({

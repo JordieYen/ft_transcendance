@@ -5,11 +5,12 @@ const nextConfig = {
     },
 }
 
-const dotenv = require('dotenv');
-const path = require('path');
+// const dotenv = require('dotenv');
+// const path = require('path');
 
-const resolvedPath = path.resolve(__dirname, '..', '.env');
-dotenv.config({
-    path: resolvedPath
-});
+// const resolvedPath = path.resolve(__dirname, '.env');
+// dotenv.config({
+//     path: resolvedPath
+// });
+// console.log('resolvedPath', resolvedPath);
 module.exports = nextConfig

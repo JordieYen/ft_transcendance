@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 const HeaderIcon = () => {
     const userData = UserData();
     if (!userData) {
-        return <div>Loading...</div>;
+        return <div>User not found in header...</div>;
     }
     const { avatar, username, stat } = userData;
     sessionStorage.setItem('userData', JSON.stringify(userData));
@@ -21,9 +21,6 @@ const HeaderIcon = () => {
             <p className='icon-container transform hover:scale-125'>{ username }</p>
             <Mmr mmr={ stat?.mmr || 0 }/>
             <Icon filePath="/gear.png"/>
-            {/* <Link to='/friend'>
-                <p>To Friend</p>
-            </Link> */}
             <NextLink href="/friend">
                 <Icon filePath="/user.png"/>
             </NextLink>
