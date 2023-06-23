@@ -6,22 +6,21 @@ import '../src/app/globals.css';
 import { SocketProvider } from '@/app/socket/SocketProvider';
 import { SessionProvider, useSession } from "next-auth/react"
 import { useRouter } from 'next/router';
-
+import { middleware } from '@/app/middleware';
 
 const MyApp = ({ Component, pageProps, router }: AppProps) => {
 
   const currentPath = router.asPath;
   const allowPages = [ '/pong-main'];
   const showAdditionalIcon = allowPages.includes(currentPath);
-
   return (
     <SessionProvider session={pageProps.session}>
       <SocketProvider>
         <div>
             <Header showAdditionalIcon={showAdditionalIcon}/>
-            {/* <ContentWrapper> */}
+            <ContentWrapper>
                 <Component {...pageProps} />
-            {/* </ContentWrapper> */}
+            </ContentWrapper>
             <Footer />
       </div>
       </SocketProvider>
@@ -29,33 +28,47 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
   );
 };
 
-const ContentWrapper = ({ children }: any) => {
-  const { data: session, status } = useSession()
-  const router = useRouter();
-  const [showLoginPage, setShowLoginPage] = useState(false);
+export const getServerSideProps = async (context: any) => {
+  const { req } = context;
+  console.log('req', req);
+  return {
+    props: {
+      req,
+    },
+  };
+};
+  
 
+const ContentWrapper = ({ children }: any) => {
+  const [fetchedData, setFetchedData] = useState(null);
 
   useEffect(() => {
-    if (status === 'unauthenticated' && !isLoginPage(router.pathname)) {
-      router.replace('/login');
-    } else if (status === 'unauthenticated' && isLoginPage(router.pathname)) {
-      setShowLoginPage(true);
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/returnRequest',{
+          credentials: 'include',
+        });
+        console.log('response', response);
+        const data = await response.json();
+        console.log('data', data);
+        setFetchedData(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
+  useEffect(() => {
+    if (fetchedData) {
+      console.log('fetchedData', fetchedData);
+      
+      const result = middleware(fetchedData!);
+      console.log('result', result);
     }
-  }, [status]);
-
-  if (status === "authenticated") {
-    console.log('session', session);
-    return <>{children}</>;
-  }
-
-  if (showLoginPage) {
-    return <>{children}</>;
-  }
-
-  // Loading
-  return null;
-
+  }, [fetchedData]);
+  
+  return <>{children}</>;
 }
 
 

@@ -22,7 +22,6 @@ const PongMain: React.FC<any> = () => {
   } else if (status === "loading") {
     console.log('loading')
   } else if (status === "unauthenticated") {
-    console.log('session', session)
     console.log('unauthenticated')
   } else {
     console.log('error')
