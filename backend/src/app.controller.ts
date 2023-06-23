@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Session } from '@nestjs/common';
+import { Controller, Get, Req } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -7,8 +7,10 @@ import { AppService } from './app.service';
 @Controller()
 @ApiTags('Api')
 export class AppController {
-  constructor(private readonly appService: AppService,
-              private readonly configService: ConfigService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Get()
   getHello(): string {
@@ -17,14 +19,12 @@ export class AppController {
 
   @Get('success')
   getSuccesslogin(): string {
-    return this.appService.getSuccesslogin()
+    return this.appService.getSuccesslogin();
   }
   @Get('check-session')
   checkSession(@Req() req: Request) {
     const sessionId = req.sessionID;
-    if (sessionId)
-      return `Session ID: ${sessionId}`;
-    else
-      return 'No session ID found';
+    if (sessionId) return `Session ID: ${sessionId}`;
+    else return 'No session ID found';
   }
 }
