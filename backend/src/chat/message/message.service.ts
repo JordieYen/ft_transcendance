@@ -10,47 +10,45 @@ import { CreateMessageDto } from './dto';
 
 @Injectable()
 export class MessageService {
-	constructor(
-		private userService: UsersService,
-		private channelUserService: ChannelUserService,
-		private channelService: ChannelService,
-		@InjectRepository(Message) private messageRepository: Repository<Message>
-	) {}
+  constructor(
+    private userService: UsersService,
+    private channelUserService: ChannelUserService,
+    private channelService: ChannelService,
+    @InjectRepository(Message) private messageRepository: Repository<Message>,
+  ) {}
 
-	async getAllMessages() {
-		return await this.messageRepository.find();
-	}
+  async getAllMessages() {
+    return await this.messageRepository.find();
+  }
 
-	async createMessage(dto: CreateMessageDto, sender: User) {
-		try {
-			this.channelService.validateUser(sender);
-			// sender = await this.userService.findUsersById(1);
-			const channel = await this.channelService.findChannelById(dto.channel_id);
-			if (!channel)
-				throw new ForbiddenException(
-					'channel not found'
-				);
-			console.log(channel);
-			const channelUser = await this.channelUserService.findChannelUserByChannelIdAndUserId(channel.channel_uid, sender.id);
-			if (!channelUser)
-				throw new ForbiddenException(
-					'user not in channel'
-				);
-			const newMessage = await this.messageRepository.create({
-				message_content: dto.message_content,
-				message_type: dto.message_type,
-				sender: sender,
-				channel: channel,
-			});
-			return await this.messageRepository.save(newMessage);
-		} catch (error) {
-			console.log('error=', error.message);
-			throw error;
-		}
-	}
+  async createMessage(dto: CreateMessageDto, sender: User) {
+    try {
+      this.channelService.validateUser(sender);
+      // sender = await this.userService.findUsersById(1);
+      const channel = await this.channelService.findChannelById(dto.channel_id);
+      if (!channel) throw new ForbiddenException('channel not found');
+      console.log(channel);
+      const channelUser =
+        await this.channelUserService.findChannelUserByChannelIdAndUserId(
+          channel.channel_uid,
+          sender.id,
+        );
+      if (!channelUser) throw new ForbiddenException('user not in channel');
+      const newMessage = await this.messageRepository.create({
+        message_content: dto.message_content,
+        message_type: dto.message_type,
+        sender: sender,
+        channel: channel,
+      });
+      return await this.messageRepository.save(newMessage);
+    } catch (error) {
+      console.log('error=', error.message);
+      throw error;
+    }
+  }
 
-	test() {
-		console.log('test');
-		return 'test';
-	}
+  test() {
+    console.log('test');
+    return 'test';
+  }
 }

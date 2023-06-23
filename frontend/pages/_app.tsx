@@ -3,8 +3,8 @@ import type { AppProps } from "next/app";
 import Header from "@/components/Header";
 import "../src/app/globals.css";
 import CustomToaster from "@/components/CustomToaster";
-import UserData from "@/app/webhook/user_data";
 import axios from "axios";
+import { SocketProvider } from "@/app/socket/SocketProvider";
 
 axios.defaults.baseURL = "http://localhost:3000/";
 
@@ -15,11 +15,13 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
   // const allowPages = ["/pong-main"];
   // const showAdditionalIcon = allowPages.includes(currentPath);
   return (
-    <>
-      <CustomToaster />
-      <Header />
-      <Component {...pageProps} />
-    </>
+    <SocketProvider>
+      <div>
+        <CustomToaster />
+        <Header />
+        <Component {...pageProps} />
+      </div>
+    </SocketProvider>
   );
 };
 

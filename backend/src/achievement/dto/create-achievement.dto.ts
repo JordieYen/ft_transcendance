@@ -1,9 +1,9 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty } from 'class-validator';
 
 export class CreateAchievementDto {
-    @IsNotEmpty()
-    name?: string;
+  @IsNotEmpty()
+  name?: string;
 
-    @IsNotEmpty()
-    description?: string;
+  @IsNotEmpty()
+  description?: string;
 }

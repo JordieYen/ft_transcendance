@@ -7,10 +7,11 @@ import { ChannelUser } from 'src/typeorm/channel_user.entity';
 import { UsersService } from 'src/users/services/users.service';
 import { User } from 'src/typeorm/user.entity';
 import { ChannelUserService } from '../channel-user/channel-user.service';
+import { StatModule } from 'src/stat/stat.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Channel, ChannelUser, User])],
+  imports: [TypeOrmModule.forFeature([Channel, ChannelUser, User]), StatModule],
   controllers: [ChannelController],
-  providers: [ChannelService, UsersService, ChannelUserService]
+  providers: [ChannelService, UsersService, ChannelUserService],
 })
 export class ChannelModule {}

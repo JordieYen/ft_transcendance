@@ -32,6 +32,10 @@ body {
   background-color: var(--background-light-dark);
 }
 
+/* button {
+  @apply bg-[var(--background-grey)] text-[var(--background-light-grey)] rounded-md px-2 py-1;
+} */
+
 h1, p, table {
   font-family: 'Roboto Mono', monospace;
   color: var(--background-grey);
@@ -42,4 +46,16 @@ h1, p, table {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  object-fit: contain;
 }
+
+.avatar-image {
+  border-radius: 50%;
+  width: auto;
+  height: auto;
+  min-height: 50px;
+  max-height: 100px;
+  object-fit: contain;
+}
+
+

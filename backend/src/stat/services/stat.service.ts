@@ -1,10 +1,11 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MatchHistoryService } from 'src/match-history/services/match-history.service';
-import { MatchHistory } from 'src/typeorm/match_history.entity';
 import { Stat } from 'src/typeorm/stats.entity';
-import { User } from 'src/typeorm/user.entity';
-import { UsersService } from 'src/users/services/users.service';
 import { Repository } from 'typeorm';
 import { CreateStatDto } from '../dto/create-stat.dto';
 import { UpdateStatDto } from '../dto/update-stat.dto';
@@ -12,103 +13,130 @@ import { UpdateStatDto } from '../dto/update-stat.dto';
 @Injectable()
 export class StatService {
   constructor(
-    @InjectRepository(Stat) private statRepository: Repository<Stat>,
-    private readonly userService: UsersService,
-    private readonly matchHistoryService: MatchHistoryService,
+    @InjectRepository(Stat)
+    private readonly statRepository: Repository<Stat>,
   ) {}
 
-  // async create(createStatDto: CreateStatDto) {
-  //   const user = await this.userService.findUsersById(createStatDto.userId);
-  //   const newStat = new Stat();
-  //   newStat.user = user;
-  //   newStat.wins = createStatDto.wins;
-  //   newStat.losses = createStatDto.losses;
-  //   newStat.mmr = createStatDto.mmr;
-  //   const stat = await this.statRepository.create(newStat);
-  //   try {
-  //     return await this.statRepository.save(stat);
-  //   } catch (error) {
-  //     throw new InternalServerErrorException('Could not create new stat');
-  //   }
-  // }
+  // Return All Entries
+  async getStat(): Promise<Stat[]> {
+    return await this.statRepository.find();
+  }
 
-  async create(createStatDto: CreateStatDto) {
-    // const user = await this.userService.findUsersByIdWithRelation(createStatDto.userId);
-    // console.log(user);
-    // const matchHistory = [ ...user?.p1_match, ...user?.p2_match];
-    const matchHistory = await this.matchHistoryService.getByPlayerUid(createStatDto.userId)
-    const newStat = new Stat();
-    // newStat.user = user;
-    newStat.userId = createStatDto.userId;
-    newStat.total_games = matchHistory.length;
-    newStat.wins = matchHistory.filter((match) => match.winner_uid === createStatDto.userId).length;
-    newStat.losses = newStat.total_games - newStat.wins;
-    newStat.winStreak = this.calculateWinStreak(matchHistory, createStatDto.userId);
-    newStat.mmr = this.calculateMMR(newStat.wins, newStat.losses);
-    const stat = await this.statRepository.create(newStat);
+  // Return entries with {uid}
+  async getByPlayerUid(uid: number): Promise<Stat[]> {
+    return await this.statRepository.find({
+      where: {
+        uid: uid,
+      },
+    });
+  }
+
+  // Return total games by player
+  async getTotalGamesByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    const total = stat[0].wins + stat[0].losses;
+    return total;
+  }
+
+  // Return total wins by player
+  async getTotalWinsByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return stat[0].wins;
+  }
+
+  // Return total losses by player
+  async getTotalLossByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return stat[0].losses;
+  }
+
+  // Return total kills by player
+  async getLifetimeKillsByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return stat[0].kills;
+  }
+
+  // Return total deaths by player
+  async getLifetimeDeathsByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return stat[0].deaths;
+  }
+
+  // Return k/d ratio of a player
+  async getKillDeathRatioByPlayerUid(uid: number): Promise<string> {
+    const stat = await this.getByPlayerUid(uid);
+    const total = stat[0].kills / stat[0].deaths;
+    return total.toFixed(2);
+  }
+
+  // Return total smashes by player
+  async getLifetimeSmashesByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return stat[0].smashes;
+  }
+
+  // Return lifetime winstreak of a player
+  async getLifetimeWinstreakByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return stat[0].winstreak;
+  }
+
+  // Return MMR of a player
+  async getMmrByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return stat[0].current_mmr;
+  }
+
+  // Return MMR of a player
+  async getHighestMmrByPlayerUid(uid: number): Promise<number> {
+    const stat = await this.getByPlayerUid(uid);
+    return stat[0].best_mmr;
+  }
+
+  // Update existing Stat
+  async updateStat(uid: number, updateStatDto: UpdateStatDto) {
+    const stat = await this.getByPlayerUid(uid);
+    if (updateStatDto?.wins) stat[0].wins = updateStatDto?.wins;
+    if (updateStatDto?.losses) stat[0].losses = updateStatDto?.losses;
+    if (updateStatDto?.kills) stat[0].kills = updateStatDto?.kills;
+    if (updateStatDto?.deaths) stat[0].deaths = updateStatDto?.deaths;
+    if (updateStatDto?.smashes) stat[0].smashes = updateStatDto?.smashes;
+    if (updateStatDto?.winstreak) stat[0].winstreak = updateStatDto?.winstreak;
+    if (updateStatDto?.current_mmr)
+      stat[0].current_mmr = updateStatDto?.current_mmr;
+    if (updateStatDto?.best_mmr) stat[0].best_mmr = updateStatDto?.best_mmr;
+    return await this.statRepository.save(stat);
+  }
+
+  // Add new entry
+  async create(uid: number, createStatDto: CreateStatDto) {
+    const newStat = await this.statRepository.create({
+      uid: uid,
+      wins: createStatDto.wins,
+      losses: createStatDto.losses,
+      kills: createStatDto.kills,
+      deaths: createStatDto.deaths,
+      smashes: createStatDto.smashes,
+      winstreak: createStatDto.winstreak,
+      current_mmr: createStatDto.current_mmr,
+      best_mmr: createStatDto.best_mmr,
+    });
+    console.log(newStat);
     try {
-      await this.statRepository.save(stat);
-      return stat;
+      await this.statRepository.save(newStat);
     } catch (error) {
+      console.log('error=', error.message);
       throw new InternalServerErrorException('Could not create new stat');
     }
   }
 
-
-  calculateWinStreak(matchHistory: MatchHistory[], userId: number): number {
-    let currentStreak = 0;
-    let longestStreak = 0;
-
-    for (const match of matchHistory) {
-      if (match.winner_uid === userId) {
-        currentStreak++;
-        if (currentStreak > longestStreak) {
-          longestStreak = currentStreak;
-        }
-      } else {
-        currentStreak = 0;
-      }
+  // Delete an entry
+  async remove(uid: number) {
+    try {
+      await this.statRepository.delete(uid);
+      return { message: 'Stat with uid ${uid} has been deleted successfully' };
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return longestStreak;
-  }
-
-  calculateMMR(wins: number, losses: number) : number {
-    return (wins * 10) - (losses * 10);
-  }
-
-
-  async findAll() : Promise<Stat[]> {
-    const stat =  await this.statRepository.find({
-      relations: [ 'user' ]
-    });
-    return stat;
-  }
-
-  async findOne(id: number) {
-    const stat = await this.statRepository.findOne({
-      relations: [ 'user'],
-      where: {
-        id: id,
-      }
-    })
-    if (!stat)
-      throw new NotFoundException(`Stat with ${id} is not found`);
-    return stat;
-  }
-
-  async update(id: number, updateStatDto: UpdateStatDto) {
-    const stat = await this.findOne(id);
-    if (updateStatDto?.userId) {
-      // const user = await this.userService.findUsersById(updateStatDto.userId);
-      stat.userId = updateStatDto?.userId;
-    }
-    stat.wins = updateStatDto?.wins;
-    stat.losses = updateStatDto?.losses;
-    stat.mmr = updateStatDto?.mmr;
-    return await this.statRepository.save(stat);
-  }
-
-  async remove(id: number) {
-    return await this.statRepository.delete(id);
   }
 }

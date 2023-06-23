@@ -5,12 +5,9 @@ import { AchievementController } from './controllers/achievement.controller';
 import { AchievementService } from './services/achievement.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Achievement])
-  ],
+  imports: [TypeOrmModule.forFeature([Achievement])],
   controllers: [AchievementController],
   providers: [AchievementService],
-  exports: [AchievementService, TypeOrmModule]
-
+  exports: [AchievementService, TypeOrmModule],
 })
 export class AchievementModule {}

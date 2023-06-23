@@ -6,6 +6,7 @@ export interface UserData {
   intra_uid: string;
   username: string;
   online: boolean;
+  authentication: boolean;
   p1_match: string;
   stat: { mmr: number };
   userAchievement: string;
@@ -23,6 +24,7 @@ const useUserStore = create<UserStore>((set) => ({
     intra_uid: "",
     username: "",
     online: false,
+    authentication: false,
     p1_match: "",
     stat: { mmr: 0 },
     userAchievement: "",

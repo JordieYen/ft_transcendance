@@ -3,11 +3,20 @@ import Image from "next/image";
 import axios from "axios";
 import QRCode from "qrcode";
 import toast from "react-hot-toast";
+import useUserStore from "@/hooks/useUserStore";
 
-export const SixDigitVerification = () => {
+export const SixDigitVerification = ({
+  closeModal,
+}: {
+  closeModal: () => void;
+}) => {
   const [verCode, setVerCode] = useState(["", "", "", "", "", ""]);
   const [isCodeComplete, setIsCodeComplete] = useState(false);
   const verInput = useRef<HTMLInputElement[]>([]);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
 
   useEffect(() => {
     verInput.current[0].focus();
@@ -95,7 +104,22 @@ export const SixDigitVerification = () => {
       )
       .then((response) => {
         console.log(response);
+        closeModal();
         toast.success("Authentication success!");
+        axios
+          .post("/users/authenticate", null, {
+            params: { uid: userData?.id?.toString() },
+          })
+          .then(() => {
+            console.log("success");
+            setUserData({
+              ...userData,
+              authentication: true,
+            });
+          })
+          .catch(() => {
+            console.log("error");
+          });
       })
       .catch(() => {
         toast.error("Authentication failed!");
@@ -210,7 +234,7 @@ const ChangeTFAModal = ({
             </div>
             <hr className="border-dimgrey"></hr>
             <p className="text-md">Verification Code:</p>
-            <SixDigitVerification />
+            <SixDigitVerification closeModal={closeModal} />
           </div>
         </div>
       )}

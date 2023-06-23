@@ -1,21 +1,30 @@
-import { IsNotEmpty, IsOptional } from "class-validator";
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateStatDto {
-    @IsNotEmpty()
-    userId: number;
+  @IsNotEmpty()
+  uid: number;
 
-    @IsOptional()
-    wins: number;
+  @IsOptional()
+  wins: number;
 
-    @IsOptional()
-    losses: number;
+  @IsOptional()
+  losses: number;
 
-    @IsOptional()
-    mmr: number;
+  @IsOptional()
+  kills: number;
 
-    @IsOptional()
-    totalGames: number;
+  @IsOptional()
+  deaths: number;
 
-    @IsOptional()
-    winStreak: number;
+  @IsOptional()
+  smashes: number;
+
+  @IsOptional()
+  winstreak: number;
+
+  @IsOptional()
+  current_mmr: number;
+
+  @IsOptional()
+  best_mmr: number;
 }

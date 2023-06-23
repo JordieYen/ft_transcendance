@@ -10,9 +10,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Put,
-  Req,
-  Res,
+  Query,
   UploadedFile,
   UseInterceptors,
   UsePipes,
@@ -21,11 +19,6 @@ import {
 import { UsersService } from 'src/users/services/users.service';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { join } from 'path';
-import { promises as fsPromises } from 'fs';
-import * as fs from 'fs';
-import { Request, Response } from 'express';
-import { User } from '../decorators/user.decorator';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -47,6 +40,11 @@ export class UsersController {
   @Get('username/:username')
   async findUsersByName(@Param('username') username: string) {
     return await this.userService.findUsersByName(username);
+  }
+
+  @Post('authenticate')
+  async authenticateUser(@Query('uid') uid: string) {
+    return await this.userService.authenticateUser(+uid);
   }
 
   @Post('create')

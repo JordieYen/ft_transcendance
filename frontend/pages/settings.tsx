@@ -9,12 +9,14 @@ import ChangeAccountModal from "@/components/user-settings/ChangeAccountModal";
 import ChangeAvatarModal from "@/components/user-settings/ChangeAvatarModal";
 import ChangeTFAModal from "@/components/user-settings/ChangeTFAModal";
 import DeleteAccountModal from "@/components/user-settings/DeleteAccountModal";
+import useUserStore from "@/hooks/useUserStore";
 
 export default function SettingsPage() {
   const [isAccOpen, openAccModal, closeAccModal, accRef] = useModal(false);
   const [isPicOpen, openPicModal, closePicModal, picRef] = useModal(false);
   const [isTFAOpen, openTFAModal, closeTFAModal, tfaRef] = useModal(false);
   const [isDelOpen, openDelModal, closeDelModal, delRef] = useModal(false);
+  const userData = useUserStore((state) => state.userData);
 
   return (
     <div className="flex flex-col gap-6">
@@ -27,7 +29,7 @@ export default function SettingsPage() {
         title="Change account name"
         description="Change the name of your account."
         buttonDescArry={["update name"]}
-        handleClick={() => openAccModal()}
+        handleClick={[() => openAccModal()]}
         mode="button"
         icon={faUser}
       />
@@ -41,7 +43,7 @@ export default function SettingsPage() {
         title="Change avatar"
         description="Change the avatar of your account."
         buttonDescArry={["update avatar"]}
-        handleClick={() => openPicModal()}
+        handleClick={[() => openPicModal()]}
         mode="button"
         icon={faImage}
       />
@@ -54,9 +56,12 @@ export default function SettingsPage() {
       <UserSettings
         title="Enable 2FA"
         description="Enable Two-Factor-Authentication."
-        buttonDescArry={["enable 2FA"]}
-        // handleClick={(text) => console.log(text)}
-        handleClick={() => openTFAModal()}
+        buttonDescArry={
+          userData.authentication === false
+            ? ["enable 2FA"]
+            : ["update 2FA", "remove 2FA"]
+        }
+        handleClick={[() => openTFAModal()]}
         mode="button"
         icon={faLock}
       />
@@ -71,7 +76,7 @@ export default function SettingsPage() {
         description="Deletes your account and all data connected to it."
         warning="You can't undo this action!"
         buttonDescArry={["delete account"]}
-        handleClick={() => openDelModal()}
+        handleClick={[() => openDelModal()]}
         mode="button"
         icon={faTrash}
       />

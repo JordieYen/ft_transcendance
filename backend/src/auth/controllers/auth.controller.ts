@@ -2,10 +2,7 @@ import {
   Body,
   Controller,
   Get,
-  Logger,
-  Param,
   Post,
-  Query,
   Req,
   Res,
   Session,
@@ -13,21 +10,12 @@ import {
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { Request, Response } from 'express';
-import { AuthenticatedGuard } from '../util/local.guard';
-import {
-  AuthenticatedUser,
-  RequestWithSessionUser,
-} from '../util/user_interface';
 import { FortyTwoAuthGuard } from '../util/42-auth.guard';
 import { User } from 'src/users/decorators/user.decorator';
 import { InvalidOtpException } from '../util/invalid_otp_exception';
 import { JwtService } from '@nestjs/jwt/dist/jwt.service';
-import { User as userEntity } from 'src/typeorm/user.entity';
-import session from 'express-session';
 import { JwtAuthGuard } from '../util/jwt-auth.guard';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UsersService } from 'src/users/services/users.service';
 
 @Controller('auth')
 @ApiTags('Auth')

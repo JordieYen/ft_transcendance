@@ -10,7 +10,7 @@ interface UserSettingsProps {
   description: string;
   warning?: string;
   buttonDescArry: string[];
-  handleClick: (str: string) => void;
+  handleClick: ((str: string) => void)[];
   mode: Mode;
   icon: IconDefinition;
 }
@@ -33,7 +33,7 @@ const UserSettings = ({
             className={`w-full flex items-center justify-center bg-jetblack border-2 ${
               warning ? "border-tomato" : "border-saffron"
             } text-timberwolf font-roboto rounded-lg cursor-pointer p-2 mb-2`}
-            onClick={() => handleClick(text)}
+            onClick={() => handleClick[index](text)}
           >
             {text}
           </button>

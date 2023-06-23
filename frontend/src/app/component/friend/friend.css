@@ -1,4 +1,4 @@
-/* .disabled-button {
+.disabled-button {
     opacity: 0.3;
     cursor: not-allowed;
 }
@@ -9,67 +9,87 @@
 
 .cancel-button {
     background-color: black;
-} */
-
-/* 
-table {
-    width: 100%;
-    border-collapse: seperate;
-    border-spacing: 0;
-    overflow: auto;
-    table-layout: fixed;
-}
-
-th {
-    background-color: var(--background-light-dark);
     color: var(--background-grey);
-    font-weight: 100;
 }
 
-td {
-    padding: 30px;
-    text-align: left;
-    color: var(--background-grey);
-    text-align: center;
-    border: none 1px var(--background-light-dark)
-}
-
-td.result-win {
-    background-color: green;
-}
-
-td.result-lose {
-    background-color: red;
-}
-
-tr:nth-child(even) {
-    background-color: var(--background-dark);
-}
-
-tr:nth-child(odd) {
-    background-color: var(--background-light-dark);
-}
-
-tr.row-win {
-    border-radius: 50px;
-}
-
-tr.row-lose {
-    border-radius: 50px;
-}
-
-td:first-child {
-    border-left-style: solid;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-}
-
-td:last-child {
-    border-right-style: solid;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-} */
-
-.avatar-image {
+.card-avatar .avatar-image {
     border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.card-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    padding: 20px;
+}
+
+p, span {
+    font-family: 'Roboto Mono', monospace;
+    color: var(--background-grey);
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    border: 10px solid darkgrey;
+    margin: 10px;
+    padding: 10px;
+    width: 300px;
+    height: 300px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-details {
+    text-align: center;
+  }
+  
+.card-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.green-dot {
+    height: 10px;
+    width: 10px;
+    background-color: green;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.red-dot {
+    height: 10px;
+    width: 10px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+button {
+    @apply bg-[var(--background-grey)] text-[var(--background-light-grey)] rounded-md px-2 py-1;
+}
+
+@media (max-width: 768px) {
+    .friend-page {
+      flex-direction: column;
+    }
+  
+    .friend-section,
+    .users-list {
+      flex: initial;
+      width: 100%;
+    }
 }

@@ -12,7 +12,6 @@ interface RequestWithSessionUser extends Request {
 
 export { RequestWithSessionUser };
 
-
 interface AuthenticatedUser extends Express.User {
   readonly id?: number;
   intra_uid?: number;

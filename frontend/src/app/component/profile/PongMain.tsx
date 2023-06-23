@@ -1,19 +1,31 @@
-import UserData from '../../webhook/user_data';
+import UserData, { UserContext } from '../../webhook/UserContext';
 import Avatar from '../header_icon/Avatar';
 import './profile.css';
 import MatchHistory from './MatchHistory';
 import formatDateMalaysia from '../../utils/formatDateMalaysia';
 import MatchMaking from './MatchMaking';
 import Achievement from './Achievement';
+import { use, useContext, useEffect } from 'react';
+import { SocketContext } from '@/app/socket/SocketProvider';
 
 const PongMain: React.FC<any> = () => {
     
-    const userData = UserData();
+  const userData = UserData();
+  const socket = useContext(SocketContext);
+  
+  useEffect(() => {
     if (!userData) {
-      return <div>Loading...</div>;
+      return;
     }
-    const { avatar, createdAt, id, intra_uid, username, online, p1_match, p2_match, stat, userAchievement } = userData;
-    const joinDate = formatDateMalaysia(new Date(createdAt));
+    const { id } = userData;
+    // socket?.emit('join', `${id}`);
+  }, [userData, socket]);
+  
+  if (!userData) {
+    return <div>Loading...</div>;
+  }
+  const { avatar, createdAt, id, intra_uid, username, online, p1_match, p2_match, stat, userAchievement } = userData;
+  const joinDate = formatDateMalaysia(new Date(createdAt));
 
     return (
       <div className='profile-page'>

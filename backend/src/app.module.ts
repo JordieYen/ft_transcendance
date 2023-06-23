@@ -15,7 +15,6 @@ import { configValidationSchema } from './config/config.schema';
 import { FriendModule } from './friend/friend.module';
 import { StatModule } from './stat/stat.module';
 import { GatewayModule } from './gateway/gateway.module';
-import { MyGateway } from './gateway/gateway';
 
 const configFactory = {
   isGlocal: true,

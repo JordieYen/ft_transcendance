@@ -1,27 +1,27 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Channel } from "./channel.entity";
-import { User } from "./user.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Channel } from './channel.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Message {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @ManyToOne(() => Channel, channel => channel.messages)
-    channel: Channel;
+  @ManyToOne(() => Channel, (channel) => channel.messages)
+  channel: Channel;
 
-    @ManyToOne(() => User, user => user.messages)
-    sender: User;
+  @ManyToOne(() => User, (user) => user.messages)
+  sender: User;
 
-    @Column()
-    message_content: string;
+  @Column()
+  message_content: string;
 
-    @Column()
-    message_type: string;
+  @Column()
+  message_type: string;
 
-    @Column({
+  @Column({
     type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
-    })
-    createdAt: Date;
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt: Date;
 }
