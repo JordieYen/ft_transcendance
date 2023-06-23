@@ -8,5 +8,6 @@ node_modules
 transcendence.pdf
 /backend/shawn
 /backend/dist
+/backend/public/avatar
 dist
 .chrome
