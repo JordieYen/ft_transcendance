@@ -109,13 +109,6 @@ export class UsersService {
     }
   }
 
-  // Set authentication to true
-  async authenticateUser(id: number) {
-    await this.updateUser(id, {
-      authentication: true,
-    });
-  }
-
   async findUsersByIdWithRelation(id: number): Promise<User> {
     const user = await this.usersRepository.findOne({
       relations: [

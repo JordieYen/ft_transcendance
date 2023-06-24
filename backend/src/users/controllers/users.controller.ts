@@ -10,7 +10,6 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Query,
   UploadedFile,
   UseInterceptors,
   UsePipes,
@@ -40,11 +39,6 @@ export class UsersController {
   @Get('username/:username')
   async findUsersByName(@Param('username') username: string) {
     return await this.userService.findUsersByName(username);
-  }
-
-  @Post('authenticate')
-  async authenticateUser(@Query('uid') uid: string) {
-    return await this.userService.authenticateUser(+uid);
   }
 
   @Post('create')
