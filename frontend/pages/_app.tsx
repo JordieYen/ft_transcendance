@@ -31,9 +31,8 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
 const ContentWrapper = ({ children }: any) => {
   const [fetchedData, setFetchedData] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,24 +60,26 @@ const ContentWrapper = ({ children }: any) => {
   }, [router.asPath]);
 
   useEffect(() => {
-    if (fetchedData) {
-      const result = authMiddleware(fetchedData!);
-      if (result === null) {
-        setIsAuthenticated(result === null);
+    const checkAuthentication = async () => {
+      if (fetchedData) {
+        const result = await authMiddleware(fetchedData!);
+        if (result === null) {
+          setIsAuthenticated(true);
+        }
+        setIsLoading(false);
       }
-    }
+    };
+    checkAuthentication();
   }, [fetchedData]);
-
-  const isLoginPage = router.asPath === '/login';
-
+  
   useEffect(() => {
-    if (!isLoginPage && !isAuthenticated) {
+    if (!isLoading && !isAuthenticated && !router.asPath.startsWith('/login')) {
       router.replace('/login'); // Redirect to the login page
     }
-  }, [router]);
-
+  }, [isLoading, isAuthenticated, router]);
   
-  return (!isLoginPage && isAuthenticated) ? <>{children}</> : null;
+  return isLoading ? null : <>{children}</>;
+
 }
 
 export default MyApp;
