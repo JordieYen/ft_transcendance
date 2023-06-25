@@ -82,26 +82,6 @@ const FriendList = () => {
             socket?.off('friend-request-cancel');
         };
     }, [socket]);
-    
-    const fetchFriendRequests = async (userId: number) => {
-        try {
-            const response = await fetch(`http://localhost:3000/friend/check-relationship/${userId}/${userData.id}`, {
-                method: 'GET',
-                credentials: 'include',
-            });
-            if (!response.ok) {
-                throw new Error(`Request failed with status ${response.status}`);
-            }
-            console.log('response', response);
-            if (response.ok) {
-                const friendRequest = await response.json();
-            }
-            console.log('friendRequestStatus after fetch', friendRequestStatus);
-        } catch (error) {
-            console.log('Error fetching friend request:', error);
-            return false;
-        }
-    };
 
     const fetchUsersList = async () => {
         try {

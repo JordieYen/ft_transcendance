@@ -6,7 +6,7 @@ import '../src/app/globals.css';
 import { SocketProvider } from '@/app/socket/SocketProvider';
 import { SessionProvider, useSession } from "next-auth/react"
 import { useRouter } from 'next/router';
-import { middleware } from '@/app/middleware';
+import { authMiddleware, middleware } from '../middleware/middleware';
 
 const MyApp = ({ Component, pageProps, router }: AppProps) => {
 
@@ -17,36 +17,37 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
     <SessionProvider session={pageProps.session}>
       <SocketProvider>
         <div>
-            <Header showAdditionalIcon={showAdditionalIcon}/>
             <ContentWrapper>
-                <Component {...pageProps} />
+              <Header showAdditionalIcon={showAdditionalIcon}/>
+                  <Component {...pageProps} />
+              <Footer />
             </ContentWrapper>
-            <Footer />
       </div>
       </SocketProvider>
     </SessionProvider>
   );
 };
 
-export const getServerSideProps = async (context: any) => {
-  const { req } = context;
-  console.log('req', req);
-  return {
-    props: {
-      req,
-    },
-  };
-};
-  
-
 const ContentWrapper = ({ children }: any) => {
   const [fetchedData, setFetchedData] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
+
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/returnRequest',{
           credentials: 'include',
+          method: 'POST',
+          body: JSON.stringify({
+            method: 'GET',
+            url: router.asPath,
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }),
         });
         console.log('response', response);
         const data = await response.json();
@@ -57,23 +58,27 @@ const ContentWrapper = ({ children }: any) => {
       }
     };
     fetchData();
-  }, []);
+  }, [router.asPath]);
 
   useEffect(() => {
     if (fetchedData) {
-      console.log('fetchedData', fetchedData);
-      
-      const result = middleware(fetchedData!);
-      console.log('result', result);
+      const result = authMiddleware(fetchedData!);
+      if (result === null) {
+        setIsAuthenticated(result === null);
+      }
     }
   }, [fetchedData]);
+
+  const isLoginPage = router.asPath === '/login';
+
+  useEffect(() => {
+    if (!isLoginPage && !isAuthenticated) {
+      router.replace('/login'); // Redirect to the login page
+    }
+  }, [router]);
+
   
-  return <>{children}</>;
-}
-
-
-const isLoginPage = (pathname: string) => {
-  return pathname === '/login';
+  return (!isLoginPage && isAuthenticated) ? <>{children}</> : null;
 }
 
 export default MyApp;

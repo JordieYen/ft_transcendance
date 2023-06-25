@@ -8,15 +8,13 @@ import Achievement from './Achievement';
 import { use, useContext, useEffect } from 'react';
 import { SocketContext } from '@/app/socket/SocketProvider';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 const PongMain: React.FC<any> = () => {
-    
-  const userData = UserData();
-  const { data: session, status } = useSession();
 
-  if (!userData) {
-    return <div>User not found in profile...</div>;
-  }
+  const { data: session, status } = useSession();
+  console.log('session', session);
+  
   if (status === "authenticated") {
     console.log('session', session)
   } else if (status === "loading") {
@@ -26,6 +24,12 @@ const PongMain: React.FC<any> = () => {
   } else {
     console.log('error')
   }
+  const userData = UserData();
+  
+  if (!userData) {
+    return <div>User not found in profile...</div>;
+  }
+
   const { avatar, createdAt, id, username, p1_match, p2_match, stat, userAchievement } = userData;
   const joinDate = formatDateMalaysia(new Date(createdAt));
 

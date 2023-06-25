@@ -24,16 +24,22 @@ function checkSession(request: NextRequest) {
 
 export function middleware(request: NextRequest) {
     if (!checkSession(request)) {
-        return new NextResponse('',{
-            status: 302,
-            headers: {
-                location: 'http://localhost:3001/login',
-            },
-        });
+        console.log('redirect to login from middleware.ts');
+        return NextResponse.redirect('http://localhost:3001/login');
     }
 }
 
-export const config = {
-    matcher: '/pong-main',
-};
+
+export function authMiddleware(req: NextRequest) {
+    const sessionCookie = (req.headers as any).cookie?.includes('ft_transcendence_session_id');
+    console.log('sessionCookie', sessionCookie);
+    
+    if (!sessionCookie) {
+        console.log('redirect to login from middleware.ts');
+        
+        return NextResponse.redirect('http://localhost:3001/login');
+    }
+
+    return null;
+}
 

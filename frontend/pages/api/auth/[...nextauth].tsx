@@ -52,27 +52,9 @@ export const authOptions: AuthOptions = {
         })
     ],
     callbacks: {
-
         // try middleware to parse the session id from transport
         async session({ session, token, trigger, user, newSession }) {
-            const client = await dbPool.connect();
-            console.log('client', client);
-            
-            try {
-                const result = await client.query(
-                    `SELECT * FROM users WHERE id = $1`,
-                    [user.id]
-                );
-                const dbSession = result.rows[0];
-                session.user = user;
-                
-                // update session for 2ffa
-                if (trigger === 'update' && newSession?.user) {
-                    session.user = newSession.user;
-                }
-            } finally {
-                client.release();
-            }
+            session.user = user;
             return session;
         },
     },

@@ -50,6 +50,7 @@ const Friend = ( { userDataId, setFriendRequestArray, setFriendRequestStatus }: 
             
             const response = await fetch(`http://localhost:3000/friend/friends/${userDataId}`, {
                 credentials: 'include',
+                mode: 'cors',
             });
             if (response.ok) {
                 const friends = await response.json();

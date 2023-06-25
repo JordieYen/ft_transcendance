@@ -59,6 +59,7 @@ const UserData = () => {
           
             const response = await fetch('http://localhost:3000/auth/profile', {
                 credentials: 'include',
+                // mode: 'no-cors',
                 signal: signal,
             });
             if (response.ok) {
@@ -76,7 +77,7 @@ const UserData = () => {
                 console.log('Fetch aborted');
             } else {
                 console.log('Error fetching user data:', error);
-                router.push('/login');
+                // router.push('/login');
             }
         }
     };

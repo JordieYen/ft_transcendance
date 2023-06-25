@@ -14,9 +14,9 @@ const Login = () => {
         <Link href='http://localhost:3000/auth/login'>
             <CustomButton text="Login with 42" />
         </Link>
-        <button className="login-button text-background-dark-grey bg-mygrey rounded-md px-2 py-1" onClick={handleLogin}>
+        {/* <button className="login-button text-background-dark-grey bg-mygrey rounded-md px-2 py-1" onClick={handleLogin}>
               Try next Auth Login
-        </button>
+        </button> */}
     </div>
   );
 };
