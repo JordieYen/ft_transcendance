@@ -119,6 +119,11 @@ const Friend = ( { userDataId, setFriendRequestArray, setFriendRequestStatus }: 
                     </div>
                     <div className='flex-col gap-1'>
                         <p>{friend?.username}</p>
+                        <div className={`${friend?.online ? 'online' : 'offline'}`}>
+                            { friend?.online ? <div className='green-dot'></div> : <div className='red-dot'></div>}
+                            <span>{friend?.online ? 'online' : 'offline'}</span>
+
+                        </div>
                         <div className='flex gap-2'>
                             <button onClick={ () => unfriend(friend?.id)}>Unfriend</button>
                             <button onClick={ () => block(friend?.id)}>Block</button>

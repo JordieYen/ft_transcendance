@@ -27,7 +27,7 @@ export class MyGateway implements OnModuleInit {
 
             socket.on('join', async (userId) => {
                 console.log("User joined room: " + userId);
-                if (userId) {
+                if (userId && userId !== 'undefined') {
                     socket.join(userId);
                     socket.data.userId = userId;
                     console.log('online users after', socket.data.userId);
@@ -38,11 +38,11 @@ export class MyGateway implements OnModuleInit {
                 console.log("User left room: " + userId);
                 socket.leave(userId);
             });
-            socket.on('disconnect', async (userId) => {
+            socket.on('disconnect', async () => {
                 console.log(socket.id, ' disconnected');
                 const socUserId = socket.data.userId;
                 if (socUserId) {
-                    this.updateUserStatus(socUserId, false);
+                    this.updateUserStatus(+socUserId, false);
                 }
             });
         });

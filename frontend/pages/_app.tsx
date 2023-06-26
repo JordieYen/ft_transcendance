@@ -78,7 +78,15 @@ const ContentWrapper = ({ children }: any) => {
     }
   }, [isLoading, isAuthenticated, router]);
   
-  return isLoading ? null : <>{children}</>;
+  // return isLoading ? null : <>{children}</>;
+  const isLoginPage = router.asPath === '/login';
+
+  if (isLoginPage) {
+    return <>{children}</>; // Render the component on the login page
+  }
+
+  return isAuthenticated ? <>{children}</> : null;
+
 
 }
 
