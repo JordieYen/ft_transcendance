@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import session, * as ExpressSession from 'express-session';
-import { ConfigService } from '@nestjs/config';
+import * as ExpressSession from 'express-session';
 import { setupSwagger } from 'src/swagger.config';
 import * as passport from 'passport';
 import { ValidationPipe } from '@nestjs/common';
@@ -9,7 +8,6 @@ import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as pg from 'pg';
 import * as connectPgSimple from 'connect-pg-simple';
-import { ISession, TypeormStore } from 'connect-typeorm';
 import { Store } from 'express-session';
 import * as cookieParser from 'cookie-parser';
 
@@ -63,7 +61,7 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use((req, res, next) => {
-    var status = req.isAuthenticated() ? 'logged in' : 'logged out';
+    const status = req.isAuthenticated() ? 'logged in' : 'logged out';
     console.log('status:', status, '\n', 'path', req.path, '\n');
     // console.log('session', req.session, '\n');
     // const isAuthRoute = (

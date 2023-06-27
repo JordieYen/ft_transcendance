@@ -68,8 +68,13 @@ export class UsersService {
 
   async deleteUserById(id: number) {
     const user = await this.findUsersById(id);
+    console.log(user);
     if (!user) throw new NotFoundException(`User with ID ${id} not found`);
-    return await this.usersRepository.delete(id);
+    try {
+      await this.usersRepository.delete(id);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async findUsersByName(username: string): Promise<User | null> {

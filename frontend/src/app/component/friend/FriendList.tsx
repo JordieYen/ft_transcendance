@@ -8,6 +8,7 @@ import Friend from "./Friend";
 import { SocketContext } from "@/app/socket/SocketProvider";
 import Block from "./Block";
 import useSessionStorageState from "@/app/utils/useSessionStorageState";
+import useUserStore from "@/hooks/useUserStore";
 
 const FriendList = () => {
   const [usersList, setUserList] = useState<any[]>([]);
@@ -28,12 +29,17 @@ const FriendList = () => {
     },
   });
   const socket = useContext(SocketContext);
+
+  const [userData, setUserData] = useUserStore((state) => [state.userData, state.setUserData])
+
   // const userData = UserData();
-  let userData: any = {};
-  if (typeof window !== "undefined") {
-    const userDataString = sessionStorage?.getItem("userData");
-    userData = userDataString ? JSON.parse(userDataString) : {};
-  }
+  // let userData: any = {};
+  // if (typeof window !== "undefined") {
+  //   const userDataString = sessionStorage?.getItem("userData");
+  //   userData = userDataString ? JSON.parse(userDataString) : {};
+  // }
+
+  console.log(userData);
 
   useEffect(() => {
     socket?.emit("join", `${userData?.id}`);
@@ -200,7 +206,7 @@ const FriendList = () => {
       <div className="friend-section w-1/3 bg-green-800">
         <div className="friend-request-page bg-red-600">
           <FriendRequest
-            userId={userData?.id}
+            userId={userData?.id!}
             currUser={userData}
             friendRequestArray={friendRequestArray}
             setFriendRequestArray={setFriendRequestArray}
@@ -210,7 +216,7 @@ const FriendList = () => {
         </div>
         <div className="friend-page bg-green-800 flex">
           <Friend
-            userDataId={userData?.id}
+            userDataId={userData?.id!}
             setFriendRequestArray={setFriendRequestArray}
             setFriendRequestStatus={setFriendRequestStatus}
           />

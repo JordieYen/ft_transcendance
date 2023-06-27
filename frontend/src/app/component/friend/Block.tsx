@@ -3,17 +3,20 @@ import UserData from "@/app/webhook/UserContext";
 import { setFips } from "crypto";
 import { use, useContext, useEffect, useState } from "react";
 import Avatar from "../header_icon/Avatar";
+import useUserStore from "@/hooks/useUserStore";
 
 const Block = () => {
   const [blocks, setBlocks] = useState<any[]>([]);
   // const [ blockerIdArray, setBlockerId ] = useState<number[]>([]);
 
   const socket = useContext(SocketContext);
-  let userData: any = {};
-  if (typeof window !== "undefined") {
-    const userDataString = sessionStorage?.getItem("userData");
-    userData = userDataString ? JSON.parse(userDataString) : {};
-  }
+  // let userData: any = {};
+  // if (typeof window !== "undefined") {
+  //   const userDataString = sessionStorage?.getItem("userData");
+  //   userData = userDataString ? JSON.parse(userDataString) : {};
+  // }
+  const [userData, setUserData] = useUserStore((state) => [state.userData, state.setUserData])
+
 
   useEffect(() => {
     socket?.on("block", (block: any) => {

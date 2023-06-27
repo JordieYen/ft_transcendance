@@ -6,12 +6,16 @@ import { faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { faCrown } from "@fortawesome/free-solid-svg-icons";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
 import "@/styles/globals.css";
 import "@/styles/styling.css";
 import { IconButton } from "./IconButton";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import useUserStore, { UserData } from "@/hooks/useUserStore";
+import NextLink from "next/link";
+import Icon from "@/app/component/header_icon/Icon";
+
 
 interface HeaderLogoProps {
   currentPath: string;
@@ -114,6 +118,16 @@ export const LogoutIcon = () => {
   );
 };
 
+export const FriendsIcon = () => {
+  return (
+    <NextLink href="/friend">
+      <IconButton>
+        <FontAwesomeIcon icon={faUserGroup} size="lg"/>
+      </IconButton>
+    </NextLink>
+  )
+}
+
 export const SettingsIcon = () => {
   return (
     <Link href={"/settings"}>
@@ -208,6 +222,7 @@ export const HeaderIcon = () => {
     <>
       <LeaderboardsIcon />
       <ProfileIconGroup user={userData} />
+      <FriendsIcon />
       <SettingsIcon />
       <LogoutIcon />
     </>

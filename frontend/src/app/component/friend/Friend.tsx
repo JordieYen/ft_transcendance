@@ -154,8 +154,8 @@ const Friend = ({
                 <span>{friend?.online ? "online" : "offline"}</span>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => unfriend(friend?.id)}>Unfriend</button>
-                <button onClick={() => block(friend?.id)}>Block</button>
+                <button className="bg-mygrey" onClick={() => unfriend(friend?.id)}>Unfriend</button>
+                <button className="bg-mygrey" onClick={() => block(friend?.id)}>Block</button>
               </div>
             </div>
           </div>
