@@ -2,6 +2,9 @@ import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateStatDto {
   @IsNotEmpty()
+  id: number;
+
+  @IsNotEmpty()
   uid: number;
 
   @IsOptional()

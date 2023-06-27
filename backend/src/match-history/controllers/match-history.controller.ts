@@ -50,4 +50,9 @@ export class MatchHistoryController {
   async remove(@Query('uid') uid: string) {
     return await this.matchHistoryService.remove(+uid);
   }
+
+  @Delete('delete-all/:id')
+  deleteAll() {
+    return this.matchHistoryService.deleteAll();
+  }
 }
