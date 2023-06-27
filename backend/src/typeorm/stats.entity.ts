@@ -10,6 +10,9 @@ import { User } from './user.entity';
 @Entity()
 export class Stat {
   @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
   uid: number;
 
   @OneToOne(() => User, (user) => user.stat)
