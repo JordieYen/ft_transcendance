@@ -190,6 +190,15 @@ export class FriendService {
     return friendRequest;
   }
 
+  // async blockUser(friendRequestId: number) {
+  //   await this.friendRepository.update(friendRequestId, {
+  //     status: FriendStatus.Blocked,
+  //   });
+  //   const updatedFriendRequest = await this.findOne(friendRequestId);
+  //   return updatedFriendRequest;
+  //   // return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Blocked });
+  // }
+
   async getSentFriendRequest(senderId: number) {
     const sentFriendRequest = await this.friendRepository.find({
       where: {

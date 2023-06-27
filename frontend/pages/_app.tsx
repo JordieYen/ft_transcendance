@@ -1,28 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import type { AppProps } from 'next/app';
-import Header from '@/app/component/common/Header';
-import Footer from '@/app/component/common/Footer';
-import '../src/app/globals.css';
-import { SocketProvider } from '@/app/socket/SocketProvider';
-import { SessionProvider, useSession } from "next-auth/react"
-import { useRouter } from 'next/router';
-import { authMiddleware, middleware } from '../middleware/middleware';
+import React, { useEffect, useState } from "react";
+import type { AppProps } from "next/app";
+import Header from "@/components/Header";
+import "../src/app/globals.css";
+import CustomToaster from "@/components/CustomToaster";
+import axios from "axios";
+import { SocketProvider } from "@/app/socket/SocketProvider";
+import { SessionProvider, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { authMiddleware, middleware } from "../middleware/middleware";
+
+axios.defaults.baseURL = "http://localhost:3000/";
 
 const MyApp = ({ Component, pageProps, router }: AppProps) => {
+  /* NOT USING THIS FOR NOW */
+  // const currentPath = router.asPath;
 
   const currentPath = router.asPath;
-  const allowPages = [ '/pong-main'];
+  const allowPages = ["/pong-main"];
   const showAdditionalIcon = allowPages.includes(currentPath);
   return (
     <SessionProvider session={pageProps.session}>
       <SocketProvider>
         <div>
-            <ContentWrapper>
-              <Header showAdditionalIcon={showAdditionalIcon}/>
-                  <Component {...pageProps} />
-              <Footer />
-            </ContentWrapper>
-      </div>
+          <ContentWrapper>
+            {/* <Header showAdditionalIcon={showAdditionalIcon}/> */}
+            <CustomToaster />
+            <Header />
+            <Component {...pageProps} />
+            {/* <Footer /> */}
+          </ContentWrapper>
+        </div>
       </SocketProvider>
     </SessionProvider>
   );
@@ -37,23 +44,23 @@ const ContentWrapper = ({ children }: any) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/returnRequest',{
-          credentials: 'include',
-          method: 'POST',
+        const response = await fetch("/api/returnRequest", {
+          credentials: "include",
+          method: "POST",
           body: JSON.stringify({
-            method: 'GET',
+            method: "GET",
             url: router.asPath,
             headers: {
-              'Content-Type': 'application/json',
-            }
+              "Content-Type": "application/json",
+            },
           }),
         });
-        console.log('response', response);
+        console.log("response", response);
         const data = await response.json();
-        console.log('data', data);
+        console.log("data", data);
         setFetchedData(data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
     fetchData();
@@ -71,23 +78,21 @@ const ContentWrapper = ({ children }: any) => {
     };
     checkAuthentication();
   }, [fetchedData]);
-  
+
   useEffect(() => {
-    if (!isLoading && !isAuthenticated && !router.asPath.startsWith('/login')) {
-      router.replace('/login'); // Redirect to the login page
+    if (!isLoading && !isAuthenticated && !router.asPath.startsWith("/login")) {
+      router.replace("/login"); // Redirect to the login page
     }
   }, [isLoading, isAuthenticated, router]);
-  
+
   // return isLoading ? null : <>{children}</>;
-  const isLoginPage = router.asPath === '/login';
+  const isLoginPage = router.asPath === "/login";
 
   if (isLoginPage) {
     return <>{children}</>; // Render the component on the login page
   }
 
   return isAuthenticated ? <>{children}</> : null;
-
-
-}
+};
 
 export default MyApp;

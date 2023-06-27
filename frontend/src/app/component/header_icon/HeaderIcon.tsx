@@ -21,6 +21,9 @@ const HeaderIcon = () => {
             <p className='icon-container transform hover:scale-125'>{ username }</p>
             <Mmr mmr={ stat?.mmr || 0 }/>
             <Icon filePath="/gear.png"/>
+            {/* <Link to='/friend'>
+                <p>To Friend</p>
+            </Link> */}
             <NextLink href="/friend">
                 <Icon filePath="/user.png"/>
             </NextLink>

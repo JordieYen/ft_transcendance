@@ -53,15 +53,23 @@ export class AuthController {
 
   // @UseGuards(AuthenticatedGuard)
   @Get('2fa')
-  async enableTwoFactorAuth(
-    @Req() req: Request,
-    @Res() res: Response,
-  ): Promise<void> {
-    const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
-      req.user,
-    );
-    await this.authService.displayQrCode(res, otpAuthUrl);
+  async enableTwoFactorAuth(@Req() req: Request) {
+    // console.log(req);
+    // const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
+    //   req.user,
+    // );
+    // await this.authService.displayQrCode(res, otpAuthUrl);
+    return await this.authService.generateTwoFactorAuthSecret(req.user);
   }
+  // async enableTwoFactorAuth(
+  //   @Req() req: Request,
+  //   @Res() res: Response,
+  // ): Promise<void> {
+  //   const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
+  //     req.user,
+  //   );
+  //   await this.authService.displayQrCode(res, otpAuthUrl);
+  // }
 
   // JWT containe Header, Payload, Signature
   // @UseGuards(AuthenticatedGuard)
@@ -76,6 +84,7 @@ export class AuthController {
       const payload = await this.authService.createPayload(req.user);
       const token = await this.authService.createToken(payload);
       res.setHeader('Authorization', `Bearer ${token}`);
+      console.log(token);
       return res.send(token);
     }
     throw new InvalidOtpException();
