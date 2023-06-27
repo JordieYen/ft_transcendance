@@ -1,31 +1,23 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpException,
-    HttpStatus,
-    Param,
-    ParseFilePipeBuilder,
-    ParseIntPipe,
-    Patch,
-    Post,
-    Put,
-    Req,
-    Res,
-    UploadedFile,
-    UseInterceptors,
-    UsePipes,
-    ValidationPipe,
-  } from '@nestjs/common';
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  ParseFilePipeBuilder,
+  ParseIntPipe,
+  Patch,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/services/users.service';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { join } from 'path';
-import { promises as fsPromises } from 'fs';
-import * as fs from 'fs';
-import { Request, Response } from 'express';
-import { User } from '../decorators/user.decorator';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -70,14 +62,18 @@ export class UsersController {
   // https://cdn.intra.42.fr/users/da37eeb2b24561bdc86b9f906f448006/steh.jpg
   @Patch('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadAvatar(@UploadedFile(
-    new ParseFilePipeBuilder()
-      .addFileTypeValidator({ fileType: '.(png|jpeg|jpg)' })
-      .addMaxSizeValidator({ maxSize: 1024 * 1024 * 4 })
-      .build({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
-      }),
-  ) file: Express.Multer.File, @Body('id', ParseIntPipe) id: number) {
+  async uploadAvatar(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({ fileType: '.(png|jpeg|jpg)' })
+        .addMaxSizeValidator({ maxSize: 1024 * 1024 * 4 })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
+    @Body('id', ParseIntPipe) id: number,
+  ) {
     try {
       const avatarURL = `http://localhost:3000/public/avatar/${file.filename}`;
       await this.userService.uploadAvatar(id, avatarURL);
@@ -85,20 +81,22 @@ export class UsersController {
     } catch (error) {
       throw new HttpException(
         'Error uploading avatar',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      )
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   // use PUT for new request body, use PATCH if need request body contain only property changes only
   @Patch(':id')
-  async updateUser(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
-      return await this.userService.updateUser(id, updateUserDto);
+  async updateUser(
+    @Param('id') id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return await this.userService.updateUser(id, updateUserDto);
   }
 
   @Get(':id')
   async getUserProfile(@Param('id') id: number) {
     return await this.userService.findUsersByIdWithRelation(id);
   }
-  
 }

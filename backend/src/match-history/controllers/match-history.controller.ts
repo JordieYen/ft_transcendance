@@ -24,23 +24,25 @@ export class MatchHistoryController {
     return this.matchHistoryService.getByPlayerUid(+uid);
   }
 
+  @Get('wins')
+  async getWinsByPlayerUid(@Query('uid') uid: string): Promise<MatchHistory[]> {
+    return this.matchHistoryService.getWinsByPlayerUid(+uid);
+  }
+
   @Get('score')
   async getByScore(@Query('score') score: string): Promise<MatchHistory[]> {
     return this.matchHistoryService.getByScore(+score);
   }
 
-  @Get('games')
-  async getTotalGamesByPlayerUid(@Query('uid') uid: string): Promise<number> {
-    return this.matchHistoryService.getTotalGamesByPlayerUid(+uid);
-  }
-
-  @Get('wins')
-  async getTotalWinsByPlayerUid(@Query('uid') uid: string): Promise<number> {
-    return this.matchHistoryService.getTotalWinsByPlayerUid(+uid);
+  @Get('current-mmr')
+  async getMmrByPlayerUid(@Query('uid') uid: string): Promise<number> {
+    return this.matchHistoryService.getMmrByPlayerUid(+uid);
   }
 
   @Post()
-  async create(@Body() createMatchHistoryDto: CreateMatchHistoryDto): Promise<void> {
+  async create(
+    @Body() createMatchHistoryDto: CreateMatchHistoryDto,
+  ): Promise<void> {
     return this.matchHistoryService.create(createMatchHistoryDto);
   }
 

@@ -15,14 +15,13 @@ import { configValidationSchema } from './config/config.schema';
 import { FriendModule } from './friend/friend.module';
 import { StatModule } from './stat/stat.module';
 import { GatewayModule } from './gateway/gateway.module';
-import { MyGateway } from './gateway/gateway';
 
 const configFactory = {
   isGlocal: true,
   envFilePath: '../.env',
   validationSchema: configValidationSchema,
   cache: true,
-}
+};
 
 @Module({
   imports: [
@@ -40,10 +39,7 @@ const configFactory = {
     StatModule,
     GatewayModule,
   ],
-  controllers: [AppController ],
-  providers: [ 
-    AppService,
-   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
-
 export class AppModule {}

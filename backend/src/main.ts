@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import session, * as ExpressSession from 'express-session'; 
-import { ConfigService } from '@nestjs/config'
+import session, * as ExpressSession from 'express-session';
+import { ConfigService } from '@nestjs/config';
 import { setupSwagger } from 'src/swagger.config';
 import * as passport from 'passport';
 import { ValidationPipe } from '@nestjs/common';
@@ -20,12 +20,14 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
     credentials: true, // Set this to true if you need to include cookies in the request
   });
-  app.use(cookieParser())
+  app.use(cookieParser());
 
   setupSwagger(app);
-  app.useGlobalPipes(new ValidationPipe(({
-    whitelist: true,
-  })));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
   app.useStaticAssets(join(__dirname, '..', 'public'), {
     index: false,
     prefix: '/public',
@@ -45,8 +47,8 @@ async function bootstrap() {
     pool: pgPool,
     createTableIfMissing: true,
     // tableName: 'session_entity',
-  })
-  const sessionOption= ExpressSession({
+  });
+  const sessionOption = ExpressSession({
     name: 'ft_transcendence_session_id',
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -65,8 +67,8 @@ async function bootstrap() {
     console.log('status:', status, '\n', 'path', req.path, '\n');
     // console.log('session', req.session, '\n');
     // const isAuthRoute = (
-    // req.path == '/auth/login' 
-    // || req.path == '/auth/callback' 
+    // req.path == '/auth/login'
+    // || req.path == '/auth/callback'
     // || req.path == '/auth/logout'
     // || req.path == '/api');
 
@@ -77,10 +79,10 @@ async function bootstrap() {
     // } else if (!req.isAuthenticated() && !isAuthRoute) {
     //     console.log('redirect to login from main.ts');
     //     return res.redirect(`${process.env.NEXT_HOST}/login`)
-    // } 
+    // }
     next();
   });
-  
+
   await app.listen(3000);
 }
 bootstrap();

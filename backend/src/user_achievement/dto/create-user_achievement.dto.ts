@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsNumber, isNumber } from "class-validator";
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateUserAchievementDto {
-    @IsNotEmpty()
-    @IsNumber()
-    userId: number;
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
 
-    @IsNotEmpty()
-    @IsNumber()
-    achievementId: number;
+  @IsNotEmpty()
+  @IsNumber()
+  achievementId: number;
 }

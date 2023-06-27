@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateAchievementDto } from '../dto/create-achievement.dto';
 import { UpdateAchievementDto } from '../dto/update-achievement.dto';
@@ -25,7 +33,10 @@ export class AchievementController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateAchievementDto: UpdateAchievementDto) {
+  async update(
+    @Param('id') id: number,
+    @Body() updateAchievementDto: UpdateAchievementDto,
+  ) {
     return await this.achievementService.update(id, updateAchievementDto);
   }
 

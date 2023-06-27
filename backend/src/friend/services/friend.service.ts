@@ -1,16 +1,19 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { any } from 'joi';
-import { send } from 'process';
 import { Friend, FriendStatus } from 'src/typeorm/friends.entity';
 import { UsersService } from 'src/users/services/users.service';
-import { In, Not, Repository } from 'typeorm';
 import { CreateFriendDto } from '../dto/create-friend.dto';
 import { UpdateFriendDto } from '../dto/update-friend.dto';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class FriendService {
-
   constructor(
     @InjectRepository(Friend) private friendRepository: Repository<Friend>,
     private readonly userService: UsersService,
@@ -46,19 +49,19 @@ export class FriendService {
 
   async findAll(): Promise<Friend[]> {
     return await this.friendRepository.find({
-      relations: [ 'sender', 'receiver' ],
+      relations: ['sender', 'receiver'],
     });
   }
 
   async findOne(id: number) {
     const friend = await this.friendRepository.findOne({
-      relations: [ 'sender', 'receiver' ],
+      relations: ['sender', 'receiver'],
       where: {
-        id: id
-      }});
-    if (!friend)
-      throw new Error('Friend not found');
-    return (friend);
+        id: id,
+      },
+    });
+    if (!friend) throw new Error('Friend not found');
+    return friend;
   }
 
   async update(id: number, updateFriendDto: UpdateFriendDto) {
@@ -67,8 +70,12 @@ export class FriendService {
     }
     const friend = await this.findOne(id);
     try {
-      const sender = await this.userService.findUsersById(updateFriendDto.senderId);
-      const receiver = await this.userService.findUsersById(updateFriendDto.receiverId);
+      const sender = await this.userService.findUsersById(
+        updateFriendDto.senderId,
+      );
+      const receiver = await this.userService.findUsersById(
+        updateFriendDto.receiverId,
+      );
       friend.sender = sender;
       friend.receiver = receiver;
       friend.status = updateFriendDto.status;
@@ -105,16 +112,20 @@ export class FriendService {
         {
           sender: { id: receiverId },
           receiver: { id: senderId },
-        }
-      ]
+        },
+      ],
     });
 
     if (existingFriend) {
-      if (existingFriend.status === FriendStatus.Pending || 
-          existingFriend.status === FriendStatus.Friended) {
+      if (
+        existingFriend.status === FriendStatus.Pending ||
+        existingFriend.status === FriendStatus.Friended
+      ) {
         throw new ConflictException('Friend request already exists');
-      } else if (existingFriend.status === FriendStatus.Cancel ||
-          existingFriend.status === FriendStatus.Decline) {
+      } else if (
+        existingFriend.status === FriendStatus.Cancel ||
+        existingFriend.status === FriendStatus.Decline
+      ) {
         existingFriend.status = FriendStatus.Pending;
         existingFriend.sender = sender;
         existingFriend.receiver = receiver;
@@ -130,25 +141,35 @@ export class FriendService {
   }
 
   async acceptFriendRequest(friendRequestId: number) {
-    await this.friendRepository.update(friendRequestId, { status: FriendStatus.Friended });
+    await this.friendRepository.update(friendRequestId, {
+      status: FriendStatus.Friended,
+    });
     const updatedFriendRequest = await this.findOne(friendRequestId);
     return updatedFriendRequest;
   }
 
   async declineFriendRequest(friendRequestId: number) {
-    await this.friendRepository.update(friendRequestId, { status: FriendStatus.Decline });
+    await this.friendRepository.update(friendRequestId, {
+      status: FriendStatus.Decline,
+    });
     const updatedFriendRequest = await this.findOne(friendRequestId);
     return updatedFriendRequest;
   }
 
   async cancelFriendRequest(friendRequestId: number) {
-    await this.friendRepository.update(friendRequestId, { status: FriendStatus.Cancel });
+    await this.friendRepository.update(friendRequestId, {
+      status: FriendStatus.Cancel,
+    });
     const updatedFriendRequest = await this.findOne(friendRequestId);
     return updatedFriendRequest;
   }
 
   // inn blocking user, blocker is the sender and blocked is the receiver
-  async blockUser(friendRequestId: number, blockerId: number,  blockedId: number) {
+  async blockUser(
+    friendRequestId: number,
+    blockerId: number,
+    blockedId: number,
+  ) {
     const friendRequest = await this.friendRepository.findOne({
       where: {
         id: friendRequestId,
@@ -226,7 +247,10 @@ export class FriendService {
     try {
       await this.friendRepository.clear();
     } catch (error) {
-      throw new InternalServerErrorException('Failed to delete all friend', error);
+      throw new InternalServerErrorException(
+        'Failed to delete all friend',
+        error,
+      );
     }
   }
 
@@ -245,11 +269,10 @@ export class FriendService {
       relations: ['sender', 'receiver'],
     });
 
-    const filteredFriends = friends.map(friend => {
-      
+    const filteredFriends = friends.map((friend) => {
       if (friend.sender.id === userId) {
         return friend.receiver;
-      } else  {
+      } else {
         return friend.sender;
       }
     });
@@ -266,8 +289,8 @@ export class FriendService {
         {
           sender: { id: receiverId },
           receiver: { id: senderId },
-        }
-      ]
+        },
+      ],
     });
     return friendship || null;
   }
@@ -275,30 +298,28 @@ export class FriendService {
   async getBlockedUsers(userId: number) {
     const blockList = await this.friendRepository.find({
       where: {
-          sender: { id: userId },
-          status: FriendStatus.Blocked,
-        },
-        relations: ['sender', 'receiver'],
-      });
+        sender: { id: userId },
+        status: FriendStatus.Blocked,
+      },
+      relations: ['sender', 'receiver'],
+    });
 
     const blockedList = await this.friendRepository.find({
       where: {
-          receiver: { id: userId },
-          status: FriendStatus.Blocked,
-        },
-        relations: ['sender', 'receiver'],
-      });
+        receiver: { id: userId },
+        status: FriendStatus.Blocked,
+      },
+      relations: ['sender', 'receiver'],
+    });
 
     console.log('blockList', blockList);
     console.log('blockedList', blockedList);
-    
 
     return {
       blockList,
-      blockedList
+      blockedList,
     };
   }
-
 
   async blocker(blockerId: number, blockedUserId: number) {
     const blockedUser = await this.friendRepository.findOne({
@@ -307,7 +328,7 @@ export class FriendService {
         { sender: { id: blockedUserId }, receiver: { id: blockerId } },
       ],
     });
-  
+
     if (!blockedUser) {
       const newBlockedUser = this.friendRepository.create({
         sender: { id: blockerId }, // Set the blocker ID
@@ -317,5 +338,4 @@ export class FriendService {
       await this.friendRepository.save(newBlockedUser);
     }
   }
-
 }

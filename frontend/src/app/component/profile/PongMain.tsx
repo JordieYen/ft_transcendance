@@ -9,6 +9,7 @@ import { use, useContext, useEffect } from 'react';
 import { SocketContext } from '@/app/socket/SocketProvider';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 const PongMain: React.FC<any> = () => {
 
@@ -37,7 +38,8 @@ const PongMain: React.FC<any> = () => {
       <div className='profile-page'>
         <div className='top-profile'>
           <div className='avatar-section'>
-              <Avatar src={ avatar } alt='user avartar'  width={140} height={140}/> 
+              <Avatar src={ avatar } alt='user avartar'  width={100} height={100}/> 
+              {/* <Image className="w-[100px] h-[100px] rounded-full object-cover" src={ avatar } alt='user avatar' width={100} height={100} /> */}
               <div className='username'>
                 <p>{ username }</p>
                 <p className='text-myyellow'>Joined { joinDate } </p>
