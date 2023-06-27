@@ -1,15 +1,13 @@
 import './friend.css';
-import React, { use, useContext } from "react";
+import React, { useContext } from "react";
 import { useState, useEffect } from "react";
 import Avatar from "../header_icon/Avatar";
 import SearchBar from "../search_bar/SearchBar";
 import FriendRequest from "./FriendRequest";
 import Friend from "./Friend";
 import { SocketContext } from '@/app/socket/SocketProvider';
-import { io, Socket } from 'socket.io-client';
 import Block from './Block';
 import useSessionStorageState from '@/app/utils/useSessionStorageState';
-import UserData from '@/app/webhook/UserContext';
 
 const FriendList = () => {
     const [usersList, setUserList] = useState<any[]>([]);
@@ -41,15 +39,6 @@ const FriendList = () => {
         socket?.emit('join', `${userData?.id}`);
         socket?.on("friend-request-received", (receivedFriendRequest: any) => {
             console.log('friend-request-received socket', receivedFriendRequest);
-            // setFriendRequestArray((prevArray: any) => [
-            //     ...prevArray,
-            //     { 
-            //         requestId: receivedFriendRequest.id, 
-            //         senderId: receivedFriendRequest?.sender?.id,
-            //         receiverId: receivedFriendRequest?.receiver?.id, 
-            //         status: receivedFriendRequest.status 
-            //     }
-            // ]);
             setFriendRequestArray((prevArray: any) => {
                 const existingRequest = prevArray.find(
                   (request: any) => request.requestId === receivedFriendRequest.id
@@ -93,26 +82,6 @@ const FriendList = () => {
             socket?.off('friend-request-cancel');
         };
     }, [socket]);
-    
-    const fetchFriendRequests = async (userId: number) => {
-        try {
-            const response = await fetch(`http://localhost:3000/friend/check-relationship/${userId}/${userData.id}`, {
-                method: 'GET',
-                credentials: 'include',
-            });
-            if (!response.ok) {
-                throw new Error(`Request failed with status ${response.status}`);
-            }
-            console.log('response', response);
-            if (response.ok) {
-                const friendRequest = await response.json();
-            }
-            console.log('friendRequestStatus after fetch', friendRequestStatus);
-        } catch (error) {
-            console.log('Error fetching friend request:', error);
-            return false;
-        }
-    };
 
     const fetchUsersList = async () => {
         try {
@@ -207,16 +176,6 @@ const FriendList = () => {
             console.log('Error fetching friend request:', error);
         }
     };
-    
-    // const areFriendsOrBlocks = (user1: any, user2: any) => {
-    //     const friendship = friendRequestArray.find(
-    //         (request) => 
-    //         ((request.senderId === user1.id && request.receiverId === user2.id) ||
-    //         (request.senderId === user2.id && request.receiverId === user1.id)) &&
-    //         (request.status === "friended" ||  request.status === "blocked")
-    //     );
-    //     return !!friendship;
-    // };
 
     return (
         <div className='friend-page w-full flex'>
@@ -265,23 +224,6 @@ const FriendList = () => {
                                             <span className="card-status">{ user?.online ? 'online' : 'offline' }</span>
                                         </div>
                                     </div>
-                                    {/* <div className="card-actions">
-                                        <button
-                                            className={ friendRequestStatus[user.id] ? 'cancel-button' : 'add-button'}
-                                            onClick={ () => 
-                                                friendRequestStatus[user?.id]
-                                                ? cancelFriendRequest(user?.id)
-                                                : sendFriendRequest(user?.id)
-                                            }
-                                        >
-                                            { friendRequestStatus[user.id]
-                                            ? 'Cancel' 
-                                            : pendingStatus[user.id] === 'pending'
-                                            ? 'Friend Request Pending'
-                                            : 'Add Friend' 
-                                            }
-                                        </button>
-                                    </div> */}
                                     <div className="card-actions">
                                         <button
                                             className={friendRequestStatus[user?.id] ? "cancel-button" : "add-button"}

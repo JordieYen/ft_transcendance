@@ -31,6 +31,7 @@ export class AuthService {
     return res.redirect(authorizeUrl);
   }
 
+  // manual approach not using passport
   async authenticateUser(
     code: string,
     req: RequestWithSessionUser,

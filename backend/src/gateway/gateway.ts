@@ -4,6 +4,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import cors from 'cors';
 import { Socket } from 'dgram';
 import { Server } from 'socket.io';
 import { FriendService } from 'src/friend/services/friend.service';
@@ -29,7 +30,7 @@ export class MyGateway implements OnModuleInit {
 
       socket.on('join', async (userId) => {
         console.log('User joined room: ' + userId);
-        if (userId) {
+        if (userId && userId !== 'undefined') {
           socket.join(userId);
           socket.data.userId = userId;
           console.log('online users after', socket.data.userId);
@@ -40,11 +41,11 @@ export class MyGateway implements OnModuleInit {
         console.log('User left room: ' + userId);
         socket.leave(userId);
       });
-      socket.on('disconnect', async (userId) => {
+      socket.on('disconnect', async () => {
         console.log(socket.id, ' disconnected');
         const socUserId = socket.data.userId;
         if (socUserId) {
-          this.updateUserStatus(socUserId, false);
+          this.updateUserStatus(+socUserId, false);
         }
       });
     });
@@ -57,7 +58,7 @@ export class MyGateway implements OnModuleInit {
     }
     const user = await this.usersService.findUsersById(parsedUserId);
     if (user) {
-      console.log(user);
+      // console.log(user);
       const newUser = await this.usersService.updateUser(parsedUserId, {
         online: isOnline,
       });
@@ -193,7 +194,11 @@ export class MyGateway implements OnModuleInit {
         blockerId,
         friendId,
       );
-      const blockRequest = await this.friendService.blockUser(frienship.id);
+      const blockRequest = await this.friendService.blockUser(
+        frienship.id,
+        blockerId,
+        friendId,
+      );
       const blockListSender = await this.friendService.getBlockedUsers(
         blockerId,
       );
@@ -201,13 +206,10 @@ export class MyGateway implements OnModuleInit {
         friendId,
       );
       console.log('block list sender', blockListSender);
-
-      this.server
-        .to(`${friendId}`)
-        .emit('block', { user: blockListReceiver, BlockerId: blockerId });
-      this.server
-        .to(`${blockerId}`)
-        .emit('block', { user: blockListSender, BlockerId: blockerId });
+      // this.server.to(`${friendId}`).emit('block', { user: blockListReceiver, BlockerId: blockerId});
+      // this.server.to(`${friendId}`).emit('block', blockListReceiver);
+      // this.server.to(`${blockerId}`).emit('block',  {user: blockListSender, BlockerId: blockerId});
+      this.server.to(`${blockerId}`).emit('block', blockListSender);
       this.server.to(`${friendId}`).emit('unfriend', blockerId);
       this.server.to(`${blockerId}`).emit('unfriend', friendId);
       this.server.emit('friend-request-received', blockRequest);
@@ -236,8 +238,8 @@ export class MyGateway implements OnModuleInit {
       const friendsForSender = await this.friendService.getFriends(blockId);
       this.server.to(`${unBlockerId}`).emit('friend', friendsForAccepter);
       this.server.to(`${blockId}`).emit('friend', friendsForSender);
-      this.server.to(`${blockId}`).emit('unblock', unBlockerId);
-      this.server.to(`${unBlockerId}`).emit('unblock', unBlockerId);
+      // this.server.to(`${blockId}`).emit('unblock', blockId);
+      this.server.to(`${unBlockerId}`).emit('unblock', blockId);
       // this.server.to(`${blockId}`).emit('block', null);
       this.server.emit('friend-request-received', acceptRequest);
       // this.server.emit('friend-request-received', unblockRequest);

@@ -146,7 +146,6 @@ export class FriendService {
     });
     const updatedFriendRequest = await this.findOne(friendRequestId);
     return updatedFriendRequest;
-    // return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Friended });
   }
 
   async declineFriendRequest(friendRequestId: number) {
@@ -155,7 +154,6 @@ export class FriendService {
     });
     const updatedFriendRequest = await this.findOne(friendRequestId);
     return updatedFriendRequest;
-    // return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Decline });
   }
 
   async cancelFriendRequest(friendRequestId: number) {
@@ -164,16 +162,32 @@ export class FriendService {
     });
     const updatedFriendRequest = await this.findOne(friendRequestId);
     return updatedFriendRequest;
-    // return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Cancel });
   }
 
-  async blockUser(friendRequestId: number) {
-    await this.friendRepository.update(friendRequestId, {
-      status: FriendStatus.Blocked,
+  // inn blocking user, blocker is the sender and blocked is the receiver
+  async blockUser(
+    friendRequestId: number,
+    blockerId: number,
+    blockedId: number,
+  ) {
+    const friendRequest = await this.friendRepository.findOne({
+      where: {
+        id: friendRequestId,
+      },
+      relations: ['sender', 'receiver'],
     });
-    const updatedFriendRequest = await this.findOne(friendRequestId);
-    return updatedFriendRequest;
-    // return await this.friendRepository.update(friendRequestId, { status: FriendStatus.Blocked });
+
+    const blocker = await this.userService.findUsersById(blockerId);
+    const blocked = await this.userService.findUsersById(blockedId);
+
+    if (friendRequest) {
+      friendRequest.status = FriendStatus.Blocked;
+      friendRequest.sender = blocker;
+      friendRequest.receiver = blocked;
+    }
+
+    await this.friendRepository.save(friendRequest);
+    return friendRequest;
   }
 
   async getSentFriendRequest(senderId: number) {
@@ -282,32 +296,29 @@ export class FriendService {
   }
 
   async getBlockedUsers(userId: number) {
-    console.log('id block', userId);
-
     const blockList = await this.friendRepository.find({
-      where: [
-        {
-          sender: { id: userId },
-          status: FriendStatus.Blocked,
-        },
-        {
-          receiver: { id: userId },
-          status: FriendStatus.Blocked,
-        },
-      ],
+      where: {
+        sender: { id: userId },
+        status: FriendStatus.Blocked,
+      },
       relations: ['sender', 'receiver'],
     });
 
-    const filteredBlockList = blockList.map((block) => {
-      if (block.sender.id === userId) {
-        return block.receiver;
-      } else {
-        return block.sender;
-      }
+    const blockedList = await this.friendRepository.find({
+      where: {
+        receiver: { id: userId },
+        status: FriendStatus.Blocked,
+      },
+      relations: ['sender', 'receiver'],
     });
-    console.log('filteredBlockList', filteredBlockList);
 
-    return filteredBlockList;
+    console.log('blockList', blockList);
+    console.log('blockedList', blockedList);
+
+    return {
+      blockList,
+      blockedList,
+    };
   }
 
   async blocker(blockerId: number, blockedUserId: number) {
