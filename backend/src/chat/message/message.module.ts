@@ -14,5 +14,6 @@ import { ChannelUser } from 'src/typeorm/channel_user.entity';
   imports: [TypeOrmModule.forFeature([Message, User, Channel, ChannelUser])],
   controllers: [MessageController],
   providers: [MessageService, UsersService, ChannelService, ChannelUserService],
+  exports: [MessageService, TypeOrmModule],
 })
 export class MessageModule {}

@@ -16,9 +16,8 @@ import { FriendService } from 'src/friend/services/friend.service';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private readonly usersRepository: Repository<User>,
-  ) // private readonly statService: StatService,
-  {}
+    @InjectRepository(User) private readonly usersRepository: Repository<User>, // private readonly statService: StatService,
+  ) {}
 
   async createUser(createUserDto: CreateUserDto) {
     console.log(createUserDto);
