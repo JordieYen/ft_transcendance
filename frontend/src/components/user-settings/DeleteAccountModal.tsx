@@ -1,9 +1,8 @@
 import React, { useState, useEffect, RefObject } from "react";
-import { NextRouter, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { TIMEOUT } from "dns";
 import axios from "axios";
 import useUserStore from "@/hooks/useUserStore";
 
@@ -63,7 +62,7 @@ const DeleteAccountModal = ({
   }, [isOpen]);
 
   return (
-    <div>
+    <>
       {isOpen && (
         <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0">
           <div
@@ -92,7 +91,7 @@ const DeleteAccountModal = ({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

@@ -1,6 +1,5 @@
-import { NextRouter, useRouter } from "next/router";
-import { useState, useEffect } from "react";
-import Logout from "@/app/data/logout";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrophy } from "@fortawesome/free-solid-svg-icons";
@@ -10,7 +9,6 @@ import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import "@/styles/globals.css";
 import "@/styles/styling.css";
 import { IconButton } from "./IconButton";
-import { Router } from "react-router-dom";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import useUserStore, { UserData } from "@/hooks/useUserStore";
@@ -220,10 +218,14 @@ const Header = () => {
   const router = useRouter();
   const currentPath = router.asPath;
   return (
-    <nav className="flex mx-16 md:mx-24 lg:mx-32 mt-5 mb-8 items-center gap-8">
-      <HeaderLogo currentPath={currentPath} />
-      {currentPath !== "/login" && <HeaderIcon />}
-    </nav>
+    <>
+      {currentPath !== "/login" && (
+        <nav className="flex mx-16 md:mx-24 lg:mx-32 mt-5 mb-8 items-center gap-8">
+          <HeaderLogo currentPath={currentPath} />
+          {currentPath !== "/setup" && <HeaderIcon />}
+        </nav>
+      )}
+    </>
   );
 };
 

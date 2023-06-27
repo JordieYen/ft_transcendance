@@ -17,4 +17,7 @@ export class CreateUserDto {
 
   @IsOptional()
   authentication?: boolean;
+
+  @IsOptional()
+  authenticationString?: string;
 }

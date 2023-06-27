@@ -87,7 +87,7 @@ const ChangeAvatarModal = ({
   }, [isOpen]);
 
   return (
-    <div>
+    <>
       {isOpen && (
         <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0">
           <div
@@ -152,7 +152,7 @@ const ChangeAvatarModal = ({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

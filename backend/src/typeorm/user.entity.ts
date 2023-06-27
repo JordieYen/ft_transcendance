@@ -36,6 +36,9 @@ export class User {
   @Column({ default: false })
   authentication: boolean;
 
+  @Column({ default: null })
+  authenticationString: string;
+
   @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',

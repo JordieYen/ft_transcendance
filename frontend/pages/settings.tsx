@@ -8,6 +8,7 @@ import useModal from "@/hooks/useModal";
 import ChangeAccountModal from "@/components/user-settings/ChangeAccountModal";
 import ChangeAvatarModal from "@/components/user-settings/ChangeAvatarModal";
 import ChangeTFAModal from "@/components/user-settings/ChangeTFAModal";
+import DeleteTFAModal from "@/components/user-settings/DeleteTFAModal";
 import DeleteAccountModal from "@/components/user-settings/DeleteAccountModal";
 import useUserStore from "@/hooks/useUserStore";
 
@@ -15,8 +16,12 @@ export default function SettingsPage() {
   const [isAccOpen, openAccModal, closeAccModal, accRef] = useModal(false);
   const [isPicOpen, openPicModal, closePicModal, picRef] = useModal(false);
   const [isTFAOpen, openTFAModal, closeTFAModal, tfaRef] = useModal(false);
+  const [isDelTFAOpen, openDelTFAModal, closeDelTFAModal, delTFARef] =
+    useModal(false);
   const [isDelOpen, openDelModal, closeDelModal, delRef] = useModal(false);
   const userData = useUserStore((state) => state.userData);
+
+  console.log(userData);
 
   return (
     <div className="flex flex-col gap-6">
@@ -48,23 +53,44 @@ export default function SettingsPage() {
         icon={faImage}
       />
 
-      <ChangeTFAModal
-        isOpen={isTFAOpen}
-        closeModal={closeTFAModal}
-        tfaRef={tfaRef}
-      />
-      <UserSettings
-        title="Enable 2FA"
-        description="Enable Two-Factor-Authentication."
-        buttonDescArry={
-          userData.authentication === false
-            ? ["enable 2FA"]
-            : ["update 2FA", "remove 2FA"]
-        }
-        handleClick={[() => openTFAModal()]}
-        mode="button"
-        icon={faLock}
-      />
+      {userData.authentication === false ? (
+        <>
+          <ChangeTFAModal
+            isOpen={isTFAOpen}
+            closeModal={closeTFAModal}
+            tfaRef={tfaRef}
+          />
+          <UserSettings
+            title="Enable 2FA"
+            description="Enable Two-Factor-Authentication."
+            buttonDescArry={["enable 2FA"]}
+            handleClick={[() => openTFAModal()]}
+            mode="button"
+            icon={faLock}
+          />
+        </>
+      ) : (
+        <>
+          <ChangeTFAModal
+            isOpen={isTFAOpen}
+            closeModal={closeTFAModal}
+            tfaRef={tfaRef}
+          />
+          <DeleteTFAModal
+            isOpen={isDelTFAOpen}
+            closeModal={closeDelTFAModal}
+            tfaRef={delTFARef}
+          />
+          <UserSettings
+            title="Enable 2FA"
+            description="Enable Two-Factor-Authentication."
+            buttonDescArry={["update 2FA", "remove 2FA"]}
+            handleClick={[() => openTFAModal(), () => openDelTFAModal()]}
+            mode="2fadone"
+            icon={faLock}
+          />
+        </>
+      )}
 
       <DeleteAccountModal
         isOpen={isDelOpen}

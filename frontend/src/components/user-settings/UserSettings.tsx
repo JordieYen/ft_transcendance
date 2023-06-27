@@ -3,7 +3,7 @@ import "@/styles/globals.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
-type Mode = "button" | "select" | "option" | "toggle";
+type Mode = "button" | "select" | "option" | "toggle" | "2fadone";
 
 interface UserSettingsProps {
   title: string;

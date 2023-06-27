@@ -103,7 +103,7 @@ export const SixDigitVerification = ({
         },
       )
       .then((response) => {
-        console.log(response);
+        localStorage.setItem("token", response.data);
         closeModal();
         toast.success("Authentication success!");
         axios
@@ -203,7 +203,7 @@ const ChangeTFAModal = ({
   }, [isOpen]);
 
   return (
-    <div>
+    <>
       {isOpen && (
         <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0">
           <div
@@ -238,7 +238,7 @@ const ChangeTFAModal = ({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

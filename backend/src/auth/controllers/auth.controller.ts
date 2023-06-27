@@ -74,6 +74,7 @@ export class AuthController {
       const payload = await this.authService.createPayload(req.user);
       const token = await this.authService.createToken(payload);
       res.setHeader('Authorization', `Bearer ${token}`);
+      console.log(token);
       return res.send(token);
     }
     throw new InvalidOtpException();
