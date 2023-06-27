@@ -27,7 +27,6 @@ const Friend = ( { userDataId, setFriendRequestArray, setFriendRequestStatus }: 
         });
         socket?.on('unfriend', (friendId: number) => {
             console.log('unfriend', friendId);
-            
             setFriends((prevFriends) => prevFriends.filter((friend) => friend.id !== friendId));
             setFriendRequestStatus((prevStatus) => {
                 return {
@@ -51,6 +50,7 @@ const Friend = ( { userDataId, setFriendRequestArray, setFriendRequestStatus }: 
             
             const response = await fetch(`http://localhost:3000/friend/friends/${userDataId}`, {
                 credentials: 'include',
+                mode: 'cors',
             });
             if (response.ok) {
                 const friends = await response.json();
@@ -90,7 +90,7 @@ const Friend = ( { userDataId, setFriendRequestArray, setFriendRequestStatus }: 
             const confirmation = window.confirm('Are you sure you want to block this friend?');
             if (confirmation) {
                 socket?.emit('block', {
-                    userId: userDataId,
+                    blockerId: userDataId,
                     friendId: friendId,
                 });
                 setFriends((prevFriends) => prevFriends.filter((friend) => friend.id !== friendId));
@@ -119,6 +119,11 @@ const Friend = ( { userDataId, setFriendRequestArray, setFriendRequestStatus }: 
                     </div>
                     <div className='flex-col gap-1'>
                         <p>{friend?.username}</p>
+                        <div className={`${friend?.online ? 'online' : 'offline'}`}>
+                            { friend?.online ? <div className='green-dot'></div> : <div className='red-dot'></div>}
+                            <span>{friend?.online ? 'online' : 'offline'}</span>
+
+                        </div>
                         <div className='flex gap-2'>
                             <button onClick={ () => unfriend(friend?.id)}>Unfriend</button>
                             <button onClick={ () => block(friend?.id)}>Block</button>

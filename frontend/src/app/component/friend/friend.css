@@ -12,7 +12,7 @@
     color: var(--background-grey);
 }
 
-.avatar-image {
+.card-avatar .avatar-image {
     border-radius: 50%;
     width: 100px;
     height: 100px;
@@ -77,5 +77,19 @@ p, span {
     display: inline-block;
     margin-right: 10px;
 }
-  
 
+button {
+    @apply bg-[var(--background-grey)] text-[var(--background-light-grey)] rounded-md px-2 py-1;
+}
+
+@media (max-width: 768px) {
+    .friend-page {
+      flex-direction: column;
+    }
+  
+    .friend-section,
+    .users-list {
+      flex: initial;
+      width: 100%;
+    }
+}

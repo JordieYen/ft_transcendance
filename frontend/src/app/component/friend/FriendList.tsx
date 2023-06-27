@@ -6,57 +6,76 @@ import SearchBar from "../search_bar/SearchBar";
 import FriendRequest from "./FriendRequest";
 import Friend from "./Friend";
 import { SocketContext } from '@/app/socket/SocketProvider';
-import { io, Socket } from 'socket.io-client';
 import Block from './Block';
+import useSessionStorageState from '@/app/utils/useSessionStorageState';
 
 const FriendList = () => {
     const [usersList, setUserList] = useState<any[]>([]);
     const [filteredUsersList, setFilteredUsersList] = useState<any[]>([]);
-    const [friendRequestArray, setFriendRequestArray] = useState<{ 
-        requestId: number, 
-        senderId: number, 
-        receiverId: number, 
-        status: string 
-    }[]>([]);
-    const [friendRequestStatus, setFriendRequestStatus] = useState<{ [key: number]: boolean }>({});
-    
+    const [friendRequestArray, setFriendRequestArray] = useSessionStorageState({
+        name: 'friendRequestArray',
+        initialValue: [] as {
+            requestId: number,
+            senderId: number,
+            receiverId: number,
+            status: string
+        }[],
+    })
+    const [friendRequestStatus, setFriendRequestStatus] = useSessionStorageState({
+        name: 'friendRequestStatus',
+        initialValue: {} as { 
+            [key: number]: boolean
+        },
+    })
     const socket = useContext(SocketContext);
     // const userData = UserData();
-
     let userData: any = {};
     if (typeof window !== "undefined") {
-        const userDataString = localStorage?.getItem("userData");
+        const userDataString = sessionStorage?.getItem('userData');
         userData = userDataString ? JSON.parse(userDataString) : {};
     }
 
     useEffect(() => {
+        socket?.emit('join', `${userData?.id}`);
         socket?.on("friend-request-received", (receivedFriendRequest: any) => {
             console.log('friend-request-received socket', receivedFriendRequest);
-            setFriendRequestArray((prevArray) => [
-                // ...prevArray,
-                { 
-                    requestId: receivedFriendRequest.id, 
+            setFriendRequestArray((prevArray: any) => {
+                const existingRequest = prevArray.find(
+                  (request: any) => request.requestId === receivedFriendRequest.id
+                );
+              
+                if (existingRequest) {
+                  const updatedArray = prevArray.map((request: any) => {
+                    if (request.requestId === receivedFriendRequest.id) {
+                      return {
+                        ...request,
+                        status: receivedFriendRequest.status,
+                      };
+                    }
+                    return request;
+                  });
+                  return updatedArray;
+                } else {
+                  const newRequest = {
+                    requestId: receivedFriendRequest.id,
                     senderId: receivedFriendRequest?.sender?.id,
-                    receiverId: receivedFriendRequest?.receiver?.id, 
-                    status: receivedFriendRequest.status 
+                    receiverId: receivedFriendRequest?.receiver?.id,
+                    status: receivedFriendRequest.status,
+                  };
+              
+                  return [...prevArray, newRequest];
                 }
-            ]);
+            });
             if (receivedFriendRequest?.status === "decline") {
-                setFriendRequestStatus((prevStatus) => ({
+                setFriendRequestStatus((prevStatus: any) => ({
                     ...prevStatus,
                     [receivedFriendRequest?.receiver?.id]: false,
                 }));
             }
+            fetchUsersList();
         });
-        const storedStatus = localStorage.getItem("friendRequestStatus");
-        if (storedStatus) {
-            setFriendRequestStatus(JSON.parse(storedStatus));
-        }
-        const storedFriendRequests = localStorage.getItem("friendRequestArray");
-        if (storedFriendRequests) {
-          setFriendRequestArray(JSON.parse(storedFriendRequests));
-        }
         fetchUsersList();
+        // fetchFriendRequests();
         return () => {
             socket?.off('friend-request-sent');
             socket?.off('friend-request-received');
@@ -64,12 +83,6 @@ const FriendList = () => {
         };
     }, [socket]);
 
-    useEffect(() => {
-        localStorage.setItem("friendRequestStatus", JSON.stringify(friendRequestStatus));
-        localStorage.setItem("friendRequestArray", JSON.stringify(friendRequestArray));
-    }, [friendRequestArray, friendRequestStatus]);
-
-      
     const fetchUsersList = async () => {
         try {
             const response = await fetch('http://localhost:3000/users', {
@@ -77,8 +90,16 @@ const FriendList = () => {
             });
             if (response.ok) {
                 const usersList = await response.json();
-                setUserList(usersList);
-                setFilteredUsersList(usersList);
+
+                const filteredList = [];
+                for (const user of usersList) {
+                    const relationship = await checkFriendsOrBlocks(userData, user);
+                    if (relationship === false) {
+                        filteredList.push(user);
+                    }
+                }
+                setUserList(filteredList);
+                setFilteredUsersList(filteredList);
             } else {
                 throw new Error('User not found');
             }
@@ -98,38 +119,32 @@ const FriendList = () => {
         }
     };
 
-    const cancelFriendRequest = (userId: number) => {
-        const friendRequests = friendRequestArray.find((request) => request.receiverId === userId);
+    const cancelFriendRequest =  (userId: number) => {
+        const friendRequests = friendRequestArray.find((request: any) => request.receiverId === userId);
+        console.log('friendRequests in cancel', friendRequests);
+        
         socket?.emit("friend-request-cancel", {
             senderId: userData.id,
+            receiverId: userId,
             // friendRequestId: friendRequest?.id
             friendRequestId: friendRequests?.requestId
         });
-        setFriendRequestArray(friendRequestArray.filter((request) => request.receiverId !== userId));
-        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: false }));
+        setFriendRequestArray(friendRequestArray.filter((request: any) => request.receiverId !== userId));
+        setFriendRequestStatus((prevStatus: any) => ({ ...prevStatus, [userId]: false }));
     };
 
     const sendFriendRequest = (userId: number) => {
-
-        // handle each both user send friend request to each other
-        if (isSent(userId)) {
-            console.log('both send friend request to each other');
-            return;
-        }
         socket?.emit("friend-request-sent", {
             senderId: userData.id,
             receiverId: userId,
         });
-        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [userId]: true }));
-        // socket?.on("friend-request-received", (friendRequest: any) => {
-        //     setFriendRequest(friendRequest);
-        //     setFriendRequestArray((prevArray) => [...prevArray, friendRequest.id]);
-        // });
+        setFriendRequestStatus((prevStatus: any) => ({ ...prevStatus, [userId]: true }));
+        // fetchFriendRequests(userId);
     }
 
     const isSent = (userId: number) => {
         const friendRequest = friendRequestArray.find(
-            (request) => 
+            (request: any) => 
             request.receiverId === userData.id && 
             request.status === "pending" &&
             request.senderId === userId
@@ -138,15 +153,28 @@ const FriendList = () => {
     };
 
     // Function to check if two users are already friends
-    const areFriendsOrBlocks = (user1: any, user2: any) => {
-        const friendship = friendRequestArray.find(
-            (request) => 
-            ((request.senderId === user1.id && request.receiverId === user2.id) ||
-            (request.senderId === user2.id && request.receiverId === user1.id)) &&
-            (request.status === "friended" ||  request.status === "blocked")
-
-        );
-        return !!friendship;
+    const checkFriendsOrBlocks = async (user1: any, user2: any) => {
+        try {
+            const userId = user1.id;
+            const friendId = user2.id;
+            const response = await fetch(`http://localhost:3000/friend/check-relationship/${userId}/${friendId}`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+            if (response.ok) {
+                const responseData = await response.text();
+                const friendship = responseData ? JSON.parse(responseData) : null;
+                if (friendship === null) {
+                    return false;
+                }
+                if (friendship.status === "friended" || friendship.status === "blocked") {
+                    return true;
+                }
+                return false;
+            }
+        } catch (error) {
+            console.log('Error fetching friend request:', error);
+        }
     };
 
     return (
@@ -182,9 +210,9 @@ const FriendList = () => {
                     <div className="flex-2 overflow-y-auto px-4">
                         <h1 className="flex justify-center">Users List</h1>
                         <div className="card-container">
-                            { filteredUsersList
-                            .filter(user => !areFriendsOrBlocks(userData, user))
-                            .map(user => user.id !== userData?.id && (
+                            { filteredUsersList && filteredUsersList
+                            // .filter(user => checkFriendsOrBlocks(userData, user) === false)
+                            .map(user => user?.id !== userData?.id && (
                                 <div className="card" key={user?.id}>
                                     <div className="card-avatar">
                                         <Avatar src={ user?.avatar } alt="user avatar" width={100} height={125}/>
@@ -198,20 +226,21 @@ const FriendList = () => {
                                     </div>
                                     <div className="card-actions">
                                         <button
-                                            className={friendRequestStatus[user.id] ? "cancel-button" : "add-button"}
-                                            onClick={() =>
-                                                friendRequestStatus[user.id]
-                                                ? cancelFriendRequest(user.id)
-                                                : sendFriendRequest(user.id)
+                                            className={friendRequestStatus[user?.id] ? "cancel-button" : "add-button"}
+                                            onClick={ () => 
+                                                friendRequestStatus[user?.id]
+                                                ? cancelFriendRequest(user?.id)
+                                                : sendFriendRequest(user?.id)
                                             }
-                                            disabled={ isSent(user.id) === true }
+                                            
+                                            disabled={ isSent(user?.id) === true }
                                             >
-                                            { friendRequestStatus[user.id]
+                                            { friendRequestStatus[user?.id]
                                                 ? "Cancel"
-                                                : isSent(user.id)
+                                                :  isSent(user?.id)
                                                 ? "Friend Request Pending " 
                                                 : "Add Friend "}
-                                             { user.id }
+                                             { user?.id }
                                         </button>
                                     </div>
                                 </div>

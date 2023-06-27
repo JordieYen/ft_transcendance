@@ -62,6 +62,25 @@ $ initdb -D /path/to/data/directory
 
 ```
 
+# Idead for nextjs authentication to get cookies
+```
+import { type NextRequest } from 'next/server'
+ 
+export const config = {
+  runtime: 'edge',
+}
+ 
+export default async function handler(req: NextRequest) {
+  const authorization = req.cookies.get('authorization')?.value
+  return fetch('https://backend-api.com/api/protected', {
+    method: req.method,
+    headers: {
+      authorization,
+    },
+    redirect: 'manual',
+  })
+}
+```
 
 #login page idea
 1. soundtrack when landing
@@ -76,3 +95,5 @@ $ initdb -D /path/to/data/directory
 4. [Notion](https://www.notion.so/a615f8244a264c3d8cd42a9a0159d34d?v=b19aec694fe74401af8ad859f3b31a15&p=021309324ca745a0ac61fac8f57e57a9&pm=s)
 5. [JWT Passport Strategy](https://betterprogramming.pub/jwt-and-passport-jwt-strategy-for-your-nestjs-rest-api-project-cafa9dd59890)
 6. [42 Passport Strategy](https://github.com/ykoh42/42OAuth-NestJS)
+7. [Subject](https://cdn.intra.42.fr/pdf/pdf/81790/en.subject.pdf)
+8. [Figma](https://www.figma.com/file/TVlO5hWLAHQM1S8YVD1oSv/Prototype-2?type=design&node-id=0-1&t=pR2aZ37d1wnm)

@@ -7,24 +7,30 @@ import MatchMaking from './MatchMaking';
 import Achievement from './Achievement';
 import { use, useContext, useEffect } from 'react';
 import { SocketContext } from '@/app/socket/SocketProvider';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 const PongMain: React.FC<any> = () => {
-    
-  const userData = UserData();
-  const socket = useContext(SocketContext);
+
+  const { data: session, status } = useSession();
+  console.log('session', session);
   
-  useEffect(() => {
-    if (!userData) {
-      return;
-    }
-    const { id } = userData;
-    socket?.emit('join', `${id}`);
-  }, [userData, socket]);
+  if (status === "authenticated") {
+    console.log('session', session)
+  } else if (status === "loading") {
+    console.log('loading')
+  } else if (status === "unauthenticated") {
+    console.log('unauthenticated')
+  } else {
+    console.log('error')
+  }
+  const userData = UserData();
   
   if (!userData) {
-    return <div>Loading...</div>;
+    return <div>User not found in profile...</div>;
   }
-  const { avatar, createdAt, id, intra_uid, username, online, p1_match, p2_match, stat, userAchievement } = userData;
+
+  const { avatar, createdAt, id, username, p1_match, p2_match, stat, userAchievement } = userData;
   const joinDate = formatDateMalaysia(new Date(createdAt));
 
     return (

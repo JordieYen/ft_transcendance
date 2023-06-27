@@ -52,15 +52,16 @@ export class AuthController {
     return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
   }
 
-  // enable google authenticator
-  // generate API credentials (client id and secret)
-  // secret key is used for generating OTP codes
-  // QR code generation contain URL with user's secret and info.
-  // display Qr code to user, user can with google authenticator app
-  // from app, get 6 digit OTP
-  // prompt enter OTP
-  // compare user entered with generated OTP
-  // if match, user authnticated.
+  /* 2FA
+  1. enable google authenticator
+  2. secret key is used for generating OTP codes
+  3. generate API credentials (client id and secret)
+  4. QR code generation contain URL with user's secret and info.
+  5. Display Qr code to user, user can with google authenticator app from app, get 6 digit OTP
+  6. Prompt enter OTP
+  7. Compare user entered with generated OTP
+  8. If match, user authenticated.
+  */
 
   // @UseGuards(AuthenticatedGuard)
   @Get('2fa')
@@ -113,10 +114,6 @@ export class AuthController {
     const returnUser = await this.authService.getAuthUserProfile(user.id);
     return await returnUser;
   }
-  // @Get('profile')
-  // async getProfile(@User() user) {
-  //     return await user;
-  // }
 
   @Get('logout')
   async logout(@Req() req: Request, @Res() res: Response) {

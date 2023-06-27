@@ -69,9 +69,17 @@ export class FriendController {
     return this.friendService.cancelFriendRequest(friendRequestId);
   }
 
-  @Put('block-user/:userId/:blockedUserId')
-  blockUser(@Param('friendRequestId') friendRequestId: number) {
-    return this.friendService.blockUser(friendRequestId);
+  // @Put('block-user/:friendRequestId')
+  // blockUser(@Param('friendRequestId') friendRequestId: number) {
+  //   return this.friendService.blockUser(friendRequestId);
+  // }
+
+  @Put('block-user/:blockerId/:blockedUserId')
+  blocker(
+    @Param('blockerId') blockerId: number,
+    @Param('blockedUserId') blockedUserId: number,
+  ) {
+    return this.friendService.blocker(blockerId, blockedUserId);
   }
 
   @Get('sent/:senderId')
@@ -107,6 +115,15 @@ export class FriendController {
 
   @Get('blocked/:userId')
   getBlockedUsers(@Param('userId') userId: number) {
+    console.log('userId', userId);
     return this.friendService.getBlockedUsers(+userId);
+  }
+
+  @Get('check-relationship/:userId/:friendId')
+  isFriend(
+    @Param('userId') userId: number,
+    @Param('friendId') friendId: number,
+  ) {
+    return this.friendService.findFriendship(+userId, +friendId);
   }
 }
