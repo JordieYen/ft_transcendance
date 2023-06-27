@@ -3,9 +3,11 @@ import React from "react";
 import HeaderIcon from "../header_icon/HeaderIcon";
 import Logo from "../header_icon/Logo";
 
-const Header = () => {
-  const router = useRouter();
-  const currentPath = router.asPath;
+interface HeaderProps {
+  showAdditionalIcon: boolean;
+}
+
+const Header = ({ showAdditionalIcon }: HeaderProps) => {
   return (
     <header>
       <Logo />

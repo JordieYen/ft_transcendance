@@ -24,8 +24,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     done: VerifyCallback,
   ): Promise<void> {
     const authUser = await this.authService.findOneOrCreate(profile);
-    // if (!authUser.online)
-    //         authUser = await this.userService.updateUser(authUser.id, { online: true });
     done(null, authUser);
   }
 

@@ -31,6 +31,7 @@ export class AuthService {
     return res.redirect(authorizeUrl);
   }
 
+  // manual approach not using passport
   async authenticateUser(
     code: string,
     req: RequestWithSessionUser,
@@ -154,16 +155,6 @@ export class AuthService {
       secret: process.env.JWT_SECRET,
     });
     return token;
-  }
-
-  // token verification and extraction
-  async verifyToken(token: string): Promise<number | null> {
-    try {
-      const payload = this.jwtService.verify(token);
-      return payload.sub;
-    } catch (error) {
-      return null;
-    }
   }
 
   async getAuthUserProfile(id: number): Promise<User> {

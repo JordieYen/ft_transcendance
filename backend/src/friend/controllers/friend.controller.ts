@@ -69,10 +69,10 @@ export class FriendController {
     return this.friendService.cancelFriendRequest(friendRequestId);
   }
 
-  @Put('block-user/:friendRequestId')
-  blockUser(@Param('friendRequestId') friendRequestId: number) {
-    return this.friendService.blockUser(friendRequestId);
-  }
+  // @Put('block-user/:friendRequestId')
+  // blockUser(@Param('friendRequestId') friendRequestId: number) {
+  //   return this.friendService.blockUser(friendRequestId);
+  // }
 
   @Put('block-user/:blockerId/:blockedUserId')
   blocker(
