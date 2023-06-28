@@ -197,9 +197,9 @@ export class MatchHistoryService {
 
   // Update stat value by match_uid
   async updateStat(match: MatchHistory, player: number) {
-  const p1_uid = match.p1_uid.id;
+    const p1_uid = match.p1_uid.id;
     const p2_uid = match.p2_uid.id;
-    
+
     if (player === 1) {
       await this.statService.updateStat(p1_uid, {
         wins: await this.getTotalWinsByPlayerUid(p1_uid),
@@ -245,7 +245,7 @@ export class MatchHistoryService {
     console.log(newMatch);
     try {
       await this.matchHistoryRepository.save(newMatch);
-      
+
       await this.updateMmr(newMatch);
       await this.updateStat(newMatch, 1);
       await this.updateStat(newMatch, 2);

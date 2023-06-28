@@ -21,7 +21,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
   return (
     <SessionProvider session={pageProps.session}>
       <SocketProvider>
-        <div>
+        <div className="wrapper">
           <ContentWrapper>
             {/* <Header showAdditionalIcon={showAdditionalIcon}/> */}
             <CustomToaster />
