@@ -10,7 +10,7 @@ import ChangeAvatarModal from "@/components/user-settings/ChangeAvatarModal";
 import ChangeTFAModal from "@/components/user-settings/ChangeTFAModal";
 import DeleteTFAModal from "@/components/user-settings/DeleteTFAModal";
 import DeleteAccountModal from "@/components/user-settings/DeleteAccountModal";
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore from "@/store/useUserStore";
 
 export default function SettingsPage() {
   const [isAccOpen, openAccModal, closeAccModal, accRef] = useModal(false);

@@ -12,10 +12,9 @@ import "@/styles/styling.css";
 import { IconButton } from "./IconButton";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import useUserStore, { UserData } from "@/hooks/useUserStore";
+import useUserStore, { UserData } from "@/store/useUserStore";
 import NextLink from "next/link";
 import Icon from "@/app/component/header_icon/Icon";
-
 
 interface HeaderLogoProps {
   currentPath: string;
@@ -122,11 +121,11 @@ export const FriendsIcon = () => {
   return (
     <NextLink href="/friend">
       <IconButton>
-        <FontAwesomeIcon icon={faUserGroup} size="lg"/>
+        <FontAwesomeIcon icon={faUserGroup} size="lg" />
       </IconButton>
     </NextLink>
-  )
-}
+  );
+};
 
 export const SettingsIcon = () => {
   return (

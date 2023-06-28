@@ -8,7 +8,7 @@ import Friend from "./Friend";
 import { SocketContext } from "@/app/socket/SocketProvider";
 import Block from "./Block";
 import useSessionStorageState from "@/app/utils/useSessionStorageState";
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore from "@/store/useUserStore";
 
 const FriendList = () => {
   const [usersList, setUserList] = useState<any[]>([]);
@@ -30,7 +30,10 @@ const FriendList = () => {
   });
   const socket = useContext(SocketContext);
 
-  const [userData, setUserData] = useUserStore((state) => [state.userData, state.setUserData])
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
 
   // const userData = UserData();
   // let userData: any = {};
