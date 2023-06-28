@@ -17,7 +17,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-    private readonly statService: StatService,
+    private readonly statService: StatService, // private readonly userAchievementService: UserAchievementService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -68,8 +68,13 @@ export class UsersService {
 
   async deleteUserById(id: number) {
     const user = await this.findUsersById(id);
+    console.log(user);
     if (!user) throw new NotFoundException(`User with ID ${id} not found`);
-    return await this.usersRepository.delete(id);
+    try {
+      await this.usersRepository.delete(id);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async findUsersByName(username: string): Promise<User | null> {
@@ -107,6 +112,19 @@ export class UsersService {
     } catch (error) {
       throw new InternalServerErrorException('Failed to update user');
     }
+  }
+
+  // Set authentication to true
+  async authenticateUser(id: number) {
+    await this.updateUser(id, {
+      authentication: true,
+    });
+    // if ((await this.userAchievementService.checkExists(id, 1)) === false) {
+    //   await this.userAchievementService.create({
+    //     user: id,
+    //     achievement: 1,
+    //   });
+    // }
   }
 
   async findUsersByIdWithRelation(id: number): Promise<User> {

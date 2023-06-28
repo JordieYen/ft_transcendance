@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
   UsePipes,
@@ -39,6 +40,11 @@ export class UsersController {
   @Get('username/:username')
   async findUsersByName(@Param('username') username: string) {
     return await this.userService.findUsersByName(username);
+  }
+
+  @Post('authenticate')
+  async authenticateUser(@Query('uid') uid: string) {
+    return await this.userService.authenticateUser(+uid);
   }
 
   @Post('create')
@@ -75,9 +81,10 @@ export class UsersController {
     @Body('id', ParseIntPipe) id: number,
   ) {
     try {
+      console.log(file);
       const avatarURL = `http://localhost:3000/public/avatar/${file.filename}`;
       await this.userService.uploadAvatar(id, avatarURL);
-      return { message: 'Avatar upload successfully' };
+      return { message: 'Avatar upload successfully', avatarURL };
     } catch (error) {
       throw new HttpException(
         'Error uploading avatar',

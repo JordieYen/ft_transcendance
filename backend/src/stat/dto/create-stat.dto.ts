@@ -23,7 +23,7 @@ export class CreateStatDto {
   smashes: number;
 
   @IsOptional()
-  winstreak: number;
+  win_streak: number;
 
   @IsOptional()
   current_mmr: number;

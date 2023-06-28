@@ -86,7 +86,7 @@ export class StatService {
   // Return lifetime winstreak of a player
   async getLifetimeWinstreakByPlayerUid(uid: number): Promise<number> {
     const stat = await this.getByPlayerUid(uid);
-    return stat[0].winstreak;
+    return stat[0].win_streak;
   }
 
   // Return MMR of a player
@@ -109,7 +109,8 @@ export class StatService {
     if (updateStatDto?.kills) stat[0].kills = updateStatDto?.kills;
     if (updateStatDto?.deaths) stat[0].deaths = updateStatDto?.deaths;
     if (updateStatDto?.smashes) stat[0].smashes = updateStatDto?.smashes;
-    if (updateStatDto?.winstreak) stat[0].winstreak = updateStatDto?.winstreak;
+    if (updateStatDto?.win_streak)
+      stat[0].win_streak = updateStatDto?.win_streak;
     if (updateStatDto?.current_mmr)
       stat[0].current_mmr = updateStatDto?.current_mmr;
     if (updateStatDto?.best_mmr) stat[0].best_mmr = updateStatDto?.best_mmr;
@@ -125,7 +126,7 @@ export class StatService {
       kills: createStatDto.kills,
       deaths: createStatDto.deaths,
       smashes: createStatDto.smashes,
-      winstreak: createStatDto.winstreak,
+      win_streak: createStatDto.win_streak,
       current_mmr: createStatDto.current_mmr,
       best_mmr: createStatDto.best_mmr,
     });

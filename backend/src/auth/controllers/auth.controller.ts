@@ -2,7 +2,10 @@ import {
   Body,
   Controller,
   Get,
+  Logger,
+  Param,
   Post,
+  Query,
   Req,
   Res,
   Session,
@@ -10,6 +13,11 @@ import {
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { Request, Response } from 'express';
+import { AuthenticatedGuard } from '../util/local.guard';
+import {
+  AuthenticatedUser,
+  RequestWithSessionUser,
+} from '../util/user_interface';
 import { FortyTwoAuthGuard } from '../util/42-auth.guard';
 import { User } from 'src/users/decorators/user.decorator';
 import { InvalidOtpException } from '../util/invalid_otp_exception';
@@ -62,6 +70,15 @@ export class AuthController {
     );
     await this.authService.displayQrCode(res, otpAuthUrl);
   }
+  // async enableTwoFactorAuth(
+  //   @Req() req: Request,
+  //   @Res() res: Response,
+  // ): Promise<void> {
+  //   const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
+  //     req.user,
+  //   );
+  //   await this.authService.displayQrCode(res, otpAuthUrl);
+  // }
 
   // JWT containe Header, Payload, Signature
   // @UseGuards(AuthenticatedGuard)
@@ -76,6 +93,7 @@ export class AuthController {
       const payload = await this.authService.createPayload(req.user);
       const token = await this.authService.createToken(payload);
       res.setHeader('Authorization', `Bearer ${token}`);
+      console.log(token);
       return res.send(token);
     }
     throw new InvalidOtpException();

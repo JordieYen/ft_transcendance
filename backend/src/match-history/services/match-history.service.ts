@@ -10,24 +10,17 @@ import { MatchHistory } from 'src/typeorm/match_history.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/services/users.service';
 import { StatService } from 'src/stat/services/stat.service';
+import { UserAchievementService } from 'src/user_achievement/services/user_achievement.service';
+import { User } from 'src/typeorm/user.entity';
 
 @Injectable()
 export class MatchHistoryService {
-  async deleteAll() {
-    try {
-      await this.matchHistoryRepository.clear();
-    } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to delete all friend',
-        error,
-      );
-    }
-  }
   constructor(
     @InjectRepository(MatchHistory)
     private readonly matchHistoryRepository: Repository<MatchHistory>,
     private readonly userService: UsersService,
     private readonly statService: StatService,
+    private readonly userAchievementService: UserAchievementService,
   ) {}
 
   // Return All Entries
@@ -201,33 +194,76 @@ export class MatchHistoryService {
   }
 
   // Update stat value by match_uid
-  async updateStat(match: MatchHistory, player: number) {
-    const p1 = match.p1;
-    const p2 = match.p2;
-    // console.log('p1', p1.id);
+  async updateStat(user: User) {
+    await this.statService.updateStat(user, {
+      wins: await this.getTotalWinsByPlayerUid(user.id),
+      losses: await this.getTotalLossByPlayerUid(user.id),
+      kills: await this.getLifetimeKillsByPlayerUid(user.id),
+      deaths: await this.getLifetimeDeathsByPlayerUid(user.id),
+      smashes: await this.getLifetimeSmashesByPlayerUid(user.id),
+      win_streak: await this.getLifetimeWinstreakByPlayerUid(user.id),
+      current_mmr: await this.getMmrByPlayerUid(user.id),
+      best_mmr: await this.getHighestMmrByPlayerUid(user.id),
+    });
+  }
 
-    if (player === 1) {
-      await this.statService.updateStat(p1, {
-        wins: await this.getTotalWinsByPlayerUid(p1.id),
-        losses: await this.getTotalLossByPlayerUid(p1.id),
-        kills: await this.getLifetimeKillsByPlayerUid(p1.id),
-        deaths: await this.getLifetimeDeathsByPlayerUid(p1.id),
-        smashes: await this.getLifetimeSmashesByPlayerUid(p1.id),
-        winstreak: await this.getLifetimeWinstreakByPlayerUid(p1.id),
-        current_mmr: await this.getMmrByPlayerUid(p1.id),
-        best_mmr: await this.getHighestMmrByPlayerUid(p1.id),
-      });
-    } else {
-      await this.statService.updateStat(p2, {
-        wins: await this.getTotalWinsByPlayerUid(p2.id),
-        losses: await this.getTotalLossByPlayerUid(p2.id),
-        kills: await this.getLifetimeKillsByPlayerUid(p2.id),
-        deaths: await this.getLifetimeDeathsByPlayerUid(p2.id),
-        smashes: await this.getLifetimeSmashesByPlayerUid(p2.id),
-        winstreak: await this.getLifetimeWinstreakByPlayerUid(p2.id),
-        current_mmr: await this.getMmrByPlayerUid(p2.id),
-        best_mmr: await this.getHighestMmrByPlayerUid(p2.id),
-      });
+  // Update stat value by match_uid
+  async updateKillChainAchievement(match: MatchHistory) {
+    if (match.p1_score === 11 && match.p2_score === 0) {
+      if (
+        (await this.userAchievementService.checkExists(match.p1.id, 10)) ===
+        false
+      ) {
+        await this.userAchievementService.create({
+          user: match.p1.id,
+          achievement: 10,
+        });
+      }
+    }
+    if (match.p1_score === 0 && match.p2_score === 11) {
+      if (
+        (await this.userAchievementService.checkExists(match.p2.id, 10)) ===
+        false
+      ) {
+        await this.userAchievementService.create({
+          user: match.p2.id,
+          achievement: 10,
+        });
+      }
+    }
+  }
+
+  // Update user achievement
+  async updateUserAchievement(uid: number): Promise<void> {
+    const stat = (await this.statService.getByPlayerUid(uid))[0];
+
+    if (stat.smashes >= 10) {
+      if ((await this.userAchievementService.checkExists(uid, 2)) === false) {
+        await this.userAchievementService.create({
+          user: uid,
+          achievement: 2,
+        });
+      }
+    }
+    let count = 5;
+    for (let i = 3; i <= 8; ++i) {
+      if (stat.kills >= count) {
+        if ((await this.userAchievementService.checkExists(uid, i)) === false) {
+          await this.userAchievementService.create({
+            user: uid,
+            achievement: i,
+          });
+        }
+      }
+      count += 5;
+    }
+    if (stat.kills >= 50) {
+      if ((await this.userAchievementService.checkExists(uid, 9)) === false) {
+        await this.userAchievementService.create({
+          user: uid,
+          achievement: 9,
+        });
+      }
     }
   }
 
@@ -252,8 +288,11 @@ export class MatchHistoryService {
     try {
       await this.matchHistoryRepository.save(newMatch);
       await this.updateMmr(newMatch);
-      await this.updateStat(newMatch, 1);
-      await this.updateStat(newMatch, 2);
+      await this.updateStat(newMatch.p1);
+      await this.updateStat(newMatch.p2);
+      await this.updateKillChainAchievement(newMatch);
+      await this.updateUserAchievement(newMatch.p1.id);
+      await this.updateUserAchievement(newMatch.p2.id);
     } catch (error) {
       console.log('error=', error.message);
       throw new InternalServerErrorException('Could not create match-history');
@@ -267,6 +306,17 @@ export class MatchHistoryService {
       return { message: 'User with uid ${uid} has been deleted successfully' };
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async deleteAll() {
+    try {
+      await this.matchHistoryRepository.clear();
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to delete all friend',
+        error,
+      );
     }
   }
 }

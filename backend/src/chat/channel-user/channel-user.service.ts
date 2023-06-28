@@ -142,7 +142,6 @@ export class ChannelUserService {
   }
 
   async createChannelUser(dto: CreateChannelUserDto, user: User) {
-    user;
     const newChannelUser = await this.channelUsersRepository.create({
       user: dto.user,
       role: dto.role,
@@ -164,6 +163,7 @@ export class ChannelUserService {
         status === Status.Muted ||
         status === Status.Banned
       ) {
+        const newStatus: Status = status;
         if (!user) throw new ForbiddenException('Not logged in');
         const channelOwner = await this.findChannelUserByChannelIdAndUserId(
           channel_id,

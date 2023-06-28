@@ -32,7 +32,7 @@ export class Stat {
   smashes: number;
 
   @Column({ default: 0 })
-  winstreak: number;
+  win_streak: number;
 
   @Column({ default: 0 })
   current_mmr: number;

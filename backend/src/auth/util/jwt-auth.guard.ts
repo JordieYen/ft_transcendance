@@ -1,6 +1,13 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { AuthGuard, IAuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { ExtractJwt } from 'passport-jwt';
+import { Observable } from 'rxjs';
+import { User } from 'src/typeorm/user.entity';
 
 // @Injectable()
 // export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {

@@ -61,7 +61,7 @@ export class StatController {
     return this.statService.getLifetimeSmashesByPlayerUid(+uid);
   }
 
-  @Get('winstreak')
+  @Get('win-streak')
   async getLifetimeWinstreakByPlayerUid(
     @Query('uid') uid: string,
   ): Promise<number> {
