@@ -9,6 +9,7 @@ import { Stat } from 'src/typeorm/stats.entity';
 import { Repository } from 'typeorm';
 import { CreateStatDto } from '../dto/create-stat.dto';
 import { UpdateStatDto } from '../dto/update-stat.dto';
+import { User } from 'src/typeorm/user.entity';
 
 @Injectable()
 export class StatService {
@@ -19,17 +20,21 @@ export class StatService {
 
   // Return All Entries
   async getStat(): Promise<Stat[]> {
-    return await this.statRepository.find();
+    return await this.statRepository.find({
+      relations: {
+        user: true,
+      },
+    });
   }
 
   // Return entries with {uid}
   async getByPlayerUid(uid: number): Promise<Stat[]> {
     return await this.statRepository.find({
       relations: {
-        user:  true,
+        user: true,
       },
       where: {
-        uid: uid,
+        user: { id: uid },
       },
     });
   }
@@ -97,8 +102,8 @@ export class StatService {
   }
 
   // Update existing Stat
-  async updateStat(uid: number, updateStatDto: UpdateStatDto) {
-    const stat = await this.getByPlayerUid(uid);
+  async updateStat(user: User, updateStatDto: UpdateStatDto) {
+    const stat = await this.getByPlayerUid(user.id);
     if (updateStatDto?.wins) stat[0].wins = updateStatDto?.wins;
     if (updateStatDto?.losses) stat[0].losses = updateStatDto?.losses;
     if (updateStatDto?.kills) stat[0].kills = updateStatDto?.kills;
@@ -112,9 +117,9 @@ export class StatService {
   }
 
   // Add new entry
-  async create(uid: number, createStatDto: CreateStatDto) {
+  async create(user: User, createStatDto: CreateStatDto) {
     const newStat = await this.statRepository.create({
-      uid: uid,
+      user: user,
       wins: createStatDto.wins,
       losses: createStatDto.losses,
       kills: createStatDto.kills,

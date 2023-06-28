@@ -5,7 +5,7 @@ export class CreateStatDto {
   id: number;
 
   @IsNotEmpty()
-  uid: number;
+  user: number;
 
   @IsOptional()
   wins: number;

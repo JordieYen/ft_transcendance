@@ -8,7 +8,7 @@ function renderMatchRows(matches: any, userId: number, isP1: boolean) {
         return (
             <tr key={match?.match_uid} className={isWinner ? 'row-win' : 'row-lose'}>
                 <td className={isWinner ? 'result-win' : 'result-lose'}></td>
-                <td>{ isP1 ? match?.p2_uid?.username : match?.p1_uid?.username } </td>
+                <td>{ isP1 ? match?.p2?.username : match?.p1?.username } </td>
                 <td>{ gameDate }</td>
                 <td>{ isP1 ? match?.p1_score : match?.p2_score }</td>
                 <td>{ isP1 ? match?.p2_score : match?.p1_score }</td>

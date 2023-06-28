@@ -32,15 +32,20 @@ export class MatchHistoryService {
 
   // Return All Entries
   async getHistory(): Promise<MatchHistory[]> {
-    return await this.matchHistoryRepository.find();
+    return await this.matchHistoryRepository.find({
+      relations: {
+        p1: true,
+        p2: true,
+      },
+    });
   }
 
   // Return entries with {match_uid}
   async getByMatchUid(uid: number): Promise<MatchHistory[]> {
     return await this.matchHistoryRepository.find({
       relations: {
-        p1_uid: true,
-        p2_uid: true,
+        p1: true,
+        p2: true,
       },
       where: {
         match_uid: uid,
@@ -52,10 +57,10 @@ export class MatchHistoryService {
   async getByPlayerUid(uid: number): Promise<MatchHistory[]> {
     return await this.matchHistoryRepository.find({
       relations: {
-        p1_uid: true,
-        p2_uid: true,
+        p1: true,
+        p2: true,
       },
-      where: [{ p1_uid: { id: uid } }, { p2_uid: { id: uid } }],
+      where: [{ p1: { id: uid } }, { p2: { id: uid } }],
     });
   }
 
@@ -63,8 +68,8 @@ export class MatchHistoryService {
   async getWinsByPlayerUid(uid: number): Promise<MatchHistory[]> {
     return await this.matchHistoryRepository.find({
       relations: {
-        p1_uid: true,
-        p2_uid: true,
+        p1: true,
+        p2: true,
       },
       where: {
         winner_uid: uid,
@@ -113,7 +118,7 @@ export class MatchHistoryService {
 
     let best = 1000;
     for (const match of matchHistory) {
-      if (match.p1_uid.id === uid) {
+      if (match.p1.id === uid) {
         if (match.p1_mmr > best) best = match.p1_mmr;
       } else {
         if (match.p2_mmr > best) best = match.p2_mmr;
@@ -145,7 +150,7 @@ export class MatchHistoryService {
 
     let total = 0;
     for (const match of matchHistory) {
-      if (match.p1_uid.id === uid) total += match.p1_score;
+      if (match.p1.id === uid) total += match.p1_score;
       else total += match.p2_score;
     }
 
@@ -158,7 +163,7 @@ export class MatchHistoryService {
 
     let total = 0;
     for (const match of matchHistory) {
-      if (match.p1_uid.id === uid) total += match.p2_score;
+      if (match.p1.id === uid) total += match.p2_score;
       else total += match.p1_score;
     }
 
@@ -179,7 +184,7 @@ export class MatchHistoryService {
 
     let total = 0;
     for (const match of matchHistory) {
-      if (match.p1_uid.id === uid) total += match.p1_smashes;
+      if (match.p1.id === uid) total += match.p1_smashes;
       else total += match.p2_smashes;
     }
 
@@ -188,39 +193,40 @@ export class MatchHistoryService {
 
   // Update Mmr value by match_uid
   async updateMmr(match: MatchHistory) {
-    const p1_uid = match.p1_uid.id;
-    const p2_uid = match.p2_uid.id;
-    match.p1_mmr = await this.getMmrByPlayerUid(p1_uid);
-    match.p2_mmr = await this.getMmrByPlayerUid(p2_uid);
+    const p1 = match.p1.id;
+    const p2 = match.p2.id;
+    match.p1_mmr = await this.getMmrByPlayerUid(p1);
+    match.p2_mmr = await this.getMmrByPlayerUid(p2);
     return await this.matchHistoryRepository.save(match);
   }
 
   // Update stat value by match_uid
   async updateStat(match: MatchHistory, player: number) {
-  const p1_uid = match.p1_uid.id;
-    const p2_uid = match.p2_uid.id;
-    
+    const p1 = match.p1;
+    const p2 = match.p2;
+    // console.log('p1', p1.id);
+
     if (player === 1) {
-      await this.statService.updateStat(p1_uid, {
-        wins: await this.getTotalWinsByPlayerUid(p1_uid),
-        losses: await this.getTotalLossByPlayerUid(p1_uid),
-        kills: await this.getLifetimeKillsByPlayerUid(p1_uid),
-        deaths: await this.getLifetimeDeathsByPlayerUid(p1_uid),
-        smashes: await this.getLifetimeSmashesByPlayerUid(p1_uid),
-        winstreak: await this.getLifetimeWinstreakByPlayerUid(p1_uid),
-        current_mmr: await this.getMmrByPlayerUid(p1_uid),
-        best_mmr: await this.getHighestMmrByPlayerUid(p1_uid),
+      await this.statService.updateStat(p1, {
+        wins: await this.getTotalWinsByPlayerUid(p1.id),
+        losses: await this.getTotalLossByPlayerUid(p1.id),
+        kills: await this.getLifetimeKillsByPlayerUid(p1.id),
+        deaths: await this.getLifetimeDeathsByPlayerUid(p1.id),
+        smashes: await this.getLifetimeSmashesByPlayerUid(p1.id),
+        winstreak: await this.getLifetimeWinstreakByPlayerUid(p1.id),
+        current_mmr: await this.getMmrByPlayerUid(p1.id),
+        best_mmr: await this.getHighestMmrByPlayerUid(p1.id),
       });
     } else {
-      await this.statService.updateStat(p2_uid, {
-        wins: await this.getTotalWinsByPlayerUid(p2_uid),
-        losses: await this.getTotalLossByPlayerUid(p2_uid),
-        kills: await this.getLifetimeKillsByPlayerUid(p2_uid),
-        deaths: await this.getLifetimeDeathsByPlayerUid(p2_uid),
-        smashes: await this.getLifetimeSmashesByPlayerUid(p2_uid),
-        winstreak: await this.getLifetimeWinstreakByPlayerUid(p2_uid),
-        current_mmr: await this.getMmrByPlayerUid(p2_uid),
-        best_mmr: await this.getHighestMmrByPlayerUid(p2_uid),
+      await this.statService.updateStat(p2, {
+        wins: await this.getTotalWinsByPlayerUid(p2.id),
+        losses: await this.getTotalLossByPlayerUid(p2.id),
+        kills: await this.getLifetimeKillsByPlayerUid(p2.id),
+        deaths: await this.getLifetimeDeathsByPlayerUid(p2.id),
+        smashes: await this.getLifetimeSmashesByPlayerUid(p2.id),
+        winstreak: await this.getLifetimeWinstreakByPlayerUid(p2.id),
+        current_mmr: await this.getMmrByPlayerUid(p2.id),
+        best_mmr: await this.getHighestMmrByPlayerUid(p2.id),
       });
     }
   }
@@ -229,11 +235,11 @@ export class MatchHistoryService {
   async create(createMatchHistoryDto: CreateMatchHistoryDto): Promise<void> {
     const newMatch = await this.matchHistoryRepository.create({
       winner_uid: createMatchHistoryDto.winner_uid,
-      p1_uid: await this.userService.findUsersById(
-        createMatchHistoryDto.p1_uid,
+      p1: await this.userService.findUsersByIdWithRelation(
+        createMatchHistoryDto.p1,
       ),
-      p2_uid: await this.userService.findUsersById(
-        createMatchHistoryDto.p2_uid,
+      p2: await this.userService.findUsersByIdWithRelation(
+        createMatchHistoryDto.p2,
       ),
       p1_score: createMatchHistoryDto.p1_score,
       p2_score: createMatchHistoryDto.p2_score,
@@ -245,7 +251,6 @@ export class MatchHistoryService {
     console.log(newMatch);
     try {
       await this.matchHistoryRepository.save(newMatch);
-      
       await this.updateMmr(newMatch);
       await this.updateStat(newMatch, 1);
       await this.updateStat(newMatch, 2);
