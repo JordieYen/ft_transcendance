@@ -15,15 +15,15 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
   const showAdditionalIcon = allowPages.includes(currentPath);
   return (
     <SessionProvider session={pageProps.session}>
-      <SocketProvider>
-        <div>
-            <ContentWrapper>
-              <Header showAdditionalIcon={showAdditionalIcon}/>
-                  <Component {...pageProps} />
-              <Footer />
-            </ContentWrapper>
-      </div>
-      </SocketProvider>
+        <SocketProvider>
+          <div className='wrapper'>
+              <ContentWrapper>
+                <Header showAdditionalIcon={showAdditionalIcon}/>
+                    <Component {...pageProps} />
+                <Footer />
+              </ContentWrapper>
+        </div>
+        </SocketProvider>
     </SessionProvider>
   );
 };
