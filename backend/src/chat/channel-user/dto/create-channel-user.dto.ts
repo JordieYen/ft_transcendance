@@ -1,4 +1,10 @@
-import { IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Channel } from 'src/typeorm/channel.entity';
 import { Role, Status } from 'src/typeorm/channel_user.entity';
 import { User } from 'src/typeorm/user.entity';

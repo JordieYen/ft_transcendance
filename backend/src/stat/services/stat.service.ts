@@ -26,7 +26,7 @@ export class StatService {
   async getByPlayerUid(uid: number): Promise<Stat[]> {
     return await this.statRepository.find({
       relations: {
-        user:  true,
+        user: true,
       },
       where: {
         uid: uid,

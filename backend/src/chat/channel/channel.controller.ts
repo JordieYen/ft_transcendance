@@ -3,9 +3,14 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
+  Req,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto, JoinChannelDto } from './dto';
