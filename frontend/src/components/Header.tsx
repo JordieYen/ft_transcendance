@@ -14,8 +14,8 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import useUserStore, { UserData } from "@/hooks/useUserStore";
 import NextLink from "next/link";
-import Icon from "@/app/component/header_icon/Icon";
-
+import useModal from "@/hooks/useModal";
+import LeaderboardsModal from "./LeaderboardsModal";
 
 interface HeaderLogoProps {
   currentPath: string;
@@ -122,11 +122,11 @@ export const FriendsIcon = () => {
   return (
     <NextLink href="/friend">
       <IconButton>
-        <FontAwesomeIcon icon={faUserGroup} size="lg"/>
+        <FontAwesomeIcon icon={faUserGroup} size="lg" />
       </IconButton>
     </NextLink>
-  )
-}
+  );
+};
 
 export const SettingsIcon = () => {
   return (
@@ -166,10 +166,20 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
 };
 
 export const LeaderboardsIcon = () => {
+  const [isLBOpen, openLBModal, closeLBModal, lbRef] = useModal(false);
   return (
-    <IconButton onClick={() => console.log("leaderboards")}>
-      <FontAwesomeIcon icon={faCrown} size="lg" />
-    </IconButton>
+    <>
+      <IconButton onClick={() => openLBModal()}>
+        <FontAwesomeIcon icon={faCrown} size="lg" />
+      </IconButton>
+      {isLBOpen && (
+        <LeaderboardsModal
+          isOpen={isLBOpen}
+          closeModal={closeLBModal}
+          lbRef={lbRef}
+        />
+      )}
+    </>
   );
 };
 
