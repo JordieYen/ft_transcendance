@@ -65,7 +65,7 @@ const PongMain: React.FC<any> = () => {
           </div>
           <div className="lifetime-wins-streak">
             <p>Win Streaks</p>
-            <p>{stat?.winStreak || 0}</p>
+            <p>{stat?.win_streak || 0}</p>
           </div>
         </div>
         <div className="vertical-line"></div>

@@ -22,6 +22,7 @@ const storageOptions: MulterModuleOptions = {
     TypeOrmModule.forFeature([User]),
     MulterModule.register(storageOptions),
     StatModule,
+    // UserAchievementModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

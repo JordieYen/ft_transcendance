@@ -18,7 +18,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-    private readonly statService: StatService,
+    private readonly statService: StatService, // private readonly userAchievementService: UserAchievementService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -28,7 +28,7 @@ export class UsersService {
     try {
       const dto = new CreateStatDto();
       const returnUser = await this.usersRepository.save(newUser);
-      await this.statService.create(newUser.id, dto);
+      await this.statService.create(newUser, dto);
       return returnUser;
     } catch (error) {
       console.error(error);
@@ -134,6 +134,12 @@ export class UsersService {
     await this.updateUser(id, {
       authentication: true,
     });
+    // if ((await this.userAchievementService.checkExists(id, 1)) === false) {
+    //   await this.userAchievementService.create({
+    //     user: id,
+    //     achievement: 1,
+    //   });
+    // }
   }
 
   async findUsersByIdWithRelation(id: number): Promise<User> {
@@ -143,11 +149,11 @@ export class UsersService {
         'userAchievement.achievement',
         'stat',
         'p1_match',
-        'p1_match.p1_uid',
-        'p1_match.p2_uid',
+        'p1_match.p1',
+        'p1_match.p2',
         'p2_match',
-        'p2_match.p1_uid',
-        'p2_match.p2_uid',
+        'p2_match.p1',
+        'p2_match.p2',
         'sentFriendRequest',
         'sentFriendRequest.receiver',
         'sentFriendRequest.sender',

@@ -1,6 +1,5 @@
-import { Controller, Get, Post, Body, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Delete, Query } from '@nestjs/common';
 import { StatService } from '../services/stat.service';
-import { CreateStatDto } from '../dto/create-stat.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Stat } from 'src/typeorm/stats.entity';
 
@@ -62,7 +61,7 @@ export class StatController {
     return this.statService.getLifetimeSmashesByPlayerUid(+uid);
   }
 
-  @Get('winstreak')
+  @Get('win-streak')
   async getLifetimeWinstreakByPlayerUid(
     @Query('uid') uid: string,
   ): Promise<number> {
@@ -79,13 +78,14 @@ export class StatController {
     return this.statService.getHighestMmrByPlayerUid(+uid);
   }
 
-  @Post('player')
-  async create(
-    @Query('uid') uid: string,
-    @Body() createStatDto: CreateStatDto,
-  ): Promise<void> {
-    return await this.statService.create(+uid, createStatDto);
-  }
+  // @Post('player')
+  // async create(
+  //   @Query('uid') uid: string,
+  //   @Body() createStatDto: CreateStatDto,
+  // ): Promise<void> {
+  //   const user = await this.userService.findUsersById(+uid);
+  //   return await this.statService.create(user, createStatDto);
+  // }
 
   @Delete('player')
   async remove(@Query('uid') uid: string) {
