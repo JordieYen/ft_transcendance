@@ -11,6 +11,7 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { StatService } from 'src/stat/services/stat.service';
 import { CreateStatDto } from 'src/stat/dto/create-stat.dto';
+import { unlink } from 'fs';
 
 @Injectable()
 export class UsersService {
@@ -88,9 +89,23 @@ export class UsersService {
     return await user;
   }
 
+  async deleteOriginalAvatar(avatar: string) {
+    if (avatar) {
+      const filename = avatar.split('/').pop();
+      const filepath = `./public/avatar/${filename}`;
+      unlink(filepath, (err) => {
+        if (err) {
+          console.log('Error deleting avatar file', err);
+        }
+      });
+    }
+  }
+
   async uploadAvatar(id: number, avatar: string) {
     try {
       const user = await this.findUsersById(id);
+      const originalAvatar = user.avatar;
+      this.deleteOriginalAvatar(originalAvatar);
       user.avatar = avatar;
       return await this.usersRepository.save(user);
     } catch (error) {
