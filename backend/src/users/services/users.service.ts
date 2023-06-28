@@ -143,29 +143,33 @@ export class UsersService {
   }
 
   async findUsersByIdWithRelation(id: number): Promise<User> {
-    const user = await this.usersRepository.findOne({
-      relations: [
-        'userAchievement',
-        'userAchievement.achievement',
-        'stat',
-        'p1_match',
-        'p1_match.p1',
-        'p1_match.p2',
-        'p2_match',
-        'p2_match.p1',
-        'p2_match.p2',
-        'sentFriendRequest',
-        'sentFriendRequest.receiver',
-        'sentFriendRequest.sender',
-        'receiveFriendRequest',
-        'receiveFriendRequest.receiver',
-        'receiveFriendRequest.sender',
-      ],
-      where: {
-        id: id,
-      },
-    });
-    if (!user) throw new NotFoundException(`User with ID ${id} not found`);
-    return await user;
+    try {
+      const user = await this.usersRepository.findOne({
+        relations: [
+          'userAchievement',
+          'userAchievement.achievement',
+          'stat',
+          'p1_match',
+          'p1_match.p1',
+          'p1_match.p2',
+          'p2_match',
+          'p2_match.p1',
+          'p2_match.p2',
+          'sentFriendRequest',
+          'sentFriendRequest.receiver',
+          'sentFriendRequest.sender',
+          'receiveFriendRequest',
+          'receiveFriendRequest.receiver',
+          'receiveFriendRequest.sender',
+        ],
+        where: {
+          id: id,
+        },
+      });
+      if (!user) throw new NotFoundException(`User with ID ${id} not found`);
+      return await user;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to find user', error);
+    }
   }
 }
