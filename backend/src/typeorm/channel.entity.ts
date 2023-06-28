@@ -3,12 +3,12 @@ import { ChannelUser } from './channel_user.entity';
 import { Message } from './message.entity';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
-// enum ChannelType {
-//   Public = 'public',
-//   Private = 'private',
-//   Protected = 'protected',
-//   Direct = 'direct',
-// }
+enum ChannelType {
+  Public = 'public',
+  Private = 'private',
+  Protected = 'protected',
+  Direct = 'direct',
+}
 
 @Entity()
 export class Channel {

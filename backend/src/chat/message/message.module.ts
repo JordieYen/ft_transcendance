@@ -18,5 +18,6 @@ import { StatModule } from 'src/stat/stat.module';
   ],
   controllers: [MessageController],
   providers: [MessageService, UsersService, ChannelService, ChannelUserService],
+  exports: [MessageService, TypeOrmModule],
 })
 export class MessageModule {}

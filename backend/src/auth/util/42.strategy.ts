@@ -1,7 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, Profile, VerifyCallback } from 'passport-42';
+// import { VerifyCallback } from "passport-jwt";
+// import { Strategy } from 'passport-42';
+import { User } from 'src/typeorm/user.entity';
+import {
+  Strategy,
+  StrategyOptions,
+  Profile,
+  VerifyCallback,
+} from 'passport-42';
 import { AuthService } from '../services/auth.service';
+import { AuthenticatedUser } from './user_interface';
 import { UsersService } from 'src/users/services/users.service';
 
 @Injectable()

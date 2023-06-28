@@ -2,7 +2,10 @@ import {
   Body,
   Controller,
   Get,
+  Logger,
+  Param,
   Post,
+  Query,
   Req,
   Res,
   Session,
@@ -10,6 +13,11 @@ import {
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { Request, Response } from 'express';
+import { AuthenticatedGuard } from '../util/local.guard';
+import {
+  AuthenticatedUser,
+  RequestWithSessionUser,
+} from '../util/user_interface';
 import { FortyTwoAuthGuard } from '../util/42-auth.guard';
 import { User } from 'src/users/decorators/user.decorator';
 import { InvalidOtpException } from '../util/invalid_otp_exception';
@@ -53,13 +61,14 @@ export class AuthController {
 
   // @UseGuards(AuthenticatedGuard)
   @Get('2fa')
-  async enableTwoFactorAuth(@Req() req: Request) {
-    // console.log(req);
-    // const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
-    //   req.user,
-    // );
-    // await this.authService.displayQrCode(res, otpAuthUrl);
-    return await this.authService.generateTwoFactorAuthSecret(req.user);
+  async enableTwoFactorAuth(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
+      req.user,
+    );
+    await this.authService.displayQrCode(res, otpAuthUrl);
   }
   // async enableTwoFactorAuth(
   //   @Req() req: Request,
