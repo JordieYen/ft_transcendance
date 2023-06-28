@@ -290,9 +290,9 @@ export class MatchHistoryService {
       await this.updateMmr(newMatch);
       await this.updateStat(newMatch.p1);
       await this.updateStat(newMatch.p2);
-      await this.updateKillChainAchievement(newMatch);
-      await this.updateUserAchievement(newMatch.p1.id);
-      await this.updateUserAchievement(newMatch.p2.id);
+      // await this.updateKillChainAchievement(newMatch);
+      // await this.updateUserAchievement(newMatch.p1.id);
+      // await this.updateUserAchievement(newMatch.p2.id);
     } catch (error) {
       console.log('error=', error.message);
       throw new InternalServerErrorException('Could not create match-history');

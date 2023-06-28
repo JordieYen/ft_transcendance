@@ -1,14 +1,14 @@
+import PongMain from "@/app/component/profile/PongMain";
 import { useRouter } from "next/router";
 
-const UserPage = () => {
+const UserProfilePage = () => {
     const router = useRouter();
     const { id } = router.query;
-
+    console.log('id', id);
+    
     return (
-        <div>
-            <h1>User ID: {id}</h1>
-        </div>
+       <PongMain userId={id} />
     );
 };
 
-export default UserPage;
+export default UserProfilePage;
