@@ -6,9 +6,10 @@ const Avatar: React.FC<{
   alt: string;
   width: number;
   height: number;
-}> = ({ src, alt, width, height }) => {
+  onClick?: () => void;
+}> = ({ src, alt, width, height, onClick }) => {
   return (
-    <span className='icon-container'>
+    <span className='icon-container' onClick={onClick}>
         <Image className="avatar-image transform hover:scale-125 object-cover" src={src} alt={alt} width={width} height={height} priority={true}/>
     </span>
   );

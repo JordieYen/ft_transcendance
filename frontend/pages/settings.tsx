@@ -21,7 +21,7 @@ export default function SettingsPage() {
   const [isDelOpen, openDelModal, closeDelModal, delRef] = useModal(false);
   const userData = useUserStore((state) => state.userData);
 
-  console.log(userData);
+  console.log('user settings', userData);
 
   return (
     <div className="flex flex-col gap-6">

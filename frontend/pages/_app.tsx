@@ -7,7 +7,7 @@ import axios from "axios";
 import { SocketProvider } from "@/app/socket/SocketProvider";
 import { SessionProvider, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { authMiddleware, middleware } from "../middleware/middleware";
+import { authMiddleware } from "../middleware/middleware";
 
 axios.defaults.baseURL = "http://localhost:3000/";
 
@@ -55,9 +55,7 @@ const ContentWrapper = ({ children }: any) => {
             },
           }),
         });
-        console.log("response", response);
         const data = await response.json();
-        console.log("data", data);
         setFetchedData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -81,15 +79,14 @@ const ContentWrapper = ({ children }: any) => {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && !router.asPath.startsWith("/login")) {
-      router.replace("/login"); // Redirect to the login page
+      router.replace("/login");
     }
   }, [isLoading, isAuthenticated, router]);
 
-  // return isLoading ? null : <>{children}</>;
   const isLoginPage = router.asPath === "/login";
 
   if (isLoginPage) {
-    return <>{children}</>; // Render the component on the login page
+    return <>{children}</>;
   }
 
   return isAuthenticated ? <>{children}</> : null;

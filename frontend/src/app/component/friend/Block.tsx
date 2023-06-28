@@ -19,25 +19,18 @@ const Block = () => {
 
 
   useEffect(() => {
-    socket?.on("block", (block: any) => {
-      // const { user, BlockerId } = block;
-      // console.log('blockUser', user);
-      // console.log('blocked', BlockerId);
-      console.log("block", block.blockList);
-      setBlocks(block.blockList);
-      // setBlockerId(BlockerId);
-      // setBlockerId((prevBlockerIds) => [...prevBlockerIds, BlockerId]);
-      // console.log('blockerIdArray', blockerIdArray);
-
-      // setBlocks((prevBlocks) => prevBlocks.filter((block) => block.id !== blockId));
-    });
-    socket?.on("unblock", (friendId: number) => {
-      setBlocks((prevBlocks) =>
-        prevBlocks.filter((block) => block.receiver.id !== friendId),
-      );
-      // setBlockerId((prevBlockerIds) => prevBlockerIds.filter((blockerId) => blockerId !== friendId));
-    });
-    fetchBlockUsers();
+    if (userData) {
+      socket?.on("block", (block: any) => {
+        console.log("block", block.blockList);
+        setBlocks(block.blockList);
+      });
+      socket?.on("unblock", (friendId: number) => {
+        setBlocks((prevBlocks) =>
+          prevBlocks.filter((block) => block.receiver.id !== friendId),
+        );
+      });
+      fetchBlockUsers();
+    }
 
     return () => {
       socket?.off("block");
@@ -50,25 +43,27 @@ const Block = () => {
   // }, [blockerIdArray]);
 
   const fetchBlockUsers = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:3000/friend/blocked/${userData?.id}`,
-        {
-          method: "GET",
-          credentials: "include",
-        },
-      );
-      if (response.ok) {
-        const blocks = await response.json();
-        console.log("fetch block", blocks);
-        console.log("block.list", blocks.blockList);
-        console.log("blocked.list", blocks.blockedList);
-        setBlocks(blocks.blockList);
-      } else {
-        throw new Error("Failed to fetch blocks");
+    if (userData.id) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/friend/blocked/${userData?.id}`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+        if (response.ok) {
+          const blocks = await response.json();
+          console.log("fetch block", blocks);
+          console.log("block.list", blocks.blockList);
+          console.log("blocked.list", blocks.blockedList);
+          setBlocks(blocks.blockList);
+        } else {
+          throw new Error("Failed to fetch blocks");
+        }
+      } catch (error) {
+        console.log("Error fetching blocks:", error);
       }
-    } catch (error) {
-      console.log("Error fetching blocks:", error);
     }
   };
 

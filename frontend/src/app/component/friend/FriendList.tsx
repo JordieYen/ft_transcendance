@@ -1,7 +1,6 @@
 import "./friend.css";
 import React, { useContext } from "react";
 import { useState, useEffect } from "react";
-import Avatar from "../header_icon/Avatar";
 import SearchBar from "../search_bar/SearchBar";
 import FriendRequest from "./FriendRequest";
 import Friend from "./Friend";
@@ -9,6 +8,9 @@ import { SocketContext } from "@/app/socket/SocketProvider";
 import Block from "./Block";
 import useSessionStorageState from "@/app/utils/useSessionStorageState";
 import useUserStore from "@/hooks/useUserStore";
+import { useRouter } from "next/router";
+import { log } from "console";
+import Avatar from "../header_icon/Avatar";
 
 const FriendList = () => {
   const [usersList, setUserList] = useState<any[]>([]);
@@ -29,65 +31,60 @@ const FriendList = () => {
     },
   });
   const socket = useContext(SocketContext);
-
   const [userData, setUserData] = useUserStore((state) => [state.userData, state.setUserData])
-
-  // const userData = UserData();
-  // let userData: any = {};
-  // if (typeof window !== "undefined") {
-  //   const userDataString = sessionStorage?.getItem("userData");
-  //   userData = userDataString ? JSON.parse(userDataString) : {};
-  // }
-
-  console.log(userData);
+  const router = useRouter();
 
   useEffect(() => {
-    socket?.emit("join", `${userData?.id}`);
-    socket?.on("friend-request-received", (receivedFriendRequest: any) => {
-      console.log("friend-request-received socket", receivedFriendRequest);
-      setFriendRequestArray((prevArray: any) => {
-        const existingRequest = prevArray.find(
-          (request: any) => request.requestId === receivedFriendRequest.id,
-        );
-
-        if (existingRequest) {
-          const updatedArray = prevArray.map((request: any) => {
-            if (request.requestId === receivedFriendRequest.id) {
-              return {
-                ...request,
-                status: receivedFriendRequest.status,
-              };
-            }
-            return request;
-          });
-          return updatedArray;
-        } else {
-          const newRequest = {
-            requestId: receivedFriendRequest.id,
-            senderId: receivedFriendRequest?.sender?.id,
-            receiverId: receivedFriendRequest?.receiver?.id,
-            status: receivedFriendRequest.status,
-          };
-
-          return [...prevArray, newRequest];
+    if (userData.id) {
+      console.log("userData", userData.id);
+      
+      socket?.emit("join", `${userData?.id}`);
+      socket?.on("friend-request-received", (receivedFriendRequest: any) => {
+        console.log("friend-request-received socket", receivedFriendRequest);
+        setFriendRequestArray((prevArray: any) => {
+          const existingRequest = prevArray.find(
+            (request: any) => request.requestId === receivedFriendRequest.id,
+          );
+  
+          if (existingRequest) {
+            const updatedArray = prevArray.map((request: any) => {
+              if (request.requestId === receivedFriendRequest.id) {
+                return {
+                  ...request,
+                  status: receivedFriendRequest.status,
+                };
+              }
+              return request;
+            });
+            return updatedArray;
+          } else {
+            const newRequest = {
+              requestId: receivedFriendRequest.id,
+              senderId: receivedFriendRequest?.sender?.id,
+              receiverId: receivedFriendRequest?.receiver?.id,
+              status: receivedFriendRequest.status,
+            };
+  
+            return [...prevArray, newRequest];
+          }
+        });
+        if (receivedFriendRequest?.status === "decline") {
+          setFriendRequestStatus((prevStatus: any) => ({
+            ...prevStatus,
+            [receivedFriendRequest?.receiver?.id]: false,
+          }));
         }
+        fetchUsersList();
       });
-      if (receivedFriendRequest?.status === "decline") {
-        setFriendRequestStatus((prevStatus: any) => ({
-          ...prevStatus,
-          [receivedFriendRequest?.receiver?.id]: false,
-        }));
-      }
       fetchUsersList();
-    });
-    fetchUsersList();
+    }
     // fetchFriendRequests();
     return () => {
       socket?.off("friend-request-sent");
       socket?.off("friend-request-received");
       socket?.off("friend-request-cancel");
     };
-  }, [socket]);
+  }, [socket, userData]);
 
   const fetchUsersList = async () => {
     try {
@@ -96,7 +93,7 @@ const FriendList = () => {
       });
       if (response.ok) {
         const usersList = await response.json();
-
+        
         const filteredList = [];
         for (const user of usersList) {
           const relationship = await checkFriendsOrBlocks(userData, user);
@@ -106,12 +103,12 @@ const FriendList = () => {
         }
         setUserList(filteredList);
         setFilteredUsersList(filteredList);
-      } else {
-        throw new Error("User not found");
+        } else {
+          throw new Error("User not found");
+        }
+      } catch (error) {
+        console.log("Error fetching friend request:", error);
       }
-    } catch (error) {
-      console.log("Error fetching friend request:", error);
-    }
   };
 
   const handleSearch = (searchQuery: string) => {
@@ -201,6 +198,27 @@ const FriendList = () => {
     }
   };
 
+  const handleClick = async (id: number) => {
+      try {
+        console.log("id in handleClick", id);
+        
+        const response = await fetch(
+          `http://localhost:3000/users/${id}`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+        if (response.ok) {
+          console.log("response in handleClick", response);
+          const user = await response.json();
+          router.push(`/users/${user.id}`);
+        }
+      } catch (error) {
+        console.log("Error redirect to profile:", error);
+      }
+  }
+
   return (
     <div className="friend-page w-full flex">
       <div className="friend-section w-1/3 bg-green-800">
@@ -235,7 +253,6 @@ const FriendList = () => {
             <div className="card-container">
               {filteredUsersList &&
                 filteredUsersList
-                  // .filter(user => checkFriendsOrBlocks(userData, user) === false)
                   .map(
                     (user) =>
                       user?.id !== userData?.id && (
@@ -246,6 +263,7 @@ const FriendList = () => {
                               alt="user avatar"
                               width={100}
                               height={125}
+                              onClick={() => handleClick(user?.id)}
                             />
                           </div>
                           <div className="card-details">
