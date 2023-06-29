@@ -13,18 +13,18 @@ import Image from "next/image";
 import UserProfile from "@/app/webhook/UserProfile";
 
 const PongMain: React.FC<any> = ({ userId }) => {
-  // const { data: session, status } = useSession();
-  // console.log("session", session);
+  const { data: session, status } = useSession();
+  console.log("session", session);
 
-  // if (status === "authenticated") {
-  //   console.log("session", session);
-  // } else if (status === "loading") {
-  //   console.log("loading");
-  // } else if (status === "unauthenticated") {
-  //   console.log("unauthenticated");
-  // } else {
-  //   console.log("error");
-  // }
+  if (status === "authenticated") {
+    console.log("session", session);
+  } else if (status === "loading") {
+    console.log("loading");
+  } else if (status === "unauthenticated") {
+    console.log("unauthenticated");
+  } else {
+    console.log("error");
+  }
   const userData = userId ? UserProfile(+userId) : UserData();
   if (!userData) {
     return <div>User not found in profile...</div>;

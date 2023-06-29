@@ -2,10 +2,7 @@ import {
   Body,
   Controller,
   Get,
-  Logger,
-  Param,
   Post,
-  Query,
   Req,
   Res,
   Session,
@@ -13,11 +10,6 @@ import {
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { Request, Response } from 'express';
-import { AuthenticatedGuard } from '../util/local.guard';
-import {
-  AuthenticatedUser,
-  RequestWithSessionUser,
-} from '../util/user_interface';
 import { FortyTwoAuthGuard } from '../util/42-auth.guard';
 import { User } from 'src/users/decorators/user.decorator';
 import { InvalidOtpException } from '../util/invalid_otp_exception';
@@ -39,7 +31,9 @@ export class AuthController {
     summary: 'login to start your pong game',
   })
   @Get('login')
-  async login() {}
+  async login() {
+    console.log('login backend');
+  }
 
   // req.user contains token
   @UseGuards(FortyTwoAuthGuard)
@@ -127,7 +121,9 @@ export class AuthController {
       await this.authService.logout(req.user);
       await this.authService.clearUserSession(req);
       await this.authService.clearUserCookies(res);
-      req.logout(() => {});
+      req.logout(() => {
+        console.log('User logged out successfully');
+      });
     }
     res.json({ message: 'User logout' });
   }

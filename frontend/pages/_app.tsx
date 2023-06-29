@@ -5,9 +5,9 @@ import "../src/app/globals.css";
 import CustomToaster from "@/components/CustomToaster";
 import axios from "axios";
 import { SocketProvider } from "@/app/socket/SocketProvider";
-import { SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
 import { useRouter } from "next/router";
-import { authMiddleware } from "../middleware/middleware";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 axios.defaults.baseURL = "http://localhost:3000/";
 
@@ -21,7 +21,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
   return (
     <SessionProvider session={pageProps.session}>
       <SocketProvider>
-        <div className="wrapper">
+        {/* <div className="wrapper"> */}
           <ContentWrapper>
             {/* <Header showAdditionalIcon={showAdditionalIcon}/> */}
             <CustomToaster />
@@ -29,7 +29,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
             <Component {...pageProps} />
             {/* <Footer /> */}
           </ContentWrapper>
-        </div>
+        {/* </div> */}
       </SocketProvider>
     </SessionProvider>
   );
