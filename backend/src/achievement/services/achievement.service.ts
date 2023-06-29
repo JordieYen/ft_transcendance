@@ -40,6 +40,18 @@ export class AchievementService {
     return achievement;
   }
 
+  async findByName(name: string): Promise<Achievement> {
+    const achievement = await this.achievementRepository.findOne({
+      where: {
+        name: name,
+      },
+    });
+    if (!achievement) {
+      throw new NotFoundException(`Achievement with NAME ${name} not found`);
+    }
+    return achievement;
+  }
+
   async update(
     id: number,
     updateAchievementDto: UpdateAchievementDto,
