@@ -28,6 +28,14 @@ const Leaderboards = ({ sortBy }: { sortBy: string }) => {
     return sortedUsers;
   };
 
+  /**
+   * The useEffect hook is called after the initial render of the component and
+   * runs the provided callback function. The second argument ([]) is an empty
+   * array, indicating that the effect should only run once.
+   *
+   * Axios is used to make an HTTP GET request to the "users" endpoint, fetching
+   * users data and its stats
+   */
   useEffect(() => {
     const fetchData = async () => {
       try {
