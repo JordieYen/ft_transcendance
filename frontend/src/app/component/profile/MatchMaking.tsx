@@ -5,7 +5,7 @@ const MatchMaking = ( { stat } : {stat: any }) => {
     <div className='match-making'>
         <div className='circle-top'>
           <div className='circle-content'>
-              <p>MATCH MAKING ON<br/><span>{stat?.current_mmr}</span><br/>{stat?.best_mmr}</p>
+              <p>MATCH MAKING<br/><span>{stat?.current_mmr}</span><br/>HIGHEST: {stat?.best_mmr}</p>
           </div>
         </div>
         <div className='circle-bottom'>
