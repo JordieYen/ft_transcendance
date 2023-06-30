@@ -159,7 +159,7 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
         <FontAwesomeIcon icon={faTrophy} size="sm" />
         <span className="text-onyxgrey font-roboto">
           
-          {user.stat === null ? 0 : user.stat.current_mmr}
+          {user.stat === null ? 0 : user?.stat?.current_mmr}
         </span>
       </div>
     </Link>
@@ -209,7 +209,7 @@ export const HeaderIcon = () => {
   }
 
   const {
-    avatar,
+    avatar, 
     id,
     intra_uid,
     username,
