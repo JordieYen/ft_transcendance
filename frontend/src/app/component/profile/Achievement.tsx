@@ -33,19 +33,24 @@ function getAchievementImage(achievementName: string) {
 function renderUserAchievement(achievement: any) {
     const achievements = [];
     const totalAchievement = 10;
-    let imageSource = "/blank.png"
-    let achievementName = "";
-    let achievementDescription = "";
-
+    
     for (let i = 0; i < totalAchievement; i++) {
+        let imageSource = "/blank.png"
+        let achievementName = "";
+        let achievementDescription = "";
         if (i < achievement.length) {
             achievementName = achievement[i]?.achievement.name;
             achievementDescription = achievement[i]?.achievement.description;
             imageSource = getAchievementImage(achievementName);
-        } else {
-            imageSource = "/blank.png"
-        }
+        } 
+        // else {
+        //     achievementName = "";
+        //     achievementDescription = "";
+        //     imageSource = "/blank.png"
+
+        // }
         achievements.push({
+            id: `tooltip-${i}`,
             imageSource,
             achievementName,
             achievementDescription
@@ -63,19 +68,22 @@ const Achievement: React.FC<any> = ({ achievement }) => {
                 <div className='avatar-row'>
                 {renderAvartar.slice(0, 5).map((achievement, index, tooltip) => (
                     <span key={index}
-                        data-tooltip-id={`tooltip-${index}`}
+                        // data-tooltip-id={`tooltip-${index}`}
+                        data-tooltip-id={achievement?.id}
                         data-tooltip-place="top"
                         >
-                            <Tooltip id={`tooltip-${index}`}>
-                                <span className="tooltip-name text-myyellow font-bold">{achievement?.achievementName}</span>: {achievement?.achievementDescription}
+                            {achievement.achievementName && achievement.achievementDescription && (
+                            <Tooltip id={achievement.id}>
+                            <span className="tooltip-name text-myyellow font-bold">{achievement?.achievementName}</span>: {achievement?.achievementDescription}
                             </Tooltip>
-                            <Avatar 
-                                key={index}
-                                src={achievement?.imageSource}
-                                alt={achievement?.achievementName}
-                                width={50}
-                                height={50}
-                            />
+                        )}
+                        <Avatar
+                            key={index}
+                            src={achievement?.imageSource}
+                            alt={achievement?.achievementName}
+                            width={50}
+                            height={50}
+                        />
                     </span>
                     ))
                 }
@@ -84,13 +92,16 @@ const Achievement: React.FC<any> = ({ achievement }) => {
                 {renderAvartar.slice(5).map((achievement, index) => (
                     <span
                         key={index}
-                        data-tooltip-id={`tooltip-${index}`}
+                        // data-tooltip-id={`tooltip-${index}`}
+                        data-tooltip-id={achievement.id}
                         data-tooltip-place="top"
                     >
-                       <Tooltip id={`tooltip-${index + 5}`}>
-                                <span className="tooltip-name text-myyellow font-bold">{achievement?.achievementName}</span>: {achievement?.achievementDescription}
-                        </Tooltip>
-                        <Avatar 
+                     {achievement.achievementName && achievement.achievementDescription && (
+                            <Tooltip id={achievement.id}>
+                            <span className="tooltip-name text-myyellow font-bold">{achievement?.achievementName}</span>: {achievement?.achievementDescription}
+                            </Tooltip>
+                        )}
+                        <Avatar
                             key={index}
                             src={achievement?.imageSource}
                             alt={achievement?.achievementName}
