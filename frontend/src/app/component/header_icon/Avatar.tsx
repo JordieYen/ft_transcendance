@@ -1,12 +1,31 @@
-import Image from 'next/image';
-import React from 'react';
-import UserData from '../../webhook/UserContext';
+import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
+import 'react-tooltip/dist/react-tooltip.css'
 
-const Avatar: React.FC<{ src: string, alt: string, width: number, height: number }> = ({ src, alt, width, height }) => {
-    return (
-        <span className='icon-container'>
-            <Image className="avatar-image transform hover:scale-125 w-full h-auto" src={src} alt={alt} width={width} height={height} priority={true}/>
-        </span>
-    );
+interface AvatarProps {
+  
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  onClick?: () => void;
+}
+
+const Avatar = ({ src, alt, width, height, onClick } : AvatarProps) => {
+
+  return (
+
+    <span className="icon-container" onClick={onClick}>
+      <Image
+        className="avatar-image transform hover:scale-125 object-cover"
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        priority={true}
+        />
+    </span>
+  );
 };
+
 export default Avatar;

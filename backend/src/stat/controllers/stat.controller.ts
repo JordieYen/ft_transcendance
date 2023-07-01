@@ -1,7 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Delete, Query } from '@nestjs/common';
 import { StatService } from '../services/stat.service';
-import { CreateStatDto } from '../dto/create-stat.dto';
-import { UpdateStatDto } from '../dto/update-stat.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Stat } from 'src/typeorm/stats.entity';
 
@@ -36,27 +34,37 @@ export class StatController {
   }
 
   @Get('kills')
-  async getLifetimeKillsByPlayerUid(@Query('uid') uid: string): Promise<number> {
+  async getLifetimeKillsByPlayerUid(
+    @Query('uid') uid: string,
+  ): Promise<number> {
     return this.statService.getLifetimeKillsByPlayerUid(+uid);
   }
 
   @Get('deaths')
-  async getLifetimeDeathsByPlayerUid(@Query('uid') uid: string): Promise<number> {
+  async getLifetimeDeathsByPlayerUid(
+    @Query('uid') uid: string,
+  ): Promise<number> {
     return this.statService.getLifetimeDeathsByPlayerUid(+uid);
   }
 
   @Get('kdr')
-  async getKillDeathRatioByPlayerUid(@Query('uid') uid: string): Promise<string> {
+  async getKillDeathRatioByPlayerUid(
+    @Query('uid') uid: string,
+  ): Promise<string> {
     return this.statService.getKillDeathRatioByPlayerUid(+uid);
   }
 
   @Get('smashes')
-  async getLifetimeSmashesByPlayerUid(@Query('uid') uid: string): Promise<number> {
+  async getLifetimeSmashesByPlayerUid(
+    @Query('uid') uid: string,
+  ): Promise<number> {
     return this.statService.getLifetimeSmashesByPlayerUid(+uid);
   }
 
-  @Get('winstreak')
-  async getLifetimeWinstreakByPlayerUid(@Query('uid') uid: string): Promise<number> {
+  @Get('win-streak')
+  async getLifetimeWinstreakByPlayerUid(
+    @Query('uid') uid: string,
+  ): Promise<number> {
     return this.statService.getLifetimeWinstreakByPlayerUid(+uid);
   }
 
@@ -70,14 +78,13 @@ export class StatController {
     return this.statService.getHighestMmrByPlayerUid(+uid);
   }
 
-  @Post('player')
-  async create(@Query('uid') uid: string, @Body() createStatDto: CreateStatDto): Promise<void> {
-    return await this.statService.create(+uid, createStatDto);
-  }
-
-  // @Patch('player')
-  // update(@Query('uid') uid: string, @Body() UpdateStatDto: UpdateStatDto) {
-  //   return this.statService.updateStat(+uid, UpdateStatDto);
+  // @Post('player')
+  // async create(
+  //   @Query('uid') uid: string,
+  //   @Body() createStatDto: CreateStatDto,
+  // ): Promise<void> {
+  //   const user = await this.userService.findUsersById(+uid);
+  //   return await this.statService.create(user, createStatDto);
   // }
 
   @Delete('player')

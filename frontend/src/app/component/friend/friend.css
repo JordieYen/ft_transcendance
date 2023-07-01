@@ -78,7 +78,14 @@ p, span {
     margin-right: 10px;
 }
 
-button {
+/* button {
+    @apply bg-[var(--background-grey)] text-[var(--background-light-grey)] rounded-md px-2 py-1;
+} */
+
+.users-list button,
+.friend-request-page button,
+.friend-page button,
+.block-page button {
     @apply bg-[var(--background-grey)] text-[var(--background-light-grey)] rounded-md px-2 py-1;
 }
 

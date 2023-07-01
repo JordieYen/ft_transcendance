@@ -1,103 +1,122 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AchievementService } from 'src/achievement/services/achievement.service';
-import { Achievement } from 'src/typeorm/achievement.entity';
-import { User } from 'src/typeorm/user.entity';
 import { UserAchievement } from 'src/typeorm/user_achievement.entity';
 import { UsersService } from 'src/users/services/users.service';
-import { getRepository, Repository } from 'typeorm';
 import { CreateUserAchievementDto } from '../dto/create-user_achievement.dto';
 import { UpdateUserAchievementDto } from '../dto/update-user_achievement.dto';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserAchievementService {
   constructor(
     @InjectRepository(UserAchievement)
-      private userAchievementRepository: Repository<UserAchievement>, 
-      private readonly userService: UsersService, 
-      private readonly achievementService: AchievementService, 
-  ){}
+    private readonly userAchievementRepository: Repository<UserAchievement>,
+    private readonly userService: UsersService,
+    private readonly achievementService: AchievementService,
+  ) {}
 
-  async create(createUserAchievementDto: CreateUserAchievementDto) : Promise<UserAchievement> {
-    const { userId, achievementId } = createUserAchievementDto;
-
-    const existingRecord = await this.userAchievementRepository.findOne({
-      where: {
-        user: { id: userId },
-        achievement: { id: achievementId },
-      },
-    });
-
-    if (existingRecord) {
-      throw new ConflictException('User achievement record already exists');
-    }
-    const [ user, achievement ] = await Promise.all([
-      this.userService.findUsersById(userId),
-      this.achievementService.findOne(achievementId),
-    ])
-    if (!user) {
-      throw new Error(`User with id ${userId} not found`);
-    }
-    if (!achievement) {
-      throw new Error(`Achievement with id ${achievementId} not found`);
-    }
+  async create(
+    createUserAchievementDto: CreateUserAchievementDto,
+  ): Promise<UserAchievement> {
     const userAchievement = new UserAchievement();
-    userAchievement.user = user;
-    userAchievement.achievement = achievement;
+    userAchievement.user = await this.userService.findUsersByIdWithRelation(
+      createUserAchievementDto.user,
+    );
+    userAchievement.achievement = await this.achievementService.findOne(
+      createUserAchievementDto.achievement,
+    );
     return await this.userAchievementRepository.save(userAchievement);
   }
 
-  async findAll() : Promise<UserAchievement[]> {
+  async findAll(): Promise<UserAchievement[]> {
     return await this.userAchievementRepository.find({
-      relations: [
-          'user',
-          'achievement',
-      ]
+      relations: ['user', 'achievement'],
     });
   }
 
-  async findOne(id: number) : Promise<UserAchievement> {
-    const userAchievement =  await this.userAchievementRepository.findOne({
+  async findOne(id: number): Promise<UserAchievement> {
+    const userAchievement = await this.userAchievementRepository.findOne({
       relations: ['user', 'achievement'],
       where: {
         id: id,
-      }
+      },
     });
     if (!userAchievement)
       throw new NotFoundException(`User achievement with ${id} not found. `);
     return userAchievement;
   }
-  
-  async update(id: number, updateUserAchievementDto: Partial<UpdateUserAchievementDto>): Promise<UserAchievement> {
+
+  // Find achievements by player uid
+  async findByPlayerUid(uid: number): Promise<UserAchievement[]> {
+    return await this.userAchievementRepository.find({
+      relations: { user: true, achievement: true },
+      where: {
+        user: { id: uid },
+      },
+    });
+  }
+
+  // return true if not found in user achievement by player uid
+  async checkExists(uid: number, achievement_id: number): Promise<boolean> {
+    const achievements = await this.findByPlayerUid(uid);
+
+    for (const ac of achievements) {
+      if (ac.achievement.id === achievement_id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async update(
+    id: number,
+    updateUserAchievementDto: Partial<UpdateUserAchievementDto>,
+  ): Promise<UserAchievement> {
     try {
       let userAchievement = await this.findOne(id);
       if (!userAchievement) {
         throw new Error(`User achievement with id ${id} not found`);
       }
 
-      if (updateUserAchievementDto.userId) {
-        const user = await this.userService.findUsersById(updateUserAchievementDto.userId);
+      if (updateUserAchievementDto.user) {
+        const user = await this.userService.findUsersById(
+          updateUserAchievementDto.user,
+        );
         if (!user) {
-          throw new Error(`User with id ${updateUserAchievementDto.userId} not found`);
+          throw new Error(
+            `User with id ${updateUserAchievementDto.user} not found`,
+          );
         }
         userAchievement.user = user;
       }
-      
-      if (updateUserAchievementDto.achievementId) {
-        const achievement = await this.achievementService.findOne(updateUserAchievementDto.achievementId);
+
+      if (updateUserAchievementDto.achievement) {
+        const achievement = await this.achievementService.findOne(
+          updateUserAchievementDto.achievement,
+        );
         if (!achievement) {
-          throw new Error(`Achievement with id ${updateUserAchievementDto.achievementId} not found`);
+          throw new Error(
+            `Achievement with id ${updateUserAchievementDto.achievement} not found`,
+          );
         }
         userAchievement.achievement = achievement;
       }
-      
-      userAchievement = await this.userAchievementRepository.save(userAchievement);
+
+      userAchievement = await this.userAchievementRepository.save(
+        userAchievement,
+      );
       return await userAchievement;
     } catch (error) {
-      throw new InternalServerErrorException('Failed to update user achievement');
+      throw new InternalServerErrorException(
+        'Failed to update user achievement',
+      );
     }
   }
-  
 
   async remove(id: number) {
     const userAchievemnt = await this.findOne(id);

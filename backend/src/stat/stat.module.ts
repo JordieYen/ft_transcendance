@@ -5,11 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Stat } from 'src/typeorm/stats.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Stat])
-  ],
+  imports: [TypeOrmModule.forFeature([Stat])],
   controllers: [StatController],
   providers: [StatService],
-  exports: [StatService, TypeOrmModule]
+  exports: [StatService, TypeOrmModule],
 })
 export class StatModule {}

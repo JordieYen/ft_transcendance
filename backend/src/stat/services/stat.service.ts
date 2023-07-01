@@ -1,30 +1,41 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { CreateStatDto } from '../dto/create-stat.dto';
-import { UpdateStatDto } from '../dto/update-stat.dto';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Stat } from 'src/typeorm/stats.entity';
 import { Repository } from 'typeorm';
-
-// api for total games and kdr
+import { CreateStatDto } from '../dto/create-stat.dto';
+import { UpdateStatDto } from '../dto/update-stat.dto';
+import { User } from 'src/typeorm/user.entity';
 
 @Injectable()
 export class StatService {
   constructor(
     @InjectRepository(Stat)
-    private statRepository: Repository<Stat>
+    private readonly statRepository: Repository<Stat>,
   ) {}
 
   // Return All Entries
   async getStat(): Promise<Stat[]> {
-    return await this.statRepository.find();
+    return await this.statRepository.find({
+      relations: {
+        user: true,
+      },
+    });
   }
 
   // Return entries with {uid}
   async getByPlayerUid(uid: number): Promise<Stat[]> {
     return await this.statRepository.find({
+      relations: {
+        user: true,
+      },
       where: {
-        uid: uid
-      }
+        user: { id: uid },
+      },
     });
   }
 
@@ -32,98 +43,92 @@ export class StatService {
   async getTotalGamesByPlayerUid(uid: number): Promise<number> {
     const stat = await this.getByPlayerUid(uid);
     const total = stat[0].wins + stat[0].losses;
-    return (total);
+    return total;
   }
 
   // Return total wins by player
   async getTotalWinsByPlayerUid(uid: number): Promise<number> {
     const stat = await this.getByPlayerUid(uid);
-    return (stat[0].wins);
+    return stat[0].wins;
   }
 
   // Return total losses by player
   async getTotalLossByPlayerUid(uid: number): Promise<number> {
     const stat = await this.getByPlayerUid(uid);
-    return (stat[0].losses);
+    return stat[0].losses;
   }
 
   // Return total kills by player
   async getLifetimeKillsByPlayerUid(uid: number): Promise<number> {
     const stat = await this.getByPlayerUid(uid);
-    return (stat[0].kills);
+    return stat[0].kills;
   }
 
   // Return total deaths by player
   async getLifetimeDeathsByPlayerUid(uid: number): Promise<number> {
     const stat = await this.getByPlayerUid(uid);
-    return (stat[0].deaths);
+    return stat[0].deaths;
   }
 
   // Return k/d ratio of a player
   async getKillDeathRatioByPlayerUid(uid: number): Promise<string> {
     const stat = await this.getByPlayerUid(uid);
     const total = stat[0].kills / stat[0].deaths;
-    return (total.toFixed(2));
+    return total.toFixed(2);
   }
 
   // Return total smashes by player
   async getLifetimeSmashesByPlayerUid(uid: number): Promise<number> {
     const stat = await this.getByPlayerUid(uid);
-    return (stat[0].smashes);
+    return stat[0].smashes;
   }
 
   // Return lifetime winstreak of a player
   async getLifetimeWinstreakByPlayerUid(uid: number): Promise<number> {
     const stat = await this.getByPlayerUid(uid);
-    return (stat[0].winstreak);
+    return stat[0].win_streak;
   }
 
   // Return MMR of a player
   async getMmrByPlayerUid(uid: number): Promise<number> {
     const stat = await this.getByPlayerUid(uid);
-    return (stat[0].current_mmr);
+    return stat[0].current_mmr;
   }
 
   // Return MMR of a player
   async getHighestMmrByPlayerUid(uid: number): Promise<number> {
     const stat = await this.getByPlayerUid(uid);
-    return (stat[0].best_mmr);
+    return stat[0].best_mmr;
   }
 
   // Update existing Stat
-  async updateStat(uid: number, updateStatDto: UpdateStatDto) {
-    const stat = await this.getByPlayerUid(uid);
-    if (updateStatDto?.wins)
-      stat[0].wins = updateStatDto?.wins;
-    if (updateStatDto?.losses)
-      stat[0].losses = updateStatDto?.losses;
-    if (updateStatDto?.kills)
-      stat[0].kills = updateStatDto?.kills;
-    if (updateStatDto?.deaths)
-      stat[0].deaths = updateStatDto?.deaths;
-    if (updateStatDto?.smashes)
-      stat[0].smashes = updateStatDto?.smashes;
-    if (updateStatDto?.winstreak)
-      stat[0].winstreak = updateStatDto?.winstreak;
+  async updateStat(user: User, updateStatDto: UpdateStatDto) {
+    const stat = await this.getByPlayerUid(user.id);
+    if (updateStatDto?.wins) stat[0].wins = updateStatDto?.wins;
+    if (updateStatDto?.losses) stat[0].losses = updateStatDto?.losses;
+    if (updateStatDto?.kills) stat[0].kills = updateStatDto?.kills;
+    if (updateStatDto?.deaths) stat[0].deaths = updateStatDto?.deaths;
+    if (updateStatDto?.smashes) stat[0].smashes = updateStatDto?.smashes;
+    if (updateStatDto?.win_streak)
+      stat[0].win_streak = updateStatDto?.win_streak;
     if (updateStatDto?.current_mmr)
       stat[0].current_mmr = updateStatDto?.current_mmr;
-    if (updateStatDto?.best_mmr)
-      stat[0].best_mmr = updateStatDto?.best_mmr;
+    if (updateStatDto?.best_mmr) stat[0].best_mmr = updateStatDto?.best_mmr;
     return await this.statRepository.save(stat);
   }
 
   // Add new entry
-  async create(uid: number, createStatDto: CreateStatDto) {
+  async create(user: User, createStatDto: CreateStatDto) {
     const newStat = await this.statRepository.create({
-      uid: uid,
+      user: user,
       wins: createStatDto.wins,
       losses: createStatDto.losses,
       kills: createStatDto.kills,
       deaths: createStatDto.deaths,
       smashes: createStatDto.smashes,
-      winstreak: createStatDto.winstreak,
+      win_streak: createStatDto.win_streak,
       current_mmr: createStatDto.current_mmr,
-      best_mmr: createStatDto.best_mmr
+      best_mmr: createStatDto.best_mmr,
     });
     console.log(newStat);
     try {
@@ -133,12 +138,11 @@ export class StatService {
       throw new InternalServerErrorException('Could not create new stat');
     }
   }
-  
   // Delete an entry
   async remove(uid: number) {
     try {
       await this.statRepository.delete(uid);
-      return {message: 'Stat with uid ${uid} has been deleted successfully'};
+      return { message: 'Stat with uid ${uid} has been deleted successfully' };
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

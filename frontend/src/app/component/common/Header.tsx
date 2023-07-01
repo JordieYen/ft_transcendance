@@ -1,7 +1,6 @@
-import UserData from '@/app/webhook/UserContext';
-import React from 'react';
+import React from "react";
 import HeaderIcon from "../header_icon/HeaderIcon";
-import Logo from '../header_icon/Logo';
+import Logo from "../header_icon/Logo";
 
 interface HeaderProps {
   showAdditionalIcon: boolean;
@@ -10,8 +9,8 @@ interface HeaderProps {
 const Header = ({ showAdditionalIcon }: HeaderProps) => {
   return (
     <header>
-        <Logo/>
-          { showAdditionalIcon && <HeaderIcon/>}
+      <Logo />
+      {showAdditionalIcon && <HeaderIcon />}
     </header>
   );
 };

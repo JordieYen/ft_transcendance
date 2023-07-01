@@ -3,13 +3,27 @@ const nextConfig = {
     images: {
         domains: ['cdn.intra.42.fr', 'localhost'],
     },
+    // async headers() {
+    //     return [
+    //       {
+    //         source: '/(.*)',
+    //         headers: [
+    //           {
+    //             key: 'Access-Control-Allow-Origin',
+    //             value: 'http://localhost:3001',
+    //           },
+    //           {
+    //             key: 'Access-Control-Allow-Methods',
+    //             value: 'GET, POST, DELETE, PUT, PATCH',
+    //           },
+    //           {
+    //             key: 'Access-Control-Allow-Credentials',
+    //             value: 'true',
+    //           },
+    //         ],
+    //       },
+    //     ];
+    // },
 }
 
-const dotenv = require('dotenv');
-const path = require('path');
-
-const resolvedPath = path.resolve(__dirname, '..', '.env');
-dotenv.config({
-    path: resolvedPath
-});
 module.exports = nextConfig

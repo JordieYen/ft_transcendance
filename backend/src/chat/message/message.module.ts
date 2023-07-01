@@ -14,9 +14,10 @@ import { StatModule } from 'src/stat/stat.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Message, User, Channel, ChannelUser]),
-    StatModule
+    StatModule,
   ],
   controllers: [MessageController],
-  providers: [MessageService, UsersService, ChannelService, ChannelUserService]
+  providers: [MessageService, UsersService, ChannelService, ChannelUserService],
+  exports: [MessageService, TypeOrmModule],
 })
 export class MessageModule {}

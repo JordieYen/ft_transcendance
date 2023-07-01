@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Put,
+} from '@nestjs/common';
 import { FriendService } from '../services/friend.service';
 import { CreateFriendDto } from '../dto/create-friend.dto';
 import { UpdateFriendDto } from '../dto/update-friend.dto';
@@ -25,7 +34,10 @@ export class FriendController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateFriendDto: Partial<UpdateFriendDto>) {
+  update(
+    @Param('id') id: number,
+    @Body() updateFriendDto: Partial<UpdateFriendDto>,
+  ) {
     return this.friendService.update(id, updateFriendDto);
   }
 
@@ -35,7 +47,10 @@ export class FriendController {
   }
 
   @Post('friend-request/:senderId/:receiverId')
-  sendFriendRequest(@Param('senderId') senderId: number, @Param('receiverId') receiverId: number) {
+  sendFriendRequest(
+    @Param('senderId') senderId: number,
+    @Param('receiverId') receiverId: number,
+  ) {
     return this.friendService.sendFriendRequest(senderId, receiverId);
   }
 
@@ -54,13 +69,16 @@ export class FriendController {
     return this.friendService.cancelFriendRequest(friendRequestId);
   }
 
-  @Put('block-user/:friendRequestId')
-  blockUser(@Param('friendRequestId') friendRequestId: number) {
-    return this.friendService.blockUser(friendRequestId);
-  }
+  // @Put('block-user/:friendRequestId')
+  // blockUser(@Param('friendRequestId') friendRequestId: number) {
+  //   return this.friendService.blockUser(friendRequestId);
+  // }
 
   @Put('block-user/:blockerId/:blockedUserId')
-  blocker(@Param('blockerId') blockerId: number, @Param('blockedUserId') blockedUserId: number) {
+  blocker(
+    @Param('blockerId') blockerId: number,
+    @Param('blockedUserId') blockedUserId: number,
+  ) {
     return this.friendService.blocker(blockerId, blockedUserId);
   }
 
@@ -102,10 +120,10 @@ export class FriendController {
   }
 
   @Get('check-relationship/:userId/:friendId')
-  isFriend(@Param('userId') userId: number, @Param('friendId') friendId: number) {
+  isFriend(
+    @Param('userId') userId: number,
+    @Param('friendId') friendId: number,
+  ) {
     return this.friendService.findFriendship(+userId, +friendId);
   }
-
-
-
 }
