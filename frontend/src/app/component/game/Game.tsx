@@ -113,8 +113,8 @@ const Game = () => {
         );
         Matter.World.add(world, paddleLeftBody);
 
-        const paddleRightWidth = 20;
-        const paddleRightHeight = 100;
+        // const paddleRightWidth = 20;
+        // const paddleRightHeight = 100;
         // const paddleRightBody = Matter.Bodies.rectangle(
         // app.view.width * 0.1,
         // app.view.height * 0.5,
@@ -127,6 +127,9 @@ const Game = () => {
         //         },
         //     }
         // );
+
+        const paddleRightWidth = 20;
+        const paddleRightHeight = 100;
         const paddleRightBody = Matter.Bodies.rectangle(
             app.view.width * 0.95 - paddleRight.width / 2,
             app.view.height * 0.5 - paddleRight.height / 2,
@@ -228,15 +231,15 @@ const Game = () => {
 
         // automated right paddle
         const moveOpponentPaddle = () => {
-            const paddleSpeed = 55;
+            const paddleSpeed = 100;
         
             // Calculate the difference between the opponent paddle's y position and the ball's y position
             const difference = ball.y - paddleRight.y;
         
             // Move the opponent paddle towards the ball
-            if (difference > paddleSpeed / 2) {
+            if (difference > paddleSpeed / 1000) {
               paddleRight.y += paddleSpeed;
-            } else if (difference < -paddleSpeed / 2) {
+            } else if (difference < -paddleSpeed / 1000) {
               paddleRight.y -= paddleSpeed;
             }
         };
@@ -278,10 +281,10 @@ const Game = () => {
                 y: paddleLeft.y + 50,
             });
 
-            Matter.Body.setPosition(paddleRightBody, {
-                x: paddleRight.x + 10,
-                y: paddleRight.y + 50,
-            });
+            // Matter.Body.setPosition(paddleRightBody, {
+            //     x: paddleRight.x + 10,
+            //     y: paddleRight.y + 50,
+            // });
 
             ball.position.x = ballBody.position.x;
             ball.position.y = ballBody.position.y;
