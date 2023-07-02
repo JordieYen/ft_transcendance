@@ -10,6 +10,7 @@ const Game = () => {
     const animationFrameId = useRef(0);
     const winnerTextRef = useRef<PIXI.Text | null>(null);
     const socket = useContext(SocketContext);
+    const paddleHitAudio = new Audio('/sounds/hit.wav');
 
     useEffect(() => {
         if (socket) {
@@ -70,7 +71,9 @@ const Game = () => {
         paddleRight.beginFill(0xFFFFFF);
         paddleRight.drawRect(0, 0, 20, 100);
         paddleRight.endFill();
-        paddleRight.position.set(app.view.width * 0.95, app.view.height * 0.5);
+        // paddleRight.position.set(app.view.width * 0.95, app.view.height * 0.5);
+        paddleRight.position.set(app.view.width * 0.95 - paddleRight.width, app.view.height * 0.5 - paddleRight.height / 2);
+
 
         const ball = new PIXI.Graphics();
         ball.beginFill(0xFFFFFF);
@@ -112,16 +115,28 @@ const Game = () => {
 
         const paddleRightWidth = 20;
         const paddleRightHeight = 100;
+        // const paddleRightBody = Matter.Bodies.rectangle(
+        // app.view.width * 0.1,
+        // app.view.height * 0.5,
+        // paddleRightWidth,
+        // paddleRightHeight,
+        //     {
+        //         isStatic: true,
+        //         render: {
+        //             fillStyle: "#ffffff",
+        //         },
+        //     }
+        // );
         const paddleRightBody = Matter.Bodies.rectangle(
-        app.view.width * 0.1,
-        app.view.height * 0.5,
-        paddleRightWidth,
-        paddleRightHeight,
+            app.view.width * 0.95 - paddleRight.width / 2,
+            app.view.height * 0.5 - paddleRight.height / 2,
+            paddleRightWidth,
+            paddleRightHeight,
             {
-                isStatic: true,
-                render: {
-                    fillStyle: "#ffffff",
-                },
+              isStatic: true,
+              render: {
+                fillStyle: "#ffffff",
+              },
             }
         );
         Matter.World.add(world, paddleRightBody);
@@ -151,6 +166,8 @@ const Game = () => {
                   Matter.Vector.mult(normal, 2 * Matter.Vector.dot(ballBody.velocity, normal))
                 );
                 Matter.Body.setVelocity(ballBody, reflection);
+                paddleHitAudio.play();
+                console.log("paddlLeftBody");
               } else if (
                 (pair.bodyA === ballBody && pair.bodyB === paddleRightBody) ||
                 (pair.bodyA === paddleRightBody && pair.bodyB === ballBody)
@@ -161,6 +178,9 @@ const Game = () => {
                     Matter.Vector.mult(normal, 2 * Matter.Vector.dot(ballBody.velocity, normal))
                 );
                 Matter.Body.setVelocity(ballBody, reflection);
+                paddleHitAudio.play();
+                console.log("paddleRightBody");
+                
             }
             });
         });
@@ -205,6 +225,22 @@ const Game = () => {
             Matter.Body.setVelocity(ballBody, resetVelocity);
         };
 
+
+        // automated right paddle
+        const moveOpponentPaddle = () => {
+            const paddleSpeed = 55;
+        
+            // Calculate the difference between the opponent paddle's y position and the ball's y position
+            const difference = ball.y - paddleRight.y;
+        
+            // Move the opponent paddle towards the ball
+            if (difference > paddleSpeed / 2) {
+              paddleRight.y += paddleSpeed;
+            } else if (difference < -paddleSpeed / 2) {
+              paddleRight.y -= paddleSpeed;
+            }
+        };
+
         // Game loop
         const gameLoop = () => {
 
@@ -224,6 +260,8 @@ const Game = () => {
                     paddleLeft.y += paddleSpeed;
                 }
             }
+
+            moveOpponentPaddle();
 
             if (keys["ArrowUp"]) {
                 if (paddleRight.y > 0) {
