@@ -12,9 +12,6 @@ export class Stat {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  uid: number;
-
   @OneToOne(() => User, (user) => user.stat)
   @JoinColumn({ name: 'userId' })
   user: User;
@@ -35,7 +32,7 @@ export class Stat {
   smashes: number;
 
   @Column({ default: 0 })
-  winstreak: number;
+  win_streak: number;
 
   @Column({ default: 0 })
   current_mmr: number;

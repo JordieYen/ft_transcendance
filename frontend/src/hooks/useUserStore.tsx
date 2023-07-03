@@ -9,7 +9,7 @@ export interface UserData {
   authentication: boolean;
   authenticationString: string;
   p1_match: string;
-  stat: { mmr: number };
+  stat: { current_mmr: number };
   userAchievement: string;
 }
 
@@ -28,7 +28,7 @@ const useUserStore = create<UserStore>((set) => ({
     authentication: false,
     authenticationString: "",
     p1_match: "",
-    stat: { mmr: 0 },
+    stat: { current_mmr: 0 },
     userAchievement: "",
   },
   setUserData: (userData) => set({ userData }),

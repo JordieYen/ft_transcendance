@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -16,7 +15,7 @@ import { Repository } from 'typeorm';
 export class UserAchievementService {
   constructor(
     @InjectRepository(UserAchievement)
-    private userAchievementRepository: Repository<UserAchievement>,
+    private readonly userAchievementRepository: Repository<UserAchievement>,
     private readonly userService: UsersService,
     private readonly achievementService: AchievementService,
   ) {}
@@ -24,31 +23,13 @@ export class UserAchievementService {
   async create(
     createUserAchievementDto: CreateUserAchievementDto,
   ): Promise<UserAchievement> {
-    const { userId, achievementId } = createUserAchievementDto;
-
-    const existingRecord = await this.userAchievementRepository.findOne({
-      where: {
-        user: { id: userId },
-        achievement: { id: achievementId },
-      },
-    });
-
-    if (existingRecord) {
-      throw new ConflictException('User achievement record already exists');
-    }
-    const [user, achievement] = await Promise.all([
-      this.userService.findUsersById(userId),
-      this.achievementService.findOne(achievementId),
-    ]);
-    if (!user) {
-      throw new Error(`User with id ${userId} not found`);
-    }
-    if (!achievement) {
-      throw new Error(`Achievement with id ${achievementId} not found`);
-    }
     const userAchievement = new UserAchievement();
-    userAchievement.user = user;
-    userAchievement.achievement = achievement;
+    userAchievement.user = await this.userService.findUsersByIdWithRelation(
+      createUserAchievementDto.user,
+    );
+    userAchievement.achievement = await this.achievementService.findOne(
+      createUserAchievementDto.achievement,
+    );
     return await this.userAchievementRepository.save(userAchievement);
   }
 
@@ -70,6 +51,28 @@ export class UserAchievementService {
     return userAchievement;
   }
 
+  // Find achievements by player uid
+  async findByPlayerUid(uid: number): Promise<UserAchievement[]> {
+    return await this.userAchievementRepository.find({
+      relations: { user: true, achievement: true },
+      where: {
+        user: { id: uid },
+      },
+    });
+  }
+
+  // return true if not found in user achievement by player uid
+  async checkExists(uid: number, achievement_id: number): Promise<boolean> {
+    const achievements = await this.findByPlayerUid(uid);
+
+    for (const ac of achievements) {
+      if (ac.achievement.id === achievement_id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async update(
     id: number,
     updateUserAchievementDto: Partial<UpdateUserAchievementDto>,
@@ -80,25 +83,25 @@ export class UserAchievementService {
         throw new Error(`User achievement with id ${id} not found`);
       }
 
-      if (updateUserAchievementDto.userId) {
+      if (updateUserAchievementDto.user) {
         const user = await this.userService.findUsersById(
-          updateUserAchievementDto.userId,
+          updateUserAchievementDto.user,
         );
         if (!user) {
           throw new Error(
-            `User with id ${updateUserAchievementDto.userId} not found`,
+            `User with id ${updateUserAchievementDto.user} not found`,
           );
         }
         userAchievement.user = user;
       }
 
-      if (updateUserAchievementDto.achievementId) {
+      if (updateUserAchievementDto.achievement) {
         const achievement = await this.achievementService.findOne(
-          updateUserAchievementDto.achievementId,
+          updateUserAchievementDto.achievement,
         );
         if (!achievement) {
           throw new Error(
-            `Achievement with id ${updateUserAchievementDto.achievementId} not found`,
+            `Achievement with id ${updateUserAchievementDto.achievement} not found`,
           );
         }
         userAchievement.achievement = achievement;

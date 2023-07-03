@@ -1,5 +1,5 @@
 import { SocketContext } from "@/app/socket/SocketProvider";
-import UserData, { UserContext } from "@/app/webhook/UserContext";
+import UserData from "@/hooks/userData";
 import { useContext, useEffect, useState } from "react";
 import './friend.css';
 
@@ -15,11 +15,11 @@ interface FriendRequestProps {
 const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestArray, friendRequestStatus, setFriendRequestStatus } : FriendRequestProps) => {
 
   const [friendRequests, setFriendRequests] = useState<any[]>([]);
-  const userData = UserData();
-  // const userData = useContext(UserContext);
+  // const userData = UserData();
   const socket = useContext(SocketContext);
 
   useEffect(() => {
+    if (userId) {
       socket?.emit('join', `${userId}`);
       socket?.on('friend-request', handleFriendRequestReceived);
       const storedStatus = localStorage.getItem("friendRequestStatus");
@@ -31,10 +31,11 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
         setFriendRequestArray(JSON.parse(storedFriendRequests));
       }
       fetchFriendRequests();
-      return () => {
-          socket?.emit('leave-room', `${userId}`);
-          socket?.off('friend-request', handleFriendRequestReceived);
-      };
+    }
+    return () => {
+      socket?.emit('leave-room');
+      socket?.off('friend-request', handleFriendRequestReceived);
+    };
   }, [socket, userId]);
 
 

@@ -10,8 +10,9 @@ import { SocketContext } from "@/app/socket/SocketProvider";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import UserProfile from "@/app/webhook/UserProfile";
 
-const PongMain: React.FC<any> = () => {
+const PongMain: React.FC<any> = ({ userId }) => {
   const { data: session, status } = useSession();
   console.log("session", session);
 
@@ -24,8 +25,7 @@ const PongMain: React.FC<any> = () => {
   } else {
     console.log("error");
   }
-  const userData = UserData();
-
+  const userData = userId ? UserProfile(+userId) : UserData();
   if (!userData) {
     return <div>User not found in profile...</div>;
   }
@@ -41,6 +41,7 @@ const PongMain: React.FC<any> = () => {
     userAchievement,
   } = userData;
   const joinDate = formatDateMalaysia(new Date(createdAt));
+  const totalGames = stat?.wins + stat?.losses;
 
   return (
     <div className="profile-page">
@@ -57,7 +58,8 @@ const PongMain: React.FC<any> = () => {
         <div className="lifetime-section">
           <div className="total-games">
             <p>Total Games</p>
-            <p>{stat?.total_games || 0}</p>
+            {/* <p>{stat?.total_games || 0}</p> */}
+            <p>{totalGames || 0}</p>
           </div>
           <div className="lifetime-wins">
             <p>Total Wins</p>
@@ -65,7 +67,7 @@ const PongMain: React.FC<any> = () => {
           </div>
           <div className="lifetime-wins-streak">
             <p>Win Streaks</p>
-            <p>{stat?.winStreak || 0}</p>
+            <p>{stat?.win_streak || 0}</p>
           </div>
         </div>
         <div className="vertical-line"></div>
@@ -73,7 +75,7 @@ const PongMain: React.FC<any> = () => {
       </div>
       <div className="bottom-content">
         <MatchHistory p1_match={p1_match} p2_match={p2_match} userId={id} />
-        <MatchMaking />
+        <MatchMaking stat={stat}/>
       </div>
     </div>
   );

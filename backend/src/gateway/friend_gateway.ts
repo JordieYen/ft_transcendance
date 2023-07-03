@@ -15,7 +15,7 @@ import { UsersService } from 'src/users/services/users.service';
     origin: 'http://localhost:3001',
   },
 })
-export class MyGateway implements OnModuleInit {
+export class FriendGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
 
@@ -29,23 +29,23 @@ export class MyGateway implements OnModuleInit {
       console.log(socket.id, ' connected');
 
       socket.on('join', async (userId) => {
-        console.log('User joined room: ' + userId);
-        if (userId && userId !== 'undefined') {
+        if (userId && userId !== 'undefined' && !isNaN(userId)) {
+          console.log('User joined room: ' + userId);
           socket.join(userId);
           socket.data.userId = userId;
-          console.log('online users after', socket.data.userId);
           this.updateUserStatus(+userId, true);
         }
       });
-      socket.on('leave-room', (userId) => {
-        console.log('User left room: ' + userId);
-        socket.leave(userId);
+      socket.on('leave-room', () => {
+        if (socket.data.userId) {
+          console.log('User left room: ' + socket.data.userId);
+          socket.leave(socket.data.userId);
+        }
       });
       socket.on('disconnect', async () => {
-        console.log(socket.id, ' disconnected');
-        const socUserId = socket.data.userId;
-        if (socUserId) {
-          this.updateUserStatus(+socUserId, false);
+        if (socket.data.userId) {
+          console.log('User disconnected: ' + socket.data.userId);
+          await this.updateUserStatus(+socket.data.userId, false);
         }
       });
     });
@@ -54,12 +54,14 @@ export class MyGateway implements OnModuleInit {
   private async updateUserStatus(userId: any, isOnline: boolean) {
     const parsedUserId = parseInt(userId, 10);
     if (isNaN(parsedUserId)) {
-      throw new BadRequestException('Invalid userId');
+      console.log('Invalid userId');
+
+      // throw new BadRequestException('Invalid userId');
     }
     const user = await this.usersService.findUsersById(parsedUserId);
     if (user) {
       // console.log(user);
-      const newUser = await this.usersService.updateUser(parsedUserId, {
+      await this.usersService.updateUser(parsedUserId, {
         online: isOnline,
       });
     }

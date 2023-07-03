@@ -1,16 +1,31 @@
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import 'react-tooltip/dist/react-tooltip.css'
 
-const Avatar: React.FC<{
+interface AvatarProps {
+  
   src: string;
   alt: string;
   width: number;
   height: number;
-}> = ({ src, alt, width, height }) => {
+  onClick?: () => void;
+}
+
+const Avatar = ({ src, alt, width, height, onClick } : AvatarProps) => {
+
   return (
-    <span className='icon-container'>
-        <Image className="avatar-image transform hover:scale-125 object-cover" src={src} alt={alt} width={width} height={height} priority={true}/>
+
+    <span className="icon-container" onClick={onClick}>
+      <Image
+        className="avatar-image transform hover:scale-125 object-cover"
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        priority={true}
+        />
     </span>
   );
 };
+
 export default Avatar;

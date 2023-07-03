@@ -30,25 +30,27 @@ const Friend = ({
 
   const socket = useContext(SocketContext);
   useEffect(() => {
-    socket?.on("friend", (friend: any) => {
-      setFriends(() => {
-        return [...friend];
+    if (userDataId) {
+      socket?.on("friend", (friend: any) => {
+        setFriends(() => {
+          return [...friend];
+        });
       });
-    });
-    socket?.on("unfriend", (friendId: number) => {
-      console.log("unfriend", friendId);
-      setFriends((prevFriends) =>
-        prevFriends.filter((friend) => friend.id !== friendId),
-      );
-      setFriendRequestStatus((prevStatus) => {
-        return {
-          ...prevStatus,
-          [friendId]: false,
-          [userDataId]: false,
-        };
+      socket?.on("unfriend", (friendId: number) => {
+        console.log("unfriend", friendId);
+        setFriends((prevFriends) =>
+          prevFriends.filter((friend) => friend.id !== friendId),
+        );
+        setFriendRequestStatus((prevStatus) => {
+          return {
+            ...prevStatus,
+            [friendId]: false,
+            [userDataId]: false,
+          };
+        });
       });
-    });
-    fetchFriends();
+      fetchFriends();
+    }
   }, [socket]);
 
   useEffect(() => {

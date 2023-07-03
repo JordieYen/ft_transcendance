@@ -5,10 +5,10 @@ export class CreateMatchHistoryDto {
   winner_uid: number;
 
   @IsNotEmpty()
-  p1_uid: number;
+  p1: number;
 
   @IsNotEmpty()
-  p2_uid: number;
+  p2: number;
 
   @IsOptional()
   p1_score: number;

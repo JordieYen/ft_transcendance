@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import session, * as ExpressSession from 'express-session';
-import { ConfigService } from '@nestjs/config';
 import { setupSwagger } from 'src/swagger.config';
 import * as passport from 'passport';
 import { ValidationPipe } from '@nestjs/common';
