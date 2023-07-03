@@ -3,9 +3,9 @@ import { IsNotEmpty, IsNumber } from 'class-validator';
 export class CreateUserAchievementDto {
   @IsNotEmpty()
   @IsNumber()
-  userId: number;
+  user: number;
 
   @IsNotEmpty()
   @IsNumber()
-  achievementId: number;
+  achievement: number;
 }

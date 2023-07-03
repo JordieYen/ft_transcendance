@@ -9,8 +9,9 @@ import { AchievementModule } from 'src/achievement/achievement.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserAchievement]),
-    UsersModule,
     AchievementModule,
+    UsersModule,
+    // forwardRef(() => UsersModule),
   ],
   controllers: [UserAchievementController],
   providers: [UserAchievementService],

@@ -58,10 +58,10 @@ export class User {
   @OneToMany(() => UserAchievement, (userAchievement) => userAchievement.user)
   userAchievement: UserAchievement[];
 
-  @OneToMany(() => MatchHistory, (matchHistory) => matchHistory.p1_uid)
+  @OneToMany(() => MatchHistory, (matchHistory) => matchHistory.p1)
   p1_match: MatchHistory[];
 
-  @OneToMany(() => MatchHistory, (matchHistory) => matchHistory.p2_uid)
+  @OneToMany(() => MatchHistory, (matchHistory) => matchHistory.p2)
   p2_match: MatchHistory[];
 
   // @ManyToMany(() => Friend, friend => [friend.sender, friend.receiver])

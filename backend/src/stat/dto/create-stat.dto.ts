@@ -5,7 +5,7 @@ export class CreateStatDto {
   id: number;
 
   @IsNotEmpty()
-  uid: number;
+  user: number;
 
   @IsOptional()
   wins: number;
@@ -23,7 +23,7 @@ export class CreateStatDto {
   smashes: number;
 
   @IsOptional()
-  winstreak: number;
+  win_streak: number;
 
   @IsOptional()
   current_mmr: number;

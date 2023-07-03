@@ -5,9 +5,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MatchHistory } from 'src/typeorm/match_history.entity';
 import { UsersModule } from 'src/users/users.module';
 import { StatModule } from 'src/stat/stat.module';
+import { UserAchievementModule } from 'src/user_achievement/user_achievement.module';
+import { AchievementModule } from 'src/achievement/achievement.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MatchHistory]), UsersModule, StatModule],
+  imports: [
+    TypeOrmModule.forFeature([MatchHistory]),
+    UsersModule,
+    StatModule,
+    AchievementModule,
+    UserAchievementModule,
+  ],
   controllers: [MatchHistoryController],
   providers: [MatchHistoryService],
   exports: [MatchHistoryService, TypeOrmModule],

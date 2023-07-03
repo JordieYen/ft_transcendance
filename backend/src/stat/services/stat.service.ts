@@ -9,6 +9,7 @@ import { Stat } from 'src/typeorm/stats.entity';
 import { Repository } from 'typeorm';
 import { CreateStatDto } from '../dto/create-stat.dto';
 import { UpdateStatDto } from '../dto/update-stat.dto';
+import { User } from 'src/typeorm/user.entity';
 
 @Injectable()
 export class StatService {
@@ -19,7 +20,11 @@ export class StatService {
 
   // Return All Entries
   async getStat(): Promise<Stat[]> {
-    return await this.statRepository.find();
+    return await this.statRepository.find({
+      relations: {
+        user: true,
+      },
+    });
   }
 
   // Return entries with {uid}
@@ -29,7 +34,7 @@ export class StatService {
         user: true,
       },
       where: {
-        uid: uid,
+        user: { id: uid },
       },
     });
   }
@@ -81,7 +86,7 @@ export class StatService {
   // Return lifetime winstreak of a player
   async getLifetimeWinstreakByPlayerUid(uid: number): Promise<number> {
     const stat = await this.getByPlayerUid(uid);
-    return stat[0].winstreak;
+    return stat[0].win_streak;
   }
 
   // Return MMR of a player
@@ -97,14 +102,15 @@ export class StatService {
   }
 
   // Update existing Stat
-  async updateStat(uid: number, updateStatDto: UpdateStatDto) {
-    const stat = await this.getByPlayerUid(uid);
+  async updateStat(user: User, updateStatDto: UpdateStatDto) {
+    const stat = await this.getByPlayerUid(user.id);
     if (updateStatDto?.wins) stat[0].wins = updateStatDto?.wins;
     if (updateStatDto?.losses) stat[0].losses = updateStatDto?.losses;
     if (updateStatDto?.kills) stat[0].kills = updateStatDto?.kills;
     if (updateStatDto?.deaths) stat[0].deaths = updateStatDto?.deaths;
     if (updateStatDto?.smashes) stat[0].smashes = updateStatDto?.smashes;
-    if (updateStatDto?.winstreak) stat[0].winstreak = updateStatDto?.winstreak;
+    if (updateStatDto?.win_streak)
+      stat[0].win_streak = updateStatDto?.win_streak;
     if (updateStatDto?.current_mmr)
       stat[0].current_mmr = updateStatDto?.current_mmr;
     if (updateStatDto?.best_mmr) stat[0].best_mmr = updateStatDto?.best_mmr;
@@ -112,15 +118,15 @@ export class StatService {
   }
 
   // Add new entry
-  async create(uid: number, createStatDto: CreateStatDto) {
+  async create(user: User, createStatDto: CreateStatDto) {
     const newStat = await this.statRepository.create({
-      uid: uid,
+      user: user,
       wins: createStatDto.wins,
       losses: createStatDto.losses,
       kills: createStatDto.kills,
       deaths: createStatDto.deaths,
       smashes: createStatDto.smashes,
-      winstreak: createStatDto.winstreak,
+      win_streak: createStatDto.win_streak,
       current_mmr: createStatDto.current_mmr,
       best_mmr: createStatDto.best_mmr,
     });
