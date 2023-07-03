@@ -7,6 +7,8 @@ import {
   faChevronDown,
   faChevronUp,
   faEllipsisVertical,
+  faTableTennisPaddleBall,
+  faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
@@ -14,9 +16,11 @@ import { SocketContext } from "@/app/socket/SocketProvider";
 
 const ChatBox: React.FC<any> = () => {
   const [chat_slide_out, setChatSlideOut] = useState(false);
+  const [group_slide_out, setGroupSlideOut] = useState(false);
   const [chat_members_slide_out, setChatMembersSlideOut] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
   const [allUsers, setUsers] = useState<any[]>([]);
+  const [chats, setChats] = useState<any[]>([]);
   const [inputValue, setInputValue] = useState("");
   const socket = useContext(SocketContext);
   const messagesEndRef = useRef(null);
@@ -37,6 +41,7 @@ const ChatBox: React.FC<any> = () => {
   useEffect(() => {
     fetchMessageData();
     fetchUserData();
+    fetchChatData()
   }, []);
 
   useEffect(() => {
@@ -91,6 +96,30 @@ const ChatBox: React.FC<any> = () => {
     return <div>users not found</div>;
   }
 
+  const fetchChatData = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/chat", {
+        method: "GET",
+        credentials: "include",
+      });
+      if (response.ok) {
+        const messageData = await response.json();
+        const messageContent = messageData.map((message: any) => {
+          return message.message_content;
+        });
+        setMessages(messageContent);
+        console.log("messageContent", messageContent);
+      } else {
+        throw new Error("Messages not found");
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
+  };
+  if (!messages) {
+    return <div>messages not found</div>;
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim() !== "") {
@@ -124,23 +153,44 @@ const ChatBox: React.FC<any> = () => {
             chat_slide_out ? "display" : "hide"
           }`}
         >
-          <img
+          {/* <img
             className="back-button"
             src="arrow-left.png"
             onClick={() => setChatSlideOut((current) => !current)}
             alt="back-button"
+          /> */}
+          <FontAwesomeIcon
+            className="group-button"
+            icon={faUserGroup}
+            size="lg"
+            style={{ color: "#d1d0c5" }}
+            onClick={() => setGroupSlideOut((current) => !current)}
           />
           <div>
             {allUsers.map((user, index) => (
-              <img src={user} key={index} className="profile-pictures"/>
+              <img src={user} key={index} className="profile-pictures" />
             ))}
           </div>
         </div>
         <div
-          className={`chat-style chat-box ${
+          className={`chat-box chat-style ${
             chat_slide_out ? "display" : "hide"
           }`}
         >
+          <div
+            className={`group-box ${
+              group_slide_out ? "group-box-display" : "group-box-hide"
+            }`}
+          >
+            <p>People</p>
+            <form>
+              <input
+                className="search-bar"
+                type="text"
+                placeholder=" Find Someone . . ."
+              />
+            </form>
+          </div>
           <div className="chat-nav">
             <h1 className="chat-name">jking-ye</h1>
             <FontAwesomeIcon
@@ -172,6 +222,15 @@ const ChatBox: React.FC<any> = () => {
             ))}
           </div>
           <ul className="list">
+            <li>
+              <div className="invite">
+                <p>User sent an Invite!</p>
+                <div className="invite-request">
+                  <button>accept</button>
+                  <button>decline</button>
+                </div>
+              </div>
+            </li>
             {messages.map((message, index) => (
               <li className="list-item" key={index}>
                 {message}
@@ -179,14 +238,22 @@ const ChatBox: React.FC<any> = () => {
             ))}
             <li ref={messagesEndRef}></li>
           </ul>
-          <form className="message-bar chat-style" onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder=" message . . ."
-              value={inputValue}
-              onChange={handleInputChange}
+          <div className="message-div">
+            <form className="message-bar chat-style" onSubmit={handleSubmit}>
+              <input
+                type="text"
+                placeholder=" message . . ."
+                value={inputValue}
+                onChange={handleInputChange}
+              />
+            </form>
+            <FontAwesomeIcon
+              className="invite-button"
+              icon={faTableTennisPaddleBall}
+              size="lg"
+              style={{ color: "#1c1e20" }}
             />
-          </form>
+          </div>
         </div>
       </div>
       <div className="bottom-nav">
