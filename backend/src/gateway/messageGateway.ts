@@ -18,6 +18,7 @@ export class MessageGateway implements OnModuleInit {
   server: Server;
 
   constructor(private readonly messageService: MessageService) {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async onModuleInit() {}
 
   @SubscribeMessage('message')

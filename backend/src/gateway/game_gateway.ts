@@ -16,6 +16,7 @@ export class GameGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor() {}
 
   async onModuleInit() {

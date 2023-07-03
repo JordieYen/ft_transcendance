@@ -52,7 +52,7 @@ export class ChannelService {
   async createChannel(dto: CreateChannelDto, user: User) {
     try {
       this.validateUser(user);
-      let hash: string = '';
+      let hash = '';
       // hashing password if channel type provided is protected
       if (dto.channel_type == 'protected') {
         if (dto.channel_hash != '') {
@@ -205,5 +205,6 @@ export class ChannelService {
     if (!user) throw new ForbiddenException('User not found');
   }
 
-  async testChannel(currentUser: User) {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async testChannel(_currentUser: User) {}
 }
