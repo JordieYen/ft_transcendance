@@ -15,7 +15,7 @@ import { UsersService } from 'src/users/services/users.service';
     origin: 'http://localhost:3001',
   },
 })
-export class MyGateway implements OnModuleInit {
+export class FriendGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
 
