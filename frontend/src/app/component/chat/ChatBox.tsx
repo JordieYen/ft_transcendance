@@ -13,6 +13,7 @@ import {
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { SocketContext } from "@/app/socket/SocketProvider";
+import useUserStore from "@/hooks/useUserStore";
 
 const ChatBox: React.FC<any> = () => {
   const [chat_slide_out, setChatSlideOut] = useState(false);
@@ -20,10 +21,17 @@ const ChatBox: React.FC<any> = () => {
   const [chat_members_slide_out, setChatMembersSlideOut] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
   const [allUsers, setUsers] = useState<any[]>([]);
+  const [searchUsers, setSearchUsers] = useState<any[]>([]);
   const [chats, setChats] = useState<any[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const socket = useContext(SocketContext);
   const messagesEndRef = useRef(null);
+
+  const socket = useContext(SocketContext);
+
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
 
   let users: String[];
 
@@ -41,26 +49,37 @@ const ChatBox: React.FC<any> = () => {
   useEffect(() => {
     fetchMessageData();
     fetchUserData();
-    fetchChatData()
+    fetchChatData();
   }, []);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    socket?.on("message-recieved", async function (new_message: any) {
+      console.log("new", new_message);
+      console.log("message", messages[1]);
+      setMessages([...messages, new_message]);
+    });
+  }, [socket, messages]);
+
+
   const fetchMessageData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/message", {
+      const response = await fetch("http://localhost:3000/message/id/84", {
         method: "GET",
         credentials: "include",
       });
       if (response.ok) {
         const messageData = await response.json();
-        const messageContent = messageData.map((message: any) => {
-          return message.message_content;
-        });
-        setMessages(messageContent);
-        console.log("messageContent", messageContent);
+        // const messageContent = messageData.map((message: any) => {
+        //   return message.message_content;
+        // });
+        // setMessages(messageContent);
+        // console.log("messageContent", messageContent);
+        setMessages(messageData);
+        console.log("meesage", messages);
       } else {
         throw new Error("Messages not found");
       }
@@ -80,11 +99,14 @@ const ChatBox: React.FC<any> = () => {
       });
       if (response.ok) {
         const userData = await response.json();
-        const userContent = userData.map((user: any) => {
-          return user.avatar;
-        });
-        setUsers(userContent);
-        console.log("userContent", userContent);
+        // const userContent = userData.map((user: any) => {
+        //   return user.avatar;
+        // });
+        // setUsers(userContent);
+        // console.log("userContent", userContent);
+        setUsers(userData);
+        console.log("userContent", userData);
+        setChats(userData);
       } else {
         throw new Error("Users not found");
       }
@@ -120,12 +142,25 @@ const ChatBox: React.FC<any> = () => {
     return <div>messages not found</div>;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim() !== "") {
-      socket?.emit("message", inputValue);
-      console.log("text", inputValue);
-      setMessages([...messages, inputValue]);
+      // const response = await fetch("http://localhost:3000/message/create", {
+      //   method: "POST",
+      //   credentials: "include",
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     message_content: inputValue,
+      //     message_type: "text",
+      //     channel_id: 84
+      //   })
+      // });
+      socket?.emit("send-message", inputValue, "text", 84, userData.id);
+      // console.log("text", inputValue);
+      // setMessages([...messages, inputValue]);
+
       setInputValue("");
     }
   };
@@ -168,7 +203,11 @@ const ChatBox: React.FC<any> = () => {
           />
           <div>
             {allUsers.map((user, index) => (
-              <img src={user} key={index} className="profile-pictures" />
+              <img
+                src={user?.avatar}
+                key={index}
+                className="profile-pictures"
+              />
             ))}
           </div>
         </div>
@@ -182,7 +221,7 @@ const ChatBox: React.FC<any> = () => {
               group_slide_out ? "group-box-display" : "group-box-hide"
             }`}
           >
-            <p>People</p>
+            <p className="title">People</p>
             <form>
               <input
                 className="search-bar"
@@ -190,6 +229,22 @@ const ChatBox: React.FC<any> = () => {
                 placeholder=" Find Someone . . ."
               />
             </form>
+            <div className="friends">
+              {allUsers.map((user, index) => (
+                <div
+                  key={index}
+                  className={`friend ${user?.online ? null : "offline"}`}
+                >
+                  <img src={user?.avatar} className="friend-profile-pictures" />
+                  <div className="user-data">
+                    <p className="user-name">{user?.username}</p>
+                    <p className="user-status">
+                      {user?.online ? "online" : "offline"}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
           <div className="chat-nav">
             <h1 className="chat-name">jking-ye</h1>
@@ -233,7 +288,8 @@ const ChatBox: React.FC<any> = () => {
             </li>
             {messages.map((message, index) => (
               <li className="list-item" key={index}>
-                {message}
+                <p className="sender-name">{message?.sender?.username}</p>
+                <p className="sender-message">{message?.message_content}</p>
               </li>
             ))}
             <li ref={messagesEndRef}></li>

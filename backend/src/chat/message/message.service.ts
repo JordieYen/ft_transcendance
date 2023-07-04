@@ -19,13 +19,13 @@ export class MessageService {
 
   async getAllMessages() {
     return await this.messageRepository.find({
-      relations: ['sender'],
+      relations: ['sender', 'channel'],
     });
   }
 
   async findMessagesById(channel_id: number) {
     return await this.messageRepository.find({
-      relations: ['sender'],
+      relations: ['sender', 'channel'],
       where: { channel: { channel_uid: channel_id } },
     });
   }

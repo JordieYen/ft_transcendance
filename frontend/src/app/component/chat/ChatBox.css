@@ -127,7 +127,7 @@
 	background-color: #323437;
 }
 
-.group-box p {
+.title {
 	padding: 2%;
 	margin: 2%;
 	margin-left: 4%;
@@ -152,12 +152,54 @@
 	color: #323437;
 }
 
+.friends {
+	height: 100%;
+	width: 100%;
+}
+
+.friend {
+	height: 8%;
+	display: flex;
+	flex-direction: row;
+	cursor: pointer;
+}
+
+.friend-profile-pictures {
+	width: auto;
+	height: auto;
+	max-width: 55px;
+	max-height: 55px;
+	min-width: 55px;
+	min-height: 55px;
+	border-radius: 50%;
+	margin: 4%;
+}
+
+.user-data {
+	width: 50%;
+}
+
+.user-name {
+	font-size: large;
+	text-align: left;
+	margin-top: 10%;
+}
+
+.user-status {
+	font-size: small;
+	text-align: left;
+	font: italic;
+}
+
+.offline {
+	opacity: 0.4;
+}
+
 .group-box-hide {
 	display: none;
 }
 
 .group-box-display {
-
 }
 
 ::-webkit-scrollbar {
@@ -165,15 +207,18 @@
 }
 
 ::-webkit-scrollbar-track {
+	display: none;
 	background: #323437;
 }
   
 ::-webkit-scrollbar-thumb {
+	display: none;
 	background: #888;
 	border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
+	display: none;
 	background: #555;
 }
 
@@ -288,6 +333,19 @@
 	opacity: 0.6;
 	text-align: left;
 	padding-left: 4%;
+	display: flex;
+	flex-direction: row;
+}
+
+.sender-name {
+	padding-right: 4%;
+	color: white;
+	opacity: 1;
+}
+
+.sender-message {
+	color: white;
+	opacity: 0.7;
 }
 
 .message-div {
@@ -364,6 +422,7 @@
 }
 
 .bottom-nav-buttons {
+	border-radius: 8px;
 	opacity: 0.6;
 	color: #D1D0C5;
 	background-color: #1c1e20;
