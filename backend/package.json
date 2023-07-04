@@ -61,7 +61,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "sqlite3": "^5.1.6",
-    "typeorm": "^0.3.16"
+    "typeorm": "^0.3.16",
+    "typeorm-extension": "^2.8.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.4.2",

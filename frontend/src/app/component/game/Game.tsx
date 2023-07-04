@@ -170,7 +170,6 @@ const Game = () => {
                 );
                 Matter.Body.setVelocity(ballBody, reflection);
                 paddleHitAudio.play();
-                console.log("paddlLeftBody");
               } else if (
                 (pair.bodyA === ballBody && pair.bodyB === paddleRightBody) ||
                 (pair.bodyA === paddleRightBody && pair.bodyB === ballBody)
@@ -182,8 +181,6 @@ const Game = () => {
                 );
                 Matter.Body.setVelocity(ballBody, reflection);
                 paddleHitAudio.play();
-                console.log("paddleRightBody");
-                
             }
             });
         });
@@ -231,15 +228,15 @@ const Game = () => {
 
         // automated right paddle
         const moveOpponentPaddle = () => {
-            const paddleSpeed = 100;
+            const paddleSpeed = 20;
         
             // Calculate the difference between the opponent paddle's y position and the ball's y position
             const difference = ball.y - paddleRight.y;
         
             // Move the opponent paddle towards the ball
-            if (difference > paddleSpeed / 1000) {
+            if (difference > paddleSpeed / 2) {
               paddleRight.y += paddleSpeed;
-            } else if (difference < -paddleSpeed / 1000) {
+            } else if (difference < -paddleSpeed / 2) {
               paddleRight.y -= paddleSpeed;
             }
         };
@@ -266,25 +263,25 @@ const Game = () => {
 
             moveOpponentPaddle();
 
-            if (keys["ArrowUp"]) {
-                if (paddleRight.y > 0) {
-                    paddleRight.y -= paddleSpeed;
-                }
-            } else if (keys["ArrowDown"]) {
-                if (paddleRight.y < app?.view.height - paddleRight.height) {
-                    paddleRight.y += paddleSpeed;
-                }
-            }
+            // if (keys["ArrowUp"]) {
+            //     if (paddleRight.y > 0) {
+            //         paddleRight.y -= paddleSpeed;
+            //     }
+            // } else if (keys["ArrowDown"]) {
+            //     if (paddleRight.y < app?.view.height - paddleRight.height) {
+            //         paddleRight.y += paddleSpeed;
+            //     }
+            // }
 
             Matter.Body.setPosition(paddleLeftBody, {
                 x: paddleLeft.x + 10,
                 y: paddleLeft.y + 50,
             });
 
-            // Matter.Body.setPosition(paddleRightBody, {
-            //     x: paddleRight.x + 10,
-            //     y: paddleRight.y + 50,
-            // });
+            Matter.Body.setPosition(paddleRightBody, {
+                x: paddleRight.x + 10,
+                y: paddleRight.y + 50,
+            });
 
             ball.position.x = ballBody.position.x;
             ball.position.y = ballBody.position.y;
