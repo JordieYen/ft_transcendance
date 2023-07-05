@@ -4,7 +4,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Socket } from 'dgram';
+import { Socket } from 'socket.io';
 import { Server } from 'socket.io';
 import { FriendService } from 'src/friend/services/friend.service';
 import { UsersService } from 'src/users/services/users.service';

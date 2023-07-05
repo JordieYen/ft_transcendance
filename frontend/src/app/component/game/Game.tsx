@@ -2,6 +2,7 @@ import { use, useContext, useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
 import Matter from 'matter-js';
 import { SocketContext } from "@/app/socket/SocketProvider";
+import useUserStore from "@/hooks/useUserStore";
 
 const Game = () => {
     const scoreLeftRef = useRef(0);
@@ -10,16 +11,32 @@ const Game = () => {
     const animationFrameId = useRef(0);
     const winnerTextRef = useRef<PIXI.Text | null>(null);
     const socket = useContext(SocketContext);
-    const paddleHitAudio = new Audio('/sounds/hit.wav');
+    const [roomId, setRoomId] = useState<any>(null);
+    const [userData, setUserData] = useUserStore((state) => [state.userData, state.setUserData]);
+    // const paddleHitAudio = new Audio('/sounds/hit.wav');
 
     useEffect(() => {
-        if (socket) {
-            socket?.emit('game-room', 1);
+        if (socket && userData.id) {
+            socket?.emit('join-room',{
+                userName: userData.username,
+            });
+            socket?.on('start-game', () => {
+                console.log('game-start');
+            });
         }
-    }, [socket]);
+        return () => {
+            socket?.off('start-game');
+        }
+    }, [socket, userData]);
 
     useEffect(() => {
-       
+        socket?.on('joined-room', (roomId: number) => {
+            setRoomId(roomId);
+        });
+        console.log('roomId', roomId);
+    }, [roomId]);
+
+    useEffect(() => {
         const app = new PIXI.Application({
             width: 1200,
             height: 900,
@@ -169,7 +186,7 @@ const Game = () => {
                   Matter.Vector.mult(normal, 2 * Matter.Vector.dot(ballBody.velocity, normal))
                 );
                 Matter.Body.setVelocity(ballBody, reflection);
-                paddleHitAudio.play();
+                // paddleHitAudio.play();
               } else if (
                 (pair.bodyA === ballBody && pair.bodyB === paddleRightBody) ||
                 (pair.bodyA === paddleRightBody && pair.bodyB === ballBody)
@@ -180,7 +197,7 @@ const Game = () => {
                     Matter.Vector.mult(normal, 2 * Matter.Vector.dot(ballBody.velocity, normal))
                 );
                 Matter.Body.setVelocity(ballBody, reflection);
-                paddleHitAudio.play();
+                // paddleHitAudio.play();
             }
             });
         });
