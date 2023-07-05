@@ -25,6 +25,7 @@ const Game = () => {
   Matter.Render.run(render);
   Matter.Runner.run(runner, engine);
 
+  //dummy
   const topBorder = Matter.Bodies.rectangle(1025, -25, 2045, 50, {
     isStatic: true,
   });
