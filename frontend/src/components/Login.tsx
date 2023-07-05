@@ -1,4 +1,3 @@
-import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -21,7 +20,7 @@ const Login = () => {
       >
         <p className="text-xl text-timberwolf">Login with 42</p>
       </Link>
-       {/* <button className="login-button text-background-dark-grey bg-mygrey rounded-md px-2 py-1" 
+      {/* <button className="login-button text-background-dark-grey bg-mygrey rounded-md px-2 py-1" 
        onClick={ async () => await signIn("42-school", { 
           method: "POST",
           redirect: true,
@@ -29,7 +28,6 @@ const Login = () => {
         })}>
           Try next Auth Login
         </button> */}
-      
     </div>
   );
 };

@@ -11,7 +11,7 @@ const Shuttlecock = () => {
       height="70"
       viewBox="0 0 512 512"
       initial={{
-        offsetPath: 'path("M50,-100 A 800 800 90 0 0 400 80")',
+        offsetPath: 'path("M100,-100 A 1000 1000 90 0 0 410 40")',
         offsetDistance: "0%",
         rotate: -90,
         y: -100,

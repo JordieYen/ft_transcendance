@@ -157,7 +157,6 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
       <div className="flex items-center rounded-lg bg-dimgrey py-1 px-2 gap-1 text-onyxgrey group-hover:bg-timberwolf">
         <FontAwesomeIcon icon={faTrophy} size="sm" />
         <span className="text-onyxgrey font-roboto">
-          
           {user.stat === null ? 0 : user?.stat?.current_mmr}
         </span>
       </div>
@@ -208,7 +207,7 @@ export const HeaderIcon = () => {
   }
 
   const {
-    avatar, 
+    avatar,
     id,
     intra_uid,
     username,
@@ -234,10 +233,10 @@ const Header = () => {
   const currentPath = router.asPath;
   return (
     <>
-      {currentPath !== "/login" && (
+      {currentPath !== "/login" && currentPath !== "/test" && (
         <nav className="flex mx-16 md:mx-24 lg:mx-32 mt-5 mb-8 items-center gap-8">
           <HeaderLogo currentPath={currentPath} />
-          {currentPath !== "/setup" && <HeaderIcon />}
+          <HeaderIcon />
         </nav>
       )}
     </>

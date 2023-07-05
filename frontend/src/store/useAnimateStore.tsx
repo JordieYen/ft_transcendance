@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type Step = "name" | "avatar" | "tfa" | "";
+export type Step = "name" | "avatar" | "tfa" | "start";
 export type Page = "main" | "setup" | "";
 
 interface AnimateStore {
@@ -11,7 +11,7 @@ interface AnimateStore {
 }
 
 const useAnimateStore = create<AnimateStore>((set) => ({
-  currentStep: "",
+  currentStep: "start",
   currentPage: "",
   setCurrentStep: (currentStep) => set({ currentStep }),
   setCurrentPage: (currentPage) => set({ currentPage }),
