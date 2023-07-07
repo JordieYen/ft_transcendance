@@ -1,8 +1,7 @@
 import { use, useContext, useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
 import Matter from 'matter-js';
-import { SocketContext } from "@/app/socket/SocketProvider";
-import useUserStore from "@/hooks/useUserStore";
+import MatchMaking from "./MatchMaking";
 
 const Game = () => {
     const scoreLeftRef = useRef(0);
@@ -10,31 +9,6 @@ const Game = () => {
     const isGameOver = useRef(false);
     const animationFrameId = useRef(0);
     const winnerTextRef = useRef<PIXI.Text | null>(null);
-    const socket = useContext(SocketContext);
-    const [roomId, setRoomId] = useState<any>(null);
-    const [userData, setUserData] = useUserStore((state) => [state.userData, state.setUserData]);
-    // const paddleHitAudio = new Audio('/sounds/hit.wav');
-
-    useEffect(() => {
-        if (socket && userData.id) {
-            socket?.emit('join-room',{
-                userName: userData.username,
-            });
-            socket?.on('start-game', () => {
-                console.log('game-start');
-            });
-        }
-        return () => {
-            socket?.off('start-game');
-        }
-    }, [socket, userData]);
-
-    useEffect(() => {
-        socket?.on('joined-room', (roomId: number) => {
-            setRoomId(roomId);
-        });
-        console.log('roomId', roomId);
-    }, [roomId]);
 
     useEffect(() => {
         const app = new PIXI.Application({
@@ -359,7 +333,11 @@ const Game = () => {
         }
     }, []);
 
-    return null;
+    return (
+        <div>
+            <MatchMaking />
+        </div>
+    );
 };
 
 export default Game;

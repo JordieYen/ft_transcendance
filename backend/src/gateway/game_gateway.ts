@@ -4,6 +4,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { formToJSON } from 'axios';
 import { randomBytes } from 'crypto';
 import { Server } from 'socket.io';
 import { Socket } from 'socket.io';
@@ -45,14 +46,12 @@ export class GameGateway {
   @SubscribeMessage('join-room')
   handleJoinRoom(client: Socket, data: { userName: string }) {
     const userName = data.userName;
-    console.log('socket', client.data);
-
     let { roomId, roomPlayers } = this.findAvailableRoom();
 
     // create new room id and push player into room
     for (const [, existingRoomPlayers] of this.rooms) {
       if (existingRoomPlayers.includes(userName)) {
-        client.emit('error', 'You are already in a room');
+        client.emit('in-room', roomId);
         console.log('User is already in a room');
         return;
       }
@@ -72,5 +71,22 @@ export class GameGateway {
       this.server.to(roomId).emit('start-game', roomId);
     }
     this.logRooms();
+  }
+
+  @SubscribeMessage('game-over')
+  clearRoom(client: Socket, data: { roomId: number }) {
+    console.log('Game over');
+    const roomId = data.roomId.toString();
+    const roomPlayers = this.rooms.get(roomId);
+    if (roomPlayers) {
+      roomPlayers.forEach((player) => {
+        const client = this.server.sockets.sockets.get(player);
+        if (client) {
+          client.leave(roomId);
+          client.disconnect();
+        }
+      });
+    }
+    this.rooms.delete(roomId.toString());
   }
 }
