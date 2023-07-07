@@ -48,7 +48,7 @@ export class GameGateway {
     const userName = data.userName;
     let { roomId, roomPlayers } = this.findAvailableRoom();
 
-    // create new room id and push player into room
+    // check if user is already in a room
     for (const [, existingRoomPlayers] of this.rooms) {
       if (existingRoomPlayers.includes(userName)) {
         client.emit('in-room', roomId);
@@ -56,7 +56,7 @@ export class GameGateway {
         return;
       }
     }
-
+    // create new room id and push player into room
     if (!roomId && !roomPlayers) {
       roomId = this.generateRoomId();
       roomPlayers = [userName];
@@ -67,6 +67,8 @@ export class GameGateway {
     }
     client.join(roomId);
     client.emit('joined-room', roomId);
+
+    // start game if room has 2 players
     if (roomPlayers.length === 2) {
       this.server.to(roomId).emit('start-game', roomId);
     }
@@ -74,19 +76,31 @@ export class GameGateway {
   }
 
   @SubscribeMessage('game-over')
-  clearRoom(client: Socket, data: { roomId: number }) {
+  clearRoom(client: Socket, data: { roomId: number; userName: string }) {
     console.log('Game over');
     const roomId = data.roomId.toString();
+    const userName = data.userName;
     const roomPlayers = this.rooms.get(roomId);
+
+    // check if player exists in room, if one player exist, send opponent-disconnected
     if (roomPlayers) {
-      roomPlayers.forEach((player) => {
-        const client = this.server.sockets.sockets.get(player);
-        if (client) {
-          client.leave(roomId);
-          client.disconnect();
-        }
-      });
+      console.log('Room players: ', roomPlayers);
+      const remainingPlayer = roomPlayers.find((player) => player !== userName);
+      console.log('Remaining player: ', remainingPlayer);
+
+      if (remainingPlayer) {
+        this.server.to(roomId).emit('opponent-disconnected');
+      }
+      const updatedRoomPlayers = roomPlayers.filter(
+        (player) => player !== userName,
+      );
+      this.rooms.set(roomId, updatedRoomPlayers);
+
+      // if room is empty, delete room and emit room-closed
+      if (updatedRoomPlayers.length === 0) {
+        this.rooms.delete(roomId.toString());
+        this.server.to(roomId).emit('room-closed');
+      }
     }
-    this.rooms.delete(roomId.toString());
   }
 }
