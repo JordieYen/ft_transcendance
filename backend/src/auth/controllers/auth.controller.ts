@@ -42,6 +42,12 @@ export class AuthController {
     return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
   }
 
+  // @Get('/callback/42-school')
+  // async callback42School(@Req() req: Request, @Res() res: Response) {
+  //   console.log('callback 42 school');
+  //   return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
+  // }
+
   /* 2FA
   1. enable google authenticator
   2. secret key is used for generating OTP codes

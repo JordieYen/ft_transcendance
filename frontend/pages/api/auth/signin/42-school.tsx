@@ -10,12 +10,11 @@ export default async function signIn42School(
     }
 
     try {
-        console.log('try login in 42 school hmm');
-        await signIn('42-school', {
-            method: "POST",
-            redirect: true,
-            callbackUrl: "http://localhost:3000/auth/login"
-        });
+        // await signIn('42-school', { 
+        //     method: "POST",
+        //     redirect: true,
+            // callbackUrl: "http://localhost:3000/auth/callback/42-school"
+        // });
         res.status(200).json({ success: true });
     } catch (error: any) {
         res.status(500).json({ error: error.message });

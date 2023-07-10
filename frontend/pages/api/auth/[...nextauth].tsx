@@ -1,5 +1,17 @@
 import NextAuth, { AuthOptions } from 'next-auth';
 import FortyTwoProvider from "next-auth/providers/42-school";
+import { Pool } from 'pg';
+import { PostgresAdapter } from './PostgressAdapter';
+
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: parseInt(process.env.DB_PORT!),
+})
+
+
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -12,12 +24,15 @@ export const authOptions: AuthOptions = {
               name: profile.login,
               image: profile.image_url,
             };
-          }
+          },
         }),
     ],
     callbacks: {
       
-        async signIn({profile, user}) {
+        async signIn({profile, user, account}) {
+            console.log('profile', profile);
+            console.log('user', user);
+            console.log('account', account?.userId);
             if (!profile || user) return false;
             return user
         },
@@ -32,6 +47,7 @@ export const authOptions: AuthOptions = {
     pages: {
         signIn: '/login',
     },
+    adapter: PostgresAdapter(pool),
 };
 
 export default NextAuth(authOptions);

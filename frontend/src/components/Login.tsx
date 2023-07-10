@@ -22,10 +22,11 @@ const Login = () => {
         <p className="text-xl text-timberwolf">Login with 42</p>
       </Link>
        {/* <button className="login-button text-background-dark-grey bg-mygrey rounded-md px-2 py-1" 
-       onClick={ async () => await signIn("42-school", { 
+       onClick={ async () => await signIn('42-school', { 
           method: "POST",
           redirect: true,
-          callbackUrl: "http://localhost:3000/auth/login"
+          // callbackUrl: "http://localhost:3000/auth/login"
+          callbackUrl: "http://localhost:3000/auth/callback/42-school"
         })}>
           Try next Auth Login
         </button> */}

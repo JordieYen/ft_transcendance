@@ -7,7 +7,7 @@ import MatchMaking from "./MatchMaking";
 import Achievement from "./Achievement";
 import { use, useContext, useEffect } from "react";
 import { SocketContext } from "@/app/socket/SocketProvider";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import UserProfile from "@/app/webhook/UserProfile";
@@ -42,6 +42,7 @@ const PongMain: React.FC<any> = ({ userId }) => {
   } = userData;
   const joinDate = formatDateMalaysia(new Date(createdAt));
   const totalGames = stat?.wins + stat?.losses;
+
 
   return (
     <div className="profile-page">
