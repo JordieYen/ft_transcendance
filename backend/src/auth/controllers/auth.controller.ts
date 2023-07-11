@@ -42,6 +42,11 @@ export class AuthController {
     return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
   }
 
+  @Get('callback/42-school')
+  async callback42() {
+    console.log('callback 42 school');
+  }
+
   // @Get('/callback/42-school')
   // async callback42School(@Req() req: Request, @Res() res: Response) {
   //   console.log('callback 42 school');

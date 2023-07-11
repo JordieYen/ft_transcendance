@@ -177,7 +177,7 @@ export const LeaderboardsIcon = () => {
 export const HeaderIcon = () => {
   const userData = useUserStore((state) => state.userData);
   const setUserData = useUserStore((state) => state.setUserData);
-
+  
   /**
    * useEffect is only required during the initial loading of the website or page,
    * where user data will be stored in useUserStore hook. To call specific user

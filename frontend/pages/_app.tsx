@@ -5,7 +5,7 @@ import "../src/app/globals.css";
 import CustomToaster from "@/components/CustomToaster";
 import axios from "axios";
 import { SocketProvider } from "@/app/socket/SocketProvider";
-import { SessionProvider } from "next-auth/react";
+import { getSession, SessionProvider } from "next-auth/react";
 import { useRouter } from "next/router";
 import { authMiddleware } from "../middleware/authMiddleware";
 
@@ -18,17 +18,18 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
   const currentPath = router.asPath;
   const allowPages = ["/pong-main"];
   const showAdditionalIcon = allowPages.includes(currentPath);
+  
   return (
     <SessionProvider session={pageProps.session}>
       <SocketProvider>
         {/* <div className="wrapper"> */}
-          <ContentWrapper>
+          {/* <ContentWrapper> */}
             {/* <Header showAdditionalIcon={showAdditionalIcon}/> */}
             <CustomToaster />
-            <Header />
+            {/* <Header /> */}
             <Component {...pageProps} />
             {/* <Footer /> */}
-          </ContentWrapper>
+          {/* </ContentWrapper> */}
         {/* </div> */}
       </SocketProvider>
     </SessionProvider>

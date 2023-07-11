@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { signIn } from "next-auth/react";
+import NextAuth from "next-auth/next";
+import { authOptions } from "../[...nextauth]";
 
 export default async function signIn42School(
     req: NextApiRequest,
@@ -10,11 +11,9 @@ export default async function signIn42School(
     }
 
     try {
-        // await signIn('42-school', { 
-        //     method: "POST",
-        //     redirect: true,
-            // callbackUrl: "http://localhost:3000/auth/callback/42-school"
-        // });
+        console.log('try signing in');
+        // await NextAuth(req, res, authOptions);
+        
         res.status(200).json({ success: true });
     } catch (error: any) {
         res.status(500).json({ error: error.message });
