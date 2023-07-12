@@ -30,13 +30,15 @@ const ThreeDots = ({
   return (
     <>
       {isOpen && (
-        <div className="overlay">
+        <div className=" overlay">
           <div
-            className={`absolute overlay-content flex flex-col left-full top-0 z-[101] w-[100px] h-fill`}
+            className={`member-option-buttons absolute overlay-content flex flex-col left-[97%] top-[-0%] z-[101]`}
             ref={modalRef}
           >
-            <p>Hello</p>
-            <p>World</p>
+            <button className="member-option-button">Role</button>
+            <button className="member-option-button">Mute</button>
+            <button className="member-option-button">Test</button>
+            <button className="member-option-button">More...</button>
           </div>
         </div>
       )}
@@ -105,10 +107,6 @@ const ChatBox: React.FC<any> = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  // useEffect(() => {
-
-  // })
 
   useEffect(() => {
     fetchMessageData();
