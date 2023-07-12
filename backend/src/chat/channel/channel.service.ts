@@ -205,6 +205,6 @@ export class ChannelService {
     if (!user) throw new ForbiddenException('User not found');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
   async testChannel(_currentUser: User) {}
 }

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState, RefObject } from "react";
 import "./ChatBox.css";
 import "../profile/profile.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,6 +14,67 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { SocketContext } from "@/app/socket/SocketProvider";
 import useUserStore from "@/hooks/useUserStore";
+import useModal from "@/hooks/useModal";
+
+const ThreeDots = ({
+  isOpen,
+  closeModal,
+  modalRef,
+  user,
+}: {
+  isOpen: boolean;
+  closeModal: () => void;
+  modalRef: RefObject<HTMLDivElement>;
+  user: any;
+}) => {
+  return (
+    <>
+      {isOpen && (
+        <div className="overlay">
+          <div
+            className={`absolute overlay-content flex flex-col left-full top-0 z-[101] w-[100px] h-fill`}
+            ref={modalRef}
+          >
+            <p>Hello</p>
+            <p>World</p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+const DisplayUser = ({ channelUser }: { channelUser: any }) => {
+  const [isModalOpen, openModal, closeModal, modalRef] = useModal(false);
+
+  return (
+    <div className="members relative">
+      <p>{channelUser?.user?.username}</p>
+      <FontAwesomeIcon
+        className="dots-button"
+        icon={faEllipsisVertical}
+        size="lg"
+        style={{ color: "#d1d0c5" }}
+        onClick={() => openModal()}
+      />
+      {isModalOpen && (
+        <ThreeDots
+          isOpen={isModalOpen}
+          closeModal={closeModal}
+          modalRef={modalRef}
+          user={channelUser.user}
+        />
+      )}
+      {/* <div className="member-options">
+                  <div className="member-buttons">
+                    <button>role</button>
+                    <button>mute</button>
+                    <button>test</button>
+                  </div>
+                </div> */}
+    </div>
+  );
+};
 
 const ChatBox: React.FC<any> = () => {
   const [chat_slide_out, setChatSlideOut] = useState(false);
@@ -25,6 +86,10 @@ const ChatBox: React.FC<any> = () => {
   const [chats, setChats] = useState<any[]>([]);
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef(null);
+  const [channels, setChannels] = useState<any[]>([]);
+  const [channelUsers, setChannelUsers] = useState<any[]>([]);
+  const [channelId, setChannelId] = useState("84");
+  const [currentChannel, setCurrentChannel] = useState<any>(null);
 
   const socket = useContext(SocketContext);
 
@@ -32,11 +97,6 @@ const ChatBox: React.FC<any> = () => {
     state.userData,
     state.setUserData,
   ]);
-
-  let users: String[];
-
-  // users = ["jking-ye", "steh", "jhii", "naz", "leulee", "jakoh", "bro", "atsuki", "gojo", "hyun-zhe", "kwang", "wding-ha", "fr", "bruh"];
-  users = ["jking-ye", "steh", "jhii", "naz", "leulee", "jakoh", "bro"];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -46,11 +106,19 @@ const ChatBox: React.FC<any> = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // useEffect(() => {
+
+  // })
+
   useEffect(() => {
     fetchMessageData();
     fetchUserData();
     fetchChatData();
-  }, []);
+    fetchChannelData();
+    fetchChannelUserData();
+    fetchCurrentChannelData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userData, channelId]);
 
   useEffect(() => {
     scrollToBottom();
@@ -64,22 +132,19 @@ const ChatBox: React.FC<any> = () => {
     });
   }, [socket, messages]);
 
-
   const fetchMessageData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/message/id/84", {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        "http://localhost:3000/message/id/" + channelId,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
       if (response.ok) {
         const messageData = await response.json();
-        // const messageContent = messageData.map((message: any) => {
-        //   return message.message_content;
-        // });
-        // setMessages(messageContent);
-        // console.log("messageContent", messageContent);
         setMessages(messageData);
-        console.log("meesage", messages);
+        console.log("message", messages);
       } else {
         throw new Error("Messages not found");
       }
@@ -99,11 +164,6 @@ const ChatBox: React.FC<any> = () => {
       });
       if (response.ok) {
         const userData = await response.json();
-        // const userContent = userData.map((user: any) => {
-        //   return user.avatar;
-        // });
-        // setUsers(userContent);
-        // console.log("userContent", userContent);
         setUsers(userData);
         console.log("userContent", userData);
         setChats(userData);
@@ -142,25 +202,82 @@ const ChatBox: React.FC<any> = () => {
     return <div>messages not found</div>;
   }
 
+  const fetchChannelData = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3000/channel/userid/" + userData.id,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        const channelData = await response.json();
+        setChannels(channelData);
+        console.log("channelContent", channelData);
+      } else {
+        throw new Error("Messages not found");
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
+  };
+  if (!messages) {
+    return <div>messages not found</div>;
+  }
+
+  const fetchChannelUserData = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3000/channel-user/channel/" + channelId,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        const channelUserData = await response.json();
+        setChannelUsers(channelUserData);
+        console.log("channelUserContent", channelUserData);
+      } else {
+        throw new Error("Messages not found");
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
+  };
+  if (!messages) {
+    return <div>messages not found</div>;
+  }
+
+  const fetchCurrentChannelData = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3000/channel/id/" + channelId,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        const channelData = await response.json();
+        setCurrentChannel(channelData);
+        console.log("channelUserContent", channelData);
+      } else {
+        throw new Error("Messages not found");
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
+  };
+  if (!messages) {
+    return <div>messages not found</div>;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim() !== "") {
-      // const response = await fetch("http://localhost:3000/message/create", {
-      //   method: "POST",
-      //   credentials: "include",
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     message_content: inputValue,
-      //     message_type: "text",
-      //     channel_id: 84
-      //   })
-      // });
-      socket?.emit("send-message", inputValue, "text", 84, userData.id);
-      // console.log("text", inputValue);
-      // setMessages([...messages, inputValue]);
-
+      socket?.emit("send-message", inputValue, "text", channelId, userData.id);
       setInputValue("");
     }
   };
@@ -221,7 +338,7 @@ const ChatBox: React.FC<any> = () => {
               group_slide_out ? "group-box-display" : "group-box-hide"
             }`}
           >
-            <p className="title">People</p>
+            <p className="title">Chats</p>
             <form>
               <input
                 className="search-bar"
@@ -230,6 +347,22 @@ const ChatBox: React.FC<any> = () => {
               />
             </form>
             <div className="friends">
+              {channels.map((channel, index) => (
+                <div
+                  className="friend"
+                  key={index}
+                  onClick={() => {
+                    setChannelId(channel?.channel_uid);
+                    setGroupSlideOut((current) => !current);
+                  }}
+                >
+                  <img src="gc.jpg" className="friend-profile-pictures" />
+                  <div className="user-data">
+                    <p className="user-name">{channel?.channel_name}</p>
+                    <p className="user-status">#{channel?.channel_uid}</p>
+                  </div>
+                </div>
+              ))}
               {allUsers.map((user, index) => (
                 <div
                   key={index}
@@ -247,7 +380,8 @@ const ChatBox: React.FC<any> = () => {
             </div>
           </div>
           <div className="chat-nav">
-            <h1 className="chat-name">jking-ye</h1>
+            {/* <h1 className="chat-name">jking-ye</h1> */}
+            <h1 className="chat-name">{currentChannel?.channel_name}</h1>
             <FontAwesomeIcon
               className="more-button"
               icon={chat_members_slide_out ? faChevronUp : faChevronDown}
@@ -263,17 +397,8 @@ const ChatBox: React.FC<any> = () => {
                 : "chat-members-hide"
             }`}
           >
-            {users.map((user, index) => (
-              <div className="members" key={index}>
-                <p>{user}</p>
-                <FontAwesomeIcon
-                  className="dots-button"
-                  icon={faEllipsisVertical}
-                  size="lg"
-                  style={{ color: "#d1d0c5" }}
-                  onClick={() => setChatSlideOut((current) => !current)}
-                />
-              </div>
+            {channelUsers.map((channelUser, index) => (
+              <DisplayUser channelUser={channelUser} key={index} />
             ))}
           </div>
           <ul className="list">
@@ -288,7 +413,16 @@ const ChatBox: React.FC<any> = () => {
             </li>
             {messages.map((message, index) => (
               <li className="list-item" key={index}>
-                <p className="sender-name">{message?.sender?.username}</p>
+                <p
+                  className={`sender-name ${
+                    messages[index - 1]?.sender?.username !==
+                    message?.sender?.username
+                      ? null
+                      : "invisible"
+                  }`}
+                >
+                  {message?.sender?.username}
+                </p>
                 <p className="sender-message">{message?.message_content}</p>
               </li>
             ))}
