@@ -25,6 +25,7 @@ const Login = () => {
        onClick={ async () => await signIn('42-school', { 
           method: "POST",
           redirect: true,
+          // callbackUrl: "http://localhost:3001/pong-main",
           // callbackUrl: "http://localhost:3000/auth/login"
           // callbackUrl: "http://localhost:3001/api/auth/callback/42-school"
         })}>

@@ -28,7 +28,7 @@ export const PostgresAdapter = (pool: Pool): Adapter<any> => {
         const client = await pool.connect();
         try {
             const session = await client.query(
-                `SELECT * FROM sessions WHERE id = $1`,
+                `SELECT * FROM session WHERE id = $1`,
                 [sessionToken]
             );
             if (session.rows.length) {
@@ -50,7 +50,7 @@ export const PostgresAdapter = (pool: Pool): Adapter<any> => {
         const client = await pool.connect();
         try {
             const newSession = await client.query(
-                `INSERT INTO sessions (id, user_id, expires) VALUES ($1, $2, $3) RETURNING *`,
+                `INSERT INTO session (id, user_id, expires) VALUES ($1, $2, $3) RETURNING *`,
                 [session.sessionToken, session.userId, session.expires]
             );
             if (newSession.rows.length) return newSession.rows[0];
