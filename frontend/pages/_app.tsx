@@ -23,20 +23,20 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
     <SessionProvider session={pageProps.session}>
       <SocketProvider>
         {/* <div className="wrapper"> */}
-          {/* <ContentWrapper> */}
+          <SessionCheck>
             {/* <Header showAdditionalIcon={showAdditionalIcon}/> */}
             <CustomToaster />
-            {/* <Header /> */}
+            <Header />
             <Component {...pageProps} />
             {/* <Footer /> */}
-          {/* </ContentWrapper> */}
+          </SessionCheck>
         {/* </div> */}
       </SocketProvider>
     </SessionProvider>
   );
 };
 
-const ContentWrapper = ({ children }: any) => {
+const SessionCheck = ({ children }: any) => {
   const [fetchedData, setFetchedData] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

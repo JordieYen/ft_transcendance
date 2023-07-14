@@ -5,6 +5,7 @@ import FortyTwoProvider from "next-auth/providers/42-school";
 import { redirect } from "next/dist/server/api-utils";
 import { Pool } from "pg";
 import { PostgresAdapter } from "./PostgressAdapter";
+import GoogleProvider from "next-auth/providers/google";
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -16,28 +17,35 @@ const pool = new Pool({
 
 export const authOptions: AuthOptions = {
   providers: [
-    FortyTwoProvider({
-      clientId: process.env.CLIENT_ID!,
-      clientSecret: process.env.CLIENT_SECRET!,
-      profile(profile) {
-        return {
-          id: profile.id,
-          name: profile.login,
-          image: profile.image.link,
-          email: profile.email,
-        };
-      },
+    // FortyTwoProvider({
+    //   clientId: process.env.CLIENT_ID!,
+    //   clientSecret: process.env.CLIENT_SECRET!,
+    //   profile(profile) {
+    //     return {
+    //       id: profile.id,
+    //       name: profile.login,
+    //       image: profile.image.link,
+    //       email: profile.email,
+    //     };
+    //   },
+    // }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  adapter: PostgresAdapter(pool),
   callbacks: {
     async signIn({ profile, user, account }) {
       if (!user) return false;
-      if (typeof window !== "undefined")
-        window.location.href = "http://localhost:3000/auth/login";
+      console.log("user", user);
       return true;
     },
 
     async session({ session, token, trigger, user, newSession }) {
+      session.user = user;
+      console.log("session", session);
+      console.log("session.user", session.user);
       return session;
     },
   },
@@ -45,7 +53,6 @@ export const authOptions: AuthOptions = {
   pages: {
     signIn: "/login",
   },
-  // adapter: PostgresAdapter(pool),
 };
 
 export default NextAuth(authOptions);

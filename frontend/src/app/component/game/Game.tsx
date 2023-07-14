@@ -332,12 +332,6 @@ const Game = () => {
             document.removeEventListener("keyup", handleKeyUp);
         }
     }, []);
-
-    return (
-        <div>
-            <MatchMaking />
-        </div>
-    );
 };
 
 export default Game;
