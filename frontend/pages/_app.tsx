@@ -8,6 +8,7 @@ import { SocketProvider } from "@/app/socket/SocketProvider";
 import { getSession, SessionProvider } from "next-auth/react";
 import { useRouter } from "next/router";
 import { authMiddleware } from "../middleware/authMiddleware";
+import { GameProvider } from "@/app/component/game/GameContext";
 
 axios.defaults.baseURL = "http://localhost:3000/";
 
@@ -27,7 +28,9 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
             {/* <Header showAdditionalIcon={showAdditionalIcon}/> */}
             <CustomToaster />
             <Header />
-            <Component {...pageProps} />
+              <GameProvider>
+                <Component {...pageProps} />
+              </GameProvider>
             {/* <Footer /> */}
           </SessionCheck>
         {/* </div> */}

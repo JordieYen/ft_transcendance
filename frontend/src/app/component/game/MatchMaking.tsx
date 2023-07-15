@@ -2,6 +2,9 @@ import { SocketContext } from "@/app/socket/SocketProvider";
 import useUserStore, { UserData } from "@/hooks/useUserStore";
 import { use, useContext, useEffect, useState } from "react";
 import Avatar from "../header_icon/Avatar";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useGameData } from "./GameContext";
 
 const MatchMaking  = () => {
     const [isMatchmaking, setIsMatchmaking] = useState(false);
@@ -13,6 +16,8 @@ const MatchMaking  = () => {
     const socket = useContext(SocketContext);
     const [player1User, setPlayer1User] = useState<UserData | null>(null);
     const [player2User, setPlayer2User] = useState<UserData | null>(null);
+    const router = useRouter();
+    const { setGameState } = useGameData();
 
     useEffect(() => {
         if (socket && userData.id) {
@@ -78,6 +83,25 @@ const MatchMaking  = () => {
         }
     }, [roomId, isMatchmaking]);
 
+    useEffect(() => {
+      if (roomId && isMatchmaking && player1User && player2User) {
+        const gameData = {
+          roomId,
+          player1User,
+          player2User,
+        }
+
+        setGameState(gameData);
+        const timeout = setTimeout(() => {
+          router.push('/game');
+        }, 5000);
+
+        return () => {
+          clearTimeout(timeout);
+        }
+      }
+    }, [roomId, isMatchmaking, player1User, player2User, router]);
+
     return (
         <div className="flex flex-col h-screen gap-5 relative">
           <button className="bg-mygrey" onClick={handleMatchmaking} disabled={isMatchmaking}>
@@ -92,10 +116,17 @@ const MatchMaking  = () => {
                 <div className="flex justify-between bg-black p-4 rounded-lg h-full">
                   <div className="flex flex-col items-center justify-top">
                     <p className="text-white">Player 1: {player1User?.username}</p>
-                        <Avatar src={player1User?.avatar || ""} 
+                        {/* <Avatar src={player1User?.avatar || ""} 
                         alt="user avatar"
                         width={150}
                         height={150}
+                        /> */}
+                        <Image
+                          className="transform hover:scale-125 object-cover rounded-full"
+                          src={player1User?.avatar || ""}
+                          alt="user avatar"
+                          width={150}
+                          height={150}
                         />
                   </div>
                   <div className="flex flex-col items-center justify-center">
@@ -103,11 +134,18 @@ const MatchMaking  = () => {
                   </div>
                   <div className="flex flex-col items-center justify-end">
                     <p className="text-white">Player 2: {player2User?.username}</p>
-                    <Avatar src={player2User?.avatar || ""} 
+                    {/* <Avatar src={player2User?.avatar || ""} 
                       alt="user avatar"
                       width={150}
                       height={150}
-                    />
+                    /> */}
+                      <Image
+                        className="transform hover:scale-125 object-cover rounded-full"
+                        src={player2User?.avatar || ""}
+                        alt="user avatar"
+                        width={150}
+                        height={150}
+                      />
                   </div>
                 </div>
               </div>

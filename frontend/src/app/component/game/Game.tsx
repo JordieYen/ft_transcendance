@@ -2,6 +2,8 @@ import { use, useContext, useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
 import Matter from 'matter-js';
 import MatchMaking from "./MatchMaking";
+import { useGameData } from "./GameContext";
+import { log } from "console";
 
 const Game = () => {
     const scoreLeftRef = useRef(0);
@@ -9,6 +11,8 @@ const Game = () => {
     const isGameOver = useRef(false);
     const animationFrameId = useRef(0);
     const winnerTextRef = useRef<PIXI.Text | null>(null);
+    const { gameState } = useGameData();
+    console.log('gameState', gameState);
 
     useEffect(() => {
         const app = new PIXI.Application({
@@ -332,6 +336,8 @@ const Game = () => {
             document.removeEventListener("keyup", handleKeyUp);
         }
     }, []);
+
+    return null;
 };
 
 export default Game;
