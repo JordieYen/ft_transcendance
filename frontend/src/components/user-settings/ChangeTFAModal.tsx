@@ -52,14 +52,13 @@ const ChangeTFAModal = ({
         params: { uid: userData?.id?.toString() },
       })
       .then(() => {
-        console.log("success");
         setUserData({
           ...userData,
           authentication: true,
         });
       })
       .catch(() => {
-        console.log("error");
+        toast.error("Failed to update 2FA. Please try again later");
       });
   };
 

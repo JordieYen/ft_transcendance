@@ -39,7 +39,7 @@ export class AuthController {
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
   async callback(@Req() req: Request, @Res() res: Response): Promise<void> {
-    return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
+    return res.redirect(`${process.env.NEXT_HOST}/setup`);
   }
 
   /* 2FA
@@ -54,15 +54,27 @@ export class AuthController {
   */
 
   // @UseGuards(AuthenticatedGuard)
+
+  // COMMAND THIS OUT
+  // @Get('2fa')
+  // async enableTwoFactorAuth(
+  //   @Req() req: Request,
+  //   @Res() res: Response,
+  // ): Promise<void> {
+  //   const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
+  //     req.user,
+  //   );
+  //   await this.authService.displayQrCode(res, otpAuthUrl);
+  // }
+
   @Get('2fa')
-  async enableTwoFactorAuth(
-    @Req() req: Request,
-    @Res() res: Response,
-  ): Promise<void> {
-    const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
-      req.user,
-    );
-    await this.authService.displayQrCode(res, otpAuthUrl);
+  async enableTwoFactorAuth(@Req() req: Request) {
+    // console.log(req);
+    // const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
+    //   req.user,
+    // );
+    // await this.authService.displayQrCode(res, otpAuthUrl);
+    return await this.authService.generateTwoFactorAuthSecret(req.user);
   }
   // async enableTwoFactorAuth(
   //   @Req() req: Request,
@@ -82,8 +94,9 @@ export class AuthController {
     @Res() res: Response,
     @Body() body: { otp: string },
   ) {
-    const isValid = await this.authService.verifyOtp(body.otp);
+    const isValid = await this.authService.verifyOtp(req.user, body.otp);
     if (isValid) {
+      await this.authService.storeSecret(req.user);
       const payload = await this.authService.createPayload(req.user);
       const token = await this.authService.createToken(payload);
       res.setHeader('Authorization', `Bearer ${token}`);

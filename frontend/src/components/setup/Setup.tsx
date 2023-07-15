@@ -3,30 +3,113 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import {
   motion,
-  useMotionValue,
-  animate,
   AnimatePresence,
+  useMotionValue,
+  useTransform,
 } from "framer-motion";
-import { interpolate } from "flubber";
 import useUserStore from "@/store/useUserStore";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
+import SixDigitVerification from "../user-settings/SixDigitVerification";
+import QRCode from "qrcode";
+import { useRouter } from "next/router";
+import { Router } from "react-router-dom";
 
-const Setup = () => {
-  const [inputValue, setInputValue] = useState<string>("");
-  const shuttlecock =
-    "M349 64c-36 0-76.4 15.8-108.8 48.2S192 184.9 192 221c0 28.2 9.6 53.2 27.7 71.3c40.4 40.4 120.7 38.9 180.1-20.5C432.2 239.4 448 199.1 448 163c0-28.2-9.6-53.2-27.7-71.3S377.1 64 349 64zm-154 2.9C238.5 23.4 294.8 0 349 0c42.8 0 84.9 14.8 116.6 46.5S512 120.2 512 163c0 54.2-23.4 110.5-66.9 154c-54.4 54.4-131.9 78.7-198.2 61.7c-29.4-7.5-62.9-5.5-84.3 16L148.3 409c6.4 12.1 4.5 27.4-5.6 37.6l-56 56c-12.5 12.5-32.8 12.5-45.3 0l-32-32c-12.5-12.5-12.5-32.8 0-45.3l56-56c10.2-10.2 25.5-12.1 37.6-5.6l14.5-14.5c21.4-21.4 23.5-54.7 16-84C129.8 250.9 128 236 128 221c0-54.2 23.4-110.5 66.9-154z";
-  const [startMorph, setStartMorph] = useState(false);
-  const [morphComplete, setMorphComplete] = useState(false);
-  const progress = useMotionValue(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [previewPic, setPreviewPic] = useState<string>("");
-  const [selectedPic, setSelectedPic] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+// export const Example = () => {
+//   const x = useMotionValue(0);
+//   const xInput = [-100, 0, 100];
+//   const background = useTransform(x, xInput, [
+//     "linear-gradient(90deg, #ff008c 0%, rgb(211, 9, 225) 100%)",
+//     "linear-gradient(90deg, #323437 100%, #323437 100%)",
+//     "linear-gradient(90deg, rgb(230, 255, 0) 0%, rgb(3, 209, 0) 100%)",
+//   ]);
+//   const color = useTransform(x, xInput, [
+//     "rgb(211, 9, 225)",
+//     "rgb(50, 52, 55)",
+//     "rgb(3, 209, 0)",
+//   ]);
 
+//   const tickPath = useTransform(x, [10, 60], [0, 1]);
+//   const crossPathA = useTransform(x, [-10, -35], [0, 1]);
+//   const crossPathB = useTransform(x, [-35, -60], [0, 1]);
+
+//   useEffect(() => {
+//     const unsubscribe = x.on("change", (currentX) => {
+//       const leftConstraint = -70;
+//       const rightConstraint = 70;
+
+//       if (currentX <= leftConstraint) {
+//         setCurrentStep("end");
+//       } else if (currentX >= rightConstraint) {
+//         isSetupTFA(true);
+//       }
+//     });
+
+//     return () => {
+//       unsubscribe();
+//     };
+//   }, [x]);
+
+//   return (
+//     <motion.div
+//       className="w-full h-full rounded-full border-[1px] border-dimgrey items-center justify-center"
+//       style={{ background, height: 50 }}
+//     >
+//       <motion.div
+//         className="flex absolute bg-timberwolf rounded-full items-center justify-center"
+//         style={{
+//           x,
+//           height: "50px",
+//           left: "calc(50% - 25px)",
+//         }}
+//         drag="x"
+//         dragConstraints={{ left: -65, right: 65 }}
+//       >
+//         <svg
+//           className="w-[95%] h-[95%]"
+//           viewBox="0 0 50 50"
+//           style={{ height: "100%" }}
+//         >
+//           <motion.path
+//             fill="none"
+//             strokeWidth="2"
+//             stroke={color}
+//             d="M 0, 20 a 20, 20 0 1,0 40,0 a 20, 20 0 1,0 -40,0"
+//             style={{ translateX: 5, translateY: 5 }}
+//           />
+//           <motion.path
+//             fill="none"
+//             strokeWidth="2"
+//             stroke={color}
+//             d="M14,26 L 22,33 L 35,16"
+//             strokeDasharray="0 1"
+//             style={{ pathLength: tickPath }}
+//           />
+//           <motion.path
+//             fill="none"
+//             strokeWidth="2"
+//             stroke={color}
+//             d="M17,17 L33,33"
+//             strokeDasharray="0 1"
+//             style={{ pathLength: crossPathA }}
+//           />
+//           <motion.path
+//             fill="none"
+//             strokeWidth="2"
+//             stroke={color}
+//             d="M33,17 L17,33"
+//             strokeDasharray="0 1"
+//             style={{ pathLength: crossPathB }}
+//           />
+//         </svg>
+//       </motion.div>
+//     </motion.div>
+//   );
+// };
+
+const LogoStep = () => {
   const [userData, setUserData] = useUserStore((state) => [
     state.userData,
     state.setUserData,
@@ -40,41 +123,53 @@ const Setup = () => {
     ]);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/auth/profile", {
-          credentials: "include",
-        });
-        if (response.ok) {
-          const userData = await response.json();
-          setUserData(userData);
-          setInputValue(userData.username);
-          console.log(userData.avatar);
-          setPreviewPic(userData.avatar);
-          setSelectedPic(userData.avatar);
-        } else {
-          throw new Error("User not found");
-        }
-      } catch (error) {
-        console.log("Error fetching user data:", error);
+    const timeout = setTimeout(() => {
+      if (userData.firstTimeLogin === true) {
+        setCurrentStep("name");
+      } else {
+        setCurrentStep("end");
       }
+    }, 2000);
+
+    return () => {
+      clearTimeout(timeout);
     };
-    fetchUserData();
   }, []);
 
-  useEffect(() => {
-    if (startMorph) {
-      const animation = animate(progress, 1, {
-        duration: 0.5,
-        ease: "easeInOut",
-        onComplete: () => {
-          setMorphComplete(true);
-        },
-      });
+  return (
+    <motion.div
+      className="flex flex-col items-center justify-center"
+      initial={{ y: "0vh" }}
+      exit={{ y: "-100vh" }}
+      transition={{ ease: "easeInOut", duration: 1.5 }}
+    >
+      <Image
+        className="object-contain"
+        src="/main-logo.svg"
+        alt="Logo"
+        width={240}
+        height={176}
+      />
+      <p className="text-5xl font-pmarker text-timberwolf">Pongmington</p>
+    </motion.div>
+  );
+};
 
-      return () => animation.stop();
-    }
-  }, [startMorph]);
+const NameStep = () => {
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+  const [currentStep, currentPage, setCurrentStep, setCurrentPage] =
+    useAnimateStore((state) => [
+      state.currentStep,
+      state.currentPage,
+      state.setCurrentStep,
+      state.setCurrentPage,
+    ]);
+
+  const [showName, setShowName] = useState(false);
+  const [inputValue, setInputValue] = useState<string>(userData.username);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -83,6 +178,10 @@ const Setup = () => {
   const handleNameUpdate = (inputValue: string) => {
     if (inputValue === "") {
       toast.error("Failed to change name: Name is not allowed to be empty!");
+    } else if (inputValue.length < 3) {
+      toast.error(
+        "Failed to change name: Name must contain at least 3 characters",
+      );
     } else {
       const updateUserDto = {
         username: inputValue,
@@ -98,6 +197,104 @@ const Setup = () => {
         });
     }
   };
+
+  return (
+    <motion.div
+      className="flex flex-col items-center justify-center"
+      initial={{ y: "100vh" }}
+      animate={{ y: "0vh" }}
+      transition={{ ease: "easeInOut", duration: 1.5 }}
+      onAnimationComplete={() => {
+        setTimeout(() => {
+          setShowName(true);
+        }, 2200);
+      }}
+      exit={{ y: "-100vh" }}
+    >
+      <div className="w-[400px] h-[200px] items-center justify-start">
+        <div className="flex w-full h-full items-center justify-start">
+          {showName ? (
+            <div className="flex flex-col w-full h-full border-dashed border-2 border-dimgrey rounded-3xl shadow-xl shadow-jetblack px-10 py-8">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <h2 className="text-2xl font-roboto text-timberwolf">Name</h2>
+              </motion.div>
+              <input
+                type="text"
+                value={inputValue}
+                onChange={handleChange}
+                className="w-full my-3 rounded-md px-2 py-1 bg-dimgrey text-timberwolf text-xl font-roboto outline-none caret-saffron"
+              />
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <button
+                  className="flex w-full rounded-md px-2 py-1 bg-jetblack justify-center"
+                  onClick={() => handleNameUpdate(inputValue)}
+                >
+                  <p className="text-xl text-timberwolf">Confirm</p>
+                </button>
+              </motion.div>
+            </div>
+          ) : (
+            <div className="flex flex-col w-full h-full px-10 py-8">
+              <h2 className="text-2xl font-roboto text-onyxgrey">Name</h2>
+              <div className="flex w-full h-9 my-3 rounded-md px-2 py-1">
+                <motion.div
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 0 }}
+                  transition={{
+                    delay: 2.5,
+                    ease: "easeInOut",
+                    duration: 0.2,
+                  }}
+                >
+                  <p className="text-xl text-timberwolf">Hi,&nbsp;</p>
+                </motion.div>
+                <motion.div
+                  animate={{ x: -47 }}
+                  transition={{
+                    delay: 2.5,
+                    ease: "easeInOut",
+                    duration: 1,
+                  }}
+                >
+                  <p className="text-xl text-timberwolf">{userData.username}</p>
+                </motion.div>
+              </div>
+              <div className="w-full px-2 py-1 justify-center">
+                <p className="text-xl text-timberwolf hidden">Confirm</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const AvatarStep = () => {
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+  const [currentStep, currentPage, setCurrentStep, setCurrentPage] =
+    useAnimateStore((state) => [
+      state.currentStep,
+      state.currentPage,
+      state.setCurrentStep,
+      state.setCurrentPage,
+    ]);
+
+  const [previewPic, setPreviewPic] = useState<string>(userData.avatar);
+  const [selectedPic, setSelectedPic] = useState<File | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -125,6 +322,9 @@ const Setup = () => {
   };
 
   const handlePicUpload = () => {
+    if (!selectedPic) {
+      setCurrentStep("tfa");
+    }
     if (selectedPic) {
       const formData = new FormData();
       formData.append("file", selectedPic);
@@ -136,6 +336,8 @@ const Setup = () => {
             ...userData,
             avatar: response.data.avatarURL,
           });
+          console.log("hehehe");
+          setCurrentStep("tfa");
         })
         .catch(() => {
           console.log("error upload avatar");
@@ -144,131 +346,309 @@ const Setup = () => {
   };
 
   return (
-    <div className="flex flex-col w-screen h-screen items-center justify-center overflow-hidden">
-      {currentStep === "start" && (
-        <motion.div
-          className="flex flex-col items-center justify-center"
-          animate={{ y: "-100vh" }}
-          transition={{ ease: "easeIn", delay: 2, duration: 1.5 }}
-          onAnimationComplete={() => {
-            setCurrentStep("name"), setIsVisible(true);
-          }}
-        >
-          <Image
-            className="object-contain"
-            src="/main-logo.svg"
-            alt="Logo"
-            width={240}
-            height={176}
+    <motion.div
+      className="flex flex-col items-center justify-center"
+      initial={{ y: "100vh" }}
+      animate={{ y: "0vh" }}
+      transition={{ ease: "easeInOut", duration: 1.5 }}
+      exit={{ y: "-100vh" }}
+    >
+      <div className="w-[360px] border-dashed border-2 border-dimgrey rounded-3xl shadow-xl shadow-jetblack px-10 py-8">
+        <h2 className="text-2xl font-roboto text-timberwolf">Avatar</h2>
+        <div className="flex flex-col my-3 py-1 items-center justify-center avatar-preview w-full">
+          <div
+            className="group cursor-pointer w-48 h-48"
+            onClick={handleCustomButtonClick}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <img
+              width={400}
+              height={400}
+              className="w-48 h-48 rounded-full object-cover bg-jetblack group-hover:opacity-20"
+              src={previewPic}
+              alt="update avatar"
+            />
+            <FontAwesomeIcon
+              icon={faCamera}
+              size="2xl"
+              className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-dimgrey transition-opacity ${
+                isHovered ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              }`}
+            />
+          </div>
+          <input
+            id="file-upload"
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handlePicChange}
+            className="hidden"
           />
-          <p className="text-5xl font-pmarker text-timberwolf">Pongmington</p>
+        </div>
+
+        <button
+          className="flex w-full rounded-md px-2 py-1 bg-jetblack justify-center"
+          onClick={() => handlePicUpload()}
+        >
+          <p className="text-xl text-timberwolf">Confirm</p>
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+
+const TFAStep = () => {
+  const router = useRouter();
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+  const [currentStep, currentPage, setCurrentStep, setCurrentPage] =
+    useAnimateStore((state) => [
+      state.currentStep,
+      state.currentPage,
+      state.setCurrentStep,
+      state.setCurrentPage,
+    ]);
+
+  const [setupTFA, isSetupTFA] = useState(false);
+  const [qrCodeImg, setQRCodeImg] = useState("");
+
+  const x = useMotionValue(0);
+  const xInput = [-100, 0, 100];
+  const background = useTransform(x, xInput, [
+    "linear-gradient(90deg, #ff008c 0%, rgb(211, 9, 225) 100%)",
+    "linear-gradient(90deg, #323437 100%, #323437 100%)",
+    "linear-gradient(90deg, rgb(230, 255, 0) 0%, rgb(3, 209, 0) 100%)",
+  ]);
+  const color = useTransform(x, xInput, [
+    "rgb(211, 9, 225)",
+    "rgb(50, 52, 55)",
+    "rgb(3, 209, 0)",
+  ]);
+
+  const tickPath = useTransform(x, [10, 60], [0, 1]);
+  const crossPathA = useTransform(x, [-10, -35], [0, 1]);
+  const crossPathB = useTransform(x, [-35, -60], [0, 1]);
+
+  useEffect(() => {
+    const unsubscribe = x.on("change", (currentX) => {
+      const leftConstraint = -64;
+      const rightConstraint = 64;
+
+      if (currentX <= leftConstraint) {
+        setCurrentStep("end");
+      } else if (currentX >= rightConstraint) {
+        isSetupTFA(true);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [x]);
+
+  useEffect(() => {
+    const fetchQRCodeData = async () => {
+      try {
+        const response = await axios.get("/auth/2fa", {
+          withCredentials: true,
+        });
+        const qrCodeUrl = response.data;
+
+        const canvas = document.createElement("canvas");
+        await QRCode.toCanvas(canvas, qrCodeUrl);
+        const qrCodeImageData = canvas.toDataURL();
+
+        setQRCodeImg(qrCodeImageData);
+      } catch (error) {
+        toast.error("Failed to generate QR code! Please try again later");
+      }
+    };
+
+    if (setupTFA === true) fetchQRCodeData();
+  }, [setupTFA]);
+
+  const patchTFA = () => {
+    axios
+      .post("/users/authenticate", null, {
+        params: { uid: userData?.id?.toString() },
+      })
+      .then(() => {
+        setUserData({
+          ...userData,
+          authentication: true,
+        });
+        setCurrentStep("end");
+      })
+      .catch(() => {
+        toast.error("Failed to update 2FA. Please try again later");
+      });
+  };
+
+  return (
+    <motion.div
+      className="flex flex-col items-center justify-center space-y-4"
+      initial={{ y: "100vh" }}
+      animate={{ y: "0vh" }}
+      transition={{ ease: "easeInOut", duration: 1.5 }}
+      exit={{ y: "-100vh" }}
+    >
+      <motion.div className="flex flex-col w-[300px] items-center justify-center border-dashed border-2 border-dimgrey rounded-3xl shadow-xl shadow-jetblack px-10 py-8">
+        <h2 className="flex w-full justify-start text-2xl font-roboto text-timberwolf">
+          Activate 2FA
+        </h2>
+        <div className="w-[180px] h-[50px] my-3 items-center justify-center">
+          <motion.div
+            className="w-full h-full rounded-full border-[1px] border-dimgrey items-center justify-center"
+            style={{ background, height: 50 }}
+          >
+            <motion.div
+              className="flex absolute bg-timberwolf rounded-full items-center justify-center"
+              style={{
+                x,
+                height: "50px",
+                left: "calc(50% - 25px)",
+              }}
+              drag="x"
+              dragConstraints={{ left: -65, right: 65 }}
+            >
+              <svg
+                className="w-[95%] h-[95%]"
+                viewBox="0 0 50 50"
+                style={{ height: "100%" }}
+              >
+                <motion.path
+                  fill="none"
+                  strokeWidth="2"
+                  stroke={color}
+                  d="M 0, 20 a 20, 20 0 1,0 40,0 a 20, 20 0 1,0 -40,0"
+                  style={{ translateX: 5, translateY: 5 }}
+                />
+                <motion.path
+                  fill="none"
+                  strokeWidth="2"
+                  stroke={color}
+                  d="M14,26 L 22,33 L 35,16"
+                  strokeDasharray="0 1"
+                  style={{ pathLength: tickPath }}
+                />
+                <motion.path
+                  fill="none"
+                  strokeWidth="2"
+                  stroke={color}
+                  d="M17,17 L33,33"
+                  strokeDasharray="0 1"
+                  style={{ pathLength: crossPathA }}
+                />
+                <motion.path
+                  fill="none"
+                  strokeWidth="2"
+                  stroke={color}
+                  d="M33,17 L17,33"
+                  strokeDasharray="0 1"
+                  style={{ pathLength: crossPathB }}
+                />
+              </svg>
+            </motion.div>
+          </motion.div>
+        </div>
+      </motion.div>
+      {setupTFA && (
+        <motion.div
+          className="flex flex-col w-[500px] h-fit border-2 border-dimgrey rounded-3xl shadow-xl shadow-jetblack p-8 space-y-3"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, ease: "easeIn", duration: 0.5 }}
+        >
+          <p className="text-md text-dimgrey">
+            Scan this QR Code with your Authenticator App and enter the
+            verification code below.
+          </p>
+          <div className="flex rounded-lg border-[3px] border-saffron bg-white items-center justify-center">
+            {qrCodeImg ? (
+              <Image
+                src={qrCodeImg}
+                alt="2FA QR Code"
+                width={150}
+                height={150}
+              />
+            ) : (
+              <p>Loading QR Code...</p>
+            )}
+          </div>
+          <hr className="border-dimgrey"></hr>
+          <p className="text-md">Verification Code:</p>
+          <SixDigitVerification
+            closeModal={undefined}
+            verifiedAction={() => patchTFA()}
+          />
         </motion.div>
       )}
-      <AnimatePresence mode="wait">
-        <div key={currentStep}>
-          {isVisible && currentStep === "name" && (
-            <motion.div
-              className="flex flex-col items-center justify-center"
-              initial={{ y: "100vh" }}
-              animate={{ y: "0vh" }}
-              transition={{ ease: "easeInOut", duration: 1.5 }}
-              exit={{ y: "-100vh" }}
-            >
-              <div className="w-[400px] border-dashed border-2 border-dimgrey rounded-3xl shadow-xl shadow-jetblack px-10 py-8">
-                <h2>
-                  <p className="text-2xl text-timberwolf">Name</p>
-                </h2>
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={handleChange}
-                  className="w-full my-3 rounded-md px-2 py-1 bg-dimgrey text-timberwolf text-xl font-roboto outline-none caret-saffron"
-                />
-                <button
-                  className="flex w-full rounded-md px-2 py-1 bg-jetblack justify-center"
-                  onClick={() => handleNameUpdate(inputValue)}
-                >
-                  <p className="text-xl text-timberwolf">Confirm</p>
-                </button>
-              </div>
-            </motion.div>
-          )}
-          {isVisible && currentStep === "avatar" && (
-            <motion.div
-              className="flex flex-col items-center justify-center"
-              initial={{ y: "100vh" }}
-              animate={{ y: "0vh" }}
-              transition={{ ease: "easeInOut", duration: 1.5 }}
-              onAnimationComplete={() => setStartMorph(true)}
-              exit={{ y: "-100vh" }}
-            >
-              <div className="w-[400px] border-dashed border-2 border-dimgrey rounded-3xl shadow-xl shadow-jetblack px-10 py-8">
-                <h2>
-                  <p className="text-2xl text-timberwolf">Avatar</p>
-                </h2>
+    </motion.div>
+  );
+};
 
-                <div className="flex flex-col my-3 py-1 items-center justify-center avatar-preview w-full">
-                  {morphComplete ? (
-                    <div
-                      className="group cursor-pointer w-48 h-48"
-                      onClick={handleCustomButtonClick}
-                      onMouseEnter={handleMouseEnter}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      <img
-                        width={400}
-                        height={400}
-                        className="w-48 h-48 rounded-full object-cover bg-jetblack group-hover:opacity-20"
-                        src={previewPic}
-                        alt="update avatar"
-                      />
-                      <FontAwesomeIcon
-                        icon={faCamera}
-                        size="2xl"
-                        className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-dimgrey transition-opacity ${
-                          isHovered
-                            ? "opacity-100"
-                            : "opacity-0 group-hover:opacity-100"
-                        }`}
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-48 h-48 bg-jetblack rounded-full">
-                      <motion.svg
-                        className="absolute w-20 h-20 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fill-dimgrey"
-                        // xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        initial={{ path: shuttlecock }}
-                        // animate={{ path: "M50 50l-50 50h100z" }}
-                        animate={{ path: interpolate(shuttlecock, "M0 0") }}
-                      >
-                        <motion.path d={shuttlecock} />
-                      </motion.svg>
-                    </div>
-                  )}
+const Setup = () => {
+  const router = useRouter();
+  const [isVisible, setIsVisible] = useState(false);
 
-                  <input
-                    id="file-upload"
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePicChange}
-                    className="hidden"
-                  />
-                </div>
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+  const [currentStep, currentPage, setCurrentStep, setCurrentPage] =
+    useAnimateStore((state) => [
+      state.currentStep,
+      state.currentPage,
+      state.setCurrentStep,
+      state.setCurrentPage,
+    ]);
 
-                <button
-                  className="flex w-full rounded-md px-2 py-1 bg-jetblack justify-center"
-                  onClick={() => handlePicUpload()}
-                >
-                  <p className="text-xl text-timberwolf">Confirm</p>
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </AnimatePresence>
-    </div>
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/auth/profile", {
+          credentials: "include",
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setUserData(userData);
+          setCurrentPage("setup");
+          setCurrentStep("start");
+          setIsVisible(true);
+        } else {
+          throw new Error("User not found");
+        }
+      } catch (error) {
+        console.log("Error fetching user data:", error);
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  return (
+    <>
+      {isVisible && (
+        <AnimatePresence
+          mode="wait"
+          onExitComplete={
+            currentStep === "end" ? () => router.push("pong-main") : undefined
+          }
+        >
+          <div
+            key={currentStep}
+            className="flex flex-col w-screen h-screen relative items-center justify-center overflow-hidden"
+          >
+            {currentStep === "start" && <LogoStep />}
+            {currentStep === "name" && <NameStep />}
+            {currentStep === "avatar" && <AvatarStep />}
+            {currentStep === "tfa" && <TFAStep />}
+          </div>
+        </AnimatePresence>
+      )}
+    </>
   );
 };
 

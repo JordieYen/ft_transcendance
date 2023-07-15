@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type Step = "name" | "avatar" | "tfa" | "start";
+export type Step = "start" | "name" | "avatar" | "tfa" | "end";
 export type Page = "main" | "setup" | "";
 
 interface AnimateStore {

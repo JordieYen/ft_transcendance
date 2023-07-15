@@ -6,7 +6,7 @@ const SixDigitVerification = ({
   closeModal,
   verifiedAction,
 }: {
-  closeModal: () => void;
+  closeModal?: () => void;
   verifiedAction: () => void;
 }) => {
   const [verCode, setVerCode] = useState(["", "", "", "", "", ""]);
@@ -103,6 +103,7 @@ const SixDigitVerification = ({
       })
       .catch(() => {
         toast.error("Authentication failed!");
+        verInput.current[5].focus();
       });
   };
 

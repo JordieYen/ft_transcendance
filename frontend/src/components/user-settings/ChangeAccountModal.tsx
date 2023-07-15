@@ -47,6 +47,10 @@ const ChangeAccountModal = ({
   const handleNameUpdate = (inputValue: string) => {
     if (inputValue === "") {
       toast.error("Failed to change name: Name is not allowed to be empty!");
+    } else if (inputValue.length < 3) {
+      toast.error(
+        "Failed to change name: Name must contain at least 3 characters",
+      );
     } else {
       if (userData.authentication === true) {
         setPromptTFA(true);

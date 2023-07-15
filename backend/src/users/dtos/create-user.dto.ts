@@ -20,4 +20,7 @@ export class CreateUserDto {
 
   @IsOptional()
   authenticationString?: string;
+
+  @IsOptional()
+  firstTimeLogin?: boolean;
 }

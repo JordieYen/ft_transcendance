@@ -11,10 +11,20 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import UserProfile from "@/app/webhook/UserProfile";
+import { motion, AnimatePresence } from "framer-motion";
+import useAnimateStore from "@/store/useAnimateStore";
 
 const PongMain: React.FC<any> = ({ userId }) => {
   const { data: session, status } = useSession();
   console.log("session", session);
+
+  const [currentStep, currentPage, setCurrentStep, setCurrentPage] =
+    useAnimateStore((state) => [
+      state.currentStep,
+      state.currentPage,
+      state.setCurrentStep,
+      state.setCurrentPage,
+    ]);
 
   if (status === "authenticated") {
     console.log("session", session);
@@ -44,7 +54,15 @@ const PongMain: React.FC<any> = ({ userId }) => {
   const totalGames = stat?.wins + stat?.losses;
 
   return (
-    <div className="profile-page">
+    <motion.div
+      initial={currentPage === "setup" ? { y: "100vh" } : { y: "0vh" }}
+      animate={{ y: "0vh" }}
+      transition={{ ease: "easeInOut", duration: 1.5 }}
+      className="profile-page"
+      onAnimationComplete={
+        currentPage === "setup" ? () => setCurrentPage("main") : undefined
+      }
+    >
       <div className="top-profile">
         <div className="avatar-section">
           <Avatar src={avatar} alt="user avartar" width={100} height={100} />
@@ -75,9 +93,9 @@ const PongMain: React.FC<any> = ({ userId }) => {
       </div>
       <div className="bottom-content">
         <MatchHistory p1_match={p1_match} p2_match={p2_match} userId={id} />
-        <MatchMaking stat={stat}/>
+        <MatchMaking stat={stat} />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

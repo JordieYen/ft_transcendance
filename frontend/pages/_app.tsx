@@ -8,6 +8,7 @@ import { SocketProvider } from "@/app/socket/SocketProvider";
 import { SessionProvider } from "next-auth/react";
 import { useRouter } from "next/router";
 import { authMiddleware } from "../middleware/authMiddleware";
+import { AnimatePresence } from "framer-motion";
 
 axios.defaults.baseURL = "http://localhost:3000/";
 
@@ -22,13 +23,15 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
     <SessionProvider session={pageProps.session}>
       <SocketProvider>
         {/* <div className="wrapper"> */}
-          <ContentWrapper>
-            {/* <Header showAdditionalIcon={showAdditionalIcon}/> */}
-            <CustomToaster />
-            <Header />
+        <ContentWrapper>
+          {/* <Header showAdditionalIcon={showAdditionalIcon}/> */}
+          <CustomToaster />
+          <Header />
+          <AnimatePresence mode="wait">
             <Component {...pageProps} />
-            {/* <Footer /> */}
-          </ContentWrapper>
+          </AnimatePresence>
+          {/* <Footer /> */}
+        </ContentWrapper>
         {/* </div> */}
       </SocketProvider>
     </SessionProvider>
