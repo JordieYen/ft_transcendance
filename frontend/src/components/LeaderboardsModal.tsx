@@ -1,4 +1,4 @@
-import { UserData } from "@/store/useUserStore";
+import useUserStore, { UserData } from "@/store/useUserStore";
 import axios from "axios";
 import { RefObject, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCrown } from "@fortawesome/free-solid-svg-icons";
 
 const Leaderboards = ({ sortBy }: { sortBy: string }) => {
+  const userData = useUserStore((state) => state.userData);
   const [users, setUsers] = useState<any[]>([]);
 
   /**
@@ -88,11 +89,22 @@ const Leaderboards = ({ sortBy }: { sortBy: string }) => {
                 alt="user_avatar"
               />
             </div>
-            <p className="flex flex-1 text-sm text-timberwolf justify-start">
+            <p
+              className={`flex ${
+                user.username !== userData.username && "flex-1"
+              } text-sm text-timberwolf justify-start`}
+            >
               {user.username}
             </p>
+            {user.username === userData.username && (
+              <div className="flex flex-1">
+                <p className="px-1 bg-saffron rounded-full text-xs font-bold text-jetblack">
+                  You
+                </p>
+              </div>
+            )}
             <div className="flex flex-col w-32">
-              <p className="flex w-full text-sm text-timberwolf justify-end">
+              <p className="flex w-full text-timberwolf justify-end">
                 {user.stat.current_mmr}
               </p>
               <p className="flex w-full text-xs text-dimgrey justify-end">
@@ -100,7 +112,7 @@ const Leaderboards = ({ sortBy }: { sortBy: string }) => {
               </p>
             </div>
             <div className="flex flex-col w-32">
-              <p className="flex w-full text-sm text-timberwolf justify-end">
+              <p className="flex w-full text-timberwolf justify-end">
                 {user.stat.losses === 0
                   ? "inf"
                   : (
@@ -112,15 +124,15 @@ const Leaderboards = ({ sortBy }: { sortBy: string }) => {
                 {user.stat.win_streak}
               </p>
             </div>
-            <p className="flex w-28 text-sm text-timberwolf items-center justify-end">
+            <p className="flex w-28 text-timberwolf items-center justify-end">
               {user.stat.deaths === 0
                 ? "inf"
                 : user.stat.kills / user.stat.deaths}
             </p>
-            <p className="flex w-28 text-sm text-timberwolf items-center justify-end">
+            <p className="flex w-28 text-timberwolf items-center justify-end">
               {user.stat.smashes}
             </p>
-            <p className="flex w-36 text-sm text-timberwolf items-center justify-end">
+            <p className="flex w-36 text-timberwolf items-center justify-end">
               We doing this?
             </p>
           </div>
