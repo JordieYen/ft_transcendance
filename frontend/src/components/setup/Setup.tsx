@@ -15,99 +15,6 @@ import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import SixDigitVerification from "../user-settings/SixDigitVerification";
 import QRCode from "qrcode";
 import { useRouter } from "next/router";
-import { Router } from "react-router-dom";
-
-// export const Example = () => {
-//   const x = useMotionValue(0);
-//   const xInput = [-100, 0, 100];
-//   const background = useTransform(x, xInput, [
-//     "linear-gradient(90deg, #ff008c 0%, rgb(211, 9, 225) 100%)",
-//     "linear-gradient(90deg, #323437 100%, #323437 100%)",
-//     "linear-gradient(90deg, rgb(230, 255, 0) 0%, rgb(3, 209, 0) 100%)",
-//   ]);
-//   const color = useTransform(x, xInput, [
-//     "rgb(211, 9, 225)",
-//     "rgb(50, 52, 55)",
-//     "rgb(3, 209, 0)",
-//   ]);
-
-//   const tickPath = useTransform(x, [10, 60], [0, 1]);
-//   const crossPathA = useTransform(x, [-10, -35], [0, 1]);
-//   const crossPathB = useTransform(x, [-35, -60], [0, 1]);
-
-//   useEffect(() => {
-//     const unsubscribe = x.on("change", (currentX) => {
-//       const leftConstraint = -70;
-//       const rightConstraint = 70;
-
-//       if (currentX <= leftConstraint) {
-//         setCurrentStep("end");
-//       } else if (currentX >= rightConstraint) {
-//         isSetupTFA(true);
-//       }
-//     });
-
-//     return () => {
-//       unsubscribe();
-//     };
-//   }, [x]);
-
-//   return (
-//     <motion.div
-//       className="w-full h-full rounded-full border-[1px] border-dimgrey items-center justify-center"
-//       style={{ background, height: 50 }}
-//     >
-//       <motion.div
-//         className="flex absolute bg-timberwolf rounded-full items-center justify-center"
-//         style={{
-//           x,
-//           height: "50px",
-//           left: "calc(50% - 25px)",
-//         }}
-//         drag="x"
-//         dragConstraints={{ left: -65, right: 65 }}
-//       >
-//         <svg
-//           className="w-[95%] h-[95%]"
-//           viewBox="0 0 50 50"
-//           style={{ height: "100%" }}
-//         >
-//           <motion.path
-//             fill="none"
-//             strokeWidth="2"
-//             stroke={color}
-//             d="M 0, 20 a 20, 20 0 1,0 40,0 a 20, 20 0 1,0 -40,0"
-//             style={{ translateX: 5, translateY: 5 }}
-//           />
-//           <motion.path
-//             fill="none"
-//             strokeWidth="2"
-//             stroke={color}
-//             d="M14,26 L 22,33 L 35,16"
-//             strokeDasharray="0 1"
-//             style={{ pathLength: tickPath }}
-//           />
-//           <motion.path
-//             fill="none"
-//             strokeWidth="2"
-//             stroke={color}
-//             d="M17,17 L33,33"
-//             strokeDasharray="0 1"
-//             style={{ pathLength: crossPathA }}
-//           />
-//           <motion.path
-//             fill="none"
-//             strokeWidth="2"
-//             stroke={color}
-//             d="M33,17 L17,33"
-//             strokeDasharray="0 1"
-//             style={{ pathLength: crossPathB }}
-//           />
-//         </svg>
-//       </motion.div>
-//     </motion.div>
-//   );
-// };
 
 const LogoStep = () => {
   const [userData, setUserData] = useUserStore((state) => [
@@ -193,7 +100,7 @@ const NameStep = () => {
           setCurrentStep("avatar");
         })
         .catch(() => {
-          console.log("update name failed!");
+          toast.error("Failed to update name! Please try again");
         });
     }
   };
@@ -340,7 +247,7 @@ const AvatarStep = () => {
           setCurrentStep("tfa");
         })
         .catch(() => {
-          console.log("error upload avatar");
+          toast.error("Failed to update avatar! Please try again");
         });
     }
   };
@@ -438,6 +345,7 @@ const TFAStep = () => {
       const rightConstraint = 64;
 
       if (currentX <= leftConstraint) {
+        setFirstTimeLogin();
         setCurrentStep("end");
       } else if (currentX >= rightConstraint) {
         isSetupTFA(true);
@@ -470,6 +378,20 @@ const TFAStep = () => {
     if (setupTFA === true) fetchQRCodeData();
   }, [setupTFA]);
 
+  const setFirstTimeLogin = () => {
+    const updateUserDto = {
+      firstTimeLogin: false,
+    };
+    axios
+      .patch(`/users/${userData?.id}`, updateUserDto)
+      .then(() => {
+        setUserData({ ...userData, firstTimeLogin: false });
+      })
+      .catch(() => {
+        toast.error("Failed to update 2FA! Please try again");
+      });
+  };
+
   const patchTFA = () => {
     axios
       .post("/users/authenticate", null, {
@@ -481,9 +403,10 @@ const TFAStep = () => {
           authentication: true,
         });
         setCurrentStep("end");
+        setFirstTimeLogin();
       })
       .catch(() => {
-        toast.error("Failed to update 2FA. Please try again later");
+        toast.error("Failed to update 2FA! Please try again");
       });
   };
 
