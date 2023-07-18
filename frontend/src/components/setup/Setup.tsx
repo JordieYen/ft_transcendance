@@ -391,17 +391,17 @@ const TFAStep = () => {
   }, [setupTFA]);
 
   const setFirstTimeLogin = () => {
-    // const updateUserDto = {
-    //   firstTimeLogin: false,
-    // };
-    // axios
-    //   .patch(`/users/${userData?.id}`, updateUserDto)
-    //   .then(() => {
-    //     setUserData({ ...userData, firstTimeLogin: false });
-    //   })
-    //   .catch(() => {
-    //     toast.error("Failed to update 2FA! Please try again");
-    //   });
+    const updateUserDto = {
+      firstTimeLogin: false,
+    };
+    axios
+      .patch(`/users/${userData?.id}`, updateUserDto)
+      .then(() => {
+        setUserData({ ...userData, firstTimeLogin: false });
+      })
+      .catch(() => {
+        toast.error("Failed to update 2FA! Please try again");
+      });
     setIsShuttlecockEnd(true);
     console.log("pepela");
   };

@@ -251,70 +251,36 @@ export default function ShuttlecockMove() {
 
   useEffect(() => {
     if (screen) {
-      // if (currentStep === "start") {
-      //   progress.jump(0);
-      //   animate([
-      //     [progress, 0.11, { duration: 1.1 }],
-      //     [yOffset, -screen.height * 0.3, { duration: 0.9, at: "+0.2" }],
-      //   ]);
-      // }
       if (currentStep === "name") {
         progress.jump(0);
         animate([
           [progress, 0.15, { duration: 3.5 }],
-          [yOffset, -screen.height * 0.4, { duration: 3.5, at: "<" }],
+          [yOffset, -screen.height * 0.45, { duration: 3.5, at: "<" }],
         ]);
       }
       if (currentStep === "avatar")
         animate([
           [progress, 0.4, { duration: 3 }],
-          [yOffset, -screen.height * 1.75, { duration: 3, at: "<" }],
+          [yOffset, -screen.height * 1.725, { duration: 3, at: "<" }],
         ]);
       if (currentStep === "tfa")
         animate([
           [progress, 0.63, { duration: 3 }],
-          [yOffset, -screen.height * 2.7, { duration: 3, at: "<" }],
+          [yOffset, -screen.height * 2.725, { duration: 3, at: "<" }],
         ]);
-      if (currentStep === "end")
-        animate([
+      if (currentStep === "end") {
+        const animation = animate([
           [progress, 1, { duration: 3 }],
-          [yOffset, -screen.height * 4, { duration: 3, at: "<" }],
+          [yOffset, -screen.height * 4.5, { duration: 3, at: "<" }],
+          [yOffset, -screen.height * 4.5 + 500, { duration: 1.5, at: 3 }],
         ]);
+        animation.then(() => setShowShuttlecock(false));
+      }
       move.jump(0);
       animate(move, 1, { duration: 3 });
     }
   }, [currentStep]);
   console.log(path);
-
-  // useEffect(() => {
-  //   if (screen) {
-  //     if (currentStep === "start") {
-  //       progress.jump(0);
-  //       animate([
-  //         [progress, 0.22, { duration: 3 }],
-  //         [yOffset, -screen.height / 2, { duration: 2.5, at: "+0.5" }],
-  //       ]);
-  //     }
-  //     if (currentStep === "name")
-  //       animate([
-  //         [progress, 0.52, { duration: 3 }],
-  //         [yOffset, -screen.height * 2.1, { duration: 3, at: "<" }],
-  //       ]);
-  //     if (currentStep === "avatar")
-  //       animate([
-  //         [progress, 0.72, { duration: 3 }],
-  //         [yOffset, -screen.height * 3.1, { duration: 3, at: "<" }],
-  //       ]);
-  //     if (currentStep === "tfa")
-  //       animate([
-  //         [progress, 1, { duration: 3 }],
-  //         [yOffset, -screen.height * 4.1, { duration: 3, at: "<" }],
-  //       ]);
-  //     move.jump(0);
-  //     animate(move, 1, { duration: 3 });
-  //   }
-  // }, [currentStep]);
-  // console.log(path);
 
   return (
     <>
@@ -329,7 +295,7 @@ export default function ShuttlecockMove() {
           </button>
         ))}
       </div> */}
-      {currentPage === "setup" && showShuttlecock && (
+      {showShuttlecock && (
         <motion.div
           className="h-screen w-screen absolute top-0 left-0 overflow-hidden"
           ref={divRef}
