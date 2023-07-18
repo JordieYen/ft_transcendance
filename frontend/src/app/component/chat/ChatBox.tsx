@@ -92,7 +92,7 @@ const ChatBox: React.FC<any> = () => {
   const messagesEndRef = useRef(null);
   const [channels, setChannels] = useState<any[]>([]);
   const [channelUsers, setChannelUsers] = useState<any[]>([]);
-  const [channelId, setChannelId] = useState("84");
+  const [channelId, setChannelId] = useState("1");
   const [currentChannel, setCurrentChannel] = useState<any>(null);
 
   const socket = useContext(SocketContext);
@@ -391,8 +391,8 @@ const ChatBox: React.FC<any> = () => {
                 style={{ color: "#d1d0c5" }}
                 onClick={() => setGroupSlideOut((current) => !current)}
               />
-              <h1 className="chat-name">{currentChannel?.channel_name}</h1>
             </div>
+              <h1 className="chat-name">{currentChannel?.channel_name}</h1>
             <FontAwesomeIcon
               className="more-button"
               icon={chat_members_slide_out ? faChevronUp : faChevronDown}

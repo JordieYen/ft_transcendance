@@ -25,6 +25,9 @@ export class MessageService {
 
   async findMessagesById(channel_id: number) {
     return await this.messageRepository.find({
+      order: {
+        id: 'ASC',
+      },
       relations: ['sender', 'channel'],
       where: { channel: { channel_uid: channel_id } },
     });
