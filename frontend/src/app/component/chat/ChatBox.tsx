@@ -4,6 +4,8 @@ import "../profile/profile.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { icon } from "@fortawesome/fontawesome-svg-core/import.macro";
 import {
+  faArrowLeft,
+  faBars,
   faChevronDown,
   faChevronUp,
   faEllipsisVertical,
@@ -37,7 +39,7 @@ const ThreeDots = ({
           >
             <button className="member-option-button">Role</button>
             <button className="member-option-button">Mute</button>
-            <button className="member-option-button">Test</button>
+            <button className="member-option-button">Check</button>
             <button className="member-option-button">More...</button>
           </div>
         </div>
@@ -298,17 +300,11 @@ const ChatBox: React.FC<any> = () => {
             onClick={() => setChatSlideOut((current) => !current)}
           />
         </div>
-        <div
+        {/* <div
           className={`chat-style side-bar ${
             chat_slide_out ? "display" : "hide"
           }`}
         >
-          {/* <img
-            className="back-button"
-            src="arrow-left.png"
-            onClick={() => setChatSlideOut((current) => !current)}
-            alt="back-button"
-          /> */}
           <FontAwesomeIcon
             className="group-button"
             icon={faUserGroup}
@@ -325,7 +321,7 @@ const ChatBox: React.FC<any> = () => {
               />
             ))}
           </div>
-        </div>
+        </div> */}
         <div
           className={`chat-box chat-style ${
             chat_slide_out ? "display" : "hide"
@@ -336,7 +332,16 @@ const ChatBox: React.FC<any> = () => {
               group_slide_out ? "group-box-display" : "group-box-hide"
             }`}
           >
-            <p className="title">Chats</p>
+            <div className="group-title">
+              <FontAwesomeIcon
+                className="back-group"
+                icon={faArrowLeft}
+                size="lg"
+                style={{ color: "#d1d0c5" }}
+                onClick={() => setGroupSlideOut((current) => !current)}
+              />
+              <p className="title">Chats</p>
+            </div>
             <form>
               <input
                 className="search-bar"
@@ -378,8 +383,16 @@ const ChatBox: React.FC<any> = () => {
             </div>
           </div>
           <div className="chat-nav">
-            {/* <h1 className="chat-name">jking-ye</h1> */}
-            <h1 className="chat-name">{currentChannel?.channel_name}</h1>
+            <div className="chat-title">
+              <FontAwesomeIcon
+                className="more-chats-button"
+                icon={faBars}
+                size="lg"
+                style={{ color: "#d1d0c5" }}
+                onClick={() => setGroupSlideOut((current) => !current)}
+              />
+              <h1 className="chat-name">{currentChannel?.channel_name}</h1>
+            </div>
             <FontAwesomeIcon
               className="more-button"
               icon={chat_members_slide_out ? faChevronUp : faChevronDown}
