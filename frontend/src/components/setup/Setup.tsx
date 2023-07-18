@@ -306,7 +306,7 @@ const AvatarStep = () => {
 };
 
 const TFAStep = () => {
-  const router = useRouter();
+  const [isShuttlecockEnd, setIsShuttlecockEnd] = useState(false);
   const [userData, setUserData] = useUserStore((state) => [
     state.userData,
     state.setUserData,
@@ -358,6 +358,18 @@ const TFAStep = () => {
   }, [x]);
 
   useEffect(() => {
+    if (isShuttlecockEnd === true) {
+      const timeout = setTimeout(() => {
+        setCurrentPage("main");
+      }, 3000);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [isShuttlecockEnd]);
+
+  useEffect(() => {
     const fetchQRCodeData = async () => {
       try {
         const response = await axios.get("/auth/2fa", {
@@ -379,17 +391,19 @@ const TFAStep = () => {
   }, [setupTFA]);
 
   const setFirstTimeLogin = () => {
-    const updateUserDto = {
-      firstTimeLogin: false,
-    };
-    axios
-      .patch(`/users/${userData?.id}`, updateUserDto)
-      .then(() => {
-        setUserData({ ...userData, firstTimeLogin: false });
-      })
-      .catch(() => {
-        toast.error("Failed to update 2FA! Please try again");
-      });
+    // const updateUserDto = {
+    //   firstTimeLogin: false,
+    // };
+    // axios
+    //   .patch(`/users/${userData?.id}`, updateUserDto)
+    //   .then(() => {
+    //     setUserData({ ...userData, firstTimeLogin: false });
+    //   })
+    //   .catch(() => {
+    //     toast.error("Failed to update 2FA! Please try again");
+    //   });
+    setIsShuttlecockEnd(true);
+    console.log("pepela");
   };
 
   const patchTFA = () => {

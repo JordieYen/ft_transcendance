@@ -9,6 +9,7 @@ import { SessionProvider } from "next-auth/react";
 import { useRouter } from "next/router";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { AnimatePresence } from "framer-motion";
+import ShuttlecockMove from "@/components/setup/ShuttlecockMove";
 
 axios.defaults.baseURL = "http://localhost:3000/";
 
@@ -28,6 +29,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
           <CustomToaster />
           <Header />
           <AnimatePresence mode="wait">
+            <ShuttlecockMove />
             <Component {...pageProps} />
           </AnimatePresence>
           {/* <Footer /> */}
