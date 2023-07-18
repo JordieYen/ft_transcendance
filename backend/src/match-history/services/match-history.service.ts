@@ -12,6 +12,7 @@ import { UsersService } from 'src/users/services/users.service';
 import { StatService } from 'src/stat/services/stat.service';
 import { UserAchievementService } from 'src/user_achievement/services/user_achievement.service';
 import { User } from 'src/typeorm/user.entity';
+import { AchievementService } from 'src/achievement/services/achievement.service';
 
 @Injectable()
 export class MatchHistoryService {
@@ -20,6 +21,7 @@ export class MatchHistoryService {
     private readonly matchHistoryRepository: Repository<MatchHistory>,
     private readonly userService: UsersService,
     private readonly statService: StatService,
+    private readonly achievementService: AchievementService,
     private readonly userAchievementService: UserAchievementService,
   ) {}
 
@@ -211,23 +213,35 @@ export class MatchHistoryService {
   async updateKillChainAchievement(match: MatchHistory) {
     if (match.p1_score === 11 && match.p2_score === 0) {
       if (
-        (await this.userAchievementService.checkExists(match.p1.id, 10)) ===
-        false
+        (await this.userAchievementService.checkExists(
+          match.p1.id,
+          (
+            await this.achievementService.findByName('Kill Chain')
+          ).id,
+        )) === false
       ) {
         await this.userAchievementService.create({
           user: match.p1.id,
-          achievement: 10,
+          achievement: (
+            await this.achievementService.findByName('Kill Chain')
+          ).id,
         });
       }
     }
     if (match.p1_score === 0 && match.p2_score === 11) {
       if (
-        (await this.userAchievementService.checkExists(match.p2.id, 10)) ===
-        false
+        (await this.userAchievementService.checkExists(
+          match.p2.id,
+          (
+            await this.achievementService.findByName('Kill Chain')
+          ).id,
+        )) === false
       ) {
         await this.userAchievementService.create({
           user: match.p2.id,
-          achievement: 10,
+          achievement: (
+            await this.achievementService.findByName('Kill Chain')
+          ).id,
         });
       }
     }
@@ -238,30 +252,65 @@ export class MatchHistoryService {
     const stat = (await this.statService.getByPlayerUid(uid))[0];
 
     if (stat.smashes >= 10) {
-      if ((await this.userAchievementService.checkExists(uid, 2)) === false) {
+      if (
+        (await this.userAchievementService.checkExists(
+          uid,
+          (
+            await this.achievementService.findByName('Lee Zii Jia')
+          ).id,
+        )) === false
+      ) {
         await this.userAchievementService.create({
           user: uid,
-          achievement: 2,
+          achievement: (
+            await this.achievementService.findByName('Lee Zii Jia')
+          ).id,
         });
       }
     }
     let count = 5;
-    for (let i = 3; i <= 8; ++i) {
+    const achievement = [
+      'Bloodthirsty',
+      'Merciless',
+      'Ruthless',
+      'Relentless',
+      'Brutal',
+      'Nuclear',
+    ];
+    for (let i = 0; i < 6; ++i) {
       if (stat.kills >= count) {
-        if ((await this.userAchievementService.checkExists(uid, i)) === false) {
+        if (
+          (await this.userAchievementService.checkExists(
+            uid,
+            (
+              await this.achievementService.findByName(achievement[i])
+            ).id,
+          )) === false
+        ) {
           await this.userAchievementService.create({
             user: uid,
-            achievement: i,
+            achievement: (
+              await this.achievementService.findByName(achievement[i])
+            ).id,
           });
         }
       }
       count += 5;
     }
     if (stat.kills >= 50) {
-      if ((await this.userAchievementService.checkExists(uid, 9)) === false) {
+      if (
+        (await this.userAchievementService.checkExists(
+          uid,
+          (
+            await this.achievementService.findByName('Unstoppable')
+          ).id,
+        )) === false
+      ) {
         await this.userAchievementService.create({
           user: uid,
-          achievement: 9,
+          achievement: (
+            await this.achievementService.findByName('Unstoppable')
+          ).id,
         });
       }
     }

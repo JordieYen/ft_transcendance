@@ -1,5 +1,10 @@
 import { OnModuleInit } from '@nestjs/common';
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { MessageService } from 'src/chat/message/message.service';
 
@@ -18,7 +23,7 @@ export class MessageGateway implements OnModuleInit {
   @SubscribeMessage('message')
   handleEvent(@MessageBody() message: string): string {
     console.log('message recieved');
-	
+
     return message;
   }
 }

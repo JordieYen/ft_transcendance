@@ -40,6 +40,18 @@ export class AchievementService {
     return achievement;
   }
 
+  async findByName(name: string): Promise<Achievement> {
+    const achievement = await this.achievementRepository.findOne({
+      where: {
+        name: name,
+      },
+    });
+    if (!achievement) {
+      throw new NotFoundException(`Achievement with NAME ${name} not found`);
+    }
+    return achievement;
+  }
+
   async update(
     id: number,
     updateAchievementDto: UpdateAchievementDto,
@@ -57,5 +69,17 @@ export class AchievementService {
   async remove(id: number): Promise<void> {
     const achievement = await this.findOne(id);
     await await this.achievementRepository.remove(achievement);
+  }
+
+  async deleteAll() {
+    try {
+      await this.achievementRepository.clear();
+      return { message: 'All achievements have been deleted' };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Could not delete all achievements',
+        error,
+      );
+    }
   }
 }

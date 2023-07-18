@@ -1,3 +1,4 @@
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -20,6 +21,15 @@ const Login = () => {
       >
         <p className="text-xl text-timberwolf">Login with 42</p>
       </Link>
+       {/* <button className="flex w-[300px] rounded-md my-10 px-2 py-2 bg-jetblack border-2 border-saffron justify-center"
+       onClick={ async () => await signIn('google', { 
+          method: "POST",
+          redirect: true,
+          credentials: "include",
+          callbackUrl: "http://localhost:3001/pong-main",
+        })}>
+          <p className="text-xl text-timberwolf">Login with Google</p>
+        </button> */}
     </div>
   );
 };

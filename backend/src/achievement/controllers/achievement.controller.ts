@@ -45,4 +45,9 @@ export class AchievementController {
     await this.achievementService.remove(id);
     return await `User achievement with id ${id} has been deleted.`;
   }
+
+  @Delete('delete-all/:id')
+  deleteAll() {
+    return this.achievementService.deleteAll();
+  }
 }
