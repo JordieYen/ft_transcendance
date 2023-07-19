@@ -17,6 +17,8 @@ import NextLink from "next/link";
 import Icon from "@/app/component/header_icon/Icon";
 import { motion } from "framer-motion";
 import useAnimateStore from "@/store/useAnimateStore";
+import useModal from "@/hooks/useModal";
+import LeaderboardsModal from "./LeaderboardsModal";
 
 interface HeaderLogoProps {
   currentPath: string;
@@ -144,7 +146,7 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
     <Link
       className="flex items-center space-x-2 group"
       /* HANDLE PROFILE CLICK BELOW! */
-      href={"/profile"}
+      href={"/pong-main"}
     >
       <img
         width={100}
@@ -159,7 +161,7 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
       <div className="flex items-center rounded-lg bg-dimgrey py-1 px-2 gap-1 text-onyxgrey group-hover:bg-timberwolf">
         <FontAwesomeIcon icon={faTrophy} size="sm" />
         <span className="text-onyxgrey font-roboto">
-          {user.stat === null ? 0 : user?.stat?.current_mmr}
+          {user.stat === null ? 0 : user.stat.current_mmr}
         </span>
       </div>
     </Link>
@@ -167,10 +169,20 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
 };
 
 export const LeaderboardsIcon = () => {
+  const [isLBOpen, openLBModal, closeLBModal, lbRef] = useModal(false);
   return (
-    <IconButton onClick={() => console.log("leaderboards")}>
-      <FontAwesomeIcon icon={faCrown} size="lg" />
-    </IconButton>
+    <>
+      <IconButton onClick={() => openLBModal()}>
+        <FontAwesomeIcon icon={faCrown} size="lg" />
+      </IconButton>
+      {isLBOpen && (
+        <LeaderboardsModal
+          isOpen={isLBOpen}
+          closeModal={closeLBModal}
+          lbRef={lbRef}
+        />
+      )}
+    </>
   );
 };
 

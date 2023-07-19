@@ -70,4 +70,16 @@ export class AchievementService {
     const achievement = await this.findOne(id);
     await await this.achievementRepository.remove(achievement);
   }
+
+  async deleteAll() {
+    try {
+      await this.achievementRepository.clear();
+      return { message: 'All achievements have been deleted' };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Could not delete all achievements',
+        error,
+      );
+    }
+  }
 }

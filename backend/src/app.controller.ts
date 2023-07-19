@@ -4,7 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { AppService } from './app.service';
 
-@Controller()
+@Controller('api')
 @ApiTags('Api')
 export class AppController {
   constructor(
@@ -26,5 +26,10 @@ export class AppController {
     const sessionId = req.sessionID;
     if (sessionId) return `Session ID: ${sessionId}`;
     else return 'No session ID found';
+  }
+
+  @Get('auth/callback/42-school')
+  callback42() {
+    return this.appService.getSuccesslogin();
   }
 }

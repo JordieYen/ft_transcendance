@@ -1,11 +1,10 @@
-import { BadRequestException, OnModuleInit } from '@nestjs/common';
+import { OnModuleInit } from '@nestjs/common';
 import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import cors from 'cors';
-import { Socket } from 'dgram';
+import { Socket } from 'socket.io';
 import { Server } from 'socket.io';
 import { FriendService } from 'src/friend/services/friend.service';
 import { UsersService } from 'src/users/services/users.service';
@@ -28,6 +27,17 @@ export class FriendGateway implements OnModuleInit {
     this.server.on('connection', (socket) => {
       console.log(socket.id, ' connected');
 
+      // setting heartbeat to check connection status of socket
+      // and update online status
+      const heartbeat = setInterval(() => {
+        if (!socket.connected) {
+          clearInterval(heartbeat);
+          if (socket.data.userId) {
+            this.updateUserStatus(+socket.data.userId, false);
+          }
+        }
+      }, 5000);
+
       socket.on('join', async (userId) => {
         if (userId && userId !== 'undefined' && !isNaN(userId)) {
           console.log('User joined room: ' + userId);
@@ -36,6 +46,7 @@ export class FriendGateway implements OnModuleInit {
           this.updateUserStatus(+userId, true);
         }
       });
+
       socket.on('leave-room', () => {
         if (socket.data.userId) {
           console.log('User left room: ' + socket.data.userId);

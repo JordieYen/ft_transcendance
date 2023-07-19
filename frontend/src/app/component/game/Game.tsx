@@ -1,7 +1,9 @@
 import { use, useContext, useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
 import Matter from 'matter-js';
-import { SocketContext } from "@/app/socket/SocketProvider";
+import MatchMaking from "./MatchMaking";
+import { useGameData } from "./GameContext";
+import { log } from "console";
 
 const Game = () => {
     const scoreLeftRef = useRef(0);
@@ -9,17 +11,10 @@ const Game = () => {
     const isGameOver = useRef(false);
     const animationFrameId = useRef(0);
     const winnerTextRef = useRef<PIXI.Text | null>(null);
-    const socket = useContext(SocketContext);
-    const paddleHitAudio = new Audio('/sounds/hit.wav');
+    const { gameState } = useGameData();
+    console.log('gameState', gameState);
 
     useEffect(() => {
-        if (socket) {
-            socket?.emit('game-room', 1);
-        }
-    }, [socket]);
-
-    useEffect(() => {
-       
         const app = new PIXI.Application({
             width: 1200,
             height: 900,
@@ -169,8 +164,7 @@ const Game = () => {
                   Matter.Vector.mult(normal, 2 * Matter.Vector.dot(ballBody.velocity, normal))
                 );
                 Matter.Body.setVelocity(ballBody, reflection);
-                paddleHitAudio.play();
-                console.log("paddlLeftBody");
+                // paddleHitAudio.play();
               } else if (
                 (pair.bodyA === ballBody && pair.bodyB === paddleRightBody) ||
                 (pair.bodyA === paddleRightBody && pair.bodyB === ballBody)
@@ -181,9 +175,7 @@ const Game = () => {
                     Matter.Vector.mult(normal, 2 * Matter.Vector.dot(ballBody.velocity, normal))
                 );
                 Matter.Body.setVelocity(ballBody, reflection);
-                paddleHitAudio.play();
-                console.log("paddleRightBody");
-                
+                // paddleHitAudio.play();
             }
             });
         });
@@ -231,15 +223,15 @@ const Game = () => {
 
         // automated right paddle
         const moveOpponentPaddle = () => {
-            const paddleSpeed = 100;
+            const paddleSpeed = 20;
         
             // Calculate the difference between the opponent paddle's y position and the ball's y position
             const difference = ball.y - paddleRight.y;
         
             // Move the opponent paddle towards the ball
-            if (difference > paddleSpeed / 1000) {
+            if (difference > paddleSpeed / 2) {
               paddleRight.y += paddleSpeed;
-            } else if (difference < -paddleSpeed / 1000) {
+            } else if (difference < -paddleSpeed / 2) {
               paddleRight.y -= paddleSpeed;
             }
         };
@@ -266,25 +258,25 @@ const Game = () => {
 
             moveOpponentPaddle();
 
-            if (keys["ArrowUp"]) {
-                if (paddleRight.y > 0) {
-                    paddleRight.y -= paddleSpeed;
-                }
-            } else if (keys["ArrowDown"]) {
-                if (paddleRight.y < app?.view.height - paddleRight.height) {
-                    paddleRight.y += paddleSpeed;
-                }
-            }
+            // if (keys["ArrowUp"]) {
+            //     if (paddleRight.y > 0) {
+            //         paddleRight.y -= paddleSpeed;
+            //     }
+            // } else if (keys["ArrowDown"]) {
+            //     if (paddleRight.y < app?.view.height - paddleRight.height) {
+            //         paddleRight.y += paddleSpeed;
+            //     }
+            // }
 
             Matter.Body.setPosition(paddleLeftBody, {
                 x: paddleLeft.x + 10,
                 y: paddleLeft.y + 50,
             });
 
-            // Matter.Body.setPosition(paddleRightBody, {
-            //     x: paddleRight.x + 10,
-            //     y: paddleRight.y + 50,
-            // });
+            Matter.Body.setPosition(paddleRightBody, {
+                x: paddleRight.x + 10,
+                y: paddleRight.y + 50,
+            });
 
             ball.position.x = ballBody.position.x;
             ball.position.y = ballBody.position.y;
