@@ -6,14 +6,15 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { randomBytes } from 'crypto';
 import { GameService } from 'src/game/game.service';
 import { User } from 'src/typeorm/user.entity';
 import { Socket } from 'socket.io';
 import { Server } from 'socket.io';
-import { Engine, Vector } from 'matter-js';
+import { Body, Engine, Vector } from 'matter-js';
 
 interface Ball {
+  position: Vector;
+  radius: number;
   speed: Vector;
   maxTimeFrame: number;
   perfectHitZone: number;
@@ -43,55 +44,25 @@ export class GameGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
   engine: Engine;
+  leftPaddle: Body;
+  rightPaddle: Body;
+  ball: Body;
   rooms: Map<string, User[]> = new Map<string, User[]>();
 
   constructor(private readonly gameService: GameService) {}
 
   async onModuleInit() {
-    console.log('onModuleINit');
+    console.log('onModuleInit');
     this.engine = this.gameService.initializeEngine();
-  }
-
-  generateRoomId() {
-    const roomIdLength = 3;
-    const roomId = randomBytes(roomIdLength)
-      .toString('hex')
-      .slice(0, roomIdLength);
-    this.rooms.set(roomId, []);
-    return roomId;
-  }
-
-  logRooms() {
-    for (const [roomId, players] of this.rooms.entries()) {
-      const usernames = players.map((player) => player.username).join(', ');
-      console.log(`Room ${roomId}: [${usernames}]`);
-    }
-  }
-
-  findAvailableRoom() {
-    for (const [roomId, roomPlayers] of this.rooms) {
-      if (roomPlayers.length < 2) {
-        return { roomId, roomPlayers };
-      }
-    }
-    return {};
-  }
-
-  handleConnection() {
-    console.log('connected to game socket gateway');
-
-    //Potentially not when connect but when he joins game instead
-
-    // socket.on('game-room', async (data) => {
-    //   socket.join(data.roomId);
-    // });
   }
 
   @SubscribeMessage('join-room')
   handleJoinRoom(client: Socket, data: { user: User }) {
     const user = data.user;
     const userName = user.username;
-    let { roomId, roomPlayers } = this.findAvailableRoom();
+    let { roomId, roomPlayers } = this.gameService.findAvailableRoom(
+      this.rooms,
+    );
 
     // check if user is already in a room
     for (const [existingRoomId, existingRoomPlayers] of this.rooms) {
@@ -105,7 +76,7 @@ export class GameGateway implements OnModuleInit {
     }
     // create new room id and push player into room
     if (!roomId && !roomPlayers) {
-      roomId = this.generateRoomId();
+      roomId = this.gameService.generateRoomId(this.rooms);
       roomPlayers = [user];
       this.rooms.set(roomId, roomPlayers);
     } else {
@@ -125,7 +96,7 @@ export class GameGateway implements OnModuleInit {
         .to(roomId)
         .emit('loading-screen', { roomId, players: playersData });
     }
-    this.logRooms();
+    this.gameService.logRooms(this.rooms);
   }
 
   @SubscribeMessage('game-over')
@@ -157,18 +128,67 @@ export class GameGateway implements OnModuleInit {
     }
   }
 
+  handleConnection() {
+    console.log('connected to game socket gateway');
+
+    //Potentially not when connect but when he joins game instead
+
+    // socket.on('game-room', async (data) => {
+    //   socket.join(data.roomId);
+    // });
+  }
+
   @SubscribeMessage('initialize-game')
   async initializeGame(
     @ConnectedSocket() socket: Socket,
     @MessageBody() gameProperties: GameElements,
   ) {
     this.gameService.initializeBorders(this.engine, gameProperties);
-    this.gameService.initializePaddle(this.engine, gameProperties.leftPaddle);
-    this.gameService.initializePaddle(this.engine, gameProperties.rightPaddle);
-    this.gameService.initializeBall(this.engine, gameProperties);
+    this.leftPaddle = this.gameService.initializePaddle(
+      this.engine,
+      gameProperties.leftPaddle,
+    );
+    this.rightPaddle = this.gameService.initializePaddle(
+      this.engine,
+      gameProperties.rightPaddle,
+    );
+    this.ball = this.gameService.initializeBall(this.engine, gameProperties);
 
-    console.log(this.engine);
+    // console.log(this.engine);
     socket.emit('emit-engine');
+  }
+
+  gameStarted = 0;
+
+  @SubscribeMessage('start-game')
+  async startGame(socket: Socket, gameProperties: GameElements) {
+    if (this.gameStarted === 0) {
+      Body.setVelocity(this.ball, {
+        x: gameProperties.ball.speed.x,
+        y: gameProperties.ball.speed.y,
+      });
+      socket.emit('ballSpeed', gameProperties.ball.speed);
+      this.gameStarted = 1;
+      setInterval(() => {
+        if (this.gameStarted) {
+          socket.emit('ballMoving', this.ball.position);
+          if (
+            this.ball.position.x < 0 ||
+            this.ball.position.x > gameProperties.screen.x
+          ) {
+            Body.setPosition(this.ball, {
+              x: gameProperties.screen.x / 2,
+              y: gameProperties.screen.y / 2,
+            });
+            Body.setVelocity(this.ball, {
+              x: 0,
+              y: 0,
+            });
+            this.gameStarted = 0;
+          }
+        }
+      }, 15);
+    }
   }
 
   handleDisconnect() {
