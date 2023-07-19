@@ -571,7 +571,7 @@ const Setup = () => {
         <AnimatePresence
           mode="wait"
           onExitComplete={
-            currentStep === "end" ? () => router.push("pong-main") : undefined
+            currentStep === "end" ? () => router.push("main-menu") : undefined
           }
         >
           <div

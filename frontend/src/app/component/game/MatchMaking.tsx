@@ -108,10 +108,16 @@ const MatchMaking  = () => {
         
         loadingContainer?.appendChild(app.view as HTMLCanvasElement);
 
-        const loadingBar = new PIXI.Graphics();
-        loadingBar.beginFill(0x000000);
-        loadingBar.drawRect(0, 0, width, 40);
-        loadingBar.endFill();
+        // const loadingBar = new PIXI.Graphics();
+        // loadingBar.beginFill(0x000000);
+        // loadingBar.drawRect(0, 0, width, 40);
+        // loadingBar.endFill();
+        // app.stage.addChild(loadingBar);
+        const loadingBar = PIXI.Sprite.from("/bracket.png");
+        // loadingBar.width = 0;
+        loadingBar.height = 40;
+        // loadingBar.anchor.x = 0;
+        loadingBar.x = -loadingBar.width;
         app.stage.addChild(loadingBar);
 
         const redBorder = new PIXI.Graphics();
@@ -127,23 +133,13 @@ const MatchMaking  = () => {
             // router.push('/game');
           }
           const progressWidth = (currentCountdown / 6) * width;
-          loadingBar.clear();
-          loadingBar.beginFill(0xE2B714);
-          loadingBar.drawRect(0, 0, progressWidth, 40);
-          loadingBar.endFill();
+          // loadingBar.width = progressWidth;
+          loadingBar.x = progressWidth - loadingBar.width;
+          // loadingBar.clear();
+          // loadingBar.beginFill(0xE2B714);
+          // loadingBar.drawRect(0, 0, progressWidth, 40);
+          // loadingBar.endFill();
         }, 1000);
-
-        // const countdownInterval = setInterval(() => {
-        //   setCountdown((prevCountdown) => {
-        //     if (prevCountdown >= 5) {
-        //       clearInterval(countdownInterval);
-        //       // router.push('/game');
-        //     }
-        //     const progressWidth = (prevCountdown / 6) * width;
-        //     loadingBar.width = progressWidth;
-        //     return prevCountdown -+1;
-        //   });
-        // }, 1000);
 
         return () => {
           clearInterval(countdownInterval);
