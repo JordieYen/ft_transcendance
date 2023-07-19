@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useGameData } from "./GameContext";
 import useUserStore, { UserData } from "@/store/useUserStore";
+import * as PIXI from 'pixi.js';
+
 
 const MatchMaking  = () => {
     const [isMatchmaking, setIsMatchmaking] = useState(false);
@@ -82,6 +84,7 @@ const MatchMaking  = () => {
             socket?.off('joined-room');
         }
     }, [roomId, isMatchmaking]);
+    
 
     useEffect(() => {
       if (roomId && isMatchmaking && player1User && player2User) {
@@ -92,12 +95,60 @@ const MatchMaking  = () => {
         }
 
         setGameState(gameData);
-        const timeout = setTimeout(() => {
-          router.push('/game');
-        }, 5000);
+        // const timeout = setTimeout(() => {
+        //   router.push('/game');
+        // }, 5000);
+        
+        const loadingContainer = document.querySelector('.loading-container');
+        const width = loadingContainer?.clientWidth || 400;
+        const app = new PIXI.Application({
+          width: width,
+          height: 40,
+        });
+        
+        loadingContainer?.appendChild(app.view as HTMLCanvasElement);
+
+        const loadingBar = new PIXI.Graphics();
+        loadingBar.beginFill(0x000000);
+        loadingBar.drawRect(0, 0, width, 40);
+        loadingBar.endFill();
+        app.stage.addChild(loadingBar);
+
+        const redBorder = new PIXI.Graphics();
+        redBorder.lineStyle(4, 0xCA4754, 1);
+        redBorder.drawRect(0, 0, width, 40);
+        app.stage.addChild(redBorder);
+
+        let currentCountdown = 0;
+        const countdownInterval = setInterval(() => {
+          currentCountdown++;
+          if (currentCountdown > 6) {
+            clearInterval(countdownInterval);
+            // router.push('/game');
+          }
+          const progressWidth = (currentCountdown / 6) * width;
+          loadingBar.clear();
+          loadingBar.beginFill(0xE2B714);
+          loadingBar.drawRect(0, 0, progressWidth, 40);
+          loadingBar.endFill();
+        }, 1000);
+
+        // const countdownInterval = setInterval(() => {
+        //   setCountdown((prevCountdown) => {
+        //     if (prevCountdown >= 5) {
+        //       clearInterval(countdownInterval);
+        //       // router.push('/game');
+        //     }
+        //     const progressWidth = (prevCountdown / 6) * width;
+        //     loadingBar.width = progressWidth;
+        //     return prevCountdown -+1;
+        //   });
+        // }, 1000);
 
         return () => {
-          clearTimeout(timeout);
+          clearInterval(countdownInterval);
+          loadingContainer?.removeChild(app.view as HTMLCanvasElement);
+          app.destroy();
         }
       }
     }, [roomId, isMatchmaking, player1User, player2User, router]);
