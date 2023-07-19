@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore from "@/store/useUserStore";
 
 interface ChangeAvatarModalProps {
   isOpen: boolean;

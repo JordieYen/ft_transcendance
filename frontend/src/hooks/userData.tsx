@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore from "@/store/useUserStore";
 
 const UserData = () => {
   const userData = useUserStore((state) => state.userData);

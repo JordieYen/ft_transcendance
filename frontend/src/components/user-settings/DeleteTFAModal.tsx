@@ -1,6 +1,6 @@
 import React, { useState, useEffect, RefObject } from "react";
 import axios from "axios";
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore from "@/store/useUserStore";
 import toast from "react-hot-toast";
 
 interface DeleteTFAModalProps {

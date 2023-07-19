@@ -3,7 +3,7 @@ import Image from "next/image";
 import axios from "axios";
 import QRCode from "qrcode";
 import toast from "react-hot-toast";
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore from "@/store/useUserStore";
 
 export const SixDigitVerification = ({
   closeModal,

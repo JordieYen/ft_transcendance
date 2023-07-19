@@ -12,10 +12,10 @@ import "@/styles/styling.css";
 import { IconButton } from "./IconButton";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import useUserStore, { UserData } from "@/hooks/useUserStore";
+import useUserStore, { UserData } from "@/store/useUserStore";
 import NextLink from "next/link";
-import Icon from "@/app/component/header_icon/Icon";
-
+import useModal from "@/hooks/useModal";
+import LeaderboardsModal from "./LeaderboardsModal";
 
 interface HeaderLogoProps {
   currentPath: string;
@@ -122,11 +122,11 @@ export const FriendsIcon = () => {
   return (
     <NextLink href="/friend">
       <IconButton>
-        <FontAwesomeIcon icon={faUserGroup} size="lg"/>
+        <FontAwesomeIcon icon={faUserGroup} size="lg" />
       </IconButton>
     </NextLink>
-  )
-}
+  );
+};
 
 export const SettingsIcon = () => {
   return (
@@ -158,8 +158,7 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
       <div className="flex items-center rounded-lg bg-dimgrey py-1 px-2 gap-1 text-onyxgrey group-hover:bg-timberwolf">
         <FontAwesomeIcon icon={faTrophy} size="sm" />
         <span className="text-onyxgrey font-roboto">
-          
-          {user.stat === null ? 0 : user?.stat?.current_mmr}
+          {user.stat === null ? 0 : user.stat.current_mmr}
         </span>
       </div>
     </Link>
@@ -167,17 +166,27 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
 };
 
 export const LeaderboardsIcon = () => {
+  const [isLBOpen, openLBModal, closeLBModal, lbRef] = useModal(false);
   return (
-    <IconButton onClick={() => console.log("leaderboards")}>
-      <FontAwesomeIcon icon={faCrown} size="lg" />
-    </IconButton>
+    <>
+      <IconButton onClick={() => openLBModal()}>
+        <FontAwesomeIcon icon={faCrown} size="lg" />
+      </IconButton>
+      {isLBOpen && (
+        <LeaderboardsModal
+          isOpen={isLBOpen}
+          closeModal={closeLBModal}
+          lbRef={lbRef}
+        />
+      )}
+    </>
   );
 };
 
 export const HeaderIcon = () => {
   const userData = useUserStore((state) => state.userData);
   const setUserData = useUserStore((state) => state.setUserData);
-  
+
   /**
    * useEffect is only required during the initial loading of the website or page,
    * where user data will be stored in useUserStore hook. To call specific user
@@ -209,7 +218,7 @@ export const HeaderIcon = () => {
   }
 
   const {
-    avatar, 
+    avatar,
     id,
     intra_uid,
     username,
