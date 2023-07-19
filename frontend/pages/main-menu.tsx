@@ -1,5 +1,9 @@
 import ChatBox from "@/app/component/chat/ChatBox";
 
 export default function MainMenuPage() {
-  return <ChatBox />;
+  return (
+    <div key="main">
+      <ChatBox />
+    </div>
+  );
 }

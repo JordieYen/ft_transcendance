@@ -30,7 +30,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
           <Header />
           <GameProvider>
             <AnimatePresence mode="wait">
-              <ShuttlecockMove />
+              <ShuttlecockMove key="shuttlecockmove" />
               <Component {...pageProps} />
             </AnimatePresence>
           </GameProvider>

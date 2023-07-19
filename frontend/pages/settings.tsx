@@ -24,7 +24,7 @@ export default function SettingsPage() {
   console.log("user settings", userData);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div key="settings" className="flex flex-col gap-6">
       <ChangeAccountModal
         isOpen={isAccOpen}
         closeModal={closeAccModal}
