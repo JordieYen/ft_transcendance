@@ -143,7 +143,7 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
     <Link
       className="flex items-center space-x-2 group"
       /* HANDLE PROFILE CLICK BELOW! */
-      href={"/profile"}
+      href={"/pong-main"}
     >
       <img
         width={100}

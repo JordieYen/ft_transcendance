@@ -11,6 +11,7 @@ import {
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { SocketContext } from "@/app/socket/SocketProvider";
+import { useRouter } from "next/router";
 
 const ChatBox: React.FC<any> = () => {
   const [chat_slide_out, setChatSlideOut] = useState(false);
@@ -20,6 +21,7 @@ const ChatBox: React.FC<any> = () => {
   const [inputValue, setInputValue] = useState("");
   const socket = useContext(SocketContext);
   const messagesEndRef = useRef(null);
+  const router = useRouter();
 
   let users: String[];
 
@@ -197,7 +199,7 @@ const ChatBox: React.FC<any> = () => {
           Friends
         </button> */}
         <button className="bottom-nav-buttons">Friends</button>
-        <button className="bottom-nav-buttons">Find match</button>
+        <button className="bottom-nav-buttons" onClick={() => router.push('game-loading')}>Find match</button>
       </div>
     </div>
   );

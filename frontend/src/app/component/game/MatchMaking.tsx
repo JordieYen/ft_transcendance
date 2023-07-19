@@ -1,10 +1,10 @@
 import { SocketContext } from "@/app/socket/SocketProvider";
-import useUserStore, { UserData } from "@/hooks/useUserStore";
 import { use, useContext, useEffect, useState } from "react";
 import Avatar from "../header_icon/Avatar";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useGameData } from "./GameContext";
+import useUserStore, { UserData } from "@/store/useUserStore";
 
 const MatchMaking  = () => {
     const [isMatchmaking, setIsMatchmaking] = useState(false);
