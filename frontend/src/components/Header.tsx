@@ -263,7 +263,7 @@ const Header = () => {
             currentPage === "setup" ? () => setCurrentPage("main") : undefined
           }
         >
-          <nav className="flex mx-16 md:mx-24 lg:mx-32 mt-5 mb-8 items-center gap-8">
+          <nav className="flex mx-16 md:mx-24 lg:mx-32 pt-5 mb-8 items-center gap-8">
             <HeaderLogo currentPath={currentPath} />
             <HeaderIcon />
           </nav>
