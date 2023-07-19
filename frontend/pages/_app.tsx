@@ -8,6 +8,8 @@ import { SocketProvider } from "@/app/socket/SocketProvider";
 import { getSession, SessionProvider } from "next-auth/react";
 import { useRouter } from "next/router";
 import { authMiddleware } from "../middleware/authMiddleware";
+import { AnimatePresence } from "framer-motion";
+import ShuttlecockMove from "@/components/setup/ShuttlecockMove";
 import { GameProvider } from "@/app/component/game/GameContext";
 
 axios.defaults.baseURL = "http://localhost:3000/";
@@ -19,21 +21,20 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
   const currentPath = router.asPath;
   const allowPages = ["/pong-main"];
   const showAdditionalIcon = allowPages.includes(currentPath);
-  
+
   return (
     <SessionProvider session={pageProps.session}>
       <SocketProvider>
-        {/* <div className="wrapper"> */}
-          <SessionCheck>
-            {/* <Header showAdditionalIcon={showAdditionalIcon}/> */}
-            <CustomToaster />
-            <Header />
-              <GameProvider>
-                <Component {...pageProps} />
-              </GameProvider>
-            {/* <Footer /> */}
-          </SessionCheck>
-        {/* </div> */}
+        <SessionCheck>
+          <CustomToaster />
+          <Header />
+          <GameProvider>
+            <AnimatePresence mode="wait">
+              <ShuttlecockMove />
+              <Component {...pageProps} />
+            </AnimatePresence>
+          </GameProvider>
+        </SessionCheck>
       </SocketProvider>
     </SessionProvider>
   );

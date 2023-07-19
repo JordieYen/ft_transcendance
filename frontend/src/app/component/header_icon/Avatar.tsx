@@ -1,9 +1,8 @@
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import 'react-tooltip/dist/react-tooltip.css'
+import "react-tooltip/dist/react-tooltip.css";
 
 interface AvatarProps {
-  
   src: string;
   alt: string;
   width: number;
@@ -11,8 +10,7 @@ interface AvatarProps {
   onClick?: () => void;
 }
 
-const Avatar = ({ src, alt, width, height, onClick } : AvatarProps) => {
-
+const Avatar = ({ src, alt, width, height, onClick }: AvatarProps) => {
   return (
     <span className="icon-container" onClick={onClick}>
       <Image
@@ -22,7 +20,7 @@ const Avatar = ({ src, alt, width, height, onClick } : AvatarProps) => {
         width={width}
         height={height}
         priority={true}
-        />
+      />
     </span>
   );
 };
