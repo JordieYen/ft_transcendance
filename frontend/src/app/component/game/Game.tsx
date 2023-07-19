@@ -2,6 +2,7 @@ import { SocketContext } from "@/app/socket/SocketProvider";
 import Matter, { Engine, Vector } from "matter-js";
 import { useContext, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
+import { useGameData } from "./GameContext";
 
 interface KeyType {
   key: string;
@@ -61,6 +62,8 @@ const gameProperties: GameElements = {
 };
 
 const Game = () => {
+  const { gameState } = useGameData();
+  console.log("gameState", gameState);
   const socket = useContext(SocketContext);
   // const socket = io("http://localhost:3000");
 
@@ -287,6 +290,7 @@ const Game = () => {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
   }, [socket]);
+  return null;
 };
 
 export default Game;

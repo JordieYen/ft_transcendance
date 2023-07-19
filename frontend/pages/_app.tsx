@@ -5,9 +5,10 @@ import "../src/app/globals.css";
 import CustomToaster from "@/components/CustomToaster";
 import axios from "axios";
 import { SocketProvider } from "@/app/socket/SocketProvider";
-import { SessionProvider } from "next-auth/react";
+import { getSession, SessionProvider } from "next-auth/react";
 import { useRouter } from "next/router";
 import { authMiddleware } from "../middleware/authMiddleware";
+import { GameProvider } from "@/app/component/game/GameContext";
 
 axios.defaults.baseURL = "http://localhost:3000/";
 
@@ -18,24 +19,27 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
   const currentPath = router.asPath;
   const allowPages = ["/pong-main"];
   const showAdditionalIcon = allowPages.includes(currentPath);
+  
   return (
     <SessionProvider session={pageProps.session}>
       <SocketProvider>
         {/* <div className="wrapper"> */}
-          <ContentWrapper>
+          <SessionCheck>
             {/* <Header showAdditionalIcon={showAdditionalIcon}/> */}
             <CustomToaster />
             <Header />
-            <Component {...pageProps} />
+              <GameProvider>
+                <Component {...pageProps} />
+              </GameProvider>
             {/* <Footer /> */}
-          </ContentWrapper>
+          </SessionCheck>
         {/* </div> */}
       </SocketProvider>
     </SessionProvider>
   );
 };
 
-const ContentWrapper = ({ children }: any) => {
+const SessionCheck = ({ children }: any) => {
   const [fetchedData, setFetchedData] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

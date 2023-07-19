@@ -39,8 +39,19 @@ export class AuthController {
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
   async callback(@Req() req: Request, @Res() res: Response): Promise<void> {
-    return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
+    return res.redirect(`${process.env.NEXT_HOST}/main-menu`);
   }
+
+  @Get('callback/42-school')
+  async callback42() {
+    console.log('callback 42 school');
+  }
+
+  // @Get('/callback/42-school')
+  // async callback42School(@Req() req: Request, @Res() res: Response) {
+  //   console.log('callback 42 school');
+  //   return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
+  // }
 
   /* 2FA
   1. enable google authenticator

@@ -1,4 +1,4 @@
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore from "@/store/useUserStore";
 import React, { useState, useEffect, RefObject } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";

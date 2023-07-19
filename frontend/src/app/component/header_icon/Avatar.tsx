@@ -14,7 +14,6 @@ interface AvatarProps {
 const Avatar = ({ src, alt, width, height, onClick } : AvatarProps) => {
 
   return (
-
     <span className="icon-container" onClick={onClick}>
       <Image
         className="avatar-image transform hover:scale-125 object-cover"
