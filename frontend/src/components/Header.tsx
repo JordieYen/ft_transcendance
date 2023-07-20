@@ -70,7 +70,7 @@ export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
         // onClick={() => {
         //   if (currentPath !== "/login") router.push("/pong-main");
         // }}
-        href={currentPath !== "/login" ? "/pong-main" : ""}
+        href={currentPath !== "/login" ? "/main-menu" : ""}
       >
         <Image
           className="object-contain"
