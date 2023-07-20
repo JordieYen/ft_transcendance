@@ -1,7 +1,8 @@
 import { createContext, ReactNode, useContext, useState } from "react";
+import { GameState } from "./MatchMaking";
 
 interface GameContextProps {
-  gameState: any;
+  gameState: GameState | null;
   setGameState: (state: any) => void;
 }
 

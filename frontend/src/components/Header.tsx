@@ -254,20 +254,29 @@ const Header = () => {
     ]);
   return (
     <>
-      {currentPath !== "/login" && currentPath !== "/setup" && (
-        <motion.div
-          initial={currentPage === "setup" ? { y: "100vh" } : { y: "0vh" }}
-          animate={{ y: "0vh" }}
-          transition={{ ease: "easeInOut", duration: 1.5 }}
-          onAnimationComplete={
-            currentPage === "setup" ? () => setCurrentPage("main") : undefined
-          }
-        >
-          <nav className="flex mx-16 md:mx-24 lg:mx-32 pt-5 mb-8 items-center gap-8">
-            <HeaderLogo currentPath={currentPath} />
-            <HeaderIcon />
-          </nav>
-        </motion.div>
+      {currentPath !== "/login" &&
+        currentPath !== "/setup" &&
+        currentPath !== "/game" && (
+          <motion.div
+            initial={currentPage === "setup" ? { y: "100vh" } : { y: "0vh" }}
+            animate={{ y: "0vh" }}
+            transition={{ ease: "easeInOut", duration: 1.5 }}
+            onAnimationComplete={
+              currentPage === "setup" ? () => setCurrentPage("main") : undefined
+            }
+          >
+            <nav className="flex mx-16 md:mx-24 lg:mx-32 pt-5 mb-8 items-center gap-8">
+              <HeaderLogo currentPath={currentPath} />
+              <HeaderIcon />
+            </nav>
+          </motion.div>
+        )}
+      {currentPath === "/game" && (
+        <nav className="flex h-[108px] mx-16 md:mx-24 lg:mx-32 pt-5 mb-8 items-center gap-8">
+          <HeaderLogo currentPath={currentPath} />
+          {/* Call your game header here */}
+          <></>
+        </nav>
       )}
     </>
   );

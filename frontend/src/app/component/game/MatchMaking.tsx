@@ -6,6 +6,12 @@ import { useGameData } from "./GameContext";
 import useUserStore, { UserData } from "@/store/useUserStore";
 import * as PIXI from "pixi.js";
 
+export interface GameState {
+  roomId: string;
+  player1User: UserData;
+  player2User: UserData;
+}
+
 const MatchMaking = () => {
   const [isMatchmaking, setIsMatchmaking] = useState(false);
   const [userData, setUserData] = useUserStore((state) => [
@@ -128,7 +134,7 @@ const MatchMaking = () => {
         currentCountdown++;
         if (currentCountdown > 6) {
           clearInterval(countdownInterval);
-          // router.push('/game');
+          router.push("/game");
         }
         const progressWidth = (currentCountdown / 6) * width;
         // loadingBar.width = progressWidth;

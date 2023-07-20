@@ -1,7 +1,5 @@
 import { OnModuleInit } from '@nestjs/common';
 import {
-  ConnectedSocket,
-  MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -129,10 +127,7 @@ export class GameGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('initialize-game')
-  async initializeGame(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() gameProperties: GameElements,
-  ) {
+  async initializeGame(client: Socket, gameProperties: GameElements) {
     this.gameService.initializeBorders(this.engine, gameProperties);
     this.leftPaddle = this.gameService.initializePaddle(
       this.engine,
@@ -143,39 +138,68 @@ export class GameGateway implements OnModuleInit {
       gameProperties.rightPaddle,
     );
     this.ball = this.gameService.initializeBall(this.engine, gameProperties);
-    // socket.emit('roomData', this.roomId);
   }
+
+  // @SubscribeMessage('mousePosition')
+  // async movePaddle(
+  //   client: Socket,
+  //   data: {
+  //     room: string;
+  //     mousePosition: number;
+  //     gameProperties: GameElements;
+  //   },
+  // ) {
+  //   Body.setPosition(this.leftPaddle, {
+  //     x: data.gameProperties.leftPaddle.position.x,
+  //     y: data.mousePosition,
+  //   });
+  //   Body.setPosition(this.rightPaddle, {
+  //     x: data.gameProperties.rightPaddle.position.x,
+  //     y: data.mousePosition,
+  //   });
+  //   this.server
+  //     .to(data.room)
+  //     .emit('leftPaddlePosition', this.leftPaddle.position);
+  //   this.server
+  //     .to(data.room)
+  //     .emit('rightPaddlePosition', this.rightPaddle.position);
+  // }
 
   gameStarted = 0;
   @SubscribeMessage('start-game')
-  async startGame(socket: Socket, gameProperties: GameElements) {
+  async startGame(
+    client: Socket,
+    data: { room: string; gameProperties: GameElements },
+  ) {
     if (this.gameStarted === 0) {
       Body.setVelocity(this.ball, {
-        x: gameProperties.ball.speed.x,
-        y: gameProperties.ball.speed.y,
+        x: data.gameProperties.ball.speed.x,
+        y: data.gameProperties.ball.speed.y,
       });
-      socket.emit('ballSpeed', gameProperties.ball.speed);
+      this.server
+        .to(data.room)
+        .emit('ballSpeed', data.gameProperties.ball.speed);
       this.gameStarted = 1;
       setInterval(() => {
         if (this.gameStarted) {
-          socket.emit('ballPosition', this.ball.position);
+          this.server.to(data.room).emit('ballPosition', this.ball.position);
           if (
             this.ball.position.x < -50 ||
-            this.ball.position.x > gameProperties.screen.x + 50
+            this.ball.position.x > data.gameProperties.screen.x + 50
           ) {
             Body.setPosition(this.ball, {
-              x: gameProperties.screen.x / 2,
-              y: gameProperties.screen.y / 2,
+              x: data.gameProperties.screen.x / 2,
+              y: data.gameProperties.screen.y / 2,
             });
             Body.setVelocity(this.ball, {
               x: 0,
               y: 0,
             });
-            socket.emit('ballPosition', {
-              x: gameProperties.screen.x / 2,
-              y: gameProperties.screen.y / 2,
+            this.server.to(data.room).emit('ballPosition', {
+              x: data.gameProperties.screen.x / 2,
+              y: data.gameProperties.screen.y / 2,
             });
-            socket.emit('ballSpeed', { x: 0, y: 0 });
+            this.server.to(data.room).emit('ballSpeed', { x: 0, y: 0 });
             this.gameStarted = 0;
           }
         }

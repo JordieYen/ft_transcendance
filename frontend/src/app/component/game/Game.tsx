@@ -130,10 +130,13 @@ const initializeGame = () => {
 };
 
 const Game = () => {
-  const roomRef = useRef();
-  const currentPlayer = useRef("");
-  const { gameState } = useGameData();
+  const gameState = useGameData().gameState;
   console.log("gameState", gameState);
+
+  const roomId = gameState?.roomId;
+  const playerOneId = gameState?.player1User.id;
+  const playerTwoId = gameState?.player2User.id;
+
   const socket = useContext(SocketContext);
   // const socket = io("http://localhost:3000");
 
@@ -141,13 +144,6 @@ const Game = () => {
     if (socket) {
       socket?.emit("game-room", 1);
       socket?.emit("initialize-game", gameProperties);
-      // socket.on("roomData", ({ room }) => {
-      //   roomRef.current = room;
-      //   if (players.length) {
-      //     if (players[0].id === socket.id) currentPlayer.current = "p1";
-      //     else currentPlayer.current = "p2";
-      //   }
-      // });
     }
 
     const keyArr: { [key: string]: KeyType } = {};
@@ -168,14 +164,6 @@ const Game = () => {
 
     /* enable mouse movement */
     const mouse = Matter.Mouse.create(render.canvas);
-    setInterval(() => {
-      if (socket) {
-        socket?.emit("mousePosition", {
-          currentPlayer,
-          position: mouse.position,
-        });
-      }
-    }, 15);
 
     /* handle key down */
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -193,7 +181,12 @@ const Game = () => {
       )
         keyArr[event.key].pressDuration += 1;
       console.log("keydown ", keyArr[event.key]);
-      if (event.key === "s") socket?.emit("start-game", gameProperties);
+
+      if (event.key === "s")
+        socket?.emit("start-game", {
+          room: roomId,
+          gameProperties: gameProperties,
+        });
     };
 
     /* handle key up */
@@ -235,7 +228,7 @@ const Game = () => {
         });
       });
     }
-  }, [socket]);
+  }, [socket, roomId]);
 
   // Matter.Events.on(engine, "beforeUpdate", function () {
   //   /* automate right paddle */
