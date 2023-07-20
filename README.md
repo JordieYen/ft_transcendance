@@ -92,6 +92,10 @@ export default async function handler(req: NextRequest) {
 2. backquotes atari pong quote?
 3. shoule be simple minimalistic
 
+# check for local network
+
+`ipconfig getifaddr en0`
+
 # Reference
 
 1. [Postgresql with nestjs](https://blog.devgenius.io/setting-up-nestjs-with-postgresql-ac2cce9045fe)

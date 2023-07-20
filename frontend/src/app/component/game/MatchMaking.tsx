@@ -84,7 +84,19 @@ const MatchMaking  = () => {
             socket?.off('joined-room');
         }
     }, [roomId, isMatchmaking]);
-    
+
+    // update loading bar width on resize
+    const updateLoadingBarWidth = (redBorder: PIXI.Graphics, loadingContainer: Element | null, app: PIXI.Application, loadingBar: PIXI.Sprite, currentCountdown: number) => {
+        loadingContainer = document.querySelector('.loading-container');
+        const width = loadingContainer?.clientWidth || 400;
+        const progressWidth = (currentCountdown / 6) * width;
+        loadingBar.x = progressWidth - loadingBar.width;
+        redBorder.drawRect(0, 0, width, 40);
+        redBorder.clear();
+        redBorder.lineStyle(4, 0xCA4754, 1);
+        redBorder.drawRect(0, 0, width, 40);
+        app.renderer.resize(width, 40);
+    }
 
     useEffect(() => {
       if (roomId && isMatchmaking && player1User && player2User) {
@@ -95,9 +107,6 @@ const MatchMaking  = () => {
         }
 
         setGameState(gameData);
-        // const timeout = setTimeout(() => {
-        //   router.push('/game');
-        // }, 5000);
         
         const loadingContainer = document.querySelector('.loading-container');
         const width = loadingContainer?.clientWidth || 400;
@@ -108,15 +117,8 @@ const MatchMaking  = () => {
         
         loadingContainer?.appendChild(app.view as HTMLCanvasElement);
 
-        // const loadingBar = new PIXI.Graphics();
-        // loadingBar.beginFill(0x000000);
-        // loadingBar.drawRect(0, 0, width, 40);
-        // loadingBar.endFill();
-        // app.stage.addChild(loadingBar);
         const loadingBar = PIXI.Sprite.from("/bracket.png");
-        // loadingBar.width = 0;
         loadingBar.height = 40;
-        // loadingBar.anchor.x = 0;
         loadingBar.x = -loadingBar.width;
         app.stage.addChild(loadingBar);
 
@@ -133,16 +135,20 @@ const MatchMaking  = () => {
             // router.push('/game');
           }
           const progressWidth = (currentCountdown / 6) * width;
-          // loadingBar.width = progressWidth;
           loadingBar.x = progressWidth - loadingBar.width;
-          // loadingBar.clear();
-          // loadingBar.beginFill(0xE2B714);
-          // loadingBar.drawRect(0, 0, progressWidth, 40);
-          // loadingBar.endFill();
         }, 1000);
+
+        const handleResize = () => {
+          console.log('handleResize');
+          
+          updateLoadingBarWidth(redBorder, loadingContainer, app, loadingBar, currentCountdown);
+        }
+
+        window.addEventListener('resize', handleResize);
 
         return () => {
           clearInterval(countdownInterval);
+          window.removeEventListener('resize', handleResize);
           loadingContainer?.removeChild(app.view as HTMLCanvasElement);
           app.destroy();
         }
@@ -163,11 +169,6 @@ const MatchMaking  = () => {
                 <div className="flex justify-between bg-black p-4 rounded-lg h-full">
                   <div className="flex flex-col items-center justify-top">
                     <p className="text-white">Player 1: {player1User?.username}</p>
-                        {/* <Avatar src={player1User?.avatar || ""} 
-                        alt="user avatar"
-                        width={150}
-                        height={150}
-                        /> */}
                         <Image
                           className="transform hover:scale-125 object-cover rounded-full"
                           src={player1User?.avatar || ""}
@@ -181,11 +182,6 @@ const MatchMaking  = () => {
                   </div>
                   <div className="flex flex-col items-center justify-end">
                     <p className="text-white">Player 2: {player2User?.username}</p>
-                    {/* <Avatar src={player2User?.avatar || ""} 
-                      alt="user avatar"
-                      width={150}
-                      height={150}
-                    /> */}
                       <Image
                         className="transform hover:scale-125 object-cover rounded-full"
                         src={player2User?.avatar || ""}
