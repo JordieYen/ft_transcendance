@@ -128,16 +128,6 @@ export class GameGateway implements OnModuleInit {
     }
   }
 
-  handleConnection() {
-    console.log('connected to game socket gateway');
-
-    //Potentially not when connect but when he joins game instead
-
-    // socket.on('game-room', async (data) => {
-    //   socket.join(data.roomId);
-    // });
-  }
-
   @SubscribeMessage('initialize-game')
   async initializeGame(
     @ConnectedSocket() socket: Socket,
@@ -153,13 +143,10 @@ export class GameGateway implements OnModuleInit {
       gameProperties.rightPaddle,
     );
     this.ball = this.gameService.initializeBall(this.engine, gameProperties);
-
-    // console.log(this.engine);
-    socket.emit('emit-engine');
+    // socket.emit('roomData', this.roomId);
   }
 
   gameStarted = 0;
-
   @SubscribeMessage('start-game')
   async startGame(socket: Socket, gameProperties: GameElements) {
     if (this.gameStarted === 0) {
@@ -171,10 +158,10 @@ export class GameGateway implements OnModuleInit {
       this.gameStarted = 1;
       setInterval(() => {
         if (this.gameStarted) {
-          socket.emit('ballMoving', this.ball.position);
+          socket.emit('ballPosition', this.ball.position);
           if (
-            this.ball.position.x < 0 ||
-            this.ball.position.x > gameProperties.screen.x
+            this.ball.position.x < -50 ||
+            this.ball.position.x > gameProperties.screen.x + 50
           ) {
             Body.setPosition(this.ball, {
               x: gameProperties.screen.x / 2,
@@ -184,6 +171,11 @@ export class GameGateway implements OnModuleInit {
               x: 0,
               y: 0,
             });
+            socket.emit('ballPosition', {
+              x: gameProperties.screen.x / 2,
+              y: gameProperties.screen.y / 2,
+            });
+            socket.emit('ballSpeed', { x: 0, y: 0 });
             this.gameStarted = 0;
           }
         }

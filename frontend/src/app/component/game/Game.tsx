@@ -1,6 +1,6 @@
 import { SocketContext } from "@/app/socket/SocketProvider";
 import Matter, { Vector } from "matter-js";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { useGameData } from "./GameContext";
 
@@ -130,6 +130,8 @@ const initializeGame = () => {
 };
 
 const Game = () => {
+  const roomRef = useRef();
+  const currentPlayer = useRef("");
   const { gameState } = useGameData();
   console.log("gameState", gameState);
   const socket = useContext(SocketContext);
@@ -139,6 +141,13 @@ const Game = () => {
     if (socket) {
       socket?.emit("game-room", 1);
       socket?.emit("initialize-game", gameProperties);
+      // socket.on("roomData", ({ room }) => {
+      //   roomRef.current = room;
+      //   if (players.length) {
+      //     if (players[0].id === socket.id) currentPlayer.current = "p1";
+      //     else currentPlayer.current = "p2";
+      //   }
+      // });
     }
 
     const keyArr: { [key: string]: KeyType } = {};
@@ -156,6 +165,17 @@ const Game = () => {
     const canvas = render.canvas;
     canvas.style.cursor = "none";
     Matter.Render.run(render);
+
+    /* enable mouse movement */
+    const mouse = Matter.Mouse.create(render.canvas);
+    setInterval(() => {
+      if (socket) {
+        socket?.emit("mousePosition", {
+          currentPlayer,
+          position: mouse.position,
+        });
+      }
+    }, 15);
 
     /* handle key down */
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -187,24 +207,36 @@ const Game = () => {
     window.addEventListener("keyup", handleKeyUp);
 
     if (socket) {
-      socket?.on("ballMoving", (ballPos: Vector) => {
-        Matter.Body.setPosition(ball, {
-          x: ballPos.x,
-          y: ballPos.y,
-        });
-      });
-
       socket?.on("ballSpeed", (ballSpeed: Vector) => {
         Matter.Body.setVelocity(ball, {
           x: ballSpeed.x,
           y: ballSpeed.y,
         });
       });
+
+      socket?.on("ballPosition", (ballPos: Vector) => {
+        Matter.Body.setPosition(ball, {
+          x: ballPos.x,
+          y: ballPos.y,
+        });
+      });
+
+      socket?.on("leftPaddlePosition", (paddlePos: Vector) => {
+        Matter.Body.setPosition(leftPaddle, {
+          x: paddlePos.x,
+          y: paddlePos.y,
+        });
+      });
+
+      socket?.on("rightPaddlePosition", (paddlePos: Vector) => {
+        Matter.Body.setPosition(rightPaddle, {
+          x: paddlePos.x,
+          y: paddlePos.y,
+        });
+      });
     }
   }, [socket]);
 
-  // /* enable mouse movement */
-  // const mouse = Matter.Mouse.create(render.canvas);
   // Matter.Events.on(engine, "beforeUpdate", function () {
   //   /* automate right paddle */
   //   gameProperties.rightPaddle.position.y = ball.position.y;
