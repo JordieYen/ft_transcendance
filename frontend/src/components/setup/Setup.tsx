@@ -243,7 +243,6 @@ const AvatarStep = () => {
             ...userData,
             avatar: response.data.avatarURL,
           });
-          console.log("hehehe");
           setCurrentStep("tfa");
         })
         .catch(() => {
@@ -403,7 +402,6 @@ const TFAStep = () => {
         toast.error("Failed to update 2FA! Please try again");
       });
     setIsShuttlecockEnd(true);
-    console.log("pepela");
   };
 
   const patchTFA = () => {
