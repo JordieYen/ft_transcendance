@@ -140,22 +140,23 @@
 .back-group {
 	width: auto;
 	height: auto;
-	max-width: 7%;
+	max-width: 4%;
 	padding-left: 4%;
 }
 
 .title {
-	padding: 4%;
+	padding: 2%;
 	margin: 2%;
-	margin-left: 2%;
+	margin-left: 1%;
+	/* margin-bottom: 1%; */
 	text-align: left;
-	font-size: x-large;
+	font-size: xx-large;
 }
 
 .search-bar {
-	padding: 1px 2% 1px 2%;
+	padding: 2px 3% 2px 3%;
 	border-radius: 5px;
-	margin-bottom: 3%;
+	margin-bottom: 2%;
 	margin-left: 3%;
 	margin-right: 3%;
 	width: 90%;
@@ -170,12 +171,13 @@
 }
 
 .friends {
-	height: auto;
+	overflow: scroll;
+	height: 87%;
 	width: auto;
 }
 
 .friend {
-	height: 8%;
+	height: 9vh;
 	display: flex;
 	flex-direction: row;
 	cursor: pointer;
@@ -197,6 +199,9 @@
 }
 
 .user-name {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 	font-size: large;
 	text-align: left;
 	margin-top: 10%;
@@ -222,7 +227,38 @@
 	border-radius: 50%;
 }
 
-.create-chat-popup-bg {
+.search-group {
+	width: auto;
+	height: auto;
+	max-width: 3vh;
+	max-height: 3vh;
+	position: absolute;
+	right: 3vh;
+	bottom: 11vh;
+	background-color: #555;
+	opacity: 0.8;
+	padding: 15px;
+	border-radius: 50%;
+}
+
+.browse-chat-popup {
+	opacity: 2;
+	background-color: #323437;
+	width: 45vh;
+	/* min-width: 50vh; */
+	height: 35vh;
+	left: 120%;
+	top: 30vh;
+	opacity: 1;
+	border-radius: 10px;
+	position: absolute;
+	box-shadow: 0px 0px 10px 2px #1c1e20;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.popup-bg {
 	background-color: black;
 	opacity: 0.7;
 	width: 200vh;
@@ -367,6 +403,20 @@
 	background: #555;
 }
 
+.noSelect {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.noSelect:focus {
+    outline: none !important;
+}
+
 .chat-style {
 	background-color: #323437;
 	opacity: 0.991;
@@ -399,6 +449,9 @@
 }
 
 .chat-name {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 	opacity: 1;
 	display: inline;
 	flex-direction: column;

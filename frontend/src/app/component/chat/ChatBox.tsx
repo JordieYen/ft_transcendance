@@ -9,6 +9,7 @@ import {
   faChevronDown,
   faChevronUp,
   faEllipsisVertical,
+  faMagnifyingGlass,
   faPen,
   faPenToSquare,
   faPlus,
@@ -88,16 +89,28 @@ const CreateChat = ({
     e.preventDefault();
     if (channelName.trim() !== "" && channelType.trim() != "") {
       if (channelType == "protected" && channelPassword != "") {
-        socket?.emit("create-channel", channelName, channelType, channelPassword, userData.id);
+        socket?.emit(
+          "create-channel",
+          channelName,
+          channelType,
+          channelPassword,
+          userData.id,
+        );
       }
       if (channelType != "protected") {
-        socket?.emit("create-channel", channelName, channelType, channelPassword, userData.id);
+        socket?.emit(
+          "create-channel",
+          channelName,
+          channelType,
+          channelPassword,
+          userData.id,
+        );
       }
       setChannelName("");
       setChannelType("");
       setChannelPassword("");
     }
-    
+
     if (channelPassword != "") {
       setChannelPassword("");
     } else {
@@ -114,9 +127,9 @@ const CreateChat = ({
     <>
       {isOpen && (
         <div className="overlay">
-          <div className="create-chat-popup-bg"></div>
+          <div className="popup-bg"></div>
           <div
-            className={`create-chat-popup absolute overlay-content flex flex-col z-[101]`}
+            className={`create-chat-popup noSelect absolute overlay-content flex flex-col z-[101]`}
             ref={modalRef}
           >
             <p className="ccp-name">Create Chat</p>
@@ -169,7 +182,37 @@ const CreateChat = ({
               value={channelPassword}
               onChange={handleChannelPasswordChange}
             />
-            <button className="ccp-submit" onClick={handleSubmit}>Create</button>
+            <button className="ccp-submit" onClick={handleSubmit}>
+              Create
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+const BrowseChats = ({
+  isOpen,
+  closeModal,
+  modalRef,
+}: // user,
+{
+  isOpen: boolean;
+  closeModal: () => void;
+  modalRef: RefObject<HTMLDivElement>;
+  // user: any;
+}) => {
+  return (
+    <>
+      {isOpen && (
+        <div className="overlay">
+          <div className="popup-bg"></div>
+          <div
+            className={`browse-chat-popup absolute overlay-content flex flex-col z-[101]`}
+            ref={modalRef}
+          >
+            {/* <p>Browse Chats</p> */}
           </div>
         </div>
       )}
@@ -229,6 +272,12 @@ const ChatBox: React.FC<any> = () => {
     closeCreateChatModal,
     modalCreateChatRef,
   ] = useModal(false);
+  const [
+    isBrowseChatModalOpen,
+    openBrowseChatModal,
+    closeBrowseChatModal,
+    modalBrowseChatRef,
+  ] = useModal(false);
 
   const socket = useContext(SocketContext);
 
@@ -266,6 +315,14 @@ const ChatBox: React.FC<any> = () => {
       setMessages([...messages, new_message]);
     });
   }, [socket, messages]);
+
+  useEffect(() => {
+    socket?.on("channel-created", async function (new_channel: any) {
+      console.log("new-channel", new_channel);
+      console.log("channel", channels[1]);
+      setChannels([...channels, new_channel]);
+    });
+  }, [socket, channels]);
 
   const fetchMessageData = async () => {
     try {
@@ -480,6 +537,7 @@ const ChatBox: React.FC<any> = () => {
             <form>
               <input
                 className="search-bar"
+                // className="ccp-input"
                 type="text"
                 placeholder=" Find Someone . . ."
               />
@@ -497,7 +555,8 @@ const ChatBox: React.FC<any> = () => {
                   <img src="gc.jpg" className="friend-profile-pictures" />
                   <div className="user-data">
                     <p className="user-name">{channel?.channel_name}</p>
-                    <p className="user-status">#{channel?.channel_uid}</p>
+                    <p className="user-status">{channel?.channel_type}</p>
+                    {/* #{channel?.channel_uid}</p> */}
                   </div>
                 </div>
               ))}
@@ -516,12 +575,27 @@ const ChatBox: React.FC<any> = () => {
                 </div>
               ))}
               <FontAwesomeIcon
+                className="search-group"
+                icon={faMagnifyingGlass}
+                size="lg"
+                style={{ color: "#d1d0c5" }}
+                onClick={() => openBrowseChatModal()}
+              />
+              <FontAwesomeIcon
                 className="plus-group"
                 icon={faPenToSquare}
                 size="lg"
                 style={{ color: "#d1d0c5" }}
                 onClick={() => openCreateChatModal()}
               />
+              {isBrowseChatModalOpen && (
+                <BrowseChats
+                  isOpen={isBrowseChatModalOpen}
+                  closeModal={closeBrowseChatModal}
+                  modalRef={modalBrowseChatRef}
+                  // user={channelUser.user}
+                />
+              )}
               {isCreateChatModalOpen && (
                 <CreateChat
                   isOpen={isCreateChatModalOpen}
