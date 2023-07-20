@@ -9,6 +9,9 @@ import {
   faChevronDown,
   faChevronUp,
   faEllipsisVertical,
+  faPen,
+  faPenToSquare,
+  faPlus,
   faTableTennisPaddleBall,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
@@ -32,7 +35,7 @@ const ThreeDots = ({
   return (
     <>
       {isOpen && (
-        <div className=" overlay">
+        <div className="overlay">
           <div
             className={`member-option-buttons absolute overlay-content flex flex-col left-[97%] top-[-0%] z-[101]`}
             ref={modalRef}
@@ -41,6 +44,132 @@ const ThreeDots = ({
             <button className="member-option-button">Mute</button>
             <button className="member-option-button">Check</button>
             <button className="member-option-button">More...</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+const CreateChat = ({
+  isOpen,
+  closeModal,
+  modalRef,
+}: // user,
+{
+  isOpen: boolean;
+  closeModal: () => void;
+  modalRef: RefObject<HTMLDivElement>;
+  // user: any;
+}) => {
+  const [channelName, setChannelName] = useState("");
+  const [channelPassword, setChannelPassword] = useState("");
+  const [channelType, setChannelType] = useState("");
+  const [isProtected, setProtected] = useState(false);
+
+  const socket = useContext(SocketContext);
+
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
+  const handleChannelNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setChannelName(e.target.value);
+  };
+
+  const handleChannelPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setChannelPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (channelName.trim() !== "" && channelType.trim() != "") {
+      if (channelType == "protected" && channelPassword != "") {
+        socket?.emit("create-channel", channelName, channelType, channelPassword, userData.id);
+      }
+      if (channelType != "protected") {
+        socket?.emit("create-channel", channelName, channelType, channelPassword, userData.id);
+      }
+      setChannelName("");
+      setChannelType("");
+      setChannelPassword("");
+    }
+    
+    if (channelPassword != "") {
+      setChannelPassword("");
+    } else {
+      console.log("channel-password is empty");
+    }
+    if (channelType != "") {
+      setChannelType("");
+    } else {
+      console.log("channel-type not selected");
+    }
+  };
+
+  return (
+    <>
+      {isOpen && (
+        <div className="overlay">
+          <div className="create-chat-popup-bg"></div>
+          <div
+            className={`create-chat-popup absolute overlay-content flex flex-col z-[101]`}
+            ref={modalRef}
+          >
+            <p className="ccp-name">Create Chat</p>
+            <input
+              className="ccp-input"
+              type="text"
+              placeholder=" Channel Name"
+              value={channelName}
+              onChange={handleChannelNameChange}
+            />
+            <div className="ccp-btn-group">
+              <button
+                className={
+                  channelType != "public" ? "ccp-btn" : "ccp-btn-selected"
+                }
+                onClick={() => {
+                  setChannelType("public");
+                  setProtected(false);
+                }}
+              >
+                public
+              </button>
+              <button
+                className={
+                  channelType != "protected" ? "ccp-btn" : "ccp-btn-selected"
+                }
+                onClick={() => {
+                  setChannelType("protected");
+                  setProtected(true);
+                }}
+              >
+                protected
+              </button>
+              <button
+                className={
+                  channelType != "private" ? "ccp-btn" : "ccp-btn-selected"
+                }
+                onClick={() => {
+                  setChannelType("private");
+                  setProtected(false);
+                }}
+              >
+                private
+              </button>
+            </div>
+            <input
+              className={`ccp-input ${isProtected ? null : "invisible"}`}
+              type="text"
+              placeholder=" Password"
+              value={channelPassword}
+              onChange={handleChannelPasswordChange}
+            />
+            <button className="ccp-submit" onClick={handleSubmit}>Create</button>
           </div>
         </div>
       )}
@@ -94,6 +223,12 @@ const ChatBox: React.FC<any> = () => {
   const [channelUsers, setChannelUsers] = useState<any[]>([]);
   const [channelId, setChannelId] = useState("1");
   const [currentChannel, setCurrentChannel] = useState<any>(null);
+  const [
+    isCreateChatModalOpen,
+    openCreateChatModal,
+    closeCreateChatModal,
+    modalCreateChatRef,
+  ] = useModal(false);
 
   const socket = useContext(SocketContext);
 
@@ -380,6 +515,21 @@ const ChatBox: React.FC<any> = () => {
                   </div>
                 </div>
               ))}
+              <FontAwesomeIcon
+                className="plus-group"
+                icon={faPenToSquare}
+                size="lg"
+                style={{ color: "#d1d0c5" }}
+                onClick={() => openCreateChatModal()}
+              />
+              {isCreateChatModalOpen && (
+                <CreateChat
+                  isOpen={isCreateChatModalOpen}
+                  closeModal={closeCreateChatModal}
+                  modalRef={modalCreateChatRef}
+                  // user={channelUser.user}
+                />
+              )}
             </div>
           </div>
           <div className="chat-nav">
@@ -392,7 +542,7 @@ const ChatBox: React.FC<any> = () => {
                 onClick={() => setGroupSlideOut((current) => !current)}
               />
             </div>
-              <h1 className="chat-name">{currentChannel?.channel_name}</h1>
+            <h1 className="chat-name">{currentChannel?.channel_name}</h1>
             <FontAwesomeIcon
               className="more-button"
               icon={chat_members_slide_out ? faChevronUp : faChevronDown}
