@@ -198,8 +198,6 @@ export default function ShuttlecockMove() {
       const curveCtrl = screenHeight * 0.5;
       let currPoint: Points = { x: 0, y: 0 };
 
-      console.log("height:", height);
-
       const curve = (startC: Points, endC: Points, newPoint: Points) => {
         const ret = `C\
           ${currPoint.x + startC.x} ${currPoint.y + startC.y} \
@@ -272,7 +270,7 @@ export default function ShuttlecockMove() {
         const animation = animate([
           [progress, 1, { duration: 3 }],
           [yOffset, -screen.height * 4.5, { duration: 3, at: "<" }],
-          [yOffset, -screen.height * 4.5 + 500, { duration: 1.5, at: 3 }],
+          [yOffset, -screen.height * 4.5 + 500, { duration: 1.2, at: 3 }],
         ]);
         animation.then(() => setShowShuttlecock(false));
       }
@@ -280,7 +278,6 @@ export default function ShuttlecockMove() {
       animate(move, 1, { duration: 3 });
     }
   }, [currentStep]);
-  console.log(path);
 
   return (
     <>

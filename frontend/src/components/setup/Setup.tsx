@@ -243,7 +243,6 @@ const AvatarStep = () => {
             ...userData,
             avatar: response.data.avatarURL,
           });
-          console.log("hehehe");
           setCurrentStep("tfa");
         })
         .catch(() => {
@@ -403,7 +402,6 @@ const TFAStep = () => {
         toast.error("Failed to update 2FA! Please try again");
       });
     setIsShuttlecockEnd(true);
-    console.log("pepela");
   };
 
   const patchTFA = () => {
@@ -442,20 +440,15 @@ const TFAStep = () => {
             style={{ background, height: 50 }}
           >
             <motion.div
-              className="flex absolute bg-timberwolf rounded-full items-center justify-center"
+              className="flex absolute w-[50px] h-[50px] bg-timberwolf rounded-full items-center justify-center"
               style={{
                 x,
-                height: "50px",
                 left: "calc(50% - 25px)",
               }}
               drag="x"
               dragConstraints={{ left: -65, right: 65 }}
             >
-              <svg
-                className="w-[95%] h-[95%]"
-                viewBox="0 0 50 50"
-                style={{ height: "100%" }}
-              >
+              <svg className="w-[95%] h-[95%]" viewBox="0 0 50 50">
                 <motion.path
                   fill="none"
                   strokeWidth="2"

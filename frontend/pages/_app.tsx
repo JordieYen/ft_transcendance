@@ -32,8 +32,8 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
             <AnimatePresence mode="wait">
               {/* <ShuttlecockMove />
               <Component {...pageProps} /> */}
-                <ShuttlecockMove key="shuttlecock-move" />
-                <Component key="main-component" {...pageProps} />
+              <ShuttlecockMove key="shuttlecock-move" />
+              <Component key="main-component" {...pageProps} />
             </AnimatePresence>
           </GameProvider>
         </SessionCheck>
