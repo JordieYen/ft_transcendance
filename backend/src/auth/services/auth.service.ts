@@ -104,7 +104,6 @@ export class AuthService {
 
   async generateTwoFactorAuthSecret(user: AuthenticatedUser): Promise<string> {
     this.secret = authenticator.generateSecret();
-    this.userService.updateUser(user.id, { authenticationString: this.secret });
     const otpAuthUrl = authenticator.keyuri(
       user.username,
       'MyApp',
@@ -117,8 +116,23 @@ export class AuthService {
     const qrCode = await qrcode.toFileStream(res, otpAuthUrl);
   }
 
-  async verifyOtp(otp: string) {
-    return authenticator.check(otp, this.secret);
+  async verifyOtp(user: AuthenticatedUser, otp: string) {
+    const users = await this.userService.findUsersById(user.id);
+    if (users.authentication === true) {
+      return authenticator.check(otp, users.authenticationString);
+    } else {
+      return authenticator.check(otp, this.secret);
+    }
+  }
+
+  async storeSecret(user: AuthenticatedUser) {
+    const users = await this.userService.findUsersById(user.id);
+    if (users.authentication !== true) {
+      this.userService.updateUser(user.id, {
+        authenticationString: this.secret,
+      });
+      this.userService.updateUser(user.id, { authentication: true });
+    }
   }
 
   async logout(user: AuthenticatedUser): Promise<User> {

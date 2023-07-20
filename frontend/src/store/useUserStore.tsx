@@ -21,6 +21,7 @@ export interface UserData {
   p1_match: string;
   stat: Stat;
   userAchievement: string;
+  firstTimeLogin: boolean;
 }
 
 interface UserStore {
@@ -49,6 +50,7 @@ const useUserStore = create<UserStore>((set) => ({
       win_streak: 0,
     },
     userAchievement: "",
+    firstTimeLogin: false,
   },
   setUserData: (userData) => set({ userData }),
 }));

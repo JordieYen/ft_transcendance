@@ -14,6 +14,9 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import useUserStore, { UserData } from "@/store/useUserStore";
 import NextLink from "next/link";
+import Icon from "@/app/component/header_icon/Icon";
+import { motion } from "framer-motion";
+import useAnimateStore from "@/store/useAnimateStore";
 import useModal from "@/hooks/useModal";
 import LeaderboardsModal from "./LeaderboardsModal";
 
@@ -242,13 +245,29 @@ export const HeaderIcon = () => {
 const Header = () => {
   const router = useRouter();
   const currentPath = router.asPath;
+  const [currentStep, currentPage, setCurrentStep, setCurrentPage] =
+    useAnimateStore((state) => [
+      state.currentStep,
+      state.currentPage,
+      state.setCurrentStep,
+      state.setCurrentPage,
+    ]);
   return (
     <>
-      {currentPath !== "/login" && (
-        <nav className="flex mx-16 md:mx-24 lg:mx-32 mt-5 mb-8 items-center gap-8">
-          <HeaderLogo currentPath={currentPath} />
-          {currentPath !== "/setup" && <HeaderIcon />}
-        </nav>
+      {currentPath !== "/login" && currentPath !== "/setup" && (
+        <motion.div
+          initial={currentPage === "setup" ? { y: "100vh" } : { y: "0vh" }}
+          animate={{ y: "0vh" }}
+          transition={{ ease: "easeInOut", duration: 1.5 }}
+          onAnimationComplete={
+            currentPage === "setup" ? () => setCurrentPage("main") : undefined
+          }
+        >
+          <nav className="flex mx-16 md:mx-24 lg:mx-32 pt-5 mb-8 items-center gap-8">
+            <HeaderLogo currentPath={currentPath} />
+            <HeaderIcon />
+          </nav>
+        </motion.div>
       )}
     </>
   );

@@ -43,7 +43,6 @@ const PongMain: React.FC<any> = ({ userId }) => {
   const joinDate = formatDateMalaysia(new Date(createdAt));
   const totalGames = stat?.wins + stat?.losses;
 
-
   return (
     <div className="profile-page">
       <div className="top-profile">
@@ -76,7 +75,7 @@ const PongMain: React.FC<any> = ({ userId }) => {
       </div>
       <div className="bottom-content">
         <MatchHistory p1_match={p1_match} p2_match={p2_match} userId={id} />
-        <MatchMaking stat={stat}/>
+        <MatchMaking stat={stat} />
       </div>
     </div>
   );

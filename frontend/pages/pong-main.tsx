@@ -1,5 +1,5 @@
-import PongMain from "@/app/component/profile/PongMain"
+import PongMain from "@/app/component/profile/PongMain";
 
 export default function PongMainPage() {
-    return <PongMain />;
-};
+  return <PongMain />;
+}
