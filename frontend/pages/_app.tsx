@@ -23,7 +23,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
   const showAdditionalIcon = allowPages.includes(currentPath);
 
   return (
-    <SessionProvider session={pageProps.session}>
+    // <SessionProvider session={pageProps.session}>
       <SocketProvider>
         <SessionCheck>
           <CustomToaster />
@@ -38,7 +38,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
           </GameProvider>
         </SessionCheck>
       </SocketProvider>
-    </SessionProvider>
+    // </SessionProvider>
   );
 };
 
