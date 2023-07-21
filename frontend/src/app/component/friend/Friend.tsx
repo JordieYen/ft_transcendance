@@ -62,7 +62,7 @@ const Friend = ({
       console.log("userDataId", userDataId);
 
       const response = await fetch(
-        `http://localhost:3000/friend/friends/${userDataId}`,
+        `${process.env.NEXT_PUBLIC_NEST_HOST}/friend/friends/${userDataId}`,
         {
           credentials: "include",
           mode: "cors",

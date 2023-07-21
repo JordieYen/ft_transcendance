@@ -8,7 +8,7 @@ const Logout = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/auth/logout", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/auth/logout`, {
         credentials: "include",
       });
       console.log("logout response", response);

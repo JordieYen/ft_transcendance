@@ -48,7 +48,7 @@ const Block = () => {
     if (userData.id) {
       try {
         const response = await fetch(
-          `http://localhost:3000/friend/blocked/${userData?.id}`,
+          `${process.env.NEXT_PUBLIC_NEST_HOST}/friend/blocked/${userData?.id}`,
           {
             method: "GET",
             credentials: "include",

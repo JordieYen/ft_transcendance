@@ -47,7 +47,7 @@ const ChatBox: React.FC<any> = () => {
 
   const fetchMessageData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/message", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/message`, {
         method: "GET",
         credentials: "include",
       });
@@ -71,7 +71,7 @@ const ChatBox: React.FC<any> = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/users`, {
         method: "GET",
         credentials: "include",
       });

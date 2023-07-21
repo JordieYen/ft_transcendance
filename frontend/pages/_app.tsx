@@ -12,7 +12,8 @@ import { AnimatePresence } from "framer-motion";
 import ShuttlecockMove from "@/components/setup/ShuttlecockMove";
 import { GameProvider } from "@/app/component/game/GameContext";
 
-axios.defaults.baseURL = "http://localhost:3000/";
+// axios.defaults.baseURL = "http://localhost:3000/";
+axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_NEST_HOST}`;
 
 const MyApp = ({ Component, pageProps, router }: AppProps) => {
   /* NOT USING THIS FOR NOW */

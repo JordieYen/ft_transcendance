@@ -47,7 +47,7 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
 
   const fetchFriendRequests = async () => {
       try {
-          const response = await fetch(`http://localhost:3000/friend/friend-requests/${userId}`, {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/friend/friend-requests/${userId}`, {
               credentials: 'include',
           });
           if (response.ok) {

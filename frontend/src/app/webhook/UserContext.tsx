@@ -16,7 +16,7 @@ export const UseUserContext = ({ children }: UserProviderProps) => {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/auth/profile", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/auth/profile`, {
         credentials: "include",
       });
       if (response.ok) {
@@ -55,7 +55,7 @@ const UserData = () => {
 
   const fetchUserData = async (signal: AbortSignal) => {
     try {
-      const response = await fetch("http://localhost:3000/auth/profile", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/auth/profile`, {
         credentials: "include",
         // mode: 'no-cors',
         signal: signal,

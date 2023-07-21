@@ -91,7 +91,7 @@ const FriendList = () => {
 
   const fetchUsersList = async () => {
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/users`, {
         credentials: "include",
       });
       if (response.ok) {
@@ -176,7 +176,7 @@ const FriendList = () => {
       const userId = user1.id;
       const friendId = user2.id;
       const response = await fetch(
-        `http://localhost:3000/friend/check-relationship/${userId}/${friendId}`,
+        `${process.env.NEXT_PUBLIC_NEST_HOST}/friend/check-relationship/${userId}/${friendId}`,
         {
           method: "GET",
           credentials: "include",
@@ -205,7 +205,7 @@ const FriendList = () => {
     try {
       console.log("id in handleClick", id);
 
-      const response = await fetch(`http://localhost:3000/users/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/users/${id}`, {
         method: "GET",
         credentials: "include",
       });

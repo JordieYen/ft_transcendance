@@ -1,4 +1,5 @@
 
+import { loadWebFont } from "pixi.js";
 import { useState, createContext, useContext, use, useEffect, ReactNode } from "react";
 import { io, Socket } from 'socket.io-client';
 
@@ -15,7 +16,7 @@ export const SocketProvider =  ({ children }: SocketProviderProps) => {
     const [socket, setSocket] = useState<SocketContextType>(null);
     
     useEffect(() => {
-        const socket = io('http://localhost:3000');
+        const socket = io(`${process.env.NEXT_PUBLIC_NEST_HOST}`);
         socket.on('connect', () => {
             console.log('Connected to socket server', socket.id);
         });
