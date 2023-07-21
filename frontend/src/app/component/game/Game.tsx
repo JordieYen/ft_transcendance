@@ -1,6 +1,6 @@
 import { SocketContext } from "@/app/socket/SocketProvider";
 import Matter, { Vector } from "matter-js";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useGameData } from "./GameContext";
 
@@ -33,7 +33,7 @@ interface GameElements {
   rightPaddle: Paddle;
 }
 
-const screenWidth = 2045;
+const screenWidth = 2045 / 2;
 const screenHeight = 900;
 
 const borderWidth = screenWidth;
@@ -130,20 +130,24 @@ const initializeGame = () => {
 };
 
 const Game = () => {
+  const currentPlayer = useRef("");
   const gameState = useGameData().gameState;
   console.log("gameState", gameState);
 
   const roomId = gameState?.roomId;
-  const playerOneId = gameState?.player1User.id;
-  const playerTwoId = gameState?.player2User.id;
+  const playerOneId = gameState?.player1User.socketId;
+  const playerTwoId = gameState?.player2User.socketId;
 
   const socket = useContext(SocketContext);
   // const socket = io("http://localhost:3000");
 
   useEffect(() => {
     if (socket) {
-      socket?.emit("game-room", 1);
-      socket?.emit("initialize-game", gameProperties);
+      socket.emit("game-room", 1);
+      socket.emit("initialize-game", gameProperties);
+      if (playerOneId === socket.id) currentPlayer.current = "p1";
+      else if (playerTwoId === socket.id) currentPlayer.current = "p2";
+      console.log("current player", currentPlayer);
     }
 
     const keyArr: { [key: string]: KeyType } = {};
@@ -164,6 +168,14 @@ const Game = () => {
 
     /* enable mouse movement */
     const mouse = Matter.Mouse.create(render.canvas);
+    setInterval(() => {
+      socket?.emit("mouse-position", {
+        room: roomId,
+        player: currentPlayer.current,
+        mouseY: mouse.position.y,
+        gameProperties: gameProperties,
+      });
+    }, 15);
 
     /* handle key down */
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -199,36 +211,52 @@ const Game = () => {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
+    Matter.Events.on(engine, "beforeUpdate", function () {
+      /* set left paddle position to follow mouse movement */
+      if (currentPlayer.current === "p1") {
+        Matter.Body.setPosition(leftPaddle, {
+          x: gameProperties.leftPaddle.position.x,
+          y: mouse.position.y,
+        });
+      }
+      if (currentPlayer.current === "p2") {
+        Matter.Body.setPosition(rightPaddle, {
+          x: gameProperties.rightPaddle.position.x,
+          y: mouse.position.y,
+        });
+      }
+    });
+
     if (socket) {
-      socket?.on("ballSpeed", (ballSpeed: Vector) => {
+      socket?.on("ball-speed", (ballSpeed: Vector) => {
         Matter.Body.setVelocity(ball, {
           x: ballSpeed.x,
           y: ballSpeed.y,
         });
       });
 
-      socket?.on("ballPosition", (ballPos: Vector) => {
+      socket?.on("ball-position", (ballPos: Vector) => {
         Matter.Body.setPosition(ball, {
           x: ballPos.x,
           y: ballPos.y,
         });
       });
 
-      socket?.on("leftPaddlePosition", (paddlePos: Vector) => {
+      socket?.on("left-paddle-position", (paddlePos: Vector) => {
         Matter.Body.setPosition(leftPaddle, {
           x: paddlePos.x,
           y: paddlePos.y,
         });
       });
 
-      socket?.on("rightPaddlePosition", (paddlePos: Vector) => {
+      socket?.on("right-paddle-position", (paddlePos: Vector) => {
         Matter.Body.setPosition(rightPaddle, {
           x: paddlePos.x,
           y: paddlePos.y,
         });
       });
     }
-  }, [socket, roomId]);
+  }, [socket, roomId, playerOneId, playerTwoId]);
 
   // Matter.Events.on(engine, "beforeUpdate", function () {
   //   /* automate right paddle */
