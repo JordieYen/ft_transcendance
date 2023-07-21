@@ -38,7 +38,12 @@ export class GameGateway implements OnModuleInit {
   @SubscribeMessage('join-room')
   handleJoinRoom(client: Socket, data: { user: UserData }) {
     data.user.socketId = client.id;
-    this.gameService.joinRooms(this.server, client, this.rooms, data.user);
+    this.gameService.joinRooms({
+      server: this.server,
+      client: client,
+      rooms: this.rooms,
+      user: data.user,
+    });
   }
 
   @SubscribeMessage('game-over')
@@ -80,35 +85,12 @@ export class GameGateway implements OnModuleInit {
 
   @SubscribeMessage('start-game')
   async startGame(client: Socket, data: StartGameParams) {
-    this.server
-      .to(data.room)
-      .emit('ball-speed', data.gameProperties.ball.speed);
-    Body.setVelocity(this.ball, {
-      x: data.gameProperties.ball.speed.x,
-      y: data.gameProperties.ball.speed.y,
+    this.gameService.handleGameState({
+      server: this.server,
+      room: data.room,
+      ball: this.ball,
+      gameProperties: data.gameProperties,
     });
-    const tempInterval = setInterval(() => {
-      this.server.to(data.room).emit('ball-position', this.ball.position);
-      if (
-        this.ball.position.x < -50 ||
-        this.ball.position.x > data.gameProperties.screen.x + 50
-      ) {
-        Body.setPosition(this.ball, {
-          x: data.gameProperties.screen.x / 2,
-          y: data.gameProperties.screen.y / 2,
-        });
-        Body.setVelocity(this.ball, {
-          x: 0,
-          y: 0,
-        });
-        this.server.to(data.room).emit('ball-position', {
-          x: data.gameProperties.screen.x / 2,
-          y: data.gameProperties.screen.y / 2,
-        });
-        this.server.to(data.room).emit('ball-speed', { x: 0, y: 0 });
-        clearInterval(tempInterval);
-      }
-    }, 15);
   }
 
   handleDisconnect() {

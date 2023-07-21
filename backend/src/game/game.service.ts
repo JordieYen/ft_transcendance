@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import { Engine, Runner, Bodies, Composite, Body } from 'matter-js';
-import { Socket, Server } from 'socket.io';
 import {
   GameElements,
   LeaveRoomParams,
   UpdatePaddleParams,
   Paddle,
   UserData,
+  HandleGameStateParams,
+  JoinRoomParams,
 } from './game.interface';
 
 @Injectable()
@@ -41,20 +42,19 @@ export class GameService {
   }
 
   /* join a user into a room */
-  joinRooms(
-    server: Server,
-    client: Socket,
-    rooms: Map<string, UserData[]>,
-    user: UserData,
-  ) {
-    let { roomId, roomPlayers } = this.findAvailableRoom(rooms);
+  joinRooms(param: JoinRoomParams) {
+    let { roomId, roomPlayers } = this.findAvailableRoom(param.rooms);
 
     // check if user is already in a room
-    for (const [existingRoomId, existingRoomPlayers] of rooms) {
-      if (existingRoomPlayers.includes(user)) {
-        console.log('User is already in a room', user.username, existingRoomId);
+    for (const [existingRoomId, existingRoomPlayers] of param.rooms) {
+      if (existingRoomPlayers.includes(param.user)) {
+        console.log(
+          'User is already in a room',
+          param.user.username,
+          existingRoomId,
+        );
         roomId = existingRoomId;
-        client.emit('in-room', roomId);
+        param.client.emit('in-room', roomId);
         console.log('User is already in a room');
         return;
       }
@@ -62,50 +62,48 @@ export class GameService {
 
     // create a room and place player in room
     if (!roomId && !roomPlayers) {
-      roomId = this.generateRoomId(rooms);
-      roomPlayers = [user];
-      rooms.set(roomId, roomPlayers);
-    } else roomPlayers.push(user);
-    client.join(roomId);
-    client.emit('joined-room', roomId);
+      roomId = this.generateRoomId(param.rooms);
+      roomPlayers = [param.user];
+      param.rooms.set(roomId, roomPlayers);
+    } else roomPlayers.push(param.user);
+    param.client.join(roomId);
+    param.client.emit('joined-room', roomId);
 
     // start game if room has 2 players
     if (roomPlayers.length === 2) {
       const playersData = roomPlayers.map((player) => ({
         player: player,
       }));
-      server
+      param.server
         .to(roomId)
         .emit('loading-screen', { roomId, players: playersData });
     }
-    this.logRooms(rooms);
+    this.logRooms(param.rooms);
   }
 
   /* check if player exists in room, if one player exist, send opponent-disconnected */
-  leaveRoom(leaveRoomParams: LeaveRoomParams) {
-    console.log('Game over', leaveRoomParams.roomId);
-    const roomPlayers = leaveRoomParams.rooms.get(leaveRoomParams.roomId);
+  leaveRoom(param: LeaveRoomParams) {
+    console.log('Game over', param.roomId);
+    const roomPlayers = param.rooms.get(param.roomId);
     if (roomPlayers) {
       console.log('Room players: ', roomPlayers);
       const remainingPlayer = roomPlayers.find(
-        (player) => player !== leaveRoomParams.user,
+        (player) => player !== param.user,
       );
       console.log('Remaining player: ', remainingPlayer);
 
       if (remainingPlayer) {
-        leaveRoomParams.server
-          .to(leaveRoomParams.roomId)
-          .emit('opponent-disconnected');
+        param.server.to(param.roomId).emit('opponent-disconnected');
       }
       const updatedRoomPlayers = roomPlayers.filter(
-        (player) => player !== leaveRoomParams.user,
+        (player) => player !== param.user,
       );
-      leaveRoomParams.rooms.set(leaveRoomParams.roomId, updatedRoomPlayers);
+      param.rooms.set(param.roomId, updatedRoomPlayers);
 
       // if room is empty, delete room and emit room-closed
       if (updatedRoomPlayers.length === 0) {
-        leaveRoomParams.rooms.delete(leaveRoomParams.roomId);
-        leaveRoomParams.server.to(leaveRoomParams.roomId).emit('room-closed');
+        param.rooms.delete(param.roomId);
+        param.server.to(param.roomId).emit('room-closed');
       }
     }
   }
@@ -186,24 +184,57 @@ export class GameService {
   }
 
   /* update paddle movement with given input */
-  updatePaddlePos(updatePaddleParam: UpdatePaddleParams) {
-    if (updatePaddleParam.player === 'p1') {
-      Body.setPosition(updatePaddleParam.leftPaddle, {
-        x: updatePaddleParam.gameProperties.leftPaddle.position.x,
-        y: updatePaddleParam.mouseY,
+  updatePaddlePos(param: UpdatePaddleParams) {
+    if (param.player === 'p1') {
+      Body.setPosition(param.leftPaddle, {
+        x: param.gameProperties.leftPaddle.position.x,
+        y: param.mouseY,
       });
     }
-    if (updatePaddleParam.player === 'p2') {
-      Body.setPosition(updatePaddleParam.rightPaddle, {
-        x: updatePaddleParam.gameProperties.rightPaddle.position.x,
-        y: updatePaddleParam.mouseY,
+    if (param.player === 'p2') {
+      Body.setPosition(param.rightPaddle, {
+        x: param.gameProperties.rightPaddle.position.x,
+        y: param.mouseY,
       });
     }
-    updatePaddleParam.server
-      .to(updatePaddleParam.room)
-      .emit('left-paddle-position', updatePaddleParam.leftPaddle.position);
-    updatePaddleParam.server
-      .to(updatePaddleParam.room)
-      .emit('right-paddle-position', updatePaddleParam.rightPaddle.position);
+    param.server
+      .to(param.room)
+      .emit('left-paddle-position', param.leftPaddle.position);
+    param.server
+      .to(param.room)
+      .emit('right-paddle-position', param.rightPaddle.position);
+  }
+
+  /* handle game when it starts */
+  handleGameState(param: HandleGameStateParams) {
+    param.server
+      .to(param.room)
+      .emit('ball-speed', param.gameProperties.ball.speed);
+    Body.setVelocity(param.ball, {
+      x: param.gameProperties.ball.speed.x,
+      y: param.gameProperties.ball.speed.y,
+    });
+    const tempInterval = setInterval(() => {
+      param.server.to(param.room).emit('ball-position', param.ball.position);
+      if (
+        param.ball.position.x < -50 ||
+        param.ball.position.x > param.gameProperties.screen.x + 50
+      ) {
+        Body.setPosition(param.ball, {
+          x: param.gameProperties.screen.x / 2,
+          y: param.gameProperties.screen.y / 2,
+        });
+        Body.setVelocity(param.ball, {
+          x: 0,
+          y: 0,
+        });
+        param.server.to(param.room).emit('ball-position', {
+          x: param.gameProperties.screen.x / 2,
+          y: param.gameProperties.screen.y / 2,
+        });
+        param.server.to(param.room).emit('ball-speed', { x: 0, y: 0 });
+        clearInterval(tempInterval);
+      }
+    }, 15);
   }
 }

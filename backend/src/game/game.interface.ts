@@ -1,4 +1,4 @@
-import { Server } from 'socket.io';
+import { Socket, Server } from 'socket.io';
 import { Body, Vector } from 'matter-js';
 import { Stat } from 'src/typeorm/stats.entity';
 
@@ -56,6 +56,20 @@ export interface StartGameParams {
 
 /* game_service.ts Params */
 
+export interface JoinRoomParams {
+  server: Server;
+  client: Socket;
+  rooms: Map<string, UserData[]>;
+  user: UserData;
+}
+
+export interface LeaveRoomParams {
+  server: Server;
+  roomId: string;
+  rooms: Map<string, UserData[]>;
+  user: UserData;
+}
+
 export interface UpdatePaddleParams {
   server: Server;
   room: string;
@@ -66,9 +80,9 @@ export interface UpdatePaddleParams {
   gameProperties: GameElements;
 }
 
-export interface LeaveRoomParams {
+export interface HandleGameStateParams {
   server: Server;
-  roomId: string;
-  rooms: Map<string, UserData[]>;
-  user: UserData;
+  room: string;
+  ball: Body;
+  gameProperties: GameElements;
 }

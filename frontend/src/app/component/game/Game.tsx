@@ -45,11 +45,6 @@ const paddleHeight = 150;
 const gameProperties: GameElements = {
   screen: { x: screenWidth, y: screenHeight },
   border: { x: borderWidth, y: borderHeight },
-  leftPaddle: {
-    width: paddleWidth,
-    height: paddleHeight,
-    position: { x: paddleWidth * 2, y: screenHeight / 2 },
-  },
   ball: {
     position: { x: screenWidth / 2, y: screenHeight / 2 },
     radius: 20,
@@ -57,6 +52,11 @@ const gameProperties: GameElements = {
     maxTimeFrame: 5,
     perfectHitZone: 50,
     perfectHitDuration: 2,
+  },
+  leftPaddle: {
+    width: paddleWidth,
+    height: paddleHeight,
+    position: { x: paddleWidth * 2, y: screenHeight / 2 },
   },
   rightPaddle: {
     width: paddleWidth,
@@ -193,12 +193,6 @@ const Game = () => {
       )
         keyArr[event.key].pressDuration += 1;
       console.log("keydown ", keyArr[event.key]);
-
-      if (event.key === "s")
-        socket?.emit("start-game", {
-          room: roomId,
-          gameProperties: gameProperties,
-        });
     };
 
     /* handle key up */
@@ -223,6 +217,12 @@ const Game = () => {
         Matter.Body.setPosition(rightPaddle, {
           x: gameProperties.rightPaddle.position.x,
           y: mouse.position.y,
+        });
+      }
+      if ("s" in keyArr && keyArr["s"].keyPressDown) {
+        socket?.emit("start-game", {
+          room: roomId,
+          gameProperties: gameProperties,
         });
       }
     });
