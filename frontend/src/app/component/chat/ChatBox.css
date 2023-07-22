@@ -241,6 +241,87 @@
 	border-radius: 50%;
 }
 
+.jc-popup-bg {
+	background-color: black;
+	width: 1000%;
+	height: 1000%;
+	position: absolute;
+	left: -105%;
+	top: -22vh;
+	opacity: 0.08;
+}
+
+.join-chat-popup {
+	opacity: 2;
+	background-color: #323437;
+	width: 50vh;
+	height: 35vh;
+	left: 9vh;
+	top: 20%;
+	opacity: 1;
+	border-radius: 10px;
+	position: absolute;
+	/* box-shadow: 0px 0px 10px 2px #1c1e20; */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.jc-name {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	width: 90%;
+	text-align: left;
+	color: #646669;
+	margin: 3vh;
+	margin-bottom: 1vh;
+	font-size: 180%;
+}
+
+.jc-desc {
+	width: 87%;
+	text-align: left;
+	color: #646669;
+}
+
+.jc-input {
+	background-color: #2c2e31;
+	width: 90%;
+	height: 12%;
+	padding: 3px;
+	padding-left: 2%;
+	margin: 5% 10% 3% 10%;
+	color: #d1d0c5;
+	font-size: larger;
+	border-radius: 10px;
+	outline: none;
+}
+
+.jc-input::placeholder {
+	color: #646669;
+}
+
+.jc-submit {
+	height: 12%;
+	width: 90%;
+	border-radius: 7px;
+	background-color: #2c2e31;
+	font-weight: 490;
+	font-size: large;
+	color: #d1d0bc;
+	padding: 10px 24px;
+	cursor: pointer;
+	float: left;
+	margin-top: 13%;
+}
+
+.jc-submit:hover {
+	opacity: 0.8;
+	background-color: #d1d0bc;
+	color: #2c2e31;
+}
+
 .browse-chat-popup {
 	opacity: 2;
 	background-color: #323437;

@@ -192,6 +192,106 @@ const CreateChat = ({
   );
 };
 
+const JoinChat = ({
+  isOpen,
+  closeModal,
+  modalRef,
+  channel,
+}: // user,
+{
+  isOpen: boolean;
+  closeModal: () => void;
+  modalRef: RefObject<HTMLDivElement>;
+  channel: any;
+}) => {
+  const [channelPassword, setChannelPassword] = useState("");
+
+  const socket = useContext(SocketContext);
+
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
+  const handleChannelPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setChannelPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    socket?.emit(
+      "join-channel",
+      channel?.channel_uid,
+      channelPassword,
+      userData.id,
+    );
+    if (channelPassword != "") {
+      setChannelPassword("");
+    }
+  };
+
+  return (
+    <>
+      {isOpen && (
+        <div className="overlay">
+          <div className="jc-popup-bg"></div>
+          <div
+            className={`join-chat-popup noSelect absolute overlay-content flex flex-col z-[101]`}
+            ref={modalRef}
+          >
+            <p className="jc-name">{channel?.channel_name}</p>
+            <p className="jc-desc">
+              Channel Type : {channel?.channel_type}
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ID: #{channel?.channel_uid}
+            </p>
+            <p className="jc-desc">
+              Created at &nbsp;&nbsp;: {channel?.createdAt}
+            </p>
+            <input
+              className={`jc-input ${
+                channel?.channel_type == "protected" ? null : "invisible"
+              }`}
+              type="text"
+              placeholder=" Password"
+              value={channelPassword}
+              onChange={handleChannelPasswordChange}
+            />
+            <button className="jc-submit" onClick={handleSubmit}>
+              Join
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+const DisplayChannel = ({ channel }: { channel: any }) => {
+  const [isModalOpen, openModal, closeModal, modalRef] = useModal(false);
+
+  return (
+    <div className="friend" onClick={() => openModal()}>
+      <img src="gc.jpg" className="friend-profile-pictures" />
+      <div className="user-data">
+        <p className="user-name">{channel?.channel_name}</p>
+        <p className="user-status">
+          {channel?.channel_type} #{channel?.channel_uid}
+        </p>
+      </div>
+      {isModalOpen && (
+        <JoinChat
+          isOpen={isModalOpen}
+          closeModal={closeModal}
+          modalRef={modalRef}
+          channel={channel}
+        />
+      )}
+    </div>
+  );
+};
+
 const BrowseChats = ({
   isOpen,
   closeModal,
@@ -215,12 +315,12 @@ const BrowseChats = ({
 
   useEffect(() => {
     changeChannelTypeSearch();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelType]);
 
   useEffect(() => {
     socket?.on("search-channels-complete", async (new_channels: any) => {
-      console.log(new_channels);
+      // console.log(new_channels);
       setChannels(new_channels);
     });
   }, [socket, channels]);
@@ -229,9 +329,16 @@ const BrowseChats = ({
     socket?.emit("search-channel-type", channelType, userData.id);
   };
 
-  const handleChannelSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
-    socket?.emit("search-channel-with-name", channelType, e.target.value, userData.id);
+  const handleChannelSearchChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    // console.log(e.target.value);
+    socket?.emit(
+      "search-channel-with-name",
+      channelType,
+      e.target.value,
+      userData.id,
+    );
   };
 
   return (
@@ -240,7 +347,7 @@ const BrowseChats = ({
         <div className="overlay">
           <div className="popup-bg"></div>
           <div
-            className={`browse-chat-popup absolute overlay-content flex flex-col z-[101]`}
+            className={`browse-chat-popup noSelect absolute overlay-content flex flex-col z-[101]`}
             ref={modalRef}
           >
             <p className="ccp-name">Explore Chats</p>
@@ -284,20 +391,7 @@ const BrowseChats = ({
             </div>
             <div className="bcp-channels">
               {channels.map((channel, index) => (
-                <div
-                  className="friend"
-                  key={index}
-                  onClick={() => {
-                    // setChannelId(channel?.channel_uid);
-                    // setGroupSlideOut((current) => !current);
-                  }}
-                >
-                  <img src="gc.jpg" className="friend-profile-pictures" />
-                  <div className="user-data">
-                    <p className="user-name">{channel?.channel_name}</p>
-                    <p className="user-status">{channel?.channel_type} #{channel?.channel_uid}</p>
-                  </div>
-                </div>
+                <DisplayChannel channel={channel} key={index} />
               ))}
             </div>
           </div>
@@ -397,16 +491,16 @@ const ChatBox: React.FC<any> = () => {
 
   useEffect(() => {
     socket?.on("message-recieved", async function (new_message: any) {
-      console.log("new", new_message);
-      console.log("message", messages[1]);
+      // console.log("new", new_message);
+      // console.log("message", messages[1]);
       setMessages([...messages, new_message]);
     });
   }, [socket, messages]);
 
   useEffect(() => {
     socket?.on("channel-created", async function (new_channel: any) {
-      console.log("new-channel", new_channel);
-      console.log("channel", channels[1]);
+      // console.log("new-channel", new_channel);
+      // console.log("channel", channels[1]);
       setChannels([...channels, new_channel]);
     });
   }, [socket, channels]);
@@ -423,7 +517,7 @@ const ChatBox: React.FC<any> = () => {
       if (response.ok) {
         const messageData = await response.json();
         setMessages(messageData);
-        console.log("message", messages);
+        // console.log("message", messages);
       } else {
         throw new Error("Messages not found");
       }
@@ -444,7 +538,7 @@ const ChatBox: React.FC<any> = () => {
       if (response.ok) {
         const userData = await response.json();
         setUsers(userData);
-        console.log("userContent", userData);
+        // console.log("userContent", userData);
         setChats(userData);
       } else {
         throw new Error("Users not found");
@@ -469,7 +563,7 @@ const ChatBox: React.FC<any> = () => {
           return message.message_content;
         });
         setMessages(messageContent);
-        console.log("messageContent", messageContent);
+        // console.log("messageContent", messageContent);
       } else {
         throw new Error("Messages not found");
       }
@@ -493,7 +587,7 @@ const ChatBox: React.FC<any> = () => {
       if (response.ok) {
         const channelData = await response.json();
         setChannels(channelData);
-        console.log("channelContent", channelData);
+        // console.log("channelContent", channelData);
       } else {
         throw new Error("Messages not found");
       }
@@ -517,7 +611,7 @@ const ChatBox: React.FC<any> = () => {
       if (response.ok) {
         const channelUserData = await response.json();
         setChannelUsers(channelUserData);
-        console.log("channelUserContent", channelUserData);
+        // console.log("channelUserContent", channelUserData);
       } else {
         throw new Error("Messages not found");
       }
@@ -541,7 +635,7 @@ const ChatBox: React.FC<any> = () => {
       if (response.ok) {
         const channelData = await response.json();
         setCurrentChannel(channelData);
-        console.log("channelUserContent", channelData);
+        // console.log("channelUserContent", channelData);
       } else {
         throw new Error("Messages not found");
       }

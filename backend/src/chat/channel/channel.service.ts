@@ -43,7 +43,7 @@ export class ChannelService {
   }
 
   async findChannelsByChannelType(channel_type: string) {
-    console.log('in type');
+    // console.log('in type');
     return await this.channelsRepository.find({
       where: { channel_type: channel_type },
     });
@@ -149,6 +149,40 @@ export class ChannelService {
         channel: channel,
       };
       this.channelUserService.createChannelUser(createChannelDto, user);
+    } catch (error) {
+      console.log('error=', error.message);
+      throw error;
+      throw new InternalServerErrorException('Channel not found');
+    }
+  }
+
+  async addUserToChannel(channelId: number, newUserId: number, user: User) {
+    try {
+      this.validateUser(user);
+      const newUser = await this.userService.findUsersById(newUserId);
+      //checking if channel id given is valid
+      const channel = await this.findChannelById(channelId);
+      if (!channel) {
+        throw new ForbiddenException('Channel not found');
+      }
+      // checking if user is already in channel
+      const existingChannelUser = await this.channelUsersRepository.findOne({
+        where: {
+          channel: { channel_uid: channel.channel_uid },
+          user: { id: newUserId },
+        },
+      });
+      if (existingChannelUser) {
+        throw new ForbiddenException('User already in channel');
+      }
+      // creating new channel user
+      const createChannelDto: CreateChannelUserDto = {
+        user: newUser,
+        role: Role.User,
+        status: Status.Null,
+        channel: channel,
+      };
+      this.channelUserService.createChannelUser(createChannelDto, newUser);
     } catch (error) {
       console.log('error=', error.message);
       throw error;
