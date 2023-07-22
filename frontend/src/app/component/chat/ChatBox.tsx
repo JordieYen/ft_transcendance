@@ -433,6 +433,45 @@ const DisplayUser = ({ channelUser }: { channelUser: any }) => {
   );
 };
 
+const DisplayMessage = ({
+  message,
+  messages,
+  index,
+}: {
+  message: any;
+  messages: any;
+  index: number;
+}) => {
+  if (message?.message_type == "invite") {
+    return (
+      <li>
+        <div className="invite">
+          <p>{message?.sender?.username} sent an Invite!</p>
+          <div className="invite-request">
+            <button>accept</button>
+            <button>decline</button>
+          </div>
+        </div>
+      </li>
+    );
+  }
+
+  return (
+    <li className="list-item" key={index}>
+      <p
+        className={`sender-name ${
+          messages[index - 1]?.sender?.username !== message?.sender?.username
+            ? null
+            : "invisible"
+        }`}
+      >
+        {message?.sender?.username}
+      </p>
+      <p className="sender-message">{message?.message_content}</p>
+    </li>
+  );
+};
+
 const ChatBox: React.FC<any> = () => {
   const [chat_slide_out, setChatSlideOut] = useState(false);
   const [group_slide_out, setGroupSlideOut] = useState(false);
@@ -490,18 +529,27 @@ const ChatBox: React.FC<any> = () => {
   }, [messages]);
 
   useEffect(() => {
-    socket?.on("message-recieved", async function (new_message: any) {
-      // console.log("new", new_message);
-      // console.log("message", messages[1]);
-      setMessages([...messages, new_message]);
-    });
+    socket?.on(
+      "message-recieved",
+      async function (new_message: any, channel_id: string) {
+        // console.log("new", new_message);
+        // console.log("message", messages[1]);
+        setMessages([...messages, new_message]);
+      },
+    );
   }, [socket, messages]);
 
   useEffect(() => {
     socket?.on("channel-created", async function (new_channel: any) {
-      // console.log("new-channel", new_channel);
-      // console.log("channel", channels[1]);
+      // console.log("test", new_channel?.channel_uid);
       setChannels([...channels, new_channel]);
+    });
+  }, [socket, channels]);
+
+  useEffect(() => {
+    socket?.on("search-channels-complete-group", async (new_channels: any) => {
+      // console.log(new_channels);
+      setChannels(new_channels);
     });
   }, [socket, channels]);
 
@@ -655,6 +703,24 @@ const ChatBox: React.FC<any> = () => {
     }
   };
 
+  const SendInvite = async () => {
+    socket?.emit(
+      "send-message",
+      "INVITATION",
+      "invite",
+      channelId,
+      userData.id,
+    );
+  };
+
+  const handleChannelSearchChanges = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    // console.log(e.target.value);
+    // socket?.emit("search-channel-with-name-group");
+    socket?.emit("search-channel-with-name-group", e.target.value, userData.id);
+  };
+
   return (
     <div className="main-menu">
       <div className="background"></div>
@@ -719,7 +785,8 @@ const ChatBox: React.FC<any> = () => {
               <input
                 className="search-bar"
                 type="text"
-                placeholder=" Find Someone . . ."
+                placeholder=" Find Chat . . ."
+                onChange={handleChannelSearchChanges}
               />
             </form>
             <div className="friends">
@@ -817,29 +884,13 @@ const ChatBox: React.FC<any> = () => {
             ))}
           </div>
           <ul className="list">
-            <li>
-              <div className="invite">
-                <p>User sent an Invite!</p>
-                <div className="invite-request">
-                  <button>accept</button>
-                  <button>decline</button>
-                </div>
-              </div>
-            </li>
             {messages.map((message, index) => (
-              <li className="list-item" key={index}>
-                <p
-                  className={`sender-name ${
-                    messages[index - 1]?.sender?.username !==
-                    message?.sender?.username
-                      ? null
-                      : "invisible"
-                  }`}
-                >
-                  {message?.sender?.username}
-                </p>
-                <p className="sender-message">{message?.message_content}</p>
-              </li>
+              <DisplayMessage
+                message={message}
+                messages={messages}
+                index={index}
+                key={index}
+              />
             ))}
             <li ref={messagesEndRef}></li>
           </ul>
@@ -857,6 +908,7 @@ const ChatBox: React.FC<any> = () => {
               icon={faTableTennisPaddleBall}
               size="lg"
               style={{ color: "#1c1e20" }}
+              onClick={SendInvite}
             />
           </div>
         </div>

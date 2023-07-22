@@ -45,16 +45,9 @@ export class MessageGateway implements OnModuleInit {
             user,
           );
           console.log(sent_message);
-          this.server.emit('message-recieved', sent_message);
+          this.server.emit('message-recieved', sent_message, channelId);
         },
       );
     });
   }
-
-  // @SubscribeMessage('message')
-  // handleEvent(@MessageBody() message: string): string {
-  //   console.log('message recieved');
-
-  //   return message;
-  // }
 }

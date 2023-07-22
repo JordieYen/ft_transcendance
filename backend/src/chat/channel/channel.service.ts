@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from 'src/typeorm/channel.entity';
 import { ChannelUser, Role, Status } from 'src/typeorm/channel_user.entity';
-import { ILike, In, Repository } from 'typeorm';
+import { ILike, In, Not, Repository } from 'typeorm';
 import { CreateChannelDto, JoinChannelDto } from './dto';
 import * as argon from 'argon2';
 import { User } from 'src/typeorm/user.entity';
@@ -45,20 +45,77 @@ export class ChannelService {
   async findChannelsByChannelType(channel_type: string) {
     // console.log('in type');
     return await this.channelsRepository.find({
-      where: { channel_type: channel_type },
+      where: {
+        channel_type: channel_type,
+      },
     });
   }
 
-  async findPublicAndProtectedChannels() {
+  async findChannelsByChannelTypeWithId(channel_type: string, userId: number) {
+    // console.log('in type');
+    const channelUsers: ChannelUser[] = await this.channelUsersRepository.find({
+      relations: ['channel'],
+      where: {
+        user: { id: userId },
+      },
+    });
+
+    const channelIds: number[] = [];
+
+    channelUsers.map((channelUserrr) => {
+      channelIds.push(channelUserrr.channel.channel_uid);
+    });
+
     return await this.channelsRepository.find({
-      where: { channel_type: In(['public', 'protected']) },
+      relations: ['channelUser'],
+      where: {
+        channel_uid: Not(In(channelIds)),
+        channel_type: channel_type,
+      },
     });
   }
 
-  async searchChannels(channel_type: string, name: string) {
+  async findPublicAndProtectedChannels(userId: number) {
+    const channelUsers: ChannelUser[] = await this.channelUsersRepository.find({
+      relations: ['channel'],
+      where: {
+        user: { id: userId },
+      },
+    });
+
+    const channelIds: number[] = [];
+
+    channelUsers.map((channelUserrr) => {
+      channelIds.push(channelUserrr.channel.channel_uid);
+    });
+
+    return await this.channelsRepository.find({
+      relations: ['channelUser'],
+      where: {
+        channel_uid: Not(In(channelIds)),
+        channel_type: In(['public', 'protected']),
+      },
+    });
+  }
+
+  async searchChannels(channel_type: string, name: string, userId: number) {
+    const channelUsers: ChannelUser[] = await this.channelUsersRepository.find({
+      relations: ['channel'],
+      where: {
+        user: { id: userId },
+      },
+    });
+
+    const channelIds: number[] = [];
+
+    channelUsers.map((channelUserrr) => {
+      channelIds.push(channelUserrr.channel.channel_uid);
+    });
+
     if (channel_type == 'all') {
       return await this.channelsRepository.find({
         where: {
+          channel_uid: Not(In(channelIds)),
           channel_name: ILike('%' + name + '%'),
           channel_type: In(['public', 'protected']),
         },
@@ -67,10 +124,34 @@ export class ChannelService {
 
     return await this.channelsRepository.find({
       where: {
+        channel_uid: Not(In(channelIds)),
         channel_name: ILike('%' + name + '%'),
         channel_type: channel_type,
       },
     });
+  }
+
+  async searchChannelsGroup(name: string, userId: number) {
+    return await this.channelsRepository.find({
+      where: {
+        channelUser: { user: { id: userId } },
+        channel_name: ILike('%' + name + '%'),
+      },
+    });
+  }
+
+  async validateChannel(channelId: number, user: User) {
+    const test = await this.channelUsersRepository.find({
+      relations: ['user', 'channel'],
+      where: {
+        channel: { channel_uid: channelId },
+        user: { id: user.id },
+      },
+    });
+    if (test.length == 0) {
+      return false;
+    }
+    return true;
   }
 
   async createChannel(dto: CreateChannelDto, user: User) {

@@ -51,11 +51,15 @@ export class ChannelGateway implements OnModuleInit {
       socket.on('search-channel-type', async (channelType, userId) => {
         // console.log(channelType, userId);
         const user = await this.userService.findUsersById(userId);
-        let channels = await this.channelService.findChannelsByChannelType(
-          channelType,
-        );
+        let channels =
+          await this.channelService.findChannelsByChannelTypeWithId(
+            channelType,
+            userId,
+          );
         if (channelType == 'all') {
-          channels = await this.channelService.findPublicAndProtectedChannels();
+          channels = await this.channelService.findPublicAndProtectedChannels(
+            userId,
+          );
         }
         // console.log(channels);
         this.server.emit('search-channels-complete', channels);
@@ -69,6 +73,7 @@ export class ChannelGateway implements OnModuleInit {
           const channels = await this.channelService.searchChannels(
             channelType,
             channelName,
+            userId,
           );
           // console.log(channels);
           this.server.emit('search-channels-complete', channels);
@@ -81,13 +86,29 @@ export class ChannelGateway implements OnModuleInit {
           channel_uid: channelId,
           channel_password: channelPassword,
         };
+        const channel = this.channelService.findChannelById(channelId);
         try {
           await this.channelService.joinChannel(dto, user);
+          this.server.emit('join-channel-complete');
+          // this.server.emit('channel-created', channel);
         } catch (error) {
           console.log('error=', error.message);
         }
-        this.server.emit('join-channel-complete');
       });
+
+      socket.on(
+        'search-channel-with-name-group',
+        async (channelName, userId) => {
+          // console.log(channelType, userId);
+          const user = await this.userService.findUsersById(userId);
+          const channels = await this.channelService.searchChannelsGroup(
+            channelName,
+            userId,
+          );
+          console.log(channels);
+          this.server.emit('search-channels-complete-group', channels);
+        },
+      );
     });
   }
 }
