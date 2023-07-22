@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from 'src/typeorm/channel.entity';
 import { ChannelUser, Role, Status } from 'src/typeorm/channel_user.entity';
-import { Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { CreateChannelDto, JoinChannelDto } from './dto';
 import * as argon from 'argon2';
 import { User } from 'src/typeorm/user.entity';
@@ -44,8 +44,32 @@ export class ChannelService {
 
   async findChannelsByChannelType(channel_type: string) {
     console.log('in type');
-    return await this.channelsRepository.findOne({
+    return await this.channelsRepository.find({
       where: { channel_type: channel_type },
+    });
+  }
+
+  async findPublicAndProtectedChannels() {
+    return await this.channelsRepository.find({
+      where: { channel_type: In(['public', 'protected']) },
+    });
+  }
+
+  async searchChannels(channel_type: string, name: string) {
+    if (channel_type == 'all') {
+      return await this.channelsRepository.find({
+        where: {
+          channel_name: ILike('%' + name + '%'),
+          channel_type: In(['public', 'protected']),
+        },
+      });
+    }
+
+    return await this.channelsRepository.find({
+      where: {
+        channel_name: ILike('%' + name + '%'),
+        channel_type: channel_type,
+      },
     });
   }
 

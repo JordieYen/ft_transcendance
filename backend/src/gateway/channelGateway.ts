@@ -47,6 +47,33 @@ export class ChannelGateway implements OnModuleInit {
           this.server.emit('channel-created', new_channel);
         },
       );
+
+      socket.on('search-channel-type', async (channelType, userId) => {
+        console.log(channelType, userId);
+        const user = await this.userService.findUsersById(userId);
+        let channels = await this.channelService.findChannelsByChannelType(
+          channelType,
+        );
+        if (channelType == 'all') {
+          channels = await this.channelService.findPublicAndProtectedChannels();
+        }
+        console.log(channels);
+        this.server.emit('search-channels-complete', channels);
+      });
+
+      socket.on(
+        'search-channel-with-name',
+        async (channelType, channelName, userId) => {
+          console.log(channelType, userId);
+          const user = await this.userService.findUsersById(userId);
+          const channels = await this.channelService.searchChannels(
+            channelType,
+            channelName,
+          );
+          console.log(channels);
+          this.server.emit('search-channels-complete', channels);
+        },
+      );
     });
   }
 }

@@ -150,7 +150,7 @@ const CreateChat = ({
                   setProtected(false);
                 }}
               >
-                public
+                Public
               </button>
               <button
                 className={
@@ -161,7 +161,7 @@ const CreateChat = ({
                   setProtected(true);
                 }}
               >
-                protected
+                Protected
               </button>
               <button
                 className={
@@ -172,7 +172,7 @@ const CreateChat = ({
                   setProtected(false);
                 }}
               >
-                private
+                Private
               </button>
             </div>
             <input
@@ -203,6 +203,37 @@ const BrowseChats = ({
   modalRef: RefObject<HTMLDivElement>;
   // user: any;
 }) => {
+  const [channelType, setChannelType] = useState("all");
+  const [channels, setChannels] = useState<any[]>([]);
+
+  const socket = useContext(SocketContext);
+
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
+  useEffect(() => {
+    changeChannelTypeSearch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channelType]);
+
+  useEffect(() => {
+    socket?.on("search-channels-complete", async (new_channels: any) => {
+      console.log(new_channels);
+      setChannels(new_channels);
+    });
+  }, [socket, channels]);
+
+  const changeChannelTypeSearch = () => {
+    socket?.emit("search-channel-type", channelType, userData.id);
+  };
+
+  const handleChannelSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
+    socket?.emit("search-channel-with-name", channelType, e.target.value, userData.id);
+  };
+
   return (
     <>
       {isOpen && (
@@ -212,7 +243,63 @@ const BrowseChats = ({
             className={`browse-chat-popup absolute overlay-content flex flex-col z-[101]`}
             ref={modalRef}
           >
-            {/* <p>Browse Chats</p> */}
+            <p className="ccp-name">Explore Chats</p>
+            <input
+              className="ccp-input"
+              type="text"
+              placeholder=" Search Channel"
+              onChange={handleChannelSearchChange}
+            />
+            <div className="ccp-btn-group">
+              <button
+                className={
+                  channelType != "all" ? "ccp-btn" : "ccp-btn-selected"
+                }
+                onClick={async () => {
+                  await setChannelType("all");
+                }}
+              >
+                All
+              </button>
+              <button
+                className={
+                  channelType != "public" ? "ccp-btn" : "ccp-btn-selected"
+                }
+                onClick={async () => {
+                  await setChannelType("public");
+                }}
+              >
+                Public
+              </button>
+              <button
+                className={
+                  channelType != "protected" ? "ccp-btn" : "ccp-btn-selected"
+                }
+                onClick={async () => {
+                  await setChannelType("protected");
+                }}
+              >
+                Protected
+              </button>
+            </div>
+            <div className="bcp-channels">
+              {channels.map((channel, index) => (
+                <div
+                  className="friend"
+                  key={index}
+                  onClick={() => {
+                    // setChannelId(channel?.channel_uid);
+                    // setGroupSlideOut((current) => !current);
+                  }}
+                >
+                  <img src="gc.jpg" className="friend-profile-pictures" />
+                  <div className="user-data">
+                    <p className="user-name">{channel?.channel_name}</p>
+                    <p className="user-status">{channel?.channel_type} #{channel?.channel_uid}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -537,7 +624,6 @@ const ChatBox: React.FC<any> = () => {
             <form>
               <input
                 className="search-bar"
-                // className="ccp-input"
                 type="text"
                 placeholder=" Find Someone . . ."
               />
