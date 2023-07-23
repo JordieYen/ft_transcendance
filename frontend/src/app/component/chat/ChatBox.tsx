@@ -8,6 +8,7 @@ import {
   faBars,
   faChevronDown,
   faChevronUp,
+  faCrown,
   faEllipsisVertical,
   faMagnifyingGlass,
   faPen,
@@ -404,6 +405,34 @@ const BrowseChats = ({
 const DisplayUser = ({ channelUser }: { channelUser: any }) => {
   const [isModalOpen, openModal, closeModal, modalRef] = useModal(false);
 
+  if (channelUser?.role == "owner") {
+    return (
+      <div className="members relative">
+        <p>{channelUser?.user?.username}</p>
+        <FontAwesomeIcon
+          icon={faCrown}
+          size="lg"
+          style={{ color: "#d1d0c5" }}
+        />
+        <FontAwesomeIcon
+          className="dots-button"
+          icon={faEllipsisVertical}
+          size="lg"
+          style={{ color: "#d1d0c5" }}
+          onClick={() => openModal()}
+        />
+        {isModalOpen && (
+          <ThreeDots
+            isOpen={isModalOpen}
+            closeModal={closeModal}
+            modalRef={modalRef}
+            user={channelUser.user}
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="members relative">
       <p>{channelUser?.user?.username}</p>
@@ -422,13 +451,6 @@ const DisplayUser = ({ channelUser }: { channelUser: any }) => {
           user={channelUser.user}
         />
       )}
-      {/* <div className="member-options">
-                  <div className="member-buttons">
-                    <button>role</button>
-                    <button>mute</button>
-                    <button>test</button>
-                  </div>
-                </div> */}
     </div>
   );
 };
@@ -448,8 +470,8 @@ const DisplayMessage = ({
         <div className="invite">
           <p>{message?.sender?.username} sent an Invite!</p>
           <div className="invite-request">
-            <button>accept</button>
-            <button>decline</button>
+            <button className="ir-button">accept</button>
+            <button className="ir-button">decline</button>
           </div>
         </div>
       </li>
