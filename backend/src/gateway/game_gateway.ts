@@ -7,7 +7,7 @@ import {
 import { GameService } from 'src/game/game.service';
 import { Socket, Server } from 'socket.io';
 import {
-  GameProps,
+  GameInfo,
   MovePaddleParams,
   StartGameParams,
   UserData,
@@ -23,7 +23,7 @@ export class GameGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
   rooms: Map<string, UserData[]> = new Map<string, UserData[]>();
-  gameProps: Map<string, GameProps> = new Map<string, GameProps>();
+  gameInfo: Map<string, GameInfo> = new Map<string, GameInfo>();
 
   constructor(private readonly gameService: GameService) {}
 
@@ -48,35 +48,35 @@ export class GameGateway implements OnModuleInit {
       server: this.server,
       roomId: data.roomId,
       rooms: this.rooms,
-      gameProps: this.gameProps,
+      gameInfo: this.gameInfo,
       user: data.user,
     });
   }
 
   @SubscribeMessage('initialize-game')
   async initializeGame(client: Socket, data: InitializeGameParam) {
-    this.gameProps.set(data.room, this.gameService.initializeGame(data));
+    this.gameInfo.set(data.roomId, this.gameService.initializeGame(data));
   }
 
   @SubscribeMessage('mouse-position')
   async movePaddle(client: Socket, data: MovePaddleParams) {
     this.gameService.updatePaddlePos({
       server: this.server,
-      room: data.room,
+      roomId: data.roomId,
       player: data.player,
       mouseY: data.mouseY,
-      leftPaddle: this.gameProps.get(data.room).leftPaddle,
-      rightPaddle: this.gameProps.get(data.room).rightPaddle,
+      gameInfo: this.gameInfo.get(data.roomId),
       gameProperties: data.gameProperties,
     });
   }
 
+  number = 0;
   @SubscribeMessage('start-game')
   async startGame(client: Socket, data: StartGameParams) {
     this.gameService.handleGameState({
       server: this.server,
-      room: data.room,
-      ball: this.gameProps.get(data.room).ball,
+      roomId: data.roomId,
+      gameInfo: this.gameInfo.get(data.roomId),
       gameProperties: data.gameProperties,
     });
   }

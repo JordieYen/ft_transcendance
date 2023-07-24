@@ -3,6 +3,12 @@ import Matter, { Vector } from "matter-js";
 import { useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useGameData } from "./GameContext";
+import useGameStore from "@/store/useGameStore";
+
+interface ScoreBoard {
+  pOneScore: number;
+  pTwoScore: number;
+}
 
 interface KeyType {
   key: string;
@@ -126,35 +132,46 @@ const initializeGame = () => {
     ball,
   ]);
 
-  return { engine, leftPaddle, rightPaddle, ball };
+  return { engine, runner, leftPaddle, rightPaddle, ball };
 };
 
 const Game = () => {
   const currentPlayer = useRef("");
   const gameState = useGameData().gameState;
-  console.log("gameState", gameState);
-
   const roomId = gameState?.roomId;
-  const playerOneId = gameState?.player1User.socketId;
-  const playerTwoId = gameState?.player2User.socketId;
+  const playerOneId = gameState!.player1User.socketId;
+  const playerTwoId = gameState!.player2User.socketId;
+  const [gameData, setGameData] = useGameStore((state) => [
+    state.gameData,
+    state.setGameData,
+  ]);
 
   const socket = useContext(SocketContext);
   // const socket = io("http://localhost:3000");
+
+  // useEffect(() => {
+  //   setGameData({
+  //     ...gameData,
+  //     playerOne: gameState!.player1User,
+  //     playerTwo: gameState!.player2User,
+  //   });
+  //   console.log("GMAE", gameData);
+  // }, [gameState, gameState?.player1User, gameState?.player2User]);
 
   useEffect(() => {
     if (socket) {
       socket.emit("game-room", 1);
       socket.emit("initialize-game", {
-        room: roomId,
+        roomId: roomId,
         gameProperties: gameProperties,
       });
       if (playerOneId === socket.id) currentPlayer.current = "p1";
       else if (playerTwoId === socket.id) currentPlayer.current = "p2";
-      console.log("current player", currentPlayer);
+      console.log("current player", socket.id);
     }
 
     const keyArr: { [key: string]: KeyType } = {};
-    let { engine, leftPaddle, rightPaddle, ball } = initializeGame();
+    let { engine, runner, leftPaddle, rightPaddle, ball } = initializeGame();
     const render = Matter.Render.create({
       element: document.body,
       engine: engine,
@@ -173,7 +190,7 @@ const Game = () => {
     const mouse = Matter.Mouse.create(render.canvas);
     setInterval(() => {
       socket?.emit("mouse-position", {
-        room: roomId,
+        roomId: roomId,
         player: currentPlayer.current,
         mouseY: mouse.position.y,
         gameProperties: gameProperties,
@@ -209,7 +226,17 @@ const Game = () => {
     window.addEventListener("keyup", handleKeyUp);
 
     Matter.Events.on(engine, "beforeUpdate", function () {
-      /* set left paddle position to follow mouse movement */
+      /* set both paddle to not go out of bounds */
+      if (mouse.position.y < gameProperties.leftPaddle.height / 2)
+        mouse.position.y = gameProperties.leftPaddle.height / 2;
+      if (
+        mouse.position.y >
+        gameProperties.screen.y - gameProperties.leftPaddle.height / 2
+      )
+        mouse.position.y =
+          gameProperties.screen.y - gameProperties.leftPaddle.height / 2;
+
+      /* set paddle to follow mouse movement */
       if (currentPlayer.current === "p1") {
         Matter.Body.setPosition(leftPaddle, {
           x: gameProperties.leftPaddle.position.x,
@@ -222,9 +249,11 @@ const Game = () => {
           y: mouse.position.y,
         });
       }
-      if ("s" in keyArr && keyArr["s"].keyPressDown) {
+
+      /* start game on " " */
+      if (" " in keyArr && keyArr[" "].keyPressDown) {
         socket?.emit("start-game", {
-          room: roomId,
+          roomId: roomId,
           gameProperties: gameProperties,
         });
       }
@@ -258,54 +287,28 @@ const Game = () => {
           y: paddlePos.y,
         });
       });
+
+      socket?.on("update-score", (score: ScoreBoard) => {
+        // do stuff with score here
+        setGameData({
+          ...gameData,
+          p1Score: score.pOneScore,
+          p2Score: score.pTwoScore,
+        });
+      });
+
+      socket?.on("game-over", () => {
+        Matter.Engine.clear(engine);
+        Matter.Render.stop(render);
+        Matter.Runner.stop(runner);
+        render.canvas.remove();
+        render.textures = {};
+      });
     }
-  }, [socket, roomId, playerOneId, playerTwoId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket]);
 
   // Matter.Events.on(engine, "beforeUpdate", function () {
-  //   /* automate right paddle */
-  //   gameProperties.rightPaddle.position.y = ball.position.y;
-  //   /* set both paddle to not go out of bounds */
-  //   if (mouse.position.y < gameProperties.leftPaddle.height / 2)
-  //     mouse.position.y = gameProperties.leftPaddle.height / 2;
-  //   if (
-  //     mouse.position.y >
-  //     gameProperties.screen.y - gameProperties.leftPaddle.height / 2
-  //   )
-  //     mouse.position.y =
-  //       gameProperties.screen.y - gameProperties.leftPaddle.height / 2;
-  //   if (
-  //     gameProperties.rightPaddle.position.y <
-  //     gameProperties.leftPaddle.height / 2
-  //   )
-  //     gameProperties.rightPaddle.position.y =
-  //       gameProperties.leftPaddle.height / 2;
-  //   if (
-  //     gameProperties.rightPaddle.position.y >
-  //     gameProperties.screen.y - gameProperties.leftPaddle.height / 2
-  //   )
-  //     gameProperties.rightPaddle.position.y =
-  //       gameProperties.screen.y - gameProperties.leftPaddle.height / 2;
-  //   /* set left paddle position to follow mouse movement */
-  //   Matter.Body.setPosition(leftPaddle, {
-  //     x: gameProperties.leftPaddle.position.x,
-  //     y: mouse.position.y,
-  //   });
-  //   /* set right paddle position to follow ball position */
-  //   Matter.Body.setPosition(rightPaddle, {
-  //     x: gameProperties.rightPaddle.position.x,
-  //     y: gameProperties.rightPaddle.position.y,
-  //   });
-  //   /* reset ball position when ball goes out of bounds */
-  //   if (ball.position.y < 0 || ball.position.y > render.canvas.height) {
-  //     Matter.Body.setPosition(ball, {
-  //       x: gameProperties.screen.x / 2,
-  //       y: gameProperties.screen.y / 2,
-  //     });
-  //     Matter.Body.setVelocity(ball, {
-  //       x: gameProperties.ball.speed.x,
-  //       y: gameProperties.ball.speed.y,
-  //     });
-  //   }
   //   /* handle perfect timing and move left paddle position when key press */
   //   if (" " in keyArr && keyArr[" "].keyPressDown) {
   //     // set perfect hit timeframe
@@ -364,28 +367,3 @@ const Game = () => {
 };
 
 export default Game;
-
-// /* handle key press */
-// const handleKeyDown = (event: KeyboardEvent) => {
-//   if (!(event.key in keyArr)) {
-//     keyArr[event.key] = {
-//       key: event.key,
-//       keyPressDown: true,
-//       pressDuration: 0,
-//     };
-//   }
-//   keyArr[event.key].keyPressDown = true;
-//   if (
-//     event.key === " " &&
-//     keyArr[event.key].pressDuration <= gameProperties.ball.maxTimeFrame
-//   )
-//     keyArr[event.key].pressDuration += 1;
-//   console.log("keydown ", keyArr[event.key]);
-// };
-
-// /* handle key release */
-// const handleKeyUp = (event: KeyboardEvent) => {
-//   keyArr[event.key].keyPressDown = false;
-//   keyArr[event.key].pressDuration = 0;
-//   console.log("keyup ", keyArr[event.key]);
-// };

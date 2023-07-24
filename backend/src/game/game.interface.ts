@@ -25,11 +25,15 @@ export interface GameElements {
   rightPaddle: Paddle;
 }
 
-export interface GameProps {
+export interface GameInfo {
   engine: Engine;
   leftPaddle: Body;
   rightPaddle: Body;
   ball: Body;
+  pOneScore: number;
+  pTwoScore: number;
+  pOneSmash: number;
+  pTwoSmash: number;
 }
 
 export interface UserData {
@@ -50,19 +54,19 @@ export interface UserData {
 /* game_gateway.ts Params */
 
 export interface InitializeGameParam {
-  room: string;
+  roomId: string;
   gameProperties: GameElements;
 }
 
 export interface MovePaddleParams {
-  room: string;
+  roomId: string;
   player: string;
   mouseY: number;
   gameProperties: GameElements;
 }
 
 export interface StartGameParams {
-  room: string;
+  roomId: string;
   gameProperties: GameElements;
 }
 
@@ -79,23 +83,22 @@ export interface LeaveRoomParams {
   server: Server;
   roomId: string;
   rooms: Map<string, UserData[]>;
-  gameProps: Map<string, GameProps>;
+  gameInfo: Map<string, GameInfo>;
   user: UserData;
 }
 
 export interface UpdatePaddleParams {
   server: Server;
-  room: string;
+  roomId: string;
   player: string;
   mouseY: number;
-  leftPaddle: Body;
-  rightPaddle: Body;
+  gameInfo: GameInfo;
   gameProperties: GameElements;
 }
 
 export interface HandleGameStateParams {
   server: Server;
-  room: string;
-  ball: Body;
+  roomId: string;
+  gameInfo: GameInfo;
   gameProperties: GameElements;
 }

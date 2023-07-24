@@ -104,7 +104,7 @@ export class GameService {
       // if room is empty, delete room and emit room-closed
       if (updatedRoomPlayers.length === 0) {
         param.rooms.delete(param.roomId);
-        param.gameProps.delete(param.roomId);
+        param.gameInfo.delete(param.roomId);
         param.server.to(param.roomId).emit('room-closed');
       }
     }
@@ -187,6 +187,10 @@ export class GameService {
 
   /* initilizes Game */
   initializeGame(param: InitializeGameParam) {
+    const pOneScore = 0;
+    const pTwoScore = 0;
+    const pOneSmash = 0;
+    const pTwoSmash = 0;
     const engine = this.initializeEngine();
     this.initializeBorders(engine, param.gameProperties);
     const leftPaddle = this.initializePaddle(
@@ -198,60 +202,107 @@ export class GameService {
       param.gameProperties.rightPaddle,
     );
     const ball = this.initializeBall(engine, param.gameProperties);
-    return { engine, leftPaddle, rightPaddle, ball };
+    return {
+      engine,
+      leftPaddle,
+      rightPaddle,
+      ball,
+      pOneScore,
+      pTwoScore,
+      pOneSmash,
+      pTwoSmash,
+    };
+  }
+
+  /* check if mouse position is out of bounds */
+  checkMousePosOutOfBounds(param: UpdatePaddleParams) {
+    if (param.mouseY < param.gameProperties.leftPaddle.height / 2)
+      return param.gameProperties.leftPaddle.height / 2;
+    else if (
+      param.mouseY >
+      param.gameProperties.screen.y - param.gameProperties.leftPaddle.height / 2
+    )
+      return (
+        param.gameProperties.screen.y -
+        param.gameProperties.leftPaddle.height / 2
+      );
+    else return 0;
   }
 
   /* update paddle movement with given input */
   updatePaddlePos(param: UpdatePaddleParams) {
+    /* set paddle to not go out of bounds */
+    const mousePos = this.checkMousePosOutOfBounds(param);
+    if (mousePos) param.mouseY = mousePos;
     if (param.player === 'p1') {
-      Body.setPosition(param.leftPaddle, {
+      Body.setPosition(param.gameInfo.leftPaddle, {
         x: param.gameProperties.leftPaddle.position.x,
         y: param.mouseY,
       });
     }
     if (param.player === 'p2') {
-      Body.setPosition(param.rightPaddle, {
+      Body.setPosition(param.gameInfo.rightPaddle, {
         x: param.gameProperties.rightPaddle.position.x,
         y: param.mouseY,
       });
     }
     param.server
-      .to(param.room)
-      .emit('left-paddle-position', param.leftPaddle.position);
+      .to(param.roomId)
+      .emit('left-paddle-position', param.gameInfo.leftPaddle.position);
     param.server
-      .to(param.room)
-      .emit('right-paddle-position', param.rightPaddle.position);
+      .to(param.roomId)
+      .emit('right-paddle-position', param.gameInfo.rightPaddle.position);
   }
 
   /* handle game when it starts */
   handleGameState(param: HandleGameStateParams) {
     param.server
-      .to(param.room)
+      .to(param.roomId)
       .emit('ball-speed', param.gameProperties.ball.speed);
-    Body.setVelocity(param.ball, {
+    Body.setVelocity(param.gameInfo.ball, {
       x: param.gameProperties.ball.speed.x,
       y: param.gameProperties.ball.speed.y,
     });
     const tempInterval = setInterval(() => {
-      param.server.to(param.room).emit('ball-position', param.ball.position);
+      param.server
+        .to(param.roomId)
+        .emit('ball-position', param.gameInfo.ball.position);
       if (
-        param.ball.position.x < -50 ||
-        param.ball.position.x > param.gameProperties.screen.x + 50
+        param.gameInfo.ball.position.x < -50 ||
+        param.gameInfo.ball.position.x > param.gameProperties.screen.x + 50
       ) {
-        Body.setPosition(param.ball, {
+        if (param.gameInfo.ball.position.x < 0 && param.gameInfo.pTwoScore < 11)
+          param.gameInfo.pTwoScore++;
+        if (
+          param.gameInfo.ball.position.x > param.gameProperties.screen.x &&
+          param.gameInfo.pOneScore < 11
+        )
+          param.gameInfo.pOneScore++;
+        Body.setPosition(param.gameInfo.ball, {
           x: param.gameProperties.screen.x / 2,
           y: param.gameProperties.screen.y / 2,
         });
-        Body.setVelocity(param.ball, {
+        Body.setVelocity(param.gameInfo.ball, {
           x: 0,
           y: 0,
         });
-        param.server.to(param.room).emit('ball-position', {
+        param.server.to(param.roomId).emit('ball-position', {
           x: param.gameProperties.screen.x / 2,
           y: param.gameProperties.screen.y / 2,
         });
-        param.server.to(param.room).emit('ball-speed', { x: 0, y: 0 });
+        param.server.to(param.roomId).emit('ball-speed', { x: 0, y: 0 });
+        param.server.to(param.roomId).emit('update-score', {
+          pOneScore: param.gameInfo.pOneScore,
+          pTwoScore: param.gameInfo.pTwoScore,
+        });
         clearInterval(tempInterval);
+        if (param.gameInfo.pOneScore == 11 || param.gameInfo.pTwoScore == 11) {
+          // end Game and create matchHistory
+          console.log('game over');
+          Engine.clear(param.gameInfo.engine);
+          param.server.to(param.roomId).emit('game-over');
+          return;
+        }
       }
     }, 15);
   }
