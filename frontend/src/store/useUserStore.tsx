@@ -16,11 +16,11 @@ export interface UserData {
   intra_uid: string;
   username: string;
   online: boolean;
+  createdAt: string;
   authentication: boolean;
   authenticationString: string;
   p1_match: string;
   stat: Stat;
-  userAchievement: string;
   firstTimeLogin: boolean;
 }
 
@@ -36,6 +36,7 @@ const useUserStore = create<UserStore>((set) => ({
     intra_uid: "",
     username: "",
     online: false,
+    createdAt: "",
     authentication: false,
     authenticationString: "",
     p1_match: "",
@@ -49,7 +50,6 @@ const useUserStore = create<UserStore>((set) => ({
       best_mmr: 0,
       win_streak: 0,
     },
-    userAchievement: "",
     firstTimeLogin: false,
   },
   setUserData: (userData) => set({ userData }),

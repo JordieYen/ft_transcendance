@@ -18,7 +18,8 @@ import Icon from "@/app/component/header_icon/Icon";
 import { motion } from "framer-motion";
 import useAnimateStore from "@/store/useAnimateStore";
 import useModal from "@/hooks/useModal";
-import LeaderboardsModal from "./LeaderboardsModal";
+import LeaderboardsModal from "@/components/LeaderboardsModal";
+import GameHeader from "@/components/game/GameHeader";
 
 interface HeaderLogoProps {
   currentPath: string;
@@ -70,7 +71,7 @@ export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
         // onClick={() => {
         //   if (currentPath !== "/login") router.push("/pong-main");
         // }}
-        href={currentPath !== "/login" ? "/pong-main" : ""}
+        href={currentPath !== "/login" ? "/main-menu" : ""}
       >
         <Image
           className="object-contain"
@@ -146,7 +147,7 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
     <Link
       className="flex items-center space-x-2 group"
       /* HANDLE PROFILE CLICK BELOW! */
-      href={"/pong-main"}
+      href={"/profile"}
     >
       <img
         width={100}
@@ -220,16 +221,7 @@ export const HeaderIcon = () => {
     return null;
   }
 
-  const {
-    avatar,
-    id,
-    intra_uid,
-    username,
-    online,
-    p1_match,
-    stat,
-    userAchievement,
-  } = userData;
+  const { avatar, id, intra_uid, username, online, p1_match, stat } = userData;
 
   return (
     <>
@@ -254,21 +246,24 @@ const Header = () => {
     ]);
   return (
     <>
-      {currentPath !== "/login" && currentPath !== "/setup" && (
-        <motion.div
-          initial={currentPage === "setup" ? { y: "100vh" } : { y: "0vh" }}
-          animate={{ y: "0vh" }}
-          transition={{ ease: "easeInOut", duration: 1.5 }}
-          onAnimationComplete={
-            currentPage === "setup" ? () => setCurrentPage("main") : undefined
-          }
-        >
-          <nav className="flex mx-16 md:mx-24 lg:mx-32 pt-5 mb-8 items-center gap-8">
-            <HeaderLogo currentPath={currentPath} />
-            <HeaderIcon />
-          </nav>
-        </motion.div>
-      )}
+      {currentPath !== "/login" &&
+        currentPath !== "/setup" &&
+        currentPath !== "/game" && (
+          <motion.div
+            initial={currentPage === "setup" ? { y: "100vh" } : { y: "0vh" }}
+            animate={{ y: "0vh" }}
+            transition={{ ease: "easeInOut", duration: 1.5 }}
+            onAnimationComplete={
+              currentPage === "setup" ? () => setCurrentPage("main") : undefined
+            }
+          >
+            <nav className="flex mx-16 md:mx-24 lg:mx-32 pt-5 mb-5 items-center gap-8">
+              <HeaderLogo currentPath={currentPath} />
+              <HeaderIcon />
+            </nav>
+          </motion.div>
+        )}
+      {currentPath === "/game" && <GameHeader />}
     </>
   );
 };

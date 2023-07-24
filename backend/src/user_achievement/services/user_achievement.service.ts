@@ -39,6 +39,23 @@ export class UserAchievementService {
     });
   }
 
+  async findAllByPlayerUid(id: number): Promise<UserAchievement[]> {
+    const userAchievements: any[] = await this.userAchievementRepository.find({
+      relations: ['user', 'achievement'],
+    });
+    let userAchievement: any[] = [];
+    for (const achievement of userAchievements) {
+      console.log('FOR LOOP RUNNING', achievement.user.id, id);
+      if (achievement.user.id.toString() === id.toString()) {
+        console.log('ture');
+        userAchievement.push(achievement);
+      }
+    }
+    console.log('pepela', userAchievement);
+    console.log('UID', id);
+    return userAchievement;
+  }
+
   async findOne(id: number): Promise<UserAchievement> {
     const userAchievement = await this.userAchievementRepository.findOne({
       relations: ['user', 'achievement'],
