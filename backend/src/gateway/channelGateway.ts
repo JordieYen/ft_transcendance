@@ -105,7 +105,7 @@ export class ChannelGateway implements OnModuleInit {
             channelName,
             userId,
           );
-          console.log(channels);
+          // console.log(channels);
           this.server.emit('search-channels-complete-group', channels);
         },
       );

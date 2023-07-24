@@ -23,29 +23,152 @@ import { SocketContext } from "@/app/socket/SocketProvider";
 import useUserStore from "@/hooks/useUserStore";
 import useModal from "@/hooks/useModal";
 
-const ThreeDots = ({
+const Roles = ({
   isOpen,
   closeModal,
   modalRef,
-  user,
+  channelUser,
 }: {
   isOpen: boolean;
   closeModal: () => void;
   modalRef: RefObject<HTMLDivElement>;
-  user: any;
+  channelUser: any;
 }) => {
   return (
     <>
       {isOpen && (
         <div className="overlay">
+          <div className="mop-bg"></div>
+          <div
+            className={`roles-popup absolute overlay-content flex flex-col left-[97%] top-[-0%] z-[101]`}
+            ref={modalRef}
+          >
+            <div className="r-btn-group">
+              {/* <p>lol</p> */}
+              <button
+                className={
+                  channelUser?.role == "user" ? "r-btn-selected" : "r-btn"
+                }
+                // onClick={() => {
+                //   setChannelType("public");
+                //   setProtected(false);
+                // }}
+              >
+                User
+              </button>
+              <button
+                className={
+                  channelUser?.role == "admin" ? "r-btn-selected" : "r-btn"
+                }
+                // onClick={() => {
+                //   setChannelType("protected");
+                //   setProtected(true);
+                // }}
+              >
+                Administrator
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+const Mute = ({
+  isOpen,
+  closeModal,
+  modalRef,
+  channelUser,
+}: {
+  isOpen: boolean;
+  closeModal: () => void;
+  modalRef: RefObject<HTMLDivElement>;
+  channelUser: any;
+}) => {
+  let mutedTill;
+  if (channelUser?.mutedUntil == undefined) {
+    mutedTill = "not muted";
+  }
+
+  return (
+    <>
+      {isOpen && (
+        <div className="overlay">
+          <div className="mop-bg"></div>
+          <div
+            className={`mute-popup absolute overlay-content flex flex-col left-[97%] top-[-0%] z-[101]`}
+            ref={modalRef}
+          >
+            <p className="mute-status">Status: {mutedTill}</p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+const ThreeDots = ({
+  isOpen,
+  closeModal,
+  modalRef,
+  user,
+  channelUser,
+}: {
+  isOpen: boolean;
+  closeModal: () => void;
+  modalRef: RefObject<HTMLDivElement>;
+  user: any;
+  channelUser: any;
+}) => {
+  const [isRolesModalOpen, openRolesModal, closeRolesModal, modalRolesRef] =
+    useModal(false);
+  const [isMuteModalOpen, openMuteModal, closeMuteModal, modalMuteRef] =
+    useModal(false);
+
+  let buttons;
+
+  if (channelUser?.role == "user") {
+    buttons = (
+      <div>
+        <button className="member-option-button" onClick={openRolesModal}>
+          Role
+        </button>
+        <button className="member-option-button" onClick={openMuteModal}>
+          Mute
+        </button>
+        <button className="member-option-button">Check</button>
+        <button className="member-option-button">More...</button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {isOpen && (
+        <div className="overlay">
+          <div className="mop-bg"></div>
           <div
             className={`member-option-buttons absolute overlay-content flex flex-col left-[97%] top-[-0%] z-[101]`}
             ref={modalRef}
           >
-            <button className="member-option-button">Role</button>
-            <button className="member-option-button">Mute</button>
-            <button className="member-option-button">Check</button>
-            <button className="member-option-button">More...</button>
+            {buttons}
+            {isRolesModalOpen && (
+              <Roles
+                isOpen={isRolesModalOpen}
+                closeModal={closeRolesModal}
+                modalRef={modalRolesRef}
+                channelUser={channelUser}
+              />
+            )}
+            {isMuteModalOpen && (
+              <Mute
+                isOpen={isMuteModalOpen}
+                closeModal={closeMuteModal}
+                modalRef={modalMuteRef}
+                channelUser={channelUser}
+              />
+            )}
           </div>
         </div>
       )}
@@ -410,11 +533,12 @@ const DisplayUser = ({ channelUser }: { channelUser: any }) => {
       <div className="members relative">
         <p>{channelUser?.user?.username}</p>
         <FontAwesomeIcon
+          className="dots-button"
           icon={faCrown}
           size="lg"
           style={{ color: "#d1d0c5" }}
         />
-        <FontAwesomeIcon
+        {/* <FontAwesomeIcon
           className="dots-button"
           icon={faEllipsisVertical}
           size="lg"
@@ -428,7 +552,7 @@ const DisplayUser = ({ channelUser }: { channelUser: any }) => {
             modalRef={modalRef}
             user={channelUser.user}
           />
-        )}
+        )} */}
       </div>
     );
   }
@@ -449,6 +573,7 @@ const DisplayUser = ({ channelUser }: { channelUser: any }) => {
           closeModal={closeModal}
           modalRef={modalRef}
           user={channelUser.user}
+          channelUser={channelUser}
         />
       )}
     </div>
@@ -494,6 +619,53 @@ const DisplayMessage = ({
   );
 };
 
+const MembersMore = ({
+  isOpen,
+  closeModal,
+  modalRef,
+  channel,
+}: // user,
+{
+  isOpen: boolean;
+  closeModal: () => void;
+  modalRef: RefObject<HTMLDivElement>;
+  channel: any;
+}) => {
+  return (
+    <>
+      {isOpen && (
+        <div className="overlay">
+          <div className="mm-popup-bg"></div>
+          <div
+            className={`members-more-popup noSelect absolute overlay-content flex flex-col z-[101]`}
+            ref={modalRef}
+          >
+            <p className="jc-name">{channel?.channel_name}</p>
+            <p className="jc-desc">
+              Channel Type : {channel?.channel_type}
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ID: #{channel?.channel_uid}
+            </p>
+            <p className="mm-desc">
+              Created at &nbsp;&nbsp;: {channel?.createdAt}
+            </p>
+            <button
+              className={`mm-change-channel-password ${
+                channel?.channel_type == "protected" ? null : "invisible"
+              }`}
+            >
+              Change Channel Password
+            </button>
+            <button className="mm-change-channel-type">
+              Change Channel Type
+            </button>
+            <button className="mm-leave-channel">Leave Channel</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
 const ChatBox: React.FC<any> = () => {
   const [chat_slide_out, setChatSlideOut] = useState(false);
   const [group_slide_out, setGroupSlideOut] = useState(false);
@@ -519,6 +691,12 @@ const ChatBox: React.FC<any> = () => {
     openBrowseChatModal,
     closeBrowseChatModal,
     modalBrowseChatRef,
+  ] = useModal(false);
+  const [
+    isMembersMoreModalOpen,
+    openMembersMoreModal,
+    closeMembersMoreModal,
+    modalMembersMoreRef,
   ] = useModal(false);
 
   const socket = useContext(SocketContext);
@@ -904,6 +1082,17 @@ const ChatBox: React.FC<any> = () => {
             {channelUsers.map((channelUser, index) => (
               <DisplayUser channelUser={channelUser} key={index} />
             ))}
+            <div className="members" onClick={() => openMembersMoreModal()}>
+              <button className="members-more">More</button>
+            </div>
+            {isMembersMoreModalOpen && (
+              <MembersMore
+                isOpen={isMembersMoreModalOpen}
+                closeModal={closeMembersMoreModal}
+                modalRef={modalMembersMoreRef}
+                channel={currentChannel}
+              />
+            )}
           </div>
           <ul className="list">
             {messages.map((message, index) => (

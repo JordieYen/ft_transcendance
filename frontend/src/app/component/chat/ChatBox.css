@@ -575,7 +575,7 @@
 
 .chat-members {
 	max-height: 40%;
-	top: 6%;
+	top: 6ch;
 	position: absolute;
 	width: 100%;
 	z-index: 15;
@@ -614,6 +614,112 @@
 	width: 85%;
 }
 
+.members-crown {
+	/* width: 4%;
+	margin-left: 0; */
+}
+
+.members-more {
+	background-color: #2c2e31;
+	color: #646669;
+	padding: 1%;
+	margin-left: 5%;
+	width: 90%;
+	border-radius: 5px;
+	font-size: large;
+	font-weight: 500;
+}
+
+.members-more:hover {
+	background-color: #d1d0bc;
+	color: #2c2e31;
+}
+
+.mm-popup-bg {
+	/* background-color: black; */
+	width: 100%;
+	height: 1000%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: 0.2;
+	/* z-index: 100; */
+}
+
+.members-more-popup {
+	opacity: 2;
+	background-color: #323437;
+	width: 80%;
+	height: auto;
+	min-height: 30%;
+	left: 10%;
+	top: 23vh;
+	opacity: 1;
+	border-radius: 10px;
+	position: absolute;
+	box-shadow: 0px 0px 20px 2px #1c1e20;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.mm-desc {
+	width: 87%;
+	text-align: left;
+	color: #646669;
+	margin-bottom: 10%;
+}
+
+.mm-change-channel-password {
+	margin: 2%;
+	margin-top: 4%;
+	background-color: #2c2e31;
+	color: #646669;
+	padding: 1%;
+	width: 90%;
+	border-radius: 5px;
+	font-size: large;
+	font-weight: 500;
+}
+
+.mm-change-channel-password:hover {
+	background-color: #d1d0bc;
+	color: #2c2e31;
+}
+
+.mm-change-channel-type {
+	margin: 2%;
+	background-color: #2c2e31;
+	color: #646669;
+	padding: 1%;
+	width: 90%;
+	border-radius: 5px;
+	font-size: large;
+	font-weight: 500;
+}
+
+.mm-change-channel-type:hover {
+	background-color: #d1d0bc;
+	color: #2c2e31;
+}
+
+.mm-leave-channel {
+	margin-top: 2%;
+	margin-bottom: 10%;
+	background-color: #2c2e31;
+	color: #646669;
+	padding: 1%;
+	width: 90%;
+	border-radius: 5px;
+	font-size: large;
+	font-weight: 500;
+}
+
+.mm-leave-channel:hover {
+	background-color: #ca4754;
+	color: #1c1e20;
+}
+
 .dots-button {
 	width: 15%;
 	height: 2vh;
@@ -638,6 +744,16 @@
 	/* width: 100%; */
 }
 
+.mop-bg {
+	/* background-color: black;
+	opacity: 0.7; */
+	width: 300vh;
+	height: 160vh;
+	position: absolute;
+	top: -60vh;
+	left: -100vh;
+}
+
 .member-option-buttons {
 	/* height: full; */
 	padding-left: 5%;
@@ -659,6 +775,68 @@
 
 .member-buttons button {
 	padding: 5%;
+}
+
+.roles-popup {
+	width: 23vh;
+	position: absolute;
+	left: 80%;
+	top: 10%;
+	padding-left: 10%;
+	padding-right: 10%;
+	padding-top: 5%;
+	padding-bottom: 5%;
+	border-radius: 15px;
+	background-color: #323437;
+	align-items: baseline;
+	box-shadow: 0px 0px 10px 2px #1c1e20;
+}
+
+.r-btn-group {
+	width: 101%;
+	background-color: #1c1e20;
+	padding-left: 7.5%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	border-radius: 15px;
+}
+
+.r-btn {
+	background-color: #1c1e20;
+	padding: 2%;
+	padding-left: 5%;
+	padding-right: 5%;
+}
+
+.r-btn-selected {
+	padding: 2%;
+	padding-left: 5%;
+	padding-right: 5%;
+	border-radius: 10px;
+	background-color: #d1d0bc;
+	color: #2c2e31;
+}
+
+.mute-popup {
+	width: 25vh;
+	height: 100%;
+	position: absolute;
+	left: 80%;
+	top: 32%;
+	padding-left: 10%;
+	padding-right: 10%;
+	padding-top: 5%;
+	padding-bottom: 5%;
+	border-radius: 15px;
+	background-color: #323437;
+	align-items: baseline;
+	box-shadow: 0px 0px 10px 2px #1c1e20;
+}
+
+.mute-status {
+	padding: 3%;
+	/* background-color: #ca4754; */
 }
 
 .list {
