@@ -33,8 +33,8 @@ interface GameElements {
   rightPaddle: Paddle;
 }
 
-const screenWidth = 2045 / 2;
-const screenHeight = 900;
+const screenWidth = 2000 / 2;
+const screenHeight = 700;
 
 const borderWidth = screenWidth;
 const borderHeight = 20;
@@ -144,7 +144,10 @@ const Game = () => {
   useEffect(() => {
     if (socket) {
       socket.emit("game-room", 1);
-      socket.emit("initialize-game", gameProperties);
+      socket.emit("initialize-game", {
+        room: roomId,
+        gameProperties: gameProperties,
+      });
       if (playerOneId === socket.id) currentPlayer.current = "p1";
       else if (playerTwoId === socket.id) currentPlayer.current = "p2";
       console.log("current player", currentPlayer);

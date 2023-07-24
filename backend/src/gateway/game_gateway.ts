@@ -6,12 +6,12 @@ import {
 } from '@nestjs/websockets';
 import { GameService } from 'src/game/game.service';
 import { Socket, Server } from 'socket.io';
-import { Body, Engine } from 'matter-js';
 import {
-  GameElements,
+  GameProps,
   MovePaddleParams,
   StartGameParams,
   UserData,
+  InitializeGameParam,
 } from 'src/game/game.interface';
 
 @WebSocketGateway({
@@ -22,17 +22,13 @@ import {
 export class GameGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
-  engine: Engine;
-  leftPaddle: Body;
-  rightPaddle: Body;
-  ball: Body;
   rooms: Map<string, UserData[]> = new Map<string, UserData[]>();
+  gameProps: Map<string, GameProps> = new Map<string, GameProps>();
 
   constructor(private readonly gameService: GameService) {}
 
   async onModuleInit() {
-    console.log('onModuleInit');
-    this.engine = this.gameService.initializeEngine();
+    // does something on Game Module init
   }
 
   @SubscribeMessage('join-room')
@@ -52,22 +48,14 @@ export class GameGateway implements OnModuleInit {
       server: this.server,
       roomId: data.roomId,
       rooms: this.rooms,
+      gameProps: this.gameProps,
       user: data.user,
     });
   }
 
   @SubscribeMessage('initialize-game')
-  async initializeGame(client: Socket, gameProperties: GameElements) {
-    this.gameService.initializeBorders(this.engine, gameProperties);
-    this.leftPaddle = this.gameService.initializePaddle(
-      this.engine,
-      gameProperties.leftPaddle,
-    );
-    this.rightPaddle = this.gameService.initializePaddle(
-      this.engine,
-      gameProperties.rightPaddle,
-    );
-    this.ball = this.gameService.initializeBall(this.engine, gameProperties);
+  async initializeGame(client: Socket, data: InitializeGameParam) {
+    this.gameProps.set(data.room, this.gameService.initializeGame(data));
   }
 
   @SubscribeMessage('mouse-position')
@@ -77,8 +65,8 @@ export class GameGateway implements OnModuleInit {
       room: data.room,
       player: data.player,
       mouseY: data.mouseY,
-      leftPaddle: this.leftPaddle,
-      rightPaddle: this.rightPaddle,
+      leftPaddle: this.gameProps.get(data.room).leftPaddle,
+      rightPaddle: this.gameProps.get(data.room).rightPaddle,
       gameProperties: data.gameProperties,
     });
   }
@@ -88,7 +76,7 @@ export class GameGateway implements OnModuleInit {
     this.gameService.handleGameState({
       server: this.server,
       room: data.room,
-      ball: this.ball,
+      ball: this.gameProps.get(data.room).ball,
       gameProperties: data.gameProperties,
     });
   }

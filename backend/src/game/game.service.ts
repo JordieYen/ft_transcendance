@@ -9,6 +9,7 @@ import {
   UserData,
   HandleGameStateParams,
   JoinRoomParams,
+  InitializeGameParam,
 } from './game.interface';
 
 @Injectable()
@@ -103,6 +104,7 @@ export class GameService {
       // if room is empty, delete room and emit room-closed
       if (updatedRoomPlayers.length === 0) {
         param.rooms.delete(param.roomId);
+        param.gameProps.delete(param.roomId);
         param.server.to(param.roomId).emit('room-closed');
       }
     }
@@ -181,6 +183,22 @@ export class GameService {
 
     console.log('added ball into engine');
     return ball;
+  }
+
+  /* initilizes Game */
+  initializeGame(param: InitializeGameParam) {
+    const engine = this.initializeEngine();
+    this.initializeBorders(engine, param.gameProperties);
+    const leftPaddle = this.initializePaddle(
+      engine,
+      param.gameProperties.leftPaddle,
+    );
+    const rightPaddle = this.initializePaddle(
+      engine,
+      param.gameProperties.rightPaddle,
+    );
+    const ball = this.initializeBall(engine, param.gameProperties);
+    return { engine, leftPaddle, rightPaddle, ball };
   }
 
   /* update paddle movement with given input */
