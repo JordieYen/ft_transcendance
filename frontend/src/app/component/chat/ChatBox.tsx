@@ -86,10 +86,36 @@ const Mute = ({
   modalRef: RefObject<HTMLDivElement>;
   channelUser: any;
 }) => {
-  let mutedTill;
-  if (channelUser?.mutedUntil == undefined) {
+  let mutedTill: string = channelUser?.mutedUntil;
+  let content;
+
+  if (mutedTill == undefined) {
     mutedTill = "not muted";
+    content = (
+      <div>
+        <p className="mute-status">Status: {mutedTill}</p>
+        <button className="mute-buttons">
+          Mute for 1 day
+        </button>
+        <button className="mute-buttons">
+          Mute for 3 days 
+        </button>
+        <button className="mute-buttons">
+          Mute for 7 days
+        </button>
+      </div>
+    );
+  } else {
+    content = (
+      <div>
+        <p className="mute-status-user">Status: {mutedTill.substring(0, 10)}</p>
+        <button className="unmute-button">
+          Unmute
+        </button>
+      </div>
+    );
   }
+  mutedTill = "not muted"
 
   return (
     <>
@@ -100,7 +126,7 @@ const Mute = ({
             className={`mute-popup absolute overlay-content flex flex-col left-[97%] top-[-0%] z-[101]`}
             ref={modalRef}
           >
-            <p className="mute-status">Status: {mutedTill}</p>
+            {content}
           </div>
         </div>
       )}
