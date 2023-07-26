@@ -10,7 +10,8 @@ import { MessageService } from 'src/chat/message/message.service';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3001',
+    // origin: 'http://localhost:3001',
+    // origin: `${process.env.NEXT_HOST}`,
   },
 })
 export class MessageGateway implements OnModuleInit {

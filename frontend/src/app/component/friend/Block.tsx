@@ -38,7 +38,7 @@ const Block = () => {
       socket?.off("block");
       socket?.off("unblock");
     };
-  }, [socket]);
+  }, [socket, userData]);
 
   // useEffect(() => {
   //     console.log('blockerIdArray:', blockerIdArray);

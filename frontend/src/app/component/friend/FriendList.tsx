@@ -40,8 +40,7 @@ const FriendList = () => {
   useEffect(() => {
     if (userData.id) {
       console.log("userData", userData.id);
-
-      socket?.emit("join", `${userData?.id}`);
+      // socket?.emit("join", `${userData?.id}`);
       socket?.on("friend-request-received", (receivedFriendRequest: any) => {
         console.log("friend-request-received socket", receivedFriendRequest);
         setFriendRequestArray((prevArray: any) => {

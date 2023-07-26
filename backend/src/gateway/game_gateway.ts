@@ -8,17 +8,21 @@ import { formToJSON } from 'axios';
 import { randomBytes } from 'crypto';
 import { Server } from 'socket.io';
 import { Socket } from 'socket.io';
+import { FriendService } from 'src/friend/services/friend.service';
 import { User } from 'src/typeorm/user.entity';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3001',
+    // origin: 'http://localhost:3001',
+    // origin: `${process.env.NEXT_HOST}`,
   },
 })
 export class GameGateway {
   @WebSocketServer()
   server: Server;
   rooms: Map<string, User[]> = new Map<string, User[]>();
+
+  constructor(private readonly friendService: FriendService) {}
 
   generateRoomId() {
     const roomIdLength = 3;
@@ -46,7 +50,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage('join-room')
-  handleJoinRoom(client: Socket, data: { user: User }) {
+  async handleJoinRoom(client: Socket, data: { user: User }) {
     const user = data.user;
     const userName = user.username;
     let { roomId, roomPlayers } = this.findAvailableRoom();
@@ -73,6 +77,19 @@ export class GameGateway {
     client.join(roomId);
     client.emit('joined-room', roomId);
 
+    // update user room id in friend
+    console.log('User: ', user.id);
+
+    const friends = await this.friendService.getFriendsBoth(user.id);
+    for (const friend of friends) {
+      console.log('Friend: ', friend);
+      const result = await this.friendService.update(friend.id, {
+        ...friend,
+        roomId: roomId,
+      });
+      console.log('result: ', result);
+    }
+
     // start game if room has 2 players
 
     if (roomPlayers.length === 2) {
@@ -87,7 +104,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage('game-over')
-  clearRoom(client: Socket, data: { roomId: string; user: User }) {
+  async clearRoom(client: Socket, data: { roomId: string; user: User }) {
     const roomId = data.roomId;
     console.log('Game over', roomId);
     const user = data.user;
@@ -111,6 +128,15 @@ export class GameGateway {
       if (updatedRoomPlayers.length === 0) {
         this.rooms.delete(roomId);
         this.server.to(roomId).emit('room-closed');
+        const friends = await this.friendService.getFriendsBoth(user.id);
+        for (const friend of friends) {
+          console.log('Friend: ', friend);
+          const result = await this.friendService.update(friend.id, {
+            ...friend,
+            roomId: null,
+          });
+          console.log('result: ', result);
+        }
       }
     }
   }

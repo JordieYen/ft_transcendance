@@ -1,6 +1,7 @@
 import { SocketContext } from "@/app/socket/SocketProvider";
 import { use, useContext, useEffect, useState } from "react";
 import Avatar from "../header_icon/Avatar";
+import ViewFriendGame from "./ViewFriendGame";
 
 interface FriendProps {
   userDataId: number;
@@ -51,7 +52,8 @@ const Friend = ({
       });
       fetchFriends();
     }
-  }, [socket]);
+  }, [socket, userDataId]);
+
 
   useEffect(() => {
     console.log("friends", friends);
@@ -70,6 +72,8 @@ const Friend = ({
       );
       if (response.ok) {
         const friends = await response.json();
+        console.log("friends room", friends);
+        
         setFriends(friends);
       } else {
         throw new Error("Failed to fetch friends");
@@ -155,6 +159,8 @@ const Friend = ({
                 )}
                 <span>{friend?.online ? "online" : "offline"}</span>
               </div>
+              {/* Display Game Status */}
+              {friend?.roomId && <ViewFriendGame roomId={friend.roomId} />}
               <div className="flex gap-2">
                 <button className="bg-mygrey" onClick={() => unfriend(friend?.id)}>Unfriend</button>
                 <button className="bg-mygrey" onClick={() => block(friend?.id)}>Block</button>

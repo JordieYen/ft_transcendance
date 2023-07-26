@@ -96,6 +96,11 @@ export default async function handler(req: NextRequest) {
 
 `ipconfig getifaddr en0`
 
+# spectator
+
+if two user start a game, emit room Id and player from backend to the both user friends
+all their friend can view the game in friend list when looking at the user profile
+
 # Reference
 
 1. [Postgresql with nestjs](https://blog.devgenius.io/setting-up-nestjs-with-postgresql-ac2cce9045fe)

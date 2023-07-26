@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { FriendStatus } from 'src/typeorm/friends.entity';
 
 export class CreateFriendDto {
@@ -12,4 +12,7 @@ export class CreateFriendDto {
 
   @IsNotEmpty()
   status: FriendStatus;
+
+  @IsOptional()
+  roomId: string;
 }

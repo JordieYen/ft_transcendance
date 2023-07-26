@@ -11,7 +11,8 @@ import { UsersService } from 'src/users/services/users.service';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3001',
+    // origin: 'http://localhost:3001',
+    // origin: `${process.env.NEXT_HOST}`,
   },
 })
 export class FriendGateway implements OnModuleInit {
@@ -27,17 +28,6 @@ export class FriendGateway implements OnModuleInit {
     this.server.on('connection', (socket) => {
       console.log(socket.id, ' connected');
 
-      // setting heartbeat to check connection status of socket
-      // and update online status
-      const heartbeat = setInterval(() => {
-        if (!socket.connected) {
-          clearInterval(heartbeat);
-          if (socket.data.userId) {
-            this.updateUserStatus(+socket.data.userId, false);
-          }
-        }
-      }, 5000);
-
       socket.on('join', async (userId) => {
         if (userId && userId !== 'undefined' && !isNaN(userId)) {
           console.log('User joined room: ' + userId);
@@ -46,7 +36,17 @@ export class FriendGateway implements OnModuleInit {
           this.updateUserStatus(+userId, true);
         }
       });
-
+      // setting heartbeat to check connection status of socket after 5 minutes
+      // and update online status
+      const heartbeat = setInterval(() => {
+        if (!socket.connected) {
+          clearInterval(heartbeat);
+          console.log('heaebeat stopped');
+          if (socket.data.userId) {
+            this.updateUserStatus(+socket.data.userId, false);
+          }
+        }
+      }, 300000);
       socket.on('leave-room', () => {
         if (socket.data.userId) {
           console.log('User left room: ' + socket.data.userId);
@@ -56,7 +56,7 @@ export class FriendGateway implements OnModuleInit {
       socket.on('disconnect', async () => {
         if (socket.data.userId) {
           console.log('User disconnected: ' + socket.data.userId);
-          await this.updateUserStatus(+socket.data.userId, false);
+          // await this.updateUserStatus(+socket.data.userId, false);
         }
       });
     });
