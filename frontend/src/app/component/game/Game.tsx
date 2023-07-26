@@ -54,7 +54,7 @@ const gameProperties: GameElements = {
   ball: {
     position: { x: screenWidth / 2, y: screenHeight / 2 },
     radius: 20,
-    speed: { x: 10, y: 10 },
+    speed: { x: -5, y: 15 },
     maxTimeFrame: 5,
     perfectHitZone: 50,
     perfectHitDuration: 2,
@@ -138,9 +138,6 @@ const initializeGame = () => {
 const Game = () => {
   const currentPlayer = useRef("");
   const gameState = useGameData().gameState;
-  const roomId = gameState?.roomId;
-  const playerOneId = gameState!.player1User.socketId;
-  const playerTwoId = gameState!.player2User.socketId;
   const [gameData, setGameData] = useGameStore((state) => [
     state.gameData,
     state.setGameData,
@@ -162,11 +159,15 @@ const Game = () => {
     if (socket) {
       socket.emit("game-room", 1);
       socket.emit("initialize-game", {
-        roomId: roomId,
+        roomId: gameState!.roomId,
+        pOneId: gameState!.player1User.id,
+        pTwoId: gameState!.player2User.id,
         gameProperties: gameProperties,
       });
-      if (playerOneId === socket.id) currentPlayer.current = "p1";
-      else if (playerTwoId === socket.id) currentPlayer.current = "p2";
+      if (gameState!.player1User.socketId === socket.id)
+        currentPlayer.current = "p1";
+      else if (gameState!.player2User.socketId === socket.id)
+        currentPlayer.current = "p2";
       console.log("current player", socket.id);
     }
 
@@ -188,9 +189,9 @@ const Game = () => {
 
     /* enable mouse movement */
     const mouse = Matter.Mouse.create(render.canvas);
-    setInterval(() => {
+    const movePaddleInterval = setInterval(() => {
       socket?.emit("mouse-position", {
-        roomId: roomId,
+        roomId: gameState!.roomId,
         player: currentPlayer.current,
         mouseY: mouse.position.y,
         gameProperties: gameProperties,
@@ -253,58 +254,75 @@ const Game = () => {
       /* start game on " " */
       if (" " in keyArr && keyArr[" "].keyPressDown) {
         socket?.emit("start-game", {
-          roomId: roomId,
+          roomId: gameState!.roomId,
           gameProperties: gameProperties,
         });
       }
     });
 
-    if (socket) {
-      socket?.on("ball-speed", (ballSpeed: Vector) => {
-        Matter.Body.setVelocity(ball, {
-          x: ballSpeed.x,
-          y: ballSpeed.y,
-        });
+    socket?.on("ball-speed", (ballSpeed: Vector) => {
+      Matter.Body.setVelocity(ball, {
+        x: ballSpeed.x,
+        y: ballSpeed.y,
       });
+    });
 
-      socket?.on("ball-position", (ballPos: Vector) => {
-        Matter.Body.setPosition(ball, {
-          x: ballPos.x,
-          y: ballPos.y,
-        });
+    socket?.on("ball-position", (ballPos: Vector) => {
+      Matter.Body.setPosition(ball, {
+        x: ballPos.x,
+        y: ballPos.y,
       });
+    });
 
-      socket?.on("left-paddle-position", (paddlePos: Vector) => {
-        Matter.Body.setPosition(leftPaddle, {
-          x: paddlePos.x,
-          y: paddlePos.y,
-        });
+    socket?.on("reset-ball-speed", () => {
+      Matter.Body.setVelocity(ball, {
+        x: 0,
+        y: 0,
       });
+    });
 
-      socket?.on("right-paddle-position", (paddlePos: Vector) => {
-        Matter.Body.setPosition(rightPaddle, {
-          x: paddlePos.x,
-          y: paddlePos.y,
-        });
+    socket?.on("reset-ball-position", () => {
+      Matter.Body.setPosition(ball, {
+        x: gameProperties.screen.x / 2,
+        y: gameProperties.screen.y / 2,
       });
+    });
 
-      socket?.on("update-score", (score: ScoreBoard) => {
-        // do stuff with score here
-        setGameData({
-          ...gameData,
-          p1Score: score.pOneScore,
-          p2Score: score.pTwoScore,
-        });
+    socket?.on("left-paddle-position", (paddlePos: Vector) => {
+      Matter.Body.setPosition(leftPaddle, {
+        x: paddlePos.x,
+        y: paddlePos.y,
       });
+    });
 
-      socket?.on("game-over", () => {
-        Matter.Engine.clear(engine);
-        Matter.Render.stop(render);
-        Matter.Runner.stop(runner);
-        render.canvas.remove();
-        render.textures = {};
+    socket?.on("right-paddle-position", (paddlePos: Vector) => {
+      Matter.Body.setPosition(rightPaddle, {
+        x: paddlePos.x,
+        y: paddlePos.y,
       });
-    }
+    });
+
+    socket?.on("update-score", (score: ScoreBoard) => {
+      // do stuff with score here
+      setGameData({
+        ...gameData,
+        p1Score: score.pOneScore,
+        p2Score: score.pTwoScore,
+      });
+    });
+
+    socket?.on("game-over", () => {
+      clearInterval(movePaddleInterval);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      Matter.World.clear(engine.world, true);
+      Matter.Engine.clear(engine);
+      Matter.Render.stop(render);
+      Matter.Runner.stop(runner);
+      render.canvas.remove();
+      render.textures = {};
+    });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 

@@ -132,11 +132,11 @@ const MatchMaking = () => {
       let currentCountdown = 0;
       const countdownInterval = setInterval(() => {
         currentCountdown++;
-        if (currentCountdown > 6) {
+        if (currentCountdown > 2) {
           clearInterval(countdownInterval);
           router.push("/game");
         }
-        const progressWidth = (currentCountdown / 6) * width;
+        const progressWidth = (currentCountdown / 2) * width;
         // loadingBar.width = progressWidth;
         loadingBar.x = progressWidth - loadingBar.width;
         // loadingBar.clear();

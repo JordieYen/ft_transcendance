@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { Engine, Runner, Bodies, Composite, Body } from 'matter-js';
+import { Engine, Runner, Bodies, Composite, Body, World } from 'matter-js';
 import {
   GameElements,
   LeaveRoomParams,
@@ -11,9 +11,12 @@ import {
   JoinRoomParams,
   InitializeGameParam,
 } from './game.interface';
+import { MatchHistoryService } from 'src/match-history/services/match-history.service';
 
 @Injectable()
 export class GameService {
+  constructor(private readonly matchHistoryService: MatchHistoryService) {}
+
   /* generate a room with unique id */
   generateRoomId(rooms: Map<string, UserData[]>) {
     const roomIdLength = 3;
@@ -187,6 +190,9 @@ export class GameService {
 
   /* initilizes Game */
   initializeGame(param: InitializeGameParam) {
+    const pOneId = param.pOneId;
+    const pTwoId = param.pTwoId;
+    const gameStart = 0;
     const pOneScore = 0;
     const pTwoScore = 0;
     const pOneSmash = 0;
@@ -207,6 +213,9 @@ export class GameService {
       leftPaddle,
       rightPaddle,
       ball,
+      pOneId,
+      pTwoId,
+      gameStart,
       pOneScore,
       pTwoScore,
       pOneSmash,
@@ -254,6 +263,103 @@ export class GameService {
       .emit('right-paddle-position', param.gameInfo.rightPaddle.position);
   }
 
+  /* set winner uid, create match-history, end game */
+  handleGameEnd(param: HandleGameStateParams) {
+    if (param.gameInfo.pOneScore == 11 || param.gameInfo.pTwoScore == 11) {
+      let winner_uid = 0;
+      if (param.gameInfo.pOneScore == 11) winner_uid = param.gameInfo.pOneId;
+      else winner_uid = param.gameInfo.pTwoId;
+
+      this.matchHistoryService.create({
+        winner_uid: winner_uid,
+        p1: param.gameInfo.pOneId,
+        p2: param.gameInfo.pTwoId,
+        p1_score: param.gameInfo.pOneScore,
+        p2_score: param.gameInfo.pTwoScore,
+        p1_smashes: 0,
+        p2_smashes: 0,
+        p1_mmr: 1000,
+        p2_mmr: 1000,
+      });
+
+      console.log('Game Over');
+      param.server.to(param.roomId).emit('game-over');
+      World.clear(param.gameInfo.engine.world, true);
+      Engine.clear(param.gameInfo.engine);
+      param.roomArray.delete(param.roomId);
+      param.gameArray.delete(param.roomId);
+    }
+  }
+
+  /* update score */
+  updateScore(param: HandleGameStateParams) {
+    if (param.gameInfo.ball.position.x < 0 && param.gameInfo.pTwoScore < 11)
+      param.gameInfo.pTwoScore++;
+    if (
+      param.gameInfo.ball.position.x > param.gameProperties.screen.x &&
+      param.gameInfo.pOneScore < 11
+    )
+      param.gameInfo.pOneScore++;
+  }
+
+  /* reset ball position if out of bounds */
+  resetBallPosition(param: HandleGameStateParams) {
+    this.updateScore(param);
+    Body.setPosition(param.gameInfo.ball, {
+      x: param.gameProperties.screen.x / 2,
+      y: param.gameProperties.screen.y / 2,
+    });
+    Body.setVelocity(param.gameInfo.ball, {
+      x: 0,
+      y: 0,
+    });
+    param.server.to(param.roomId).emit('reset-ball-speed');
+    param.server.to(param.roomId).emit('reset-ball-position');
+    param.server.to(param.roomId).emit('update-score', {
+      pOneScore: param.gameInfo.pOneScore,
+      pTwoScore: param.gameInfo.pTwoScore,
+    });
+    param.gameInfo.gameStart = 0;
+  }
+
+  /* check if ball goes out of bounds */
+  checkBallOutOfBounds(param: HandleGameStateParams) {
+    if (
+      param.gameInfo.ball.position.x < -100 ||
+      param.gameInfo.ball.position.x > param.gameProperties.screen.x + 100
+    ) {
+      return 1;
+    }
+    return 0;
+  }
+
+  /* check if ball in starting position */
+  checkBallStartPos(param: HandleGameStateParams) {
+    if (
+      param.gameInfo.ball.position.x === param.gameProperties.screen.x / 2 &&
+      param.gameInfo.ball.position.y === param.gameProperties.screen.y / 2
+    ) {
+      return 1;
+    }
+    return 0;
+  }
+
+  /* start round */
+  startRound(param: HandleGameStateParams) {
+    const startGameInterval = setInterval(() => {
+      param.server
+        .to(param.roomId)
+        .emit('ball-position', param.gameInfo.ball.position);
+      if (this.checkBallOutOfBounds(param)) {
+        this.resetBallPosition(param);
+        this.handleGameEnd(param);
+      }
+      if (this.checkBallStartPos(param)) {
+        clearInterval(startGameInterval);
+      }
+    }, 50);
+  }
+
   /* handle game when it starts */
   handleGameState(param: HandleGameStateParams) {
     param.server
@@ -263,47 +369,6 @@ export class GameService {
       x: param.gameProperties.ball.speed.x,
       y: param.gameProperties.ball.speed.y,
     });
-    const tempInterval = setInterval(() => {
-      param.server
-        .to(param.roomId)
-        .emit('ball-position', param.gameInfo.ball.position);
-      if (
-        param.gameInfo.ball.position.x < -50 ||
-        param.gameInfo.ball.position.x > param.gameProperties.screen.x + 50
-      ) {
-        if (param.gameInfo.ball.position.x < 0 && param.gameInfo.pTwoScore < 11)
-          param.gameInfo.pTwoScore++;
-        if (
-          param.gameInfo.ball.position.x > param.gameProperties.screen.x &&
-          param.gameInfo.pOneScore < 11
-        )
-          param.gameInfo.pOneScore++;
-        Body.setPosition(param.gameInfo.ball, {
-          x: param.gameProperties.screen.x / 2,
-          y: param.gameProperties.screen.y / 2,
-        });
-        Body.setVelocity(param.gameInfo.ball, {
-          x: 0,
-          y: 0,
-        });
-        param.server.to(param.roomId).emit('ball-position', {
-          x: param.gameProperties.screen.x / 2,
-          y: param.gameProperties.screen.y / 2,
-        });
-        param.server.to(param.roomId).emit('ball-speed', { x: 0, y: 0 });
-        param.server.to(param.roomId).emit('update-score', {
-          pOneScore: param.gameInfo.pOneScore,
-          pTwoScore: param.gameInfo.pTwoScore,
-        });
-        clearInterval(tempInterval);
-        if (param.gameInfo.pOneScore == 11 || param.gameInfo.pTwoScore == 11) {
-          // end Game and create matchHistory
-          console.log('game over');
-          Engine.clear(param.gameInfo.engine);
-          param.server.to(param.roomId).emit('game-over');
-          return;
-        }
-      }
-    }, 15);
+    this.startRound(param);
   }
 }

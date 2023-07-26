@@ -70,15 +70,20 @@ export class GameGateway implements OnModuleInit {
     });
   }
 
-  number = 0;
   @SubscribeMessage('start-game')
   async startGame(client: Socket, data: StartGameParams) {
-    this.gameService.handleGameState({
-      server: this.server,
-      roomId: data.roomId,
-      gameInfo: this.gameInfo.get(data.roomId),
-      gameProperties: data.gameProperties,
-    });
+    if (this.gameInfo.get(data.roomId).gameStart < 1) {
+      this.gameService.handleGameState({
+        server: this.server,
+        roomId: data.roomId,
+        roomArray: this.rooms,
+        gameArray: this.gameInfo,
+        gameInfo: this.gameInfo.get(data.roomId),
+        gameProperties: data.gameProperties,
+      });
+    }
+    if (this.gameInfo.get(data.roomId).gameStart < 3)
+      this.gameInfo.get(data.roomId).gameStart++;
   }
 
   handleDisconnect() {

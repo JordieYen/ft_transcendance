@@ -30,6 +30,9 @@ export interface GameInfo {
   leftPaddle: Body;
   rightPaddle: Body;
   ball: Body;
+  pOneId: number;
+  pTwoId: number;
+  gameStart: number;
   pOneScore: number;
   pTwoScore: number;
   pOneSmash: number;
@@ -55,6 +58,8 @@ export interface UserData {
 
 export interface InitializeGameParam {
   roomId: string;
+  pOneId: number;
+  pTwoId: number;
   gameProperties: GameElements;
 }
 
@@ -99,6 +104,8 @@ export interface UpdatePaddleParams {
 export interface HandleGameStateParams {
   server: Server;
   roomId: string;
+  roomArray: Map<string, UserData[]>;
+  gameArray: Map<string, GameInfo>;
   gameInfo: GameInfo;
   gameProperties: GameElements;
 }
