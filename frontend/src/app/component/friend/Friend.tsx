@@ -1,6 +1,8 @@
 import { SocketContext } from "@/app/socket/SocketProvider";
+import useUserStore from "@/store/useUserStore";
 import { use, useContext, useEffect, useState } from "react";
 import Avatar from "../header_icon/Avatar";
+import InviteFriendGame from "./InviteFriendGame";
 import ViewFriendGame from "./ViewFriendGame";
 
 interface FriendProps {
@@ -28,6 +30,10 @@ const Friend = ({
   setFriendRequestStatus,
 }: FriendProps) => {
   const [friends, setFriends] = useState<any[]>([]);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
 
   const socket = useContext(SocketContext);
   useEffect(() => {
@@ -73,7 +79,6 @@ const Friend = ({
       if (response.ok) {
         const friends = await response.json();
         console.log("friends room", friends);
-        
         setFriends(friends);
       } else {
         throw new Error("Failed to fetch friends");
@@ -160,7 +165,13 @@ const Friend = ({
                 <span>{friend?.online ? "online" : "offline"}</span>
               </div>
               {/* Display Game Status */}
-              {friend?.roomId && <ViewFriendGame roomId={friend.roomId} />}
+              {
+                friend?.roomId !== "null" ? (
+                  <ViewFriendGame roomId={friend.roomId} />
+                ) : (
+                  <InviteFriendGame friend={friend} user={userData} socket={socket}/>
+                )
+              }
               <div className="flex gap-2">
                 <button className="bg-mygrey" onClick={() => unfriend(friend?.id)}>Unfriend</button>
                 <button className="bg-mygrey" onClick={() => block(friend?.id)}>Block</button>

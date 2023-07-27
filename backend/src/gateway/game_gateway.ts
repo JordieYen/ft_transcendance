@@ -128,16 +128,27 @@ export class GameGateway {
       if (updatedRoomPlayers.length === 0) {
         this.rooms.delete(roomId);
         this.server.to(roomId).emit('room-closed');
-        const friends = await this.friendService.getFriendsBoth(user.id);
-        for (const friend of friends) {
-          console.log('Friend: ', friend);
-          const result = await this.friendService.update(friend.id, {
-            ...friend,
-            roomId: null,
-          });
-          console.log('result: ', result);
-        }
+        this.clearRoomIdInFriend(user.id);
       }
     }
+  }
+
+  async clearRoomIdInFriend(id: number) {
+    const friends = await this.friendService.getFriendsBoth(id);
+    for (const friend of friends) {
+      console.log('Friend: ', friend);
+      const result = await this.friendService.update(friend.id, {
+        ...friend,
+        roomId: null,
+      });
+      console.log('result: ', result);
+    }
+  }
+
+  @SubscribeMessage('invite-game')
+  async handleInviteGame(client: Socket, data: { user: User; friend: User }) {
+    const user = data.user;
+    const friend = data.friend;
+    client.to(friend.id.toString()).emit('invite-game', { user, friend });
   }
 }

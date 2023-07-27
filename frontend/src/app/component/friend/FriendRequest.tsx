@@ -63,7 +63,6 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
 
   const handleFriendRequestReceived = (friendRequest: any) => {
     setFriendRequests(() => {
-      console.log('friendRequest XXXXX', friendRequest);
       const updatedRequest = [...friendRequest];
       return updatedRequest.sort((a, b) => a.id - b.id);
       // return updatedRequest;

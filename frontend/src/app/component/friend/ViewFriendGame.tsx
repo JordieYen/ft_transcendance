@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 const ViewFriendGame = ({ roomId }: any) => {
   const handleViewGame = () => {
     console.log(`Viewing game of friend with ID: ${roomId}`);

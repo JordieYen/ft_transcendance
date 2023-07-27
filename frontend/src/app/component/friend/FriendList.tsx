@@ -79,6 +79,7 @@ const FriendList = () => {
         fetchUsersList();
       });
       fetchUsersList();
+      InviteFriendGame();
     }
     // fetchFriendRequests();
     return () => {
@@ -87,6 +88,14 @@ const FriendList = () => {
       socket?.off("friend-request-cancel");
     };
   }, [socket, userData]);
+
+  const InviteFriendGame = () => {
+    socket?.on("invite-game", (data: any) => {
+      console.log(`Inviting friend to game`);
+      console.log(data);
+
+    });
+  };
 
   const fetchUsersList = async () => {
     try {
