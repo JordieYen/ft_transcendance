@@ -94,28 +94,20 @@ const Mute = ({
     content = (
       <div>
         <p className="mute-status">Status: {mutedTill}</p>
-        <button className="mute-buttons">
-          Mute for 1 day
-        </button>
-        <button className="mute-buttons">
-          Mute for 3 days 
-        </button>
-        <button className="mute-buttons">
-          Mute for 7 days
-        </button>
+        <button className="mute-buttons">Mute for 1 day</button>
+        <button className="mute-buttons">Mute for 3 days</button>
+        <button className="mute-buttons">Mute for 7 days</button>
       </div>
     );
   } else {
     content = (
       <div>
         <p className="mute-status-user">Status: {mutedTill.substring(0, 10)}</p>
-        <button className="unmute-button">
-          Unmute
-        </button>
+        <button className="unmute-button">Unmute</button>
       </div>
     );
   }
-  mutedTill = "not muted"
+  mutedTill = "not muted";
 
   return (
     <>
@@ -645,18 +637,206 @@ const DisplayMessage = ({
   );
 };
 
+const ChangeChannelPassword = ({
+  isOpen,
+  closeModal,
+  modalRef,
+  channel,
+  channelUser,
+}: {
+  isOpen: boolean;
+  closeModal: () => void;
+  modalRef: RefObject<HTMLDivElement>;
+  channel: any;
+  channelUser: any;
+}) => {
+  return (
+    <>
+      {isOpen && (
+        <div className="overlay">
+          <div className="cct-bg"></div>
+          <div
+            className={`change-channel-password-popup noSelect absolute overlay-content flex flex-col z-[101]`}
+            ref={modalRef}
+          >
+            <input
+              className={`ccpp-input`}
+              type="text"
+              placeholder="Old Password"
+              // value={channelPassword}
+              // onChange={handleChannelPasswordChange}
+            />
+            <input
+              className={`ccpp-input`}
+              type="text"
+              placeholder="New Password"
+              // value={channelPassword}
+              // onChange={handleChannelPasswordChange}
+            />
+            <button className="ccpp-submit">Change</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+const ChangeChannelType = ({
+  isOpen,
+  closeModal,
+  modalRef,
+  channel,
+  channelUser,
+}: {
+  isOpen: boolean;
+  closeModal: () => void;
+  modalRef: RefObject<HTMLDivElement>;
+  channel: any;
+  channelUser: any;
+}) => {
+  const [channelType, setChannelType] = useState("");
+  const [isProtected, setProtected] = useState(false);
+  let displayPublic = "";
+  let displayProtected = "";
+  let displayPrivate = "";
+
+  if (channel?.channel_type == "public") {
+    displayPublic = "none";
+  } else if (channel?.channel_type == "protected") {
+    displayProtected = "none";
+  } else if (channel?.channel_type == "private") {
+    displayPrivate = "none";
+  }
+
+  return (
+    <>
+      {isOpen && (
+        <div className="overlay">
+          <div className="cct-bg"></div>
+          <div
+            className={`change-channel-type-popup noSelect absolute overlay-content flex flex-col z-[101]`}
+            ref={modalRef}
+          >
+            {/* <p className="cct-name">Channel : {channel?.channel_type}</p> */}
+            <div className="cct-btn-group">
+              <button
+                className={`${displayPublic} ${
+                  channelType != "public" ? "ccp-btn" : "ccp-btn-selected"
+                }`}
+                onClick={() => {
+                  setChannelType("public");
+                  setProtected(false);
+                }}
+              >
+                Public
+              </button>
+              <button
+                className={`${displayProtected} ${
+                  channelType != "protected" ? "ccp-btn" : "ccp-btn-selected"
+                }`}
+                onClick={() => {
+                  setChannelType("protected");
+                  setProtected(true);
+                }}
+              >
+                Protected
+              </button>
+              <button
+                className={`${displayPrivate} ${
+                  channelType != "private" ? "ccp-btn" : "ccp-btn-selected"
+                }`}
+                onClick={() => {
+                  setChannelType("private");
+                  setProtected(false);
+                }}
+              >
+                Private
+              </button>
+            </div>
+            <input
+              className={`cct-input ${
+                channelType == "protected" ? null : "invisible"
+              }`}
+              type="text"
+              placeholder=" Password"
+              // value={channelPassword}
+              // onChange={handleChannelPasswordChange}
+            />
+            <button className="cct-submit">Change</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
 const MembersMore = ({
   isOpen,
   closeModal,
   modalRef,
   channel,
-}: // user,
-{
+  channelUser,
+}: {
   isOpen: boolean;
   closeModal: () => void;
   modalRef: RefObject<HTMLDivElement>;
   channel: any;
+  channelUser: any;
 }) => {
+  const [
+    isChangeChannelTypeModalOpen,
+    openChangeChannelTypeModal,
+    closeChangeChannelTypeModal,
+    modalChangeChannelTypeRef,
+  ] = useModal(false);
+  const [
+    isChangeChannelPasswordModalOpen,
+    openChangeChannelPasswordModal,
+    closeChangeChannelPasswordModal,
+    modalChangeChannelPasswordRef,
+  ] = useModal(false);
+
+  let buttons;
+
+  if (channelUser?.role == "owner") {
+    buttons = (
+      <div className="filler">
+        <button
+          className={`mm-change-channel-password ${
+            channel?.channel_type == "protected" ? null : "invisible"
+          }`}
+          onClick={openChangeChannelPasswordModal}
+        >
+          Change Channel Password
+        </button>
+        {isChangeChannelPasswordModalOpen && (
+          <ChangeChannelPassword
+            isOpen={isChangeChannelPasswordModalOpen}
+            closeModal={closeChangeChannelPasswordModal}
+            modalRef={modalChangeChannelPasswordRef}
+            channel={channel}
+            channelUser={channelUser}
+          />
+        )}
+        <button
+          className="mm-change-channel-type"
+          onClick={openChangeChannelTypeModal}
+        >
+          Change Channel Type
+        </button>
+        {isChangeChannelTypeModalOpen && (
+          <ChangeChannelType
+            isOpen={isChangeChannelTypeModalOpen}
+            closeModal={closeChangeChannelTypeModal}
+            modalRef={modalChangeChannelTypeRef}
+            channel={channel}
+            channelUser={channelUser}
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
     <>
       {isOpen && (
@@ -674,16 +854,7 @@ const MembersMore = ({
             <p className="mm-desc">
               Created at &nbsp;&nbsp;: {channel?.createdAt}
             </p>
-            <button
-              className={`mm-change-channel-password ${
-                channel?.channel_type == "protected" ? null : "invisible"
-              }`}
-            >
-              Change Channel Password
-            </button>
-            <button className="mm-change-channel-type">
-              Change Channel Type
-            </button>
+            {buttons}
             <button className="mm-leave-channel">Leave Channel</button>
           </div>
         </div>
@@ -704,8 +875,9 @@ const ChatBox: React.FC<any> = () => {
   const messagesEndRef = useRef(null);
   const [channels, setChannels] = useState<any[]>([]);
   const [channelUsers, setChannelUsers] = useState<any[]>([]);
-  const [channelId, setChannelId] = useState("1");
+  const [channelId, setChannelId] = useState("2");
   const [currentChannel, setCurrentChannel] = useState<any>(null);
+  const [currentChannelUser, setCurrentChannelUser] = useState<any>(null);
   const [
     isCreateChatModalOpen,
     openCreateChatModal,
@@ -747,6 +919,7 @@ const ChatBox: React.FC<any> = () => {
     fetchChannelData();
     fetchChannelUserData();
     fetchCurrentChannelData();
+    fetchCurrentChannelUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData, channelId]);
 
@@ -760,7 +933,22 @@ const ChatBox: React.FC<any> = () => {
       async function (new_message: any, channel_id: string) {
         // console.log("new", new_message);
         // console.log("message", messages[1]);
-        setMessages([...messages, new_message]);
+        // console.log("broooo", new_message?.channelChannelUid);
+        const idNumber = new_message?.channel?.channel_uid;
+        const idString: string = "" + idNumber;
+        const channelIdString: string = "" + channelId;
+        console.log(
+          "lollll",
+          new_message?.channel?.channel_uid,
+          idNumber,
+          idString,
+          channelId,
+          channelIdString,
+        );
+        if (idString == channelId) {
+          console.log("ran");
+          setMessages([...messages, new_message]);
+        }
       },
     );
   }, [socket, messages]);
@@ -910,6 +1098,28 @@ const ChatBox: React.FC<any> = () => {
         const channelData = await response.json();
         setCurrentChannel(channelData);
         // console.log("channelUserContent", channelData);
+      } else {
+        throw new Error("Messages not found");
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
+  };
+  if (!messages) {
+    return <div>messages not found</div>;
+  }
+
+  const fetchCurrentChannelUserData = async () => {
+    try {
+      const request = `${process.env.NEXT_PUBLIC_NEST_HOST}channel-user/channeluser/${channelId}/${userData.id}`;
+      console.log("bruh", request);
+      const response = await fetch(request, {
+        method: "GET",
+        credentials: "include",
+      });
+      if (response.ok) {
+        const channelData = await response.json();
+        setCurrentChannelUser(channelData);
       } else {
         throw new Error("Messages not found");
       }
@@ -1117,6 +1327,7 @@ const ChatBox: React.FC<any> = () => {
                 closeModal={closeMembersMoreModal}
                 modalRef={modalMembersMoreRef}
                 channel={currentChannel}
+                channelUser={currentChannelUser}
               />
             )}
           </div>

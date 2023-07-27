@@ -211,7 +211,7 @@ export class ChannelService {
       if (channel.channel_type == 'protected') {
         if (dto.channel_password == undefined || dto.channel_password == null) {
           throw new ForbiddenException(
-            'hannel is protedted: Channel_password id empty',
+            'channel is protected: Channel_password id empty',
           );
         }
         const pwMatches = await argon.verify(
@@ -298,6 +298,22 @@ export class ChannelService {
       console.log('error=', error.message);
       throw error;
       throw new InternalServerErrorException('Channel not found');
+    }
+  }
+
+  async changePassword(channelId: number, user: User, newChanneltype: string) {
+    this.validateUser(user);
+    const channelUser =
+      await this.channelUserService.findChannelUserByChannelIdAndUserId(
+        channelId,
+        user.id,
+      );
+
+    if (channelUser.role == 'owner') {
+      this.channelsRepository.save({
+        channel_uid: channelId,
+        channel_type: newChanneltype,
+      });
     }
   }
 
