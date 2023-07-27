@@ -80,33 +80,53 @@ const Mute = ({
   closeModal,
   modalRef,
   channelUser,
+  currentChannelUser,
 }: {
   isOpen: boolean;
   closeModal: () => void;
   modalRef: RefObject<HTMLDivElement>;
   channelUser: any;
+  currentChannelUser: any;
 }) => {
   let mutedTill: string = channelUser?.mutedUntil;
   let content;
 
-  if (mutedTill == undefined) {
-    mutedTill = "not muted";
-    content = (
-      <div>
-        <p className="mute-status">Status: {mutedTill}</p>
-        <button className="mute-buttons">Mute for 1 day</button>
-        <button className="mute-buttons">Mute for 3 days</button>
-        <button className="mute-buttons">Mute for 7 days</button>
-      </div>
-    );
-  } else {
-    content = (
-      <div>
-        <p className="mute-status-user">Status: {mutedTill.substring(0, 10)}</p>
-        <button className="unmute-button">Unmute</button>
-      </div>
-    );
+  if (currentChannelUser?.role == "owner" || currentChannelUser?.role == "administrator") {
+    if (mutedTill == undefined) {
+      mutedTill = "not muted";
+      content = (
+        <div>
+          <p className="mute-status">Status: {mutedTill}</p>
+          <button className="mute-buttons">Mute for 1 day</button>
+          <button className="mute-buttons">Mute for 3 days</button>
+          <button className="mute-buttons">Mute for 7 days</button>
+        </div>
+      );
+    } else {
+      content = (
+        <div>
+          <p className="mute-status-user">Status: muted till {mutedTill.substring(0, 10)}</p>
+          <button className="unmute-button">Unmute</button>
+        </div>
+      );
+    }
+  } else if (currentChannelUser?.role == "user") {
+    if (mutedTill == undefined) {
+      mutedTill = "not muted";
+      content = (
+        <div>
+          <p className="mute-status">Status: {mutedTill}</p>
+        </div>
+      );
+    } else {
+      content = (
+        <div>
+          <p className="mute-status-user">Status: muted till {mutedTill.substring(0, 10)}</p>
+        </div>
+      );
+    }
   }
+  
   mutedTill = "not muted";
 
   return (
@@ -132,12 +152,14 @@ const ThreeDots = ({
   modalRef,
   user,
   channelUser,
+  currentChannelUser,
 }: {
   isOpen: boolean;
   closeModal: () => void;
   modalRef: RefObject<HTMLDivElement>;
   user: any;
   channelUser: any;
+  currentChannelUser: any;
 }) => {
   const [isRolesModalOpen, openRolesModal, closeRolesModal, modalRolesRef] =
     useModal(false);
@@ -185,6 +207,7 @@ const ThreeDots = ({
                 closeModal={closeMuteModal}
                 modalRef={modalMuteRef}
                 channelUser={channelUser}
+                currentChannelUser={currentChannelUser}
               />
             )}
           </div>
@@ -543,13 +566,13 @@ const BrowseChats = ({
   );
 };
 
-const DisplayUser = ({ channelUser }: { channelUser: any }) => {
+const DisplayUser = ({ channelUser, currentChannelUser }: { channelUser: any , currentChannelUser: any}) => {
   const [isModalOpen, openModal, closeModal, modalRef] = useModal(false);
 
   if (channelUser?.role == "owner") {
     return (
       <div className="members relative">
-        <p>{channelUser?.user?.username}</p>
+        <p className="members-name">{channelUser?.user?.username}</p>
         <FontAwesomeIcon
           className="dots-button"
           icon={faCrown}
@@ -577,7 +600,7 @@ const DisplayUser = ({ channelUser }: { channelUser: any }) => {
 
   return (
     <div className="members relative">
-      <p>{channelUser?.user?.username}</p>
+      <p className="members-name">{channelUser?.user?.username}</p>
       <FontAwesomeIcon
         className="dots-button"
         icon={faEllipsisVertical}
@@ -592,6 +615,7 @@ const DisplayUser = ({ channelUser }: { channelUser: any }) => {
           modalRef={modalRef}
           user={channelUser.user}
           channelUser={channelUser}
+          currentChannelUser={currentChannelUser}
         />
       )}
     </div>
@@ -717,7 +741,7 @@ const ChangeChannelType = ({
             className={`change-channel-type-popup noSelect absolute overlay-content flex flex-col z-[101]`}
             ref={modalRef}
           >
-            {/* <p className="cct-name">Channel : {channel?.channel_type}</p> */}
+            <p className="cct-name">New Channel Type</p>
             <div className="cct-btn-group">
               <button
                 className={`${displayPublic} ${
@@ -1316,7 +1340,7 @@ const ChatBox: React.FC<any> = () => {
             }`}
           >
             {channelUsers.map((channelUser, index) => (
-              <DisplayUser channelUser={channelUser} key={index} />
+              <DisplayUser channelUser={channelUser} currentChannelUser={currentChannelUser} key={index} />
             ))}
             <div className="members" onClick={() => openMembersMoreModal()}>
               <button className="members-more">More</button>
