@@ -18,7 +18,19 @@ export class MessageService {
   ) {}
 
   async getAllMessages() {
-    return await this.messageRepository.find();
+    return await this.messageRepository.find({
+      relations: ['sender', 'channel'],
+    });
+  }
+
+  async findMessagesById(channel_id: number) {
+    return await this.messageRepository.find({
+      order: {
+        id: 'ASC',
+      },
+      relations: ['sender', 'channel'],
+      where: { channel: { channel_uid: channel_id } },
+    });
   }
 
   async createMessage(dto: CreateMessageDto, sender: User) {
