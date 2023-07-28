@@ -141,7 +141,7 @@ const Friend = ({
   };
 
   return (
-    <div className="friend flex-col">
+    <div className="friend-list flex-col">
       <h1>Friends</h1>
       {friends &&
         friends.map((friend) => (

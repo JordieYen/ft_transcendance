@@ -5,13 +5,14 @@ import { Socket } from "socket.io-client";
 interface InviteFriendGameProps {
   user: UserData;
   friend: UserData;
-  socket: Socket;
+  socket: Socket<any, any> | null;
 }
 
 // take in current user, friend user
 const InviteFriendGame = ({ user, friend, socket}: InviteFriendGameProps) => {
 
   const handleInviteFriendGame = () => {
+   
     console.log(`Inviting friend to game`);
     console.log(`User:`, user);
     console.log(`Friend:`, friend);
