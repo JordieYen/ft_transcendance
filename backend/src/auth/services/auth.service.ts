@@ -43,7 +43,7 @@ export class AuthService {
           grant_type: 'authorization_code',
           client_id: this.configService.get<string>('CLIENT_ID'),
           client_secret: this.configService.get<string>('CLIENT_SECRET'),
-          redirect_uri: 'http://localhost:3000/auth/callback',
+          redirect_uri: `${process.env.NEST_HOST}/auth/callback`,
           code,
         },
       );
@@ -95,7 +95,7 @@ export class AuthService {
       newUser.username = profile.username;
       newUser.avatar =
         profile._json.image.link ||
-        'http://localhost:3000/public/default_avatar.png';
+        `${process.env.NEST_HOST}/public/default_avatar.png`;
       newUser.online = false;
       returnUser = await this.userService.createUser(newUser);
     }
@@ -104,7 +104,6 @@ export class AuthService {
 
   async generateTwoFactorAuthSecret(user: AuthenticatedUser): Promise<string> {
     this.secret = authenticator.generateSecret();
-    this.userService.updateUser(user.id, { authenticationString: this.secret });
     const otpAuthUrl = authenticator.keyuri(
       user.username,
       'MyApp',
@@ -117,8 +116,23 @@ export class AuthService {
     const qrCode = await qrcode.toFileStream(res, otpAuthUrl);
   }
 
-  async verifyOtp(otp: string) {
-    return authenticator.check(otp, this.secret);
+  async verifyOtp(user: AuthenticatedUser, otp: string) {
+    const users = await this.userService.findUsersById(user.id);
+    if (users.authentication === true) {
+      return authenticator.check(otp, users.authenticationString);
+    } else {
+      return authenticator.check(otp, this.secret);
+    }
+  }
+
+  async storeSecret(user: AuthenticatedUser) {
+    const users = await this.userService.findUsersById(user.id);
+    if (users.authentication !== true) {
+      this.userService.updateUser(user.id, {
+        authenticationString: this.secret,
+      });
+      this.userService.updateUser(user.id, { authentication: true });
+    }
   }
 
   async logout(user: AuthenticatedUser): Promise<User> {

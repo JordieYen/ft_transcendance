@@ -1,8 +1,8 @@
-import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
 const Login = () => {
+  const loginUrl = process.env.NEXT_PUBLIC_NEST_HOST;
   return (
     <div className="flex flex-col w-screen h-screen items-center justify-center">
       <div className="flex flex-col items-center justify-center">
@@ -16,20 +16,21 @@ const Login = () => {
         <p className="text-5xl font-pmarker text-timberwolf">Pongmington</p>
       </div>
       <Link
-        href="http://localhost:3000/auth/login"
+        // href="http://localhost:3000/auth/login"
+        href={`${loginUrl}/auth/login`}
         className="flex w-[300px] rounded-md my-10 px-2 py-2 bg-jetblack border-2 border-saffron justify-center"
       >
         <p className="text-xl text-timberwolf">Login with 42</p>
       </Link>
-       {/* <button className="login-button text-background-dark-grey bg-mygrey rounded-md px-2 py-1" 
-       onClick={ async () => await signIn("42-school", { 
+      {/* <button className="flex w-[300px] rounded-md my-10 px-2 py-2 bg-jetblack border-2 border-saffron justify-center"
+       onClick={ async () => await signIn('google', { 
           method: "POST",
           redirect: true,
-          callbackUrl: "http://localhost:3000/auth/login"
+          credentials: "include",
+          callbackUrl: "http://localhost:3001/pong-main",
         })}>
-          Try next Auth Login
+          <p className="text-xl text-timberwolf">Login with Google</p>
         </button> */}
-      
     </div>
   );
 };

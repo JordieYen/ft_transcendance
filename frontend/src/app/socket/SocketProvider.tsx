@@ -1,4 +1,6 @@
 
+import useUserStore from "@/store/useUserStore";
+import { loadWebFont } from "pixi.js";
 import { useState, createContext, useContext, use, useEffect, ReactNode } from "react";
 import { io, Socket } from 'socket.io-client';
 
@@ -13,11 +15,18 @@ export const SocketContext = createContext<SocketContextType>(null);
 
 export const SocketProvider =  ({ children }: SocketProviderProps) => {
     const [socket, setSocket] = useState<SocketContextType>(null);
+    const [userData, setUserData] = useUserStore((state) => [
+        state.userData,
+        state.setUserData,
+      ]);
     
     useEffect(() => {
-        const socket = io('http://localhost:3000');
+        const socket = io(`${process.env.NEXT_PUBLIC_NEST_HOST}`);
         socket.on('connect', () => {
             console.log('Connected to socket server', socket.id);
+            if (userData) {
+                socket?.emit('join', userData.id);
+            }
         });
         setSocket(socket);
         return () => {

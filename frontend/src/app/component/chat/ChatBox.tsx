@@ -20,7 +20,7 @@ import {
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { SocketContext } from "@/app/socket/SocketProvider";
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore from "@/store/useUserStore";
 import useModal from "@/hooks/useModal";
 
 const Roles = ({
@@ -91,7 +91,10 @@ const Mute = ({
   let mutedTill: string = channelUser?.mutedUntil;
   let content;
 
-  if (currentChannelUser?.role == "owner" || currentChannelUser?.role == "administrator") {
+  if (
+    currentChannelUser?.role == "owner" ||
+    currentChannelUser?.role == "administrator"
+  ) {
     if (mutedTill == undefined) {
       mutedTill = "not muted";
       content = (
@@ -105,7 +108,9 @@ const Mute = ({
     } else {
       content = (
         <div>
-          <p className="mute-status-user">Status: muted till {mutedTill.substring(0, 10)}</p>
+          <p className="mute-status-user">
+            Status: muted till {mutedTill.substring(0, 10)}
+          </p>
           <button className="unmute-button">Unmute</button>
         </div>
       );
@@ -121,12 +126,14 @@ const Mute = ({
     } else {
       content = (
         <div>
-          <p className="mute-status-user">Status: muted till {mutedTill.substring(0, 10)}</p>
+          <p className="mute-status-user">
+            Status: muted till {mutedTill.substring(0, 10)}
+          </p>
         </div>
       );
     }
   }
-  
+
   mutedTill = "not muted";
 
   return (
@@ -566,7 +573,13 @@ const BrowseChats = ({
   );
 };
 
-const DisplayUser = ({ channelUser, currentChannelUser }: { channelUser: any , currentChannelUser: any}) => {
+const DisplayUser = ({
+  channelUser,
+  currentChannelUser,
+}: {
+  channelUser: any;
+  currentChannelUser: any;
+}) => {
   const [isModalOpen, openModal, closeModal, modalRef] = useModal(false);
 
   if (channelUser?.role == "owner") {
@@ -886,6 +899,7 @@ const MembersMore = ({
     </>
   );
 };
+import { useRouter } from "next/router";
 
 const ChatBox: React.FC<any> = () => {
   const [chat_slide_out, setChatSlideOut] = useState(false);
@@ -920,6 +934,7 @@ const ChatBox: React.FC<any> = () => {
     closeMembersMoreModal,
     modalMembersMoreRef,
   ] = useModal(false);
+  const router = useRouter();
 
   const socket = useContext(SocketContext);
 
@@ -1000,6 +1015,10 @@ const ChatBox: React.FC<any> = () => {
           credentials: "include",
         },
       );
+      // const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/message`, {
+      //   method: "GET",
+      //   credentials: "include",
+      // });
       if (response.ok) {
         const messageData = await response.json();
         setMessages(messageData);
@@ -1017,10 +1036,14 @@ const ChatBox: React.FC<any> = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/users", {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        // `${process.env.NEXT_PUBLIC_NEST_HOST}/users`,
+        "http://localhost:3000/users",
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
       if (response.ok) {
         const userData = await response.json();
         setUsers(userData);
@@ -1137,10 +1160,16 @@ const ChatBox: React.FC<any> = () => {
     try {
       const request = `${process.env.NEXT_PUBLIC_NEST_HOST}channel-user/channeluser/${channelId}/${userData.id}`;
       console.log("bruh", request);
-      const response = await fetch(request, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        "http://localhost:3000/channel-user/channeluser/" +
+          channelId +
+          "/" +
+          userData.id,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
       if (response.ok) {
         const channelData = await response.json();
         setCurrentChannelUser(channelData);
@@ -1340,7 +1369,11 @@ const ChatBox: React.FC<any> = () => {
             }`}
           >
             {channelUsers.map((channelUser, index) => (
-              <DisplayUser channelUser={channelUser} currentChannelUser={currentChannelUser} key={index} />
+              <DisplayUser
+                channelUser={channelUser}
+                currentChannelUser={currentChannelUser}
+                key={index}
+              />
             ))}
             <div className="members" onClick={() => openMembersMoreModal()}>
               <button className="members-more">More</button>
@@ -1393,7 +1426,12 @@ const ChatBox: React.FC<any> = () => {
           Friends
         </button> */}
         <button className="bottom-nav-buttons">Friends</button>
-        <button className="bottom-nav-buttons">Find match</button>
+        <button
+          className="bottom-nav-buttons"
+          onClick={() => router.push("game-loading")}
+        >
+          Find match
+        </button>
       </div>
     </div>
   );

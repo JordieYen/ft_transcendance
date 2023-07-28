@@ -82,7 +82,7 @@ export class UsersController {
   ) {
     try {
       console.log(file);
-      const avatarURL = `http://localhost:3000/public/avatar/${file.filename}`;
+      const avatarURL = `${process.env.NEST_HOST}/public/avatar/${file.filename}`;
       await this.userService.uploadAvatar(id, avatarURL);
       return { message: 'Avatar upload successfully', avatarURL };
     } catch (error) {

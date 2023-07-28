@@ -47,7 +47,7 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
 
   const fetchFriendRequests = async () => {
       try {
-          const response = await fetch(`http://localhost:3000/friend/friend-requests/${userId}`, {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/friend/friend-requests/${userId}`, {
               credentials: 'include',
           });
           if (response.ok) {
@@ -63,7 +63,6 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
 
   const handleFriendRequestReceived = (friendRequest: any) => {
     setFriendRequests(() => {
-      console.log('friendRequest XXXXX', friendRequest);
       const updatedRequest = [...friendRequest];
       return updatedRequest.sort((a, b) => a.id - b.id);
       // return updatedRequest;

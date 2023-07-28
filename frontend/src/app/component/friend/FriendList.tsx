@@ -7,7 +7,7 @@ import Friend from "./Friend";
 import { SocketContext } from "@/app/socket/SocketProvider";
 import Block from "./Block";
 import useSessionStorageState from "@/app/utils/useSessionStorageState";
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore from "@/store/useUserStore";
 import { useRouter } from "next/router";
 import { log } from "console";
 import Avatar from "../header_icon/Avatar";
@@ -31,21 +31,23 @@ const FriendList = () => {
     },
   });
   const socket = useContext(SocketContext);
-  const [userData, setUserData] = useUserStore((state) => [state.userData, state.setUserData])
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
   const router = useRouter();
 
   useEffect(() => {
     if (userData.id) {
       console.log("userData", userData.id);
-      
-      socket?.emit("join", `${userData?.id}`);
+      // socket?.emit("join", `${userData?.id}`);
       socket?.on("friend-request-received", (receivedFriendRequest: any) => {
         console.log("friend-request-received socket", receivedFriendRequest);
         setFriendRequestArray((prevArray: any) => {
           const existingRequest = prevArray.find(
             (request: any) => request.requestId === receivedFriendRequest.id,
           );
-  
+
           if (existingRequest) {
             const updatedArray = prevArray.map((request: any) => {
               if (request.requestId === receivedFriendRequest.id) {
@@ -64,7 +66,7 @@ const FriendList = () => {
               receiverId: receivedFriendRequest?.receiver?.id,
               status: receivedFriendRequest.status,
             };
-  
+
             return [...prevArray, newRequest];
           }
         });
@@ -77,6 +79,7 @@ const FriendList = () => {
         fetchUsersList();
       });
       fetchUsersList();
+      InviteFriendGame();
     }
     // fetchFriendRequests();
     return () => {
@@ -86,14 +89,22 @@ const FriendList = () => {
     };
   }, [socket, userData]);
 
+  const InviteFriendGame = () => {
+    socket?.on("invite-game", (data: any) => {
+      console.log(`Inviting friend to game`);
+      console.log(data);
+
+    });
+  };
+
   const fetchUsersList = async () => {
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/users`, {
         credentials: "include",
       });
       if (response.ok) {
         const usersList = await response.json();
-        
+
         const filteredList = [];
         for (const user of usersList) {
           const relationship = await checkFriendsOrBlocks(userData, user);
@@ -103,12 +114,12 @@ const FriendList = () => {
         }
         setUserList(filteredList);
         setFilteredUsersList(filteredList);
-        } else {
-          throw new Error("User not found");
-        }
-      } catch (error) {
-        console.log("Error fetching friend request:", error);
+      } else {
+        throw new Error("User not found");
       }
+    } catch (error) {
+      console.log("Error fetching friend request:", error);
+    }
   };
 
   const handleSearch = (searchQuery: string) => {
@@ -173,7 +184,7 @@ const FriendList = () => {
       const userId = user1.id;
       const friendId = user2.id;
       const response = await fetch(
-        `http://localhost:3000/friend/check-relationship/${userId}/${friendId}`,
+        `${process.env.NEXT_PUBLIC_NEST_HOST}/friend/check-relationship/${userId}/${friendId}`,
         {
           method: "GET",
           credentials: "include",
@@ -199,25 +210,22 @@ const FriendList = () => {
   };
 
   const handleClick = async (id: number) => {
-      try {
-        console.log("id in handleClick", id);
-        
-        const response = await fetch(
-          `http://localhost:3000/users/${id}`,
-          {
-            method: "GET",
-            credentials: "include",
-          },
-        );
-        if (response.ok) {
-          console.log("response in handleClick", response);
-          const user = await response.json();
-          router.push(`/users/${user.id}`);
-        }
-      } catch (error) {
-        console.log("Error redirect to profile:", error);
+    try {
+      console.log("id in handleClick", id);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/users/${id}`, {
+        method: "GET",
+        credentials: "include",
+      });
+      if (response.ok) {
+        console.log("response in handleClick", response);
+        const user = await response.json();
+        router.push(`/users/${user.id}`);
       }
-  }
+    } catch (error) {
+      console.log("Error redirect to profile:", error);
+    }
+  };
 
   return (
     <div className="friend-page w-full flex">
@@ -252,62 +260,61 @@ const FriendList = () => {
             <h1 className="flex justify-center">Users List</h1>
             <div className="card-container">
               {filteredUsersList &&
-                filteredUsersList
-                  .map(
-                    (user) =>
-                      user?.id !== userData?.id && (
-                        <div className="card" key={user?.id}>
-                          <div className="card-avatar">
-                            <Avatar
-                              src={user?.avatar}
-                              alt="user avatar"
-                              width={100}
-                              height={125}
-                              onClick={() => handleClick(user?.id)}
-                            />
-                          </div>
-                          <div className="card-details">
-                            <p className="card-username">{user?.username}</p>
-                            <div
-                              className={`card-status ${
-                                user?.online ? "online" : "offline"
-                              }`}
-                            >
-                              {user?.online ? (
-                                <div className="green-dot"></div>
-                              ) : (
-                                <div className="red-dot"></div>
-                              )}
-                              <span className="card-status">
-                                {user?.online ? "online" : "offline"}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="card-actions">
-                            <button
-                              className={
-                                friendRequestStatus[user?.id]
-                                  ? "cancel-button"
-                                  : "add-button"
-                              }
-                              onClick={() =>
-                                friendRequestStatus[user?.id]
-                                  ? cancelFriendRequest(user?.id)
-                                  : sendFriendRequest(user?.id)
-                              }
-                              disabled={isSent(user?.id) === true}
-                            >
-                              {friendRequestStatus[user?.id]
-                                ? "Cancel"
-                                : isSent(user?.id)
-                                ? "Friend Request Pending "
-                                : "Add Friend "}
-                              {user?.id}
-                            </button>
+                filteredUsersList.map(
+                  (user) =>
+                    user?.id !== userData?.id && (
+                      <div className="card" key={user?.id}>
+                        <div className="card-avatar">
+                          <Avatar
+                            src={user?.avatar}
+                            alt="user avatar"
+                            width={100}
+                            height={125}
+                            onClick={() => handleClick(user?.id)}
+                          />
+                        </div>
+                        <div className="card-details">
+                          <p className="card-username">{user?.username}</p>
+                          <div
+                            className={`card-status ${
+                              user?.online ? "online" : "offline"
+                            }`}
+                          >
+                            {user?.online ? (
+                              <div className="green-dot"></div>
+                            ) : (
+                              <div className="red-dot"></div>
+                            )}
+                            <span className="card-status">
+                              {user?.online ? "online" : "offline"}
+                            </span>
                           </div>
                         </div>
-                      ),
-                  )}
+                        <div className="card-actions">
+                          <button
+                            className={
+                              friendRequestStatus[user?.id]
+                                ? "cancel-button"
+                                : "add-button"
+                            }
+                            onClick={() =>
+                              friendRequestStatus[user?.id]
+                                ? cancelFriendRequest(user?.id)
+                                : sendFriendRequest(user?.id)
+                            }
+                            disabled={isSent(user?.id) === true}
+                          >
+                            {friendRequestStatus[user?.id]
+                              ? "Cancel"
+                              : isSent(user?.id)
+                              ? "Friend Request Pending "
+                              : "Add Friend "}
+                            {user?.id}
+                          </button>
+                        </div>
+                      </div>
+                    ),
+                )}
             </div>
           </div>
         </div>

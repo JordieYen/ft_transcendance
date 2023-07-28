@@ -3,7 +3,7 @@ import UserData from "@/app/webhook/UserContext";
 import { setFips } from "crypto";
 import { use, useContext, useEffect, useState } from "react";
 import Avatar from "../header_icon/Avatar";
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore from "@/store/useUserStore";
 
 const Block = () => {
   const [blocks, setBlocks] = useState<any[]>([]);
@@ -15,8 +15,10 @@ const Block = () => {
   //   const userDataString = sessionStorage?.getItem("userData");
   //   userData = userDataString ? JSON.parse(userDataString) : {};
   // }
-  const [userData, setUserData] = useUserStore((state) => [state.userData, state.setUserData])
-
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
 
   useEffect(() => {
     if (userData) {
@@ -36,7 +38,7 @@ const Block = () => {
       socket?.off("block");
       socket?.off("unblock");
     };
-  }, [socket]);
+  }, [socket, userData]);
 
   // useEffect(() => {
   //     console.log('blockerIdArray:', blockerIdArray);
@@ -46,7 +48,7 @@ const Block = () => {
     if (userData.id) {
       try {
         const response = await fetch(
-          `http://localhost:3000/friend/blocked/${userData?.id}`,
+          `${process.env.NEXT_PUBLIC_NEST_HOST}/friend/blocked/${userData?.id}`,
           {
             method: "GET",
             credentials: "include",

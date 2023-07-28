@@ -12,10 +12,13 @@ import "@/styles/styling.css";
 import { IconButton } from "./IconButton";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import useUserStore, { UserData } from "@/hooks/useUserStore";
+import useUserStore, { UserData } from "@/store/useUserStore";
 import NextLink from "next/link";
 import Icon from "@/app/component/header_icon/Icon";
-
+import { motion } from "framer-motion";
+import useAnimateStore from "@/store/useAnimateStore";
+import useModal from "@/hooks/useModal";
+import LeaderboardsModal from "./LeaderboardsModal";
 
 interface HeaderLogoProps {
   currentPath: string;
@@ -67,7 +70,7 @@ export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
         // onClick={() => {
         //   if (currentPath !== "/login") router.push("/pong-main");
         // }}
-        href={currentPath !== "/login" ? "/pong-main" : ""}
+        href={currentPath !== "/login" ? "/main-menu" : ""}
       >
         <Image
           className="object-contain"
@@ -89,8 +92,8 @@ export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
 export const LogoutIcon = () => {
   const router = useRouter();
   const handleLogout = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/auth/logout", {
+    try {      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/auth/logout`, {
         credentials: "include",
       });
       router.push("/login").then(() => {
@@ -122,11 +125,11 @@ export const FriendsIcon = () => {
   return (
     <NextLink href="/friend">
       <IconButton>
-        <FontAwesomeIcon icon={faUserGroup} size="lg"/>
+        <FontAwesomeIcon icon={faUserGroup} size="lg" />
       </IconButton>
     </NextLink>
-  )
-}
+  );
+};
 
 export const SettingsIcon = () => {
   return (
@@ -143,7 +146,7 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
     <Link
       className="flex items-center space-x-2 group"
       /* HANDLE PROFILE CLICK BELOW! */
-      href={"/profile"}
+      href={"/pong-main"}
     >
       <img
         width={100}
@@ -158,8 +161,7 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
       <div className="flex items-center rounded-lg bg-dimgrey py-1 px-2 gap-1 text-onyxgrey group-hover:bg-timberwolf">
         <FontAwesomeIcon icon={faTrophy} size="sm" />
         <span className="text-onyxgrey font-roboto">
-          
-          {user.stat === null ? 0 : user?.stat?.current_mmr}
+          {user.stat === null ? 0 : user.stat.current_mmr}
         </span>
       </div>
     </Link>
@@ -167,10 +169,20 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
 };
 
 export const LeaderboardsIcon = () => {
+  const [isLBOpen, openLBModal, closeLBModal, lbRef] = useModal(false);
   return (
-    <IconButton onClick={() => console.log("leaderboards")}>
-      <FontAwesomeIcon icon={faCrown} size="lg" />
-    </IconButton>
+    <>
+      <IconButton onClick={() => openLBModal()}>
+        <FontAwesomeIcon icon={faCrown} size="lg" />
+      </IconButton>
+      {isLBOpen && (
+        <LeaderboardsModal
+          isOpen={isLBOpen}
+          closeModal={closeLBModal}
+          lbRef={lbRef}
+        />
+      )}
+    </>
   );
 };
 
@@ -188,7 +200,7 @@ export const HeaderIcon = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/auth/profile", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/auth/profile`, {
           credentials: "include",
         });
         if (response.ok) {
@@ -201,7 +213,7 @@ export const HeaderIcon = () => {
         console.log("Error fetching user data:", error);
       }
     };
-    fetchUserData();
+    fetchUserData()
   }, []);
 
   if (!userData) {
@@ -209,7 +221,7 @@ export const HeaderIcon = () => {
   }
 
   const {
-    avatar, 
+    avatar,
     id,
     intra_uid,
     username,
@@ -233,13 +245,29 @@ export const HeaderIcon = () => {
 const Header = () => {
   const router = useRouter();
   const currentPath = router.asPath;
+  const [currentStep, currentPage, setCurrentStep, setCurrentPage] =
+    useAnimateStore((state) => [
+      state.currentStep,
+      state.currentPage,
+      state.setCurrentStep,
+      state.setCurrentPage,
+    ]);
   return (
     <>
-      {currentPath !== "/login" && (
-        <nav className="flex mx-16 md:mx-24 lg:mx-32 mt-5 mb-8 items-center gap-8">
-          <HeaderLogo currentPath={currentPath} />
-          {currentPath !== "/setup" && <HeaderIcon />}
-        </nav>
+      {currentPath !== "/login" && currentPath !== "/setup" && (
+        <motion.div
+          initial={currentPage === "setup" ? { y: "100vh" } : { y: "0vh" }}
+          animate={{ y: "0vh" }}
+          transition={{ ease: "easeInOut", duration: 1.5 }}
+          onAnimationComplete={
+            currentPage === "setup" ? () => setCurrentPage("main") : undefined
+          }
+        >
+          <nav className="flex mx-16 md:mx-24 lg:mx-32 pt-5 mb-8 items-center gap-8">
+            <HeaderLogo currentPath={currentPath} />
+            <HeaderIcon />
+          </nav>
+        </motion.div>
       )}
     </>
   );

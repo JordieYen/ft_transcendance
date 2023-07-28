@@ -13,7 +13,8 @@ import { UsersService } from 'src/users/services/users.service';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3001',
+    // origin: 'http://localhost:3001',
+    // origin: `${process.env.NEXT_HOST}`,
   },
 })
 export class MessageGateway implements OnModuleInit {

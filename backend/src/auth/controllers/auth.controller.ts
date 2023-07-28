@@ -16,14 +16,12 @@ import { InvalidOtpException } from '../util/invalid_otp_exception';
 import { JwtService } from '@nestjs/jwt/dist/jwt.service';
 import { JwtAuthGuard } from '../util/jwt-auth.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UsersService } from 'src/users/services/users.service';
 
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   // Using 42 Passport
   @UseGuards(FortyTwoAuthGuard)
@@ -39,8 +37,20 @@ export class AuthController {
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
   async callback(@Req() req: Request, @Res() res: Response): Promise<void> {
-    return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
+    console.log('callback');
+    return res.redirect(`${process.env.NEXT_HOST}/setup`);
   }
+
+  // @Get('callback/42-school')
+  // async callback42() {
+  //   console.log('callback 42 school');
+  // }
+
+  // @Get('/callback/42-school')
+  // async callback42School(@Req() req: Request, @Res() res: Response) {
+  //   console.log('callback 42 school');
+  //   return res.redirect(`${process.env.NEXT_HOST}/pong-main`);
+  // }
 
   /* 2FA
   1. enable google authenticator
@@ -54,15 +64,27 @@ export class AuthController {
   */
 
   // @UseGuards(AuthenticatedGuard)
+
+  // COMMAND THIS OUT
+  // @Get('2fa')
+  // async enableTwoFactorAuth(
+  //   @Req() req: Request,
+  //   @Res() res: Response,
+  // ): Promise<void> {
+  //   const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
+  //     req.user,
+  //   );
+  //   await this.authService.displayQrCode(res, otpAuthUrl);
+  // }
+
   @Get('2fa')
-  async enableTwoFactorAuth(
-    @Req() req: Request,
-    @Res() res: Response,
-  ): Promise<void> {
-    const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
-      req.user,
-    );
-    await this.authService.displayQrCode(res, otpAuthUrl);
+  async enableTwoFactorAuth(@Req() req: Request) {
+    // console.log(req);
+    // const otpAuthUrl = await this.authService.generateTwoFactorAuthSecret(
+    //   req.user,
+    // );
+    // await this.authService.displayQrCode(res, otpAuthUrl);
+    return await this.authService.generateTwoFactorAuthSecret(req.user);
   }
   // async enableTwoFactorAuth(
   //   @Req() req: Request,
@@ -82,8 +104,9 @@ export class AuthController {
     @Res() res: Response,
     @Body() body: { otp: string },
   ) {
-    const isValid = await this.authService.verifyOtp(body.otp);
+    const isValid = await this.authService.verifyOtp(req.user, body.otp);
     if (isValid) {
+      await this.authService.storeSecret(req.user);
       const payload = await this.authService.createPayload(req.user);
       const token = await this.authService.createToken(payload);
       res.setHeader('Authorization', `Bearer ${token}`);

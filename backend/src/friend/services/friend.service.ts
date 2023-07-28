@@ -70,15 +70,24 @@ export class FriendService {
     }
     const friend = await this.findOne(id);
     try {
-      const sender = await this.userService.findUsersById(
-        updateFriendDto.senderId,
-      );
-      const receiver = await this.userService.findUsersById(
-        updateFriendDto.receiverId,
-      );
-      friend.sender = sender;
-      friend.receiver = receiver;
-      friend.status = updateFriendDto.status;
+      if (updateFriendDto.senderId) {
+        const sender = await this.userService.findUsersById(
+          updateFriendDto.senderId,
+        );
+        friend.sender = sender;
+      }
+      if (updateFriendDto.receiverId) {
+        const receiver = await this.userService.findUsersById(
+          updateFriendDto.receiverId,
+        );
+        friend.receiver = receiver;
+      }
+      if (updateFriendDto.status) {
+        friend.status = updateFriendDto.status;
+      }
+      if (updateFriendDto.roomId) {
+        friend.roomId = updateFriendDto.roomId;
+      }
       await this.friendRepository.update(id, friend);
       return await this.findOne(id);
     } catch (error) {
@@ -179,6 +188,7 @@ export class FriendService {
 
     const blocker = await this.userService.findUsersById(blockerId);
     const blocked = await this.userService.findUsersById(blockedId);
+    friendRequest.roomId = null;
 
     if (friendRequest) {
       friendRequest.status = FriendStatus.Blocked;
@@ -279,13 +289,28 @@ export class FriendService {
     });
 
     const filteredFriends = friends.map((friend) => {
-      if (friend.sender.id === userId) {
-        return friend.receiver;
-      } else {
-        return friend.sender;
-      }
+      const friendData =
+        friend.sender.id === userId ? friend.receiver : friend.sender;
+      return { ...friendData, roomId: friend.roomId };
     });
     return filteredFriends;
+  }
+
+  async getFriendsBoth(userId: number) {
+    const friends = await this.friendRepository.find({
+      where: [
+        {
+          sender: { id: userId },
+          status: FriendStatus.Friended,
+        },
+        {
+          receiver: { id: userId },
+          status: FriendStatus.Friended,
+        },
+      ],
+      relations: ['sender', 'receiver'],
+    });
+    return friends;
   }
 
   async findFriendship(senderId: number, receiverId: number) {

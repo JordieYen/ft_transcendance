@@ -33,4 +33,7 @@ export class Friend {
 
   @Column({ type: 'enum', enum: FriendStatus })
   status: FriendStatus;
+
+  @Column({ nullable: true })
+  roomId: string;
 }

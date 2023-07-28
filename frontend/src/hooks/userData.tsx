@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import useUserStore from "@/hooks/useUserStore";
+import useUserStore from "@/store/useUserStore";
 
 const UserData = () => {
   const userData = useUserStore((state) => state.userData);
@@ -8,7 +8,7 @@ const UserData = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/auth/profile", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}auth/profile`, {
           credentials: "include",
         });
         if (response.ok) {
