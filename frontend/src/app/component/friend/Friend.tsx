@@ -166,7 +166,7 @@ const Friend = ({
               </div>
               {/* Display Game Status */}
               {
-                friend?.roomId !== "null" ? (
+                (friend?.roomId !== "null" && friend?.roomId !== null) ? (
                   <ViewFriendGame roomId={friend.roomId} />
                 ) : (
                   <InviteFriendGame friend={friend} user={userData} socket={socket}/>
