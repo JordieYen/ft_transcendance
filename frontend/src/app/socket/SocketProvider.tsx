@@ -24,15 +24,21 @@ export const SocketProvider =  ({ children }: SocketProviderProps) => {
         const socket = io(`${process.env.NEXT_PUBLIC_NEST_HOST}`);
         socket.on('connect', () => {
             console.log('Connected to socket server', socket.id);
-            if (userData) {
-                socket?.emit('join', userData.id);
-            }
         });
         setSocket(socket);
         return () => {
             socket.disconnect();
         }
     }, []);
+
+    useEffect(() => {
+        if (userData) {
+            socket?.emit('join', userData.id);
+        }
+        return () => {
+            socket?.emit('leave-room', userData?.id);
+        }
+    }, [userData]);
 
     return (
         <SocketContext.Provider value={socket}>
