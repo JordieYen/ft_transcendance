@@ -5,7 +5,7 @@ const PlayerOneScore = () => {
 
   return (
     <div>
-      <p className="text-timberwolf text-3xl font-bold">{gameData.p2Score}</p>
+      <p className="text-timberwolf text-3xl font-bold">{gameData.p1Score}</p>
     </div>
   );
 };
