@@ -239,90 +239,93 @@ const Game = () => {
         // Game loop
         const gameLoop = () => {
 
-            // requestAnimationFrame(gameLoop);
-            animationFrameId.current = requestAnimationFrame(gameLoop);
+            if (app) {
+
+                // requestAnimationFrame(gameLoop);
+                animationFrameId.current = requestAnimationFrame(gameLoop);
 
 
-            const paddleSpeed = 15;
-            // move paddles
-            if (keys["KeyW"]) {
-                if (paddleLeft.y > 0) {
-                    paddleLeft.y -= paddleSpeed;
+                const paddleSpeed = 15;
+                // move paddles
+                if (keys["KeyW"]) {
+                    if (paddleLeft.y > 0) {
+                        paddleLeft.y -= paddleSpeed;
 
+                    }
+                } else if (keys["KeyS"]) {
+                    if (paddleLeft.y < app?.view.height - paddleLeft.height) {
+                        paddleLeft.y += paddleSpeed;
+                    }
                 }
-            } else if (keys["KeyS"]) {
-                if (paddleLeft.y < app?.view.height - paddleLeft.height) {
-                    paddleLeft.y += paddleSpeed;
+
+                moveOpponentPaddle();
+
+                // if (keys["ArrowUp"]) {
+                //     if (paddleRight.y > 0) {
+                //         paddleRight.y -= paddleSpeed;
+                //     }
+                // } else if (keys["ArrowDown"]) {
+                //     if (paddleRight.y < app?.view.height - paddleRight.height) {
+                //         paddleRight.y += paddleSpeed;
+                //     }
+                // }
+
+                Matter.Body.setPosition(paddleLeftBody, {
+                    x: paddleLeft.x + 10,
+                    y: paddleLeft.y + 50,
+                });
+
+                Matter.Body.setPosition(paddleRightBody, {
+                    x: paddleRight.x + 10,
+                    y: paddleRight.y + 50,
+                });
+
+                ball.position.x = ballBody.position.x;
+                ball.position.y = ballBody.position.y;
+    
+                const ballRadius = ball.width / 2;
+                const appWidth = app?.view.width;
+                const appHeight = app?.view.height;
+
+                // check if ball is outside of the screen x
+                if (ball.x < -ballRadius) {
+                    // Ball went out on the left side
+                    scoreRightRef.current += 1;
+                    resetBall();
+                } else if (ball.x > appWidth + ballRadius) {
+                    // Ball went out on the right side
+                    scoreLeftRef.current += 1;
+                    resetBall();
                 }
-            }
-
-            moveOpponentPaddle();
-
-            // if (keys["ArrowUp"]) {
-            //     if (paddleRight.y > 0) {
-            //         paddleRight.y -= paddleSpeed;
-            //     }
-            // } else if (keys["ArrowDown"]) {
-            //     if (paddleRight.y < app?.view.height - paddleRight.height) {
-            //         paddleRight.y += paddleSpeed;
-            //     }
-            // }
-
-            Matter.Body.setPosition(paddleLeftBody, {
-                x: paddleLeft.x + 10,
-                y: paddleLeft.y + 50,
-            });
-
-            Matter.Body.setPosition(paddleRightBody, {
-                x: paddleRight.x + 10,
-                y: paddleRight.y + 50,
-            });
-
-            ball.position.x = ballBody.position.x;
-            ball.position.y = ballBody.position.y;
-   
-            const ballRadius = ball.width / 2;
-            const appWidth = app?.view.width;
-            const appHeight = app?.view.height;
-
-            // check if ball is outside of the screen x
-            if (ball.x < -ballRadius) {
-                // Ball went out on the left side
-                scoreRightRef.current += 1;
-                resetBall();
-            } else if (ball.x > appWidth + ballRadius) {
-                // Ball went out on the right side
-                scoreLeftRef.current += 1;
-                resetBall();
-            }
-                    
-            // check if ball is outside of the screen y
-            if (ball.y - ballRadius < 0 ||
-                ball.y + ballRadius > appHeight) {
-                    const reflection = { x: ballBody.velocity.x, y: -ballBody.velocity.y };
-                    Matter.Body.setVelocity(ballBody, reflection);
-            }
-            app.renderer.render(app.stage);
-            Matter.Engine.update(engine);
+                        
+                // check if ball is outside of the screen y
+                if (ball.y - ballRadius < 0 ||
+                    ball.y + ballRadius > appHeight) {
+                        const reflection = { x: ballBody.velocity.x, y: -ballBody.velocity.y };
+                        Matter.Body.setVelocity(ballBody, reflection);
+                }
+                app.renderer.render(app.stage);
+                Matter.Engine.update(engine);
 
 
-            // Update score text
-            scoreTextLeft.text = `Score: ${scoreLeftRef.current}`;
-            scoreTextRight.text = `Score: ${scoreRightRef.current}`;
+                // Update score text
+                scoreTextLeft.text = `Score: ${scoreLeftRef.current}`;
+                scoreTextRight.text = `Score: ${scoreRightRef.current}`;
 
-            if (scoreLeftRef.current >= 2) {
-                isGameOver.current = true;
-            } else if (scoreRightRef.current >= 2) {
-                isGameOver.current = true;
-            }
+                if (scoreLeftRef.current >= 2) {
+                    isGameOver.current = true;
+                } else if (scoreRightRef.current >= 2) {
+                    isGameOver.current = true;
+                }
 
-            if (isGameOver.current) {
-                cancelAnimationFrame(animationFrameId.current);
-                if (winnerTextRef.current) {
-                    winnerTextRef.current.text = scoreLeftRef.current >= 2 ? 
-                    "Left Wins!\nEnter for next game" : 
-                    "Right Wins!\nEnter for next game";
-                    winnerTextRef.current.visible = true;
+                if (isGameOver.current) {
+                    cancelAnimationFrame(animationFrameId.current);
+                    if (winnerTextRef.current) {
+                        winnerTextRef.current.text = scoreLeftRef.current >= 2 ? 
+                        "Left Wins!\nEnter for next game" : 
+                        "Right Wins!\nEnter for next game";
+                        winnerTextRef.current.visible = true;
+                    }
                 }
             }
         }

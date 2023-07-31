@@ -24,9 +24,6 @@ const GameInvitationListener = () => {
         };
     }, [socket]);
 
-    console.log('game invite', gameInvitation);
-
-
     return (
         <>
         {gameInvitation && (

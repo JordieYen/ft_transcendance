@@ -151,4 +151,25 @@ export class GameGateway {
     const friend = data.friend;
     client.to(friend.id.toString()).emit('invite-game', { user, friend });
   }
+
+  @SubscribeMessage('accept-game-invitation')
+  async handleAcceptGameInvitation(
+    client: Socket,
+    data: { user: User; friend: User },
+  ) {
+    const user = data.user;
+    const friend = data.friend;
+
+    const roomId = this.generateRoomId();
+    this.rooms.set(roomId, [user, friend]);
+
+    client.join(roomId);
+    client.to(friend.id.toString()).emit('joined-room', roomId);
+
+    const playersData = [user, friend].map((player) => ({ player: player }));
+    this.server
+      .to(roomId)
+      .emit('to-loading-screen', { roomId, players: playersData });
+    this.logRooms();
+  }
 }

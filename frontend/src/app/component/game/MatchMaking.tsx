@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { useGameData } from "./GameContext";
 import useUserStore, { UserData } from "@/store/useUserStore";
 import * as PIXI from 'pixi.js';
+import LoadingScreen from "./LoadingScreen";
 
 
 const MatchMaking  = () => {
@@ -19,7 +20,9 @@ const MatchMaking  = () => {
     const [player1User, setPlayer1User] = useState<UserData | null>(null);
     const [player2User, setPlayer2User] = useState<UserData | null>(null);
     const router = useRouter();
-    const { setGameState } = useGameData();
+    const { setGameState, isLoadingScreenVisible } = useGameData();
+    const [showLoadingScreen, setShowLoadingScreen] = useState(false);
+
 
     useEffect(() => {
         if (socket && userData.id) {
@@ -48,7 +51,7 @@ const MatchMaking  = () => {
             socket?.off('opponent-disconnected');
             socket?.off('room-closed');
         }
-    }, [socket, userData]);
+    }, [socket, userData, router]);
 
     const handleMatchmaking = () => {
         setIsMatchmaking(true);
@@ -164,34 +167,9 @@ const MatchMaking  = () => {
             {'Game Over'}
           </button>
           {
-            roomId && isMatchmaking && player1User && player2User && (
-              <div className="loading-container absolute top-20 w-4/5 h-3/5 left-1/2 transform -translate-x-1/2">
-                <div className="flex justify-between bg-black p-4 rounded-lg h-full">
-                  <div className="flex flex-col items-center justify-top">
-                    <p className="text-white">Player 1: {player1User?.username}</p>
-                        <Image
-                          className="transform hover:scale-125 object-cover rounded-full"
-                          src={player1User?.avatar || ""}
-                          alt="user avatar"
-                          width={150}
-                          height={150}
-                        />
-                  </div>
-                  <div className="flex flex-col items-center justify-center">
-                    <p className="text-white text-4xl font-bold">VS</p>
-                  </div>
-                  <div className="flex flex-col items-center justify-end">
-                    <p className="text-white">Player 2: {player2User?.username}</p>
-                      <Image
-                        className="transform hover:scale-125 object-cover rounded-full"
-                        src={player2User?.avatar || ""}
-                        alt="user avatar"
-                        width={150}
-                        height={150}
-                      />
-                  </div>
-                </div>
-              </div>
+            // roomId && isMatchmaking && player1User && player2User && (
+            isLoadingScreenVisible && player1User && player2User && (
+              <LoadingScreen player1User={player1User} player2User={player2User} />
             )
           }
         </div>
