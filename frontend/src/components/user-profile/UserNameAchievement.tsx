@@ -31,9 +31,12 @@ const RenderAchievementIcon = ({
         alt="user_achv"
       />
       {isHovered && (
-        <div className="flex flex-col absolute top-[5%] left-[69%] w-[290px] bg-dimgrey rounded-3xl px-6 py-4 space-y-1">
+        <div className="flex flex-col absolute top-[3%] left-[25%] xl:left-[69%] w-[290px] bg-dimgrey rounded-3xl px-6 py-4 space-y-1">
           <p>{achv.achievement.name}</p>
           <p className="text-sm">{achv.achievement.description}</p>
+          <p className="text-xs text-onyxgrey">
+            Achieved {formatDate(new Date(achv.createdAt), 2)}
+          </p>
         </div>
       )}
     </div>
@@ -99,7 +102,7 @@ const UserAchievement = () => {
   return (
     <div className="flex w-full h-full lg:hidden xl:flex xl:w-80 py-1">
       {userAchv.length !== 0 ? (
-        <div className="w-full h-full flex flex-col items-start justify-start space-y-1">
+        <div className="w-full h-full flex flex-row xl:flex-col items-start justify-start space-y-1">
           <div className="w-full h-1/2 flex space-x-[18px]">
             {userAchv.slice(0, 5).map((achv: any, i) => {
               const achvImage = getAchvImage(achv.achievement.name);
@@ -116,15 +119,11 @@ const UserAchievement = () => {
             {userAchv.slice(5, 10).map((achv: any, i) => {
               const achvImage = getAchvImage(achv.achievement.name);
               return (
-                <div key={i} className="w-[50px] h-[50px]">
-                  <Image
-                    width={50}
-                    height={50}
-                    className="w-[50px] h-[50px] rounded-full object-cover"
-                    src={achvImage}
-                    alt="user_achv"
-                  />
-                </div>
+                <RenderAchievementIcon
+                  achv={achv}
+                  achvImage={achvImage}
+                  key={i}
+                />
               );
             })}
           </div>

@@ -78,7 +78,7 @@ const MatchHistory = () => {
                   {gameDate}
                 </p>
                 <div className="w-[260px] flex justify-center items-center">
-                  <p className="text-2xl font-bold">{opponentScore}</p>
+                  <p className="text-3xl font-bold">{opponentScore}</p>
                   <div
                     className={`hidden md:flex flex-col ${
                       opponentScore < 10 ? "ml-5" : "ml-2"
@@ -99,7 +99,7 @@ const MatchHistory = () => {
                     <p className="text-dimgrey text-xs">smashes</p>
                     <p className="text-timberwolf text-left">{playerSmash}</p>
                   </div>
-                  <p className="text-2xl font-bold">{playerScore}</p>
+                  <p className="text-3xl font-bold">{playerScore}</p>
                 </div>
               </div>
             );
