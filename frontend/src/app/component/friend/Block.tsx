@@ -56,9 +56,9 @@ const Block = () => {
         );
         if (response.ok) {
           const blocks = await response.json();
-          console.log("fetch block", blocks);
-          console.log("block.list", blocks.blockList);
-          console.log("blocked.list", blocks.blockedList);
+          // console.log("fetch block", blocks);
+          // console.log("block.list", blocks.blockList);
+          // console.log("blocked.list", blocks.blockedList);
           setBlocks(blocks.blockList);
         } else {
           throw new Error("Failed to fetch blocks");

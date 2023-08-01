@@ -170,6 +170,9 @@ export class GameGateway {
     this.server
       .to(roomId)
       .emit('to-loading-screen', { roomId, players: playersData });
+    this.server
+      .to(user.id.toString())
+      .emit('to-loading-screen', { roomId, players: playersData });
     this.logRooms();
   }
 }

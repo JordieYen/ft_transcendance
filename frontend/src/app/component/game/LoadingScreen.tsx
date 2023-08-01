@@ -1,5 +1,8 @@
 import { UserData } from "@/store/useUserStore";
 import Image from "next/image";
+import { use, useEffect, useRef } from "react";
+import * as PIXI from 'pixi.js';
+import { useRouter } from "next/router";
 
 interface LoadingScreenProps {
     player1User: UserData;
@@ -7,6 +10,68 @@ interface LoadingScreenProps {
 }
 
 const LoadingScreen = ({ player1User, player2User} : LoadingScreenProps ) => {
+    const router = useRouter();
+    const updateLoadingBarWidth = (redBorder: PIXI.Graphics, loadingContainer: Element | null, app: PIXI.Application, loadingBar: PIXI.Sprite, currentCountdown: number) => {
+        loadingContainer = document.querySelector('.loading-container');
+        const width = loadingContainer?.clientWidth || 400;
+        const progressWidth = (currentCountdown / 6) * width;
+        loadingBar.x = progressWidth - loadingBar.width;
+        redBorder.drawRect(0, 0, width, 40);
+        redBorder.clear();
+        redBorder.lineStyle(4, 0xCA4754, 1);
+        redBorder.drawRect(0, 0, width, 40);
+        app.renderer.resize(width, 40);
+    }
+
+    useEffect(() => {
+        const loadingContainer = document.querySelector('.loading-container');
+        const width = loadingContainer?.clientWidth || 400;
+        const app = new PIXI.Application({
+          width: width,
+          height: 40,
+        });
+        
+        loadingContainer?.appendChild(app.view as HTMLCanvasElement);
+
+        const loadingBar = PIXI.Sprite.from("/bracket.png");
+        loadingBar.height = 40;
+        loadingBar.x = -loadingBar.width;
+        app.stage.addChild(loadingBar);
+
+        const redBorder = new PIXI.Graphics();
+        redBorder.lineStyle(4, 0xCA4754, 1);
+        redBorder.drawRect(0, 0, width, 40);
+        app.stage.addChild(redBorder);
+
+        let currentCountdown = 0;
+        const countdownInterval = setInterval(() => {
+          currentCountdown++;
+          if (currentCountdown > 6) {
+            clearInterval(countdownInterval);
+            // router.push('/game');
+          }
+          const progressWidth = (currentCountdown / 6) * width;
+          loadingBar.x = progressWidth - loadingBar.width;
+        }, 1000);
+
+        const handleResize = () => {
+          console.log('handleResize');
+          
+          updateLoadingBarWidth(redBorder, loadingContainer, app, loadingBar, currentCountdown);
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+          clearInterval(countdownInterval);
+          window.removeEventListener('resize', handleResize);
+          loadingContainer?.removeChild(app.view as HTMLCanvasElement);
+          app.destroy();
+        }
+    }, [player1User, player2User]);
+
+
+    
     return (
         <div className="loading-container absolute top-20 w-4/5 h-3/5 left-1/2 transform -translate-x-1/2">
             <div className="flex justify-between bg-black p-4 rounded-lg h-full">

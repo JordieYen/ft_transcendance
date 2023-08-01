@@ -62,7 +62,9 @@ const Friend = ({
 
 
   useEffect(() => {
-    console.log("friends", friends);
+    if (friends.length > 0) {
+      console.log("friends", friends);
+    }
   }, [friends]);
 
   const fetchFriends = async () => {

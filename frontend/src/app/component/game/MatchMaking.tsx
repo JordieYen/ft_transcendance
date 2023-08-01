@@ -20,8 +20,7 @@ const MatchMaking  = () => {
     const [player1User, setPlayer1User] = useState<UserData | null>(null);
     const [player2User, setPlayer2User] = useState<UserData | null>(null);
     const router = useRouter();
-    const { setGameState, isLoadingScreenVisible } = useGameData();
-    const [showLoadingScreen, setShowLoadingScreen] = useState(false);
+    const { setGameState } = useGameData();
 
 
     useEffect(() => {
@@ -88,19 +87,6 @@ const MatchMaking  = () => {
         }
     }, [roomId, isMatchmaking]);
 
-    // update loading bar width on resize
-    const updateLoadingBarWidth = (redBorder: PIXI.Graphics, loadingContainer: Element | null, app: PIXI.Application, loadingBar: PIXI.Sprite, currentCountdown: number) => {
-        loadingContainer = document.querySelector('.loading-container');
-        const width = loadingContainer?.clientWidth || 400;
-        const progressWidth = (currentCountdown / 6) * width;
-        loadingBar.x = progressWidth - loadingBar.width;
-        redBorder.drawRect(0, 0, width, 40);
-        redBorder.clear();
-        redBorder.lineStyle(4, 0xCA4754, 1);
-        redBorder.drawRect(0, 0, width, 40);
-        app.renderer.resize(width, 40);
-    }
-
     useEffect(() => {
       if (roomId && isMatchmaking && player1User && player2User) {
         const gameData = {
@@ -108,53 +94,7 @@ const MatchMaking  = () => {
           player1User,
           player2User,
         }
-
         setGameState(gameData);
-        
-        const loadingContainer = document.querySelector('.loading-container');
-        const width = loadingContainer?.clientWidth || 400;
-        const app = new PIXI.Application({
-          width: width,
-          height: 40,
-        });
-        
-        loadingContainer?.appendChild(app.view as HTMLCanvasElement);
-
-        const loadingBar = PIXI.Sprite.from("/bracket.png");
-        loadingBar.height = 40;
-        loadingBar.x = -loadingBar.width;
-        app.stage.addChild(loadingBar);
-
-        const redBorder = new PIXI.Graphics();
-        redBorder.lineStyle(4, 0xCA4754, 1);
-        redBorder.drawRect(0, 0, width, 40);
-        app.stage.addChild(redBorder);
-
-        let currentCountdown = 0;
-        const countdownInterval = setInterval(() => {
-          currentCountdown++;
-          if (currentCountdown > 6) {
-            clearInterval(countdownInterval);
-            // router.push('/game');
-          }
-          const progressWidth = (currentCountdown / 6) * width;
-          loadingBar.x = progressWidth - loadingBar.width;
-        }, 1000);
-
-        const handleResize = () => {
-          console.log('handleResize');
-          
-          updateLoadingBarWidth(redBorder, loadingContainer, app, loadingBar, currentCountdown);
-        }
-
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-          clearInterval(countdownInterval);
-          window.removeEventListener('resize', handleResize);
-          loadingContainer?.removeChild(app.view as HTMLCanvasElement);
-          app.destroy();
-        }
       }
     }, [roomId, isMatchmaking, player1User, player2User, router]);
 
@@ -167,8 +107,7 @@ const MatchMaking  = () => {
             {'Game Over'}
           </button>
           {
-            // roomId && isMatchmaking && player1User && player2User && (
-            isLoadingScreenVisible && player1User && player2User && (
+            roomId && isMatchmaking && player1User && player2User && (
               <LoadingScreen player1User={player1User} player2User={player2User} />
             )
           }
