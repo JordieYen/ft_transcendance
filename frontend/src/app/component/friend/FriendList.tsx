@@ -38,12 +38,12 @@ const FriendList = () => {
     state.setUserData,
   ]);
   const router = useRouter();
-  const { setGameState, isLoadingScreenVisible, player1, player2 } = useGameData();
+  // const { setGameState, isLoadingScreenVisible, player1, player2 } = useGameData();
 
 
   useEffect(() => {
     if (userData.id) {
-      console.log('players from game state', player1, player2, isLoadingScreenVisible);
+      // console.log('players from game state', player1, player2, isLoadingScreenVisible);
 
       console.log("userData", userData.id);
       // socket?.emit("join", `${userData?.id}`);
@@ -317,11 +317,11 @@ const FriendList = () => {
           </div>
         </div>
       </div>
-      {
+      {/* {
         isLoadingScreenVisible && player1 && player2 && (
           <LoadingScreen player1User={player1} player2User={player2} />
         )
-      }
+      } */}
     </div>
   );
 };
