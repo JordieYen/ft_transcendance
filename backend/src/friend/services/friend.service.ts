@@ -87,7 +87,7 @@ export class FriendService {
       }
       if (updateFriendDto.roomId) {
         friend.roomId = updateFriendDto.roomId;
-      }
+      } else friend.roomId = null;
       await this.friendRepository.update(id, friend);
       return await this.findOne(id);
     } catch (error) {
