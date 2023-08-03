@@ -11,11 +11,15 @@ import {
   JoinRoomParams,
   InitializeGameParam,
 } from './game.interface';
+import { FriendService } from 'src/friend/services/friend.service';
 import { MatchHistoryService } from 'src/match-history/services/match-history.service';
 
 @Injectable()
 export class GameService {
-  constructor(private readonly matchHistoryService: MatchHistoryService) {}
+  constructor(
+    private readonly friendService: FriendService,
+    private readonly matchHistoryService: MatchHistoryService,
+  ) {}
 
   /* generate a room with unique id */
   generateRoomId(rooms: Map<string, UserData[]>) {
@@ -46,7 +50,7 @@ export class GameService {
   }
 
   /* join a user into a room */
-  joinRooms(param: JoinRoomParams) {
+  async joinRooms(param: JoinRoomParams) {
     let { roomId, roomPlayers } = this.findAvailableRoom(param.rooms);
 
     // check if user is already in a room
@@ -73,6 +77,16 @@ export class GameService {
     param.client.join(roomId);
     param.client.emit('joined-room', roomId);
 
+    const friends = await this.friendService.getFriendsBoth(param.user.id);
+    for (const friend of friends) {
+      console.log('Friend: ', friend);
+      const result = await this.friendService.update(friend.id, {
+        ...friend,
+        roomId: roomId,
+      });
+      console.log('result: ', result);
+    }
+
     // start game if room has 2 players
     if (roomPlayers.length === 2) {
       const playersData = roomPlayers.map((player) => ({
@@ -87,27 +101,33 @@ export class GameService {
 
   /* check if player exists in room, if one player exist, send opponent-disconnected */
   leaveRoom(param: LeaveRoomParams) {
-    console.log('Game over', param.roomId);
-    const roomPlayers = param.rooms.get(param.roomId);
+    const roomPlayers = param.roomArray.get(param.roomId);
     if (roomPlayers) {
-      console.log('Room players: ', roomPlayers);
       const remainingPlayer = roomPlayers.find(
         (player) => player !== param.user,
       );
-      console.log('Remaining player: ', remainingPlayer);
 
       if (remainingPlayer) {
         param.server.to(param.roomId).emit('opponent-disconnected');
       }
-      const updatedRoomPlayers = roomPlayers.filter(
-        (player) => player !== param.user,
-      );
-      param.rooms.set(param.roomId, updatedRoomPlayers);
+      const updatedRoomPlayers = roomPlayers.filter((player) => {
+        player !== param.user;
+      });
+      // console.log('updated room player', updatedRoomPlayers);
+      param.roomArray.set(param.roomId, updatedRoomPlayers);
 
       // if room is empty, delete room and emit room-closed
       if (updatedRoomPlayers.length === 0) {
-        param.rooms.delete(param.roomId);
-        param.gameInfo.delete(param.roomId);
+        console.log('both players left the game');
+        this.gameOver({
+          server: param.server,
+          roomId: param.roomId,
+          roomArray: param.roomArray,
+          gameArray: param.gameArray,
+          gameInfo: param.gameInfo,
+          gameProperties: null,
+        });
+        console.log('after game over');
         param.server.to(param.roomId).emit('room-closed');
       }
     }
@@ -263,6 +283,31 @@ export class GameService {
       .emit('right-paddle-position', param.gameInfo.rightPaddle.position);
   }
 
+  /* clear roomId in friend */
+  async clearRoomIdInFriend(id: number) {
+    const friends = await this.friendService.getFriendsBoth(id);
+    for (const friend of friends) {
+      console.log('Friend: ', friend);
+      const result = await this.friendService.update(friend.id, {
+        ...friend,
+        roomId: null,
+      });
+      console.log('result: ', result);
+    }
+  }
+
+  /* ends game and remove everything */
+  gameOver(param: HandleGameStateParams) {
+    console.log('Game Over');
+    World.clear(param.gameInfo.engine.world, true);
+    Engine.clear(param.gameInfo.engine);
+    this.clearRoomIdInFriend(param.gameInfo.pOneId);
+    this.clearRoomIdInFriend(param.gameInfo.pTwoId);
+    param.gameArray.delete(param.roomId);
+    param.roomArray.delete(param.roomId);
+    param.server.to(param.roomId).emit('room-closed');
+  }
+
   /* set winner uid, create match-history, end game */
   handleGameEnd(param: HandleGameStateParams) {
     if (param.gameInfo.pOneScore == 11 || param.gameInfo.pTwoScore == 11) {
@@ -276,18 +321,14 @@ export class GameService {
         p2: param.gameInfo.pTwoId,
         p1_score: param.gameInfo.pOneScore,
         p2_score: param.gameInfo.pTwoScore,
-        p1_smashes: 0,
-        p2_smashes: 0,
+        p1_smashes: param.gameInfo.pOneSmash,
+        p2_smashes: param.gameInfo.pTwoSmash,
         p1_mmr: 1000,
         p2_mmr: 1000,
       });
 
-      console.log('Game Over');
       param.server.to(param.roomId).emit('game-over');
-      World.clear(param.gameInfo.engine.world, true);
-      Engine.clear(param.gameInfo.engine);
-      param.roomArray.delete(param.roomId);
-      param.gameArray.delete(param.roomId);
+      this.gameOver(param);
     }
   }
 

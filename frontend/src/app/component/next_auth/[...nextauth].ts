@@ -17,18 +17,18 @@ const pool = new Pool({
 
 export const authOptions: AuthOptions = {
   providers: [
-    // FortyTwoProvider({
-    //   clientId: process.env.CLIENT_ID!,
-    //   clientSecret: process.env.CLIENT_SECRET!,
-    //   profile(profile) {
-    //     return {
-    //       id: profile.id,
-    //       name: profile.login,
-    //       image: profile.image.link,
-    //       email: profile.email,
-    //     };
-    //   },
-    // }),
+    FortyTwoProvider({
+      clientId: process.env.CLIENT_ID!,
+      clientSecret: process.env.CLIENT_SECRET!,
+      profile(profile) {
+        return {
+          id: profile.id,
+          name: profile.login,
+          image: profile.image.link,
+          email: profile.email,
+        };
+      },
+    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -49,7 +49,7 @@ export const authOptions: AuthOptions = {
       return session;
     },
   },
-  // debug: true,
+  debug: true,
   pages: {
     signIn: "/login",
   },

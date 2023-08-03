@@ -4,6 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useGameData } from "./GameContext";
 import useGameStore from "@/store/useGameStore";
+import router from "next/router";
 
 interface ScoreBoard {
   pOneScore: number;
@@ -54,7 +55,7 @@ const gameProperties: GameElements = {
   ball: {
     position: { x: screenWidth / 2, y: screenHeight / 2 },
     radius: 20,
-    speed: { x: -5, y: 15 },
+    speed: { x: 20, y: 0 },
     maxTimeFrame: 5,
     perfectHitZone: 50,
     perfectHitDuration: 2,
@@ -137,11 +138,14 @@ const initializeGame = () => {
 
 const Game = () => {
   const currentPlayer = useRef("");
+  const currentUser = useRef();
   const gameState = useGameData().gameState;
   const [gameData, setGameData] = useGameStore((state) => [
     state.gameData,
     state.setGameData,
   ]);
+
+  console.log("GAME STATE", gameState);
 
   const socket = useContext(SocketContext);
   // const socket = io("http://localhost:3000");
@@ -164,10 +168,13 @@ const Game = () => {
         pTwoId: gameState!.player2User.id,
         gameProperties: gameProperties,
       });
-      if (gameState!.player1User.socketId === socket.id)
+      if (gameState!.player1User.socketId === socket.id) {
         currentPlayer.current = "p1";
-      else if (gameState!.player2User.socketId === socket.id)
+        currentUser.current = gameState!.player1User;
+      } else if (gameState!.player2User.socketId === socket.id) {
         currentPlayer.current = "p2";
+        currentUser.current = gameState!.player2User;
+      }
       console.log("current player", socket.id);
     }
 
@@ -311,7 +318,9 @@ const Game = () => {
       });
     });
 
-    socket?.on("game-over", () => {
+    /* end game and clear screen */
+    const endGame = () => {
+      console.log("interval", currentPlayer.current);
       clearInterval(movePaddleInterval);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
@@ -321,8 +330,30 @@ const Game = () => {
       Matter.Runner.stop(runner);
       render.canvas.remove();
       render.textures = {};
+      setGameData({
+        ...gameData,
+        p1Score: 0,
+        p2Score: 0,
+      });
+    };
+
+    socket?.on("game-over", () => {
+      endGame();
     });
 
+    const handleRouteChange = () => {
+      endGame();
+      socket?.emit("clear-room", {
+        roomId: gameState!.roomId,
+        user: currentUser.current,
+      });
+    };
+
+    router.events.on("routeChangeStart", handleRouteChange);
+
+    return () => {
+      clearInterval(movePaddleInterval);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 

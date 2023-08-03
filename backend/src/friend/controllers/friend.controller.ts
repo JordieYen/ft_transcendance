@@ -34,10 +34,7 @@ export class FriendController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: number,
-    @Body() updateFriendDto: Partial<UpdateFriendDto>,
-  ) {
+  update(@Param('id') id: number, @Body() updateFriendDto: UpdateFriendDto) {
     return this.friendService.update(id, updateFriendDto);
   }
 

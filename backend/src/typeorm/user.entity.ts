@@ -25,7 +25,7 @@ export class User {
   username: string;
 
   @Column({
-    default: 'http://localhost:3000/public/default_avatar.png',
+    default: `${process.env.NEST_HOST}/public/default_avatar.png`,
     nullable: true,
   })
   avatar: string;

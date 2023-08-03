@@ -1,16 +1,12 @@
 import { SocketContext } from "@/app/socket/SocketProvider";
-import { useContext, useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
+import Avatar from "../header_icon/Avatar";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useGameData } from "./GameContext";
 import useUserStore, { UserData } from "@/store/useUserStore";
 import * as PIXI from "pixi.js";
-
-export interface GameState {
-  roomId: string;
-  player1User: UserData;
-  player2User: UserData;
-}
+import LoadingScreen from "./LoadingScreen";
 
 const MatchMaking = () => {
   const [isMatchmaking, setIsMatchmaking] = useState(false);
@@ -53,7 +49,7 @@ const MatchMaking = () => {
       socket?.off("opponent-disconnected");
       socket?.off("room-closed");
     };
-  }, [socket, userData]);
+  }, [socket, userData, router]);
 
   const handleMatchmaking = () => {
     setIsMatchmaking(true);
@@ -63,7 +59,7 @@ const MatchMaking = () => {
   };
 
   const handleGameOver = () => {
-    socket?.emit("game-over", {
+    socket?.emit("clear-room", {
       roomId: roomId || sessionStorage.getItem("roomId"),
       // userName: userData.username,
       user: userData,
@@ -88,7 +84,7 @@ const MatchMaking = () => {
       socket?.off("in-room");
       socket?.off("joined-room");
     };
-  }, [socket, roomId, isMatchmaking]);
+  }, [roomId, isMatchmaking]);
 
   useEffect(() => {
     if (roomId && isMatchmaking && player1User && player2User) {
@@ -97,61 +93,9 @@ const MatchMaking = () => {
         player1User,
         player2User,
       };
-
       setGameState(gameData);
-      // const timeout = setTimeout(() => {
-      //   router.push('/game');
-      // }, 5000);
-
-      const loadingContainer = document.querySelector(".loading-container");
-      const width = loadingContainer?.clientWidth || 400;
-      const app = new PIXI.Application({
-        width: width,
-        height: 40,
-      });
-
-      loadingContainer?.appendChild(app.view as HTMLCanvasElement);
-
-      // const loadingBar = new PIXI.Graphics();
-      // loadingBar.beginFill(0x000000);
-      // loadingBar.drawRect(0, 0, width, 40);
-      // loadingBar.endFill();
-      // app.stage.addChild(loadingBar);
-      const loadingBar = PIXI.Sprite.from("/bracket.png");
-      // loadingBar.width = 0;
-      loadingBar.height = 40;
-      // loadingBar.anchor.x = 0;
-      loadingBar.x = -loadingBar.width;
-      app.stage.addChild(loadingBar);
-
-      const redBorder = new PIXI.Graphics();
-      redBorder.lineStyle(4, 0xca4754, 1);
-      redBorder.drawRect(0, 0, width, 40);
-      app.stage.addChild(redBorder);
-
-      let currentCountdown = 0;
-      const countdownInterval = setInterval(() => {
-        currentCountdown++;
-        if (currentCountdown > 2) {
-          clearInterval(countdownInterval);
-          router.push("/game");
-        }
-        const progressWidth = (currentCountdown / 2) * width;
-        // loadingBar.width = progressWidth;
-        loadingBar.x = progressWidth - loadingBar.width;
-        // loadingBar.clear();
-        // loadingBar.beginFill(0xE2B714);
-        // loadingBar.drawRect(0, 0, progressWidth, 40);
-        // loadingBar.endFill();
-      }, 1000);
-
-      return () => {
-        clearInterval(countdownInterval);
-        loadingContainer?.removeChild(app.view as HTMLCanvasElement);
-        app.destroy();
-      };
     }
-  }, [roomId, isMatchmaking, player1User, player2User, router, setGameState]);
+  }, [roomId, isMatchmaking, player1User, player2User, router]);
 
   return (
     <div className="flex flex-col h-screen gap-5 relative">
@@ -166,43 +110,7 @@ const MatchMaking = () => {
         {"Game Over"}
       </button>
       {roomId && isMatchmaking && player1User && player2User && (
-        <div className="loading-container absolute top-20 w-4/5 h-3/5 left-1/2 transform -translate-x-1/2">
-          <div className="flex justify-between bg-black p-4 rounded-lg h-full">
-            <div className="flex flex-col items-center justify-top">
-              <p className="text-white">Player 1: {player1User?.username}</p>
-              {/* <Avatar src={player1User?.avatar || ""} 
-                        alt="user avatar"
-                        width={150}
-                        height={150}
-                        /> */}
-              <Image
-                className="transform hover:scale-125 object-cover rounded-full"
-                src={player1User?.avatar || ""}
-                alt="user avatar"
-                width={150}
-                height={150}
-              />
-            </div>
-            <div className="flex flex-col items-center justify-center">
-              <p className="text-white text-4xl font-bold">VS</p>
-            </div>
-            <div className="flex flex-col items-center justify-end">
-              <p className="text-white">Player 2: {player2User?.username}</p>
-              {/* <Avatar src={player2User?.avatar || ""} 
-                      alt="user avatar"
-                      width={150}
-                      height={150}
-                    /> */}
-              <Image
-                className="transform hover:scale-125 object-cover rounded-full"
-                src={player2User?.avatar || ""}
-                alt="user avatar"
-                width={150}
-                height={150}
-              />
-            </div>
-          </div>
-        </div>
+        <LoadingScreen player1User={player1User} player2User={player2User} />
       )}
     </div>
   );

@@ -12,11 +12,13 @@ import {
   StartGameParams,
   UserData,
   InitializeGameParam,
+  EndGameParams,
 } from 'src/game/game.interface';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3001',
+    // origin: 'http://localhost:3001',
+    // origin: `${process.env.NEXT_HOST}`,
   },
 })
 export class GameGateway implements OnModuleInit {
@@ -42,13 +44,14 @@ export class GameGateway implements OnModuleInit {
     });
   }
 
-  @SubscribeMessage('game-over')
+  @SubscribeMessage('clear-room')
   clearRoom(client: Socket, data: { roomId: string; user: UserData }) {
     this.gameService.leaveRoom({
       server: this.server,
       roomId: data.roomId,
-      rooms: this.rooms,
-      gameInfo: this.gameInfo,
+      roomArray: this.rooms,
+      gameArray: this.gameInfo,
+      gameInfo: this.gameInfo.get(data.roomId),
       user: data.user,
     });
   }
@@ -81,9 +84,53 @@ export class GameGateway implements OnModuleInit {
         gameInfo: this.gameInfo.get(data.roomId),
         gameProperties: data.gameProperties,
       });
+      if (this.gameInfo.get(data.roomId).gameStart < 3)
+        this.gameInfo.get(data.roomId).gameStart++;
     }
-    if (this.gameInfo.get(data.roomId).gameStart < 3)
-      this.gameInfo.get(data.roomId).gameStart++;
+  }
+
+  @SubscribeMessage('end-game')
+  async endGame(client: Socket, data: EndGameParams) {
+    this.gameService.gameOver({
+      server: this.server,
+      roomId: data.roomId,
+      roomArray: this.rooms,
+      gameArray: this.gameInfo,
+      gameInfo: this.gameInfo.get(data.roomId),
+      gameProperties: data.gameProperties,
+    });
+  }
+
+  @SubscribeMessage('invite-game')
+  async handleInviteGame(
+    client: Socket,
+    data: { user: UserData; friend: UserData },
+  ) {
+    const user = data.user;
+    const friend = data.friend;
+    client.to(friend.id.toString()).emit('invite-game', { user, friend });
+  }
+
+  @SubscribeMessage('accept-game-invitation')
+  async handleAcceptGameInvitation(
+    client: Socket,
+    data: { user: UserData; friend: UserData },
+  ) {
+    const user = data.user;
+    const friend = data.friend;
+
+    const roomId = this.gameService.generateRoomId(this.rooms);
+    this.rooms.set(roomId, [user, friend]);
+
+    client.join(roomId);
+    client.to(friend.id.toString()).emit('joined-room', roomId);
+
+    const playersData = [user, friend].map((player) => ({ player: player }));
+    this.server.to(roomId).emit('to-loading-screen', { roomId, playersData });
+    this.server
+      .to(user.id.toString())
+      .emit('to-loading-screen', { roomId, playersData });
+    this.gameService.logRooms(this.rooms);
   }
 
   handleDisconnect() {

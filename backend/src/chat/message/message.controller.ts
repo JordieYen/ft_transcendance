@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { MessageService } from './message.service';
 import { User } from 'src/users/decorators/user.decorator';
 import { CreateMessageDto } from './dto';
@@ -17,6 +24,11 @@ export class MessageController {
   @Get()
   getAllMessages() {
     return this.messageService.getAllMessages();
+  }
+
+  @Get('id/:channel_id')
+  findChannelById(@Param('channel_id', ParseIntPipe) channel_id: number) {
+    return this.messageService.findMessagesById(channel_id);
   }
 
   @Post('create')

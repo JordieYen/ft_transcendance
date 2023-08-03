@@ -38,7 +38,7 @@ const Block = () => {
       socket?.off("block");
       socket?.off("unblock");
     };
-  }, [socket]);
+  }, [socket, userData]);
 
   // useEffect(() => {
   //     console.log('blockerIdArray:', blockerIdArray);
@@ -48,7 +48,7 @@ const Block = () => {
     if (userData.id) {
       try {
         const response = await fetch(
-          `http://localhost:3000/friend/blocked/${userData?.id}`,
+          `${process.env.NEXT_PUBLIC_NEST_HOST}/friend/blocked/${userData?.id}`,
           {
             method: "GET",
             credentials: "include",
@@ -56,9 +56,9 @@ const Block = () => {
         );
         if (response.ok) {
           const blocks = await response.json();
-          console.log("fetch block", blocks);
-          console.log("block.list", blocks.blockList);
-          console.log("blocked.list", blocks.blockedList);
+          // console.log("fetch block", blocks);
+          // console.log("block.list", blocks.blockList);
+          // console.log("blocked.list", blocks.blockedList);
           setBlocks(blocks.blockList);
         } else {
           throw new Error("Failed to fetch blocks");

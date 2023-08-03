@@ -75,6 +75,11 @@ export interface StartGameParams {
   gameProperties: GameElements;
 }
 
+export interface EndGameParams {
+  roomId: string;
+  gameProperties: GameElements;
+}
+
 /* game_service.ts Params */
 
 export interface JoinRoomParams {
@@ -87,8 +92,9 @@ export interface JoinRoomParams {
 export interface LeaveRoomParams {
   server: Server;
   roomId: string;
-  rooms: Map<string, UserData[]>;
-  gameInfo: Map<string, GameInfo>;
+  roomArray: Map<string, UserData[]>;
+  gameArray: Map<string, GameInfo>;
+  gameInfo: GameInfo;
   user: UserData;
 }
 

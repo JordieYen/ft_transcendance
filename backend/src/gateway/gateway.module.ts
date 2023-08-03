@@ -14,26 +14,32 @@ import { AchievementModule } from 'src/achievement/achievement.module';
 import { AchievementService } from 'src/achievement/services/achievement.service';
 import { UserAchievementModule } from 'src/user_achievement/user_achievement.module';
 import { UserAchievementService } from 'src/user_achievement/services/user_achievement.service';
+import { ChannelModule } from 'src/chat/channel/channel.module';
+import { ChannelGateway } from './channelGateway';
+import { NotificationGateway } from './notification_gateway';
 
 @Module({
   imports: [
-    FriendModule,
-    UsersModule,
-    MessageModule,
     StatModule,
+    UsersModule,
+    FriendModule,
+    MessageModule,
+    ChannelModule,
     AchievementModule,
-    UserAchievementModule,
     MatchHistoryModule,
+    UserAchievementModule,
   ],
   providers: [
-    FriendGateway,
-    MessageGateway,
     GameGateway,
     GameService,
     StatService,
+    FriendGateway,
+    MessageGateway,
+    ChannelGateway,
     AchievementService,
-    UserAchievementService,
     MatchHistoryService,
+    NotificationGateway,
+    UserAchievementService,
   ],
 })
 export class GatewayModule {}
