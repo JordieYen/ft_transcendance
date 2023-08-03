@@ -37,7 +37,9 @@ export class UsersService {
   }
 
   async getUsers() {
-    return await this.usersRepository.find();
+    return await this.usersRepository.find({
+      relations: { stat: true },
+    });
   }
 
   async findUsersById(id: number): Promise<User | null> {

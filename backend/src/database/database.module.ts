@@ -1,7 +1,15 @@
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import entities from '../typeorm';
+import { DataSource } from 'typeorm';
+import {
+  runSeeders,
+  SeederFactoryManager,
+  SeederOptions,
+} from 'typeorm-extension';
+import { log } from 'console';
+import AchievementSeed from './seeds/achievement.seed';
 
 @Module({
   imports: [
@@ -16,18 +24,21 @@ import entities from '../typeorm';
         username: ConfigService.get('DB_USER'),
         password: ConfigService.get('DB_PASSWORD'),
         database: ConfigService.get('DB_NAME'),
-        // entities: [
-        //   __dirname + '/**/*.entity{.ts,.js}',
-        // ],
         entities: entities,
         autoLoadEntities: true,
         synchronize: true,
-        // synchronize: false
       }),
-      // dataSourceFactory: async (options) => {
-      //     const dataSource = await new DataSource(options).initialize();
-      //     return dataSource;
-      //   },
+      dataSourceFactory: async (options) => {
+        const dataSource = await new DataSource(options).initialize();
+        const seederOptions: SeederOptions = {
+          seeds: ['./seeds/*.ts'],
+          factories: ['./factories/*.ts'],
+        };
+        const achievementSeeder = new AchievementSeed();
+        achievementSeeder.run(dataSource);
+        // await runSeeders(dataSource, seederOptions);
+        return dataSource;
+      },
     }),
   ],
 })

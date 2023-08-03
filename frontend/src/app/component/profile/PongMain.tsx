@@ -7,7 +7,7 @@ import MatchMaking from "./MatchMaking";
 import Achievement from "./Achievement";
 import { use, useContext, useEffect } from "react";
 import { SocketContext } from "@/app/socket/SocketProvider";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import UserProfile from "@/app/webhook/UserProfile";
@@ -75,7 +75,7 @@ const PongMain: React.FC<any> = ({ userId }) => {
       </div>
       <div className="bottom-content">
         <MatchHistory p1_match={p1_match} p2_match={p2_match} userId={id} />
-        <MatchMaking stat={stat}/>
+        <MatchMaking stat={stat} />
       </div>
     </div>
   );
