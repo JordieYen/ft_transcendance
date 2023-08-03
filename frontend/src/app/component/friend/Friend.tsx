@@ -2,6 +2,7 @@ import { SocketContext } from "@/app/socket/SocketProvider";
 import useUserStore from "@/store/useUserStore";
 import { use, useContext, useEffect, useState } from "react";
 import Avatar from "../header_icon/Avatar";
+import { toUserProfile } from "./handleClick";
 import InviteFriendGame from "./InviteFriendGame";
 import ViewFriendGame from "./ViewFriendGame";
 
@@ -154,6 +155,7 @@ const Friend = ({
                 alt="user avatar"
                 width={50}
                 height={50}
+                onClick={() => toUserProfile(friend?.id)}
               />
             </div>
             <div className="flex-col gap-1">

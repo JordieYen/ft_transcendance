@@ -13,6 +13,7 @@ import { log } from "console";
 import Avatar from "../header_icon/Avatar";
 import { useGameData } from "../game/GameContext";
 import LoadingScreen from "../game/LoadingScreen";
+import { toUserProfile } from "./handleClick";
 
 const FriendList = () => {
   const [usersList, setUserList] = useState<any[]>([]);
@@ -207,24 +208,6 @@ const FriendList = () => {
     }
   };
 
-  const handleClick = async (id: number) => {
-    try {
-      console.log("id in handleClick", id);
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/users/${id}`, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (response.ok) {
-        console.log("response in handleClick", response);
-        const user = await response.json();
-        router.push(`/users/${user.id}`);
-      }
-    } catch (error) {
-      console.log("Error redirect to profile:", error);
-    }
-  };
-
   return (
     <div className="friend-page w-full flex">
       <div className="friend-section w-1/3 bg-green-800">
@@ -268,7 +251,7 @@ const FriendList = () => {
                             alt="user avatar"
                             width={100}
                             height={125}
-                            onClick={() => handleClick(user?.id)}
+                            onClick={() => toUserProfile(user?.id)}
                           />
                         </div>
                         <div className="card-details">
