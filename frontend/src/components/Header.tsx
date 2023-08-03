@@ -18,7 +18,8 @@ import Icon from "@/app/component/header_icon/Icon";
 import { motion } from "framer-motion";
 import useAnimateStore from "@/store/useAnimateStore";
 import useModal from "@/hooks/useModal";
-import LeaderboardsModal from "./LeaderboardsModal";
+import LeaderboardsModal from "@/components/LeaderboardsModal";
+import GameHeader from "@/components/game/GameHeader";
 
 interface HeaderLogoProps {
   currentPath: string;
@@ -146,7 +147,7 @@ export const ProfileIconGroup = ({ user }: { user: UserData }) => {
     <Link
       className="flex items-center space-x-2 group"
       /* HANDLE PROFILE CLICK BELOW! */
-      href={"/pong-main"}
+      href={"/profile"}
     >
       <img
         width={100}
@@ -220,16 +221,7 @@ export const HeaderIcon = () => {
     return null;
   }
 
-  const {
-    avatar,
-    id,
-    intra_uid,
-    username,
-    online,
-    p1_match,
-    stat,
-    userAchievement,
-  } = userData;
+  const { avatar, id, intra_uid, username, online, p1_match, stat } = userData;
 
   return (
     <>
@@ -265,19 +257,13 @@ const Header = () => {
               currentPage === "setup" ? () => setCurrentPage("main") : undefined
             }
           >
-            <nav className="flex mx-16 md:mx-24 lg:mx-32 pt-5 mb-8 items-center gap-8">
+            <nav className="flex mx-16 md:mx-24 lg:mx-32 pt-5 mb-5 items-center gap-8">
               <HeaderLogo currentPath={currentPath} />
               <HeaderIcon />
             </nav>
           </motion.div>
         )}
-      {currentPath === "/game" && (
-        <nav className="flex h-[108px] mx-16 md:mx-24 lg:mx-32 pt-5 mb-8 items-center gap-8">
-          <HeaderLogo currentPath={currentPath} />
-          {/* Call your game header here */}
-          <></>
-        </nav>
-      )}
+      {currentPath === "/game" && <GameHeader />}
     </>
   );
 };

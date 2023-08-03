@@ -45,7 +45,7 @@ const Leaderboards = ({ sortBy }: { sortBy: string }) => {
 
         setUsers(sorting(userData));
       } catch (error) {
-        console.error(error);
+        console.error("error fetching leaderboards data", error);
       }
     };
     fetchData();
@@ -111,7 +111,7 @@ const Leaderboards = ({ sortBy }: { sortBy: string }) => {
                 {user.stat.best_mmr}
               </p>
             </div>
-            <div className="flex flex-col w-32">
+            <div className="hidden md:flex flex-col w-32">
               <p className="flex w-full text-timberwolf justify-end">
                 {user.stat.losses === 0
                   ? "inf"
@@ -124,7 +124,7 @@ const Leaderboards = ({ sortBy }: { sortBy: string }) => {
                 {user.stat.win_streak}
               </p>
             </div>
-            <p className="flex w-28 text-timberwolf items-center justify-end">
+            <p className="hidden lg:flex w-28 text-timberwolf items-center justify-end">
               {user.stat.deaths === 0
                 ? "inf"
                 : user.stat.kills / user.stat.deaths}
@@ -132,7 +132,7 @@ const Leaderboards = ({ sortBy }: { sortBy: string }) => {
             <p className="flex w-28 text-timberwolf items-center justify-end">
               {user.stat.smashes}
             </p>
-            <p className="flex w-36 text-timberwolf items-center justify-end">
+            <p className="hidden xl:flex w-36 text-timberwolf items-center justify-end">
               We doing this?
             </p>
           </div>
@@ -156,17 +156,17 @@ const LeaderboardTitle = () => {
         <p className="flex w-full text-sm text-dimgrey justify-end">MMR</p>
         <p className="flex w-full text-xs text-dimgrey justify-end">highest</p>
       </div>
-      <div className="flex flex-col w-32">
+      <div className="hidden md:flex flex-col w-32">
         <p className="flex w-full text-sm text-dimgrey justify-end">winrate</p>
         <p className="flex w-full text-xs text-dimgrey justify-end">streak</p>
       </div>
-      <p className="flex w-28 text-sm text-dimgrey items-center justify-end">
+      <p className="hidden lg:flex w-28 text-sm text-dimgrey items-center justify-end">
         K/DR
       </p>
       <p className="flex w-28 text-sm text-dimgrey items-center justify-end">
         smashes
       </p>
-      <p className="flex w-36 text-sm text-dimgrey items-center justify-end">
+      <p className="hidden xl:flex w-36 text-sm text-dimgrey items-center justify-end">
         last match
       </p>
     </div>
@@ -193,7 +193,7 @@ const LeaderboardsModal = ({
   return (
     <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 left-0">
       <div
-        className="overlay-content w-10/12 h-5/6 bg-onyxgrey rounded-2xl p-8"
+        className="overlay-content w-10/12 h-5/6 bg-onyxgrey rounded-2xl p-8 relative z-50"
         ref={lbRef}
       >
         <h2>
@@ -205,7 +205,7 @@ const LeaderboardsModal = ({
           <p className="flex flex-1 text-2xl">Top player</p>
           <div className="flex space-x-4">
             <button
-              className={`flex w-40 h-full rounded-lg border-2 border-saffron ${
+              className={`flex w-32 md:w-40 h-full rounded-lg border-2 border-saffron ${
                 sortBy === "MMR" ? "bg-saffron" : ""
               } items-center justify-center`}
               onClick={() => handleClick("MMR")}
@@ -219,7 +219,7 @@ const LeaderboardsModal = ({
               </p>
             </button>
             <button
-              className={`flex w-40 h-full rounded-lg border-2 border-saffron ${
+              className={`flex w-32 md:w-40 h-full rounded-lg border-2 border-saffron ${
                 sortBy === "Smashes" ? "bg-saffron" : ""
               } items-center justify-center`}
               onClick={() => handleClick("Smashes")}

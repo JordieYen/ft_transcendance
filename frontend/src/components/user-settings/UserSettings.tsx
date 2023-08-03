@@ -26,7 +26,7 @@ const UserSettings = ({
 }: UserSettingsProps) => {
   const renderRightContent = () => {
     return (
-      <div className="w-[400px] flex gap-2">
+      <div className="w-[200px] md:w-[300px] lg:w-[400px] flex gap-2">
         {buttonDescArry.map((text, index) => (
           <button
             key={index}

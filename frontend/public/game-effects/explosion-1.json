@@ -1,0 +1,1175 @@
+{
+	"frames": {
+		"DEATH P300.png": {
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P301.png": {
+			"frame": {
+				"x": 744,
+				"y": 1,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P302.png": {
+			"frame": {
+				"x": 1487,
+				"y": 1,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P303.png": {
+			"frame": {
+				"x": 2230,
+				"y": 1,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P304.png": {
+			"frame": {
+				"x": 2973,
+				"y": 1,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P305.png": {
+			"frame": {
+				"x": 3716,
+				"y": 1,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P306.png": {
+			"frame": {
+				"x": 4459,
+				"y": 1,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P307.png": {
+			"frame": {
+				"x": 5202,
+				"y": 1,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P308.png": {
+			"frame": {
+				"x": 1,
+				"y": 952,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P309.png": {
+			"frame": {
+				"x": 744,
+				"y": 952,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P310.png": {
+			"frame": {
+				"x": 1487,
+				"y": 952,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P311.png": {
+			"frame": {
+				"x": 2230,
+				"y": 952,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P312.png": {
+			"frame": {
+				"x": 2973,
+				"y": 952,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P313.png": {
+			"frame": {
+				"x": 3716,
+				"y": 952,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P314.png": {
+			"frame": {
+				"x": 4459,
+				"y": 952,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P315.png": {
+			"frame": {
+				"x": 5202,
+				"y": 952,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P316.png": {
+			"frame": {
+				"x": 1,
+				"y": 1903,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P317.png": {
+			"frame": {
+				"x": 744,
+				"y": 1903,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P318.png": {
+			"frame": {
+				"x": 1487,
+				"y": 1903,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P319.png": {
+			"frame": {
+				"x": 2230,
+				"y": 1903,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P320.png": {
+			"frame": {
+				"x": 2973,
+				"y": 1903,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P321.png": {
+			"frame": {
+				"x": 3716,
+				"y": 1903,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P322.png": {
+			"frame": {
+				"x": 4459,
+				"y": 1903,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P323.png": {
+			"frame": {
+				"x": 5202,
+				"y": 1903,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P324.png": {
+			"frame": {
+				"x": 1,
+				"y": 2854,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P325.png": {
+			"frame": {
+				"x": 744,
+				"y": 2854,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P326.png": {
+			"frame": {
+				"x": 1487,
+				"y": 2854,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P327.png": {
+			"frame": {
+				"x": 2230,
+				"y": 2854,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P328.png": {
+			"frame": {
+				"x": 2973,
+				"y": 2854,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P329.png": {
+			"frame": {
+				"x": 3716,
+				"y": 2854,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P330.png": {
+			"frame": {
+				"x": 4459,
+				"y": 2854,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P331.png": {
+			"frame": {
+				"x": 5202,
+				"y": 2854,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P332.png": {
+			"frame": {
+				"x": 1,
+				"y": 3805,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P333.png": {
+			"frame": {
+				"x": 744,
+				"y": 3805,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P334.png": {
+			"frame": {
+				"x": 1487,
+				"y": 3805,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P335.png": {
+			"frame": {
+				"x": 2230,
+				"y": 3805,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P336.png": {
+			"frame": {
+				"x": 2973,
+				"y": 3805,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P337.png": {
+			"frame": {
+				"x": 3716,
+				"y": 3805,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P338.png": {
+			"frame": {
+				"x": 4459,
+				"y": 3805,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P339.png": {
+			"frame": {
+				"x": 5202,
+				"y": 3805,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P340.png": {
+			"frame": {
+				"x": 1,
+				"y": 4756,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P341.png": {
+			"frame": {
+				"x": 744,
+				"y": 4756,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P342.png": {
+			"frame": {
+				"x": 1487,
+				"y": 4756,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P343.png": {
+			"frame": {
+				"x": 2230,
+				"y": 4756,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P344.png": {
+			"frame": {
+				"x": 2973,
+				"y": 4756,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P345.png": {
+			"frame": {
+				"x": 3716,
+				"y": 4756,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P346.png": {
+			"frame": {
+				"x": 4459,
+				"y": 4756,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P347.png": {
+			"frame": {
+				"x": 5202,
+				"y": 4756,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P348.png": {
+			"frame": {
+				"x": 5945,
+				"y": 1,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P349.png": {
+			"frame": {
+				"x": 5945,
+				"y": 952,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P350.png": {
+			"frame": {
+				"x": 5945,
+				"y": 1903,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P351.png": {
+			"frame": {
+				"x": 5945,
+				"y": 2854,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P352.png": {
+			"frame": {
+				"x": 5945,
+				"y": 3805,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P353.png": {
+			"frame": {
+				"x": 5945,
+				"y": 4756,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P354.png": {
+			"frame": {
+				"x": 1,
+				"y": 5707,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P355.png": {
+			"frame": {
+				"x": 744,
+				"y": 5707,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P356.png": {
+			"frame": {
+				"x": 1487,
+				"y": 5707,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		},
+		"DEATH P357.png": {
+			"frame": {
+				"x": 2230,
+				"y": 5707,
+				"w": 741,
+				"h": 949
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 741,
+				"h": 949
+			},
+			"sourceSize": {
+				"w": 741,
+				"h": 949
+			}
+		}
+	},
+	"meta": {
+		"app": "http://www.codeandweb.com/texturepacker",
+		"version": "1.0",
+		"image": "explosion-1.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 6687,
+			"h": 6657
+		},
+		"scale": "1"
+	}
+}
