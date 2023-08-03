@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UserAchievementService } from '../services/user_achievement.service';
 import { CreateUserAchievementDto } from '../dto/create-user_achievement.dto';
@@ -27,6 +28,11 @@ export class UserAchievementController {
   @Get()
   async findAll() {
     return await this.userAchievementService.findAll();
+  }
+
+  @Get('player')
+  async findAllByOne(@Query('id') id: number) {
+    return await this.userAchievementService.findAllByPlayerUid(id);
   }
 
   @Get(':id')

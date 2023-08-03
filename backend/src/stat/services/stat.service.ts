@@ -138,7 +138,6 @@ export class StatService {
       throw new InternalServerErrorException('Could not create new stat');
     }
   }
-
   // Delete an entry
   async remove(uid: number) {
     try {
