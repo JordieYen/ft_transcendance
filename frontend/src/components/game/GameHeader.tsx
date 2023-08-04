@@ -9,12 +9,20 @@ const PlayerOne = () => {
         <img
           width={100}
           height={100}
-          className="w-[60px] h-[60px] rounded-full object-cover"
+          className={`w-[60px] h-[60px] rounded-full object-cover z-10 ${
+            gameData.currentStreak === 1 &&
+            "border-2 border-opacity-50 border-[#FE8341] shadow-[0px_-5px_10px_2px_rgba(236,118,57,0.3)] drop-shadow-[0px_5px_10px_rgba(235,238,118,0.3)]"
+          }`}
           src={gameData.playerOne.avatar}
           alt="p1 avatar"
         />
       ) : (
-        <div className="w-[60px] h-[60px] rounded-full bg-jetblack" />
+        <div
+          className={`w-[60px] h-[60px] rounded-full bg-jetblack z-10 ${
+            gameData.currentStreak === 1 &&
+            "border-2 border-opacity-50 border-[#FE8341] shadow-[0px_-5px_10px_2px_rgba(236,118,57,0.3)] drop-shadow-[0px_5px_10px_rgba(235,238,118,0.3)]"
+          }`}
+        />
       )}
 
       <p className="text-timberwolf text-3xl font-bold">{gameData.p1Score}</p>
@@ -32,12 +40,20 @@ const PlayerTwo = () => {
         <img
           width={100}
           height={100}
-          className="w-[60px] h-[60px] rounded-full object-cover"
+          className={`w-[60px] h-[60px] rounded-full object-cover z-10 ${
+            gameData.currentStreak === 2 &&
+            "border-2 border-opacity-50 border-[#FE8341] shadow-[0px_-5px_10px_2px_rgba(236,118,57,0.3)] drop-shadow-[0px_5px_10px_rgba(235,238,118,0.3)]"
+          }`}
           src={gameData.playerTwo.avatar}
           alt="p2 avatar"
         />
       ) : (
-        <div className="w-[60px] h-[60px] rounded-full bg-jetblack" />
+        <div
+          className={`w-[60px] h-[60px] rounded-full bg-jetblack z-10 ${
+            gameData.currentStreak === 2 &&
+            "border-2 border-opacity-50 border-[#FE8341] shadow-[0px_-5px_10px_2px_rgba(236,118,57,0.3)] drop-shadow-[0px_5px_10px_rgba(235,238,118,0.3)]"
+          }`}
+        />
       )}
     </div>
   );

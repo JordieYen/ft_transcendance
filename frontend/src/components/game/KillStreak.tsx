@@ -39,8 +39,8 @@ const KillStreak = () => {
           } else if (gameData.currentStreak === 2) {
             anime.x = app.screen.width / 1.7175;
           }
-          anime.y = 80;
-          anime.scale.set(1.75, 0.5);
+          anime.y = 70;
+          anime.scale.set(1.8, 0.6);
 
           anime.play();
           app.stage.addChild(anime);
@@ -53,7 +53,7 @@ const KillStreak = () => {
   return (
     <div
       ref={ref}
-      className="absolute w-screen h-screen top-0 left-0 bg-transparent"
+      className="absolute w-screen h-screen top-0 left-0 bg-transparent z-0"
     />
   );
 };
