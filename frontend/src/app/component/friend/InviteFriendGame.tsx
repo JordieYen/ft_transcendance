@@ -1,6 +1,8 @@
 import { UserData } from "@/store/useUserStore";
 import React from "react";
 import { Socket } from "socket.io-client";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
 interface InviteFriendGameProps {
   user: UserData;
@@ -28,14 +30,13 @@ const InviteFriendGame = ({ user, friend, socket}: InviteFriendGameProps) => {
   };
 
   return (
-    <div>
+    <>
         <button
-          className="my-2 text-white px-4 py-2 rounded cursor-pointer"
           onClick={handleInviteFriendGame}
         >
-          Invite Game
+          <FontAwesomeIcon icon={faEnvelope} />
         </button>
-    </div>
+    </>
   );
 };
 

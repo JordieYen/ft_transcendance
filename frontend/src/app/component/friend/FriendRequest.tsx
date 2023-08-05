@@ -1,7 +1,11 @@
 import { SocketContext } from "@/app/socket/SocketProvider";
 import UserData from "@/hooks/userData";
 import { useContext, useEffect, useState } from "react";
+import Avatar from "../header_icon/Avatar";
 import './friend.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import toast from "react-hot-toast";
 
 interface FriendRequestProps {
   userId: number;
@@ -52,6 +56,8 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
           });
           if (response.ok) {
               const friendRequests = await response.json() as any[];
+              console.log('friendRequests', friendRequests);
+              
               setFriendRequests(friendRequests);
           } else {
               throw new Error('Failed to fetch friend requests');
@@ -69,36 +75,93 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
     })    
   };
 
+  // const acceptFriendRequest = async (friendRequestId: number, senderId: number, accepterId: number) => {
+  //   try {
+  //     const confirmation = window.confirm('Are you sure you want to accept this friend request?');
+  //     if (confirmation) {
+  //       socket?.emit('accept-friend-request', {
+  //         userId: userId,
+  //         friendRequestId: friendRequestId,
+  //         senderId: senderId,
+
+  //       });
+  //       setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [accepterId]: false }));
+  //       setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
+  //     }
+
+  //   } catch (error) {
+  //     console.log('Error accepting friend request:', error);
+  //   }
+  // };
+
   const acceptFriendRequest = async (friendRequestId: number, senderId: number, accepterId: number) => {
     try {
-      const confirmation = window.confirm('Are you sure you want to accept this friend request?');
-      if (confirmation) {
-        socket?.emit('accept-friend-request', {
-          userId: userId,
-          friendRequestId: friendRequestId,
-          senderId: senderId,
-
-        });
-        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [accepterId]: false }));
-        setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
-      }
-
+      const confirmation = await toast.promise(
+        new Promise<void>((resolve, reject) => {
+          const userConfirmation = window.confirm('Are you sure you want to accept this friend request?');
+          if (userConfirmation) {
+            socket?.emit('accept-friend-request', {
+              userId: userId,
+              friendRequestId: friendRequestId,
+              senderId: senderId,
+            });
+            setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [accepterId]: false }));
+            setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
+            resolve();
+          } else {
+            reject();
+          }
+        }),
+        {
+          loading: 'Accepting friend request...',
+          success: 'Friend request accepted!',
+          error: 'Cancel accept friend request',
+        },
+      );
     } catch (error) {
       console.log('Error accepting friend request:', error);
     }
   };
 
+  // const declineFriendRequest = async (friendRequestId: number, declinerId: number) => {
+  //   try {
+  //     const confirmation = window.confirm('Are you sure you want to decline this friend request?');
+  //     if (confirmation) {
+  //       socket?.emit('decline-friend-request', {
+  //         userId: userId,
+  //         friendRequestId: friendRequestId,
+  //       });
+  //       setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [declinerId]: false }));
+  //       setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
+  //     }
+  //   } catch (error) {
+  //     console.log('Error declining friend request:', error);
+  //   }
+  // };
   const declineFriendRequest = async (friendRequestId: number, declinerId: number) => {
     try {
-      const confirmation = window.confirm('Are you sure you want to decline this friend request?');
-      if (confirmation) {
-        socket?.emit('decline-friend-request', {
-          userId: userId,
-          friendRequestId: friendRequestId,
-        });
-        setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [declinerId]: false }));
-        setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
-      }
+      const confirmation = await toast.promise(
+        new Promise<void>((resolve, reject) => {
+          const userConfirmation = window.confirm('Are you sure you want to decline this friend request?');
+          if (userConfirmation) {
+            socket?.emit('decline-friend-request', {
+              userId: userId,
+              friendRequestId: friendRequestId,
+            });
+            setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [declinerId]: false }));
+            setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
+            resolve();
+          } else {
+            reject();
+          }
+        }
+        ),
+        {
+          loading: 'Declining friend request...',
+          success: 'Friend request declined!',
+          error: 'Cancel decline friend request',
+        },
+      );
     } catch (error) {
       console.log('Error declining friend request:', error);
     }
@@ -112,20 +175,32 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
           // .filter((friendRequest) => friendRequest?.receiver?.id === userData?.id)
           .filter((friendRequest) => friendRequest?.status !== 'friended')
           .map((friendRequest) => (
-            <div key={friendRequest?.id}>
-            <p>Id: {friendRequest?.id}</p>
-            <p>Sender: {friendRequest?.sender?.username}</p>
-            <p>Receiver: {friendRequest?.receiver?.username}</p>
-            <p>Status: {friendRequest?.status}</p>
-            <div className="flex gap-5 my-5">
-              <button onClick={ () => acceptFriendRequest(friendRequest.id, friendRequest.sender.id, friendRequest.receiver.id) }
-              disabled={ friendRequest.status === 'friended'}
-              className={friendRequest.status === 'friended' || friendRequest.status === 'decline' ? 'disabled-button' : ''}
-              >Accept</button>
-              <button onClick={ () => declineFriendRequest(friendRequest.id, friendRequest.receiver.id) }
-              disabled={ friendRequest.status === 'decline'}
-              className={friendRequest.status === 'decline' || friendRequest.status === 'friended'? 'disabled-button' : ''}
-              >Decline</button>
+            <div className="flex items-center gap-10 p-10" key={friendRequest?.id}>
+              <div className="h-22 w-20 overflow-hidden">
+                <Avatar
+                  src={friendRequest?.sender?.avatar}
+                  alt="user avatar"
+                  width={50}
+                  height={50}
+                />
+             </div>
+            <div className="flex-col gap-1">
+              <p>Sender: {friendRequest?.sender?.username}</p>
+              <p>Status: {friendRequest?.status}</p>
+              <div className="flex gap-5 my-5">
+                <button onClick={ () => acceptFriendRequest(friendRequest.id, friendRequest.sender.id, friendRequest.receiver.id) }
+                disabled={ friendRequest.status === 'friended'}
+                className={friendRequest.status === 'friended' || friendRequest.status === 'decline' ? 'disabled-button' : ''}
+                >
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
+                <button onClick={ () => declineFriendRequest(friendRequest.id, friendRequest.receiver.id) }
+                disabled={ friendRequest.status === 'decline'}
+                className={friendRequest.status === 'decline' || friendRequest.status === 'friended'? 'disabled-button' : ''}
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+              </div>
             </div>
           </div>
         ))) : (

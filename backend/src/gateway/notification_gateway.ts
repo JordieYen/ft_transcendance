@@ -28,7 +28,7 @@ export class NotificationGateway implements OnModuleInit {
             this.connectedUser.delete(socket.data.userId);
           }
         }
-      }, 5000);
+      }, 15000);
 
       socket.on('join', async (userId) => {
         if (userId && userId !== 'undefined' && !isNaN(userId)) {

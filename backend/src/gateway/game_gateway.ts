@@ -125,11 +125,21 @@ export class GameGateway implements OnModuleInit {
     client.join(roomId);
     client.to(friend.id.toString()).emit('joined-room', roomId);
 
-    const playersData = [user, friend].map((player) => ({ player: player }));
-    this.server.to(roomId).emit('to-loading-screen', { roomId, playersData });
+    // const playersData = [user, friend].map((player) => ({ player: player }));
+    // this.server.to(roomId).emit('to-loading-screen', { roomId, playersData });
+    this.server.to(roomId).emit('to-loading-screen', {
+      roomId,
+      player1User: user,
+      player2User: friend,
+    });
     this.server
       .to(user.id.toString())
-      .emit('to-loading-screen', { roomId, playersData });
+      // .emit('to-loading-screen', { roomId, playersData });
+      .emit('to-loading-screen', {
+        roomId,
+        player1User: user,
+        player2User: friend,
+      });
     this.gameService.logRooms(this.rooms);
   }
 

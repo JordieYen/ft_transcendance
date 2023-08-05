@@ -1,5 +1,6 @@
 import React from 'react';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGamepad } from '@fortawesome/free-solid-svg-icons';
 
 const ViewFriendGame = ({ roomId }: any) => {
   const handleViewGame = () => {
@@ -11,12 +12,11 @@ const ViewFriendGame = ({ roomId }: any) => {
   return (
     <>
       {roomId ? (
-        <div
-          className="bg-blue-500 my-2 text-white px-4 py-2 rounded cursor-pointer"
+        <button
           onClick={handleViewGame}
         >
-          In game
-        </div>
+           <FontAwesomeIcon icon={faGamepad} />
+        </button>
       ) : null}
     </>
   );

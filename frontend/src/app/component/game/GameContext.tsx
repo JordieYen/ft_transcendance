@@ -88,19 +88,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       console.log("DATA", data);
       setRoomId(data.roomId);
       setLoadingScreenVisible(true);
-      setPlayer1User(data.playersData[0].player);
-      setPlayer2User(data.playersData[1].player);
-      console.log(player1User);
-      console.log(player2User);
+      setPlayer1User(data.player1User);
+      setPlayer2User(data.player2User);
       setGameState(data);
     });
-
-    // const gameData = {
-    //   roomId,
-    //   player1User,
-    //   player2User,
-    // };
-    // setGameState(gameData);
     console.log("roomId", roomId);
     console.log("gamestate", gameState);
     console.log("player1", player1User);
