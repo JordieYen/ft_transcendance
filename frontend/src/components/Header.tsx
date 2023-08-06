@@ -225,8 +225,8 @@ export const HeaderIcon = () => {
 
   return (
     <>
-      <LeaderboardsIcon />
       <ProfileIconGroup user={userData} />
+      <LeaderboardsIcon />
       <FriendsIcon />
       <SettingsIcon />
       <LogoutIcon />

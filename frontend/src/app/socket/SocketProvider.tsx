@@ -26,6 +26,9 @@ export const SocketProvider =  ({ children }: SocketProviderProps) => {
             console.log('Connected to socket server', socket.id);
         });
         setSocket(socket);
+        window.addEventListener('beforeunload', () => {
+            socket.disconnect();
+        });
         return () => {
             socket.disconnect();
         }
@@ -33,6 +36,8 @@ export const SocketProvider =  ({ children }: SocketProviderProps) => {
 
     useEffect(() => {
         if (userData) {
+            console.log('Joining room', userData.id);
+            
             socket?.emit('join', userData.id);
         }
         return () => {

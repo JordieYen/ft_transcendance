@@ -11,17 +11,17 @@ const LifetimeKills = () => {
           <br />
           kills
         </p>
-        <p className="text-3xl font-bold my-1">{userData.stat.kills}</p>
+        <p className="text-3xl font-bold my-1">{userData.stat?.kills}</p>
         <div className="flex">
           <p className="text-dimgrey text-sm">deaths&nbsp;</p>
-          <p className="text-sm font-bold">{userData.stat.deaths}</p>
+          <p className="text-sm font-bold">{userData.stat?.deaths}</p>
         </div>
         <div className="flex">
           <p className="text-dimgrey text-sm">K/DR&nbsp;</p>
           <p className="text-sm font-bold">
-            {userData.stat.deaths === 0
+            {userData.stat?.deaths === 0
               ? "inf"
-              : userData.stat.kills / userData.stat.deaths}
+              : userData.stat?.kills / userData.stat?.deaths}
           </p>
         </div>
       </div>
@@ -40,10 +40,10 @@ const MatchmakingRating = () => {
           <br />
           rating
         </p>
-        <p className="text-3xl font-bold my-1">{userData.stat.current_mmr}</p>
+        <p className="text-3xl font-bold my-1">{userData.stat?.current_mmr}</p>
         <div className="flex">
           <p className="text-dimgrey text-sm">highest&nbsp;</p>
-          <p className="text-sm font-bold">{userData.stat.best_mmr}</p>
+          <p className="text-sm font-bold">{userData.stat?.best_mmr}</p>
         </div>
       </div>
     </div>
@@ -58,7 +58,7 @@ const UserStats = () => {
       <LifetimeKills />
       <div className="flex space-x-20">
         <p className="text-timberwolf">Smash count</p>
-        <p className="text-timberwolf">{userData.stat.smashes}</p>
+        <p className="text-timberwolf">{userData.stat?.smashes}</p>
       </div>
     </div>
   );

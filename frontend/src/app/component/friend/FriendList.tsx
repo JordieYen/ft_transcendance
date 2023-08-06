@@ -9,10 +9,7 @@ import Block from "./Block";
 import useSessionStorageState from "@/app/utils/useSessionStorageState";
 import useUserStore from "@/store/useUserStore";
 import { useRouter } from "next/router";
-import { log } from "console";
 import Avatar from "../header_icon/Avatar";
-import { useGameData } from "../game/GameContext";
-import LoadingScreen from "../game/LoadingScreen";
 import { toUserProfile } from "./handleClick";
 
 const FriendList = () => {
@@ -38,7 +35,6 @@ const FriendList = () => {
     state.userData,
     state.setUserData,
   ]);
-  const router = useRouter();
   // const { setGameState, isLoadingScreenVisible, player1, player2 } = useGameData();
 
 
@@ -300,11 +296,6 @@ const FriendList = () => {
           </div>
         </div>
       </div>
-      {/* {
-        isLoadingScreenVisible && player1 && player2 && (
-          <LoadingScreen player1User={player1} player2User={player2} />
-        )
-      } */}
     </div>
   );
 };

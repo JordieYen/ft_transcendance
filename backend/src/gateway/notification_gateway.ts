@@ -28,7 +28,7 @@ export class NotificationGateway implements OnModuleInit {
             this.connectedUser.delete(socket.data.userId);
           }
         }
-      }, 15000);
+      }, 60000);
 
       socket.on('join', async (userId) => {
         if (userId && userId !== 'undefined' && !isNaN(userId)) {
@@ -54,8 +54,8 @@ export class NotificationGateway implements OnModuleInit {
         if (socket.data.userId) {
           console.log('User disconnected: ' + socket.data.userId);
           this.connectedUser.delete(socket.data.userId);
+          await this.updateUserStatus(+socket.data.userId, false);
           this.logConnectedUsers();
-          // await this.updateUserStatus(+socket.data.userId, false);
         }
       });
     });

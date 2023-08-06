@@ -163,6 +163,10 @@ export class UsersService {
           'receiveFriendRequest',
           'receiveFriendRequest.receiver',
           'receiveFriendRequest.sender',
+          'sentGameInvitations',
+          'sentGameInvitations.receiver',
+          'receiveGameInvitations',
+          'receiveGameInvitations.sender',
         ],
         where: {
           id: id,
