@@ -41,8 +41,7 @@ const FriendList = () => {
   useEffect(() => {
     if (userData.id) {
       // console.log('players from game state', player1, player2, isLoadingScreenVisible);
-
-      console.log("userData", userData.id);
+      // console.log("userData", userData.id);
       // socket?.emit("join", `${userData?.id}`);
       socket?.on("friend-request-received", (receivedFriendRequest: any) => {
         console.log("friend-request-received socket", receivedFriendRequest);

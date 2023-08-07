@@ -28,15 +28,23 @@ export class NotificationGateway implements OnModuleInit {
             this.connectedUser.delete(socket.data.userId);
           }
         }
-      }, 60000);
+      }, 300000);
 
       socket.on('join', async (userId) => {
         if (userId && userId !== 'undefined' && !isNaN(userId)) {
           console.log('User joined room: ' + userId);
-          socket.join(userId);
+          socket.join(userId.toString());
           socket.data.userId = userId;
           this.updateUserStatus(+userId, true);
-          this.connectedUser.set(userId, socket);
+
+          const existingSocket = this.connectedUser.get(userId);
+          if (!existingSocket || existingSocket.id !== socket.id) {
+            this.connectedUser.set(userId, socket);
+            console.log('after: ', this.connectedUser.size);
+            this.server
+              .to(socket.data.userId.toString())
+              .emit('online-status-changed', { isOnline: true });
+          }
           this.logConnectedUsers();
         }
       });
@@ -47,6 +55,32 @@ export class NotificationGateway implements OnModuleInit {
           socket.leave(socket.data.userId);
           this.updateUserStatus(socket.data.userId, false);
           this.connectedUser.delete(socket.data.userId);
+          this.server
+            .to(socket.data.userId.toString())
+            .emit('online-status-changed', { isOnline: false });
+          this.logConnectedUsers();
+        }
+      });
+
+      socket.on('activity', () => {
+        if (socket.data.userId) {
+          console.log('User activity: ' + socket.data.userId);
+          this.updateUserStatus(socket.data.userId, true);
+          this.connectedUser.set(socket.data.userId, socket);
+          // this.server
+          //   .to(socket.data.userId)
+          //   .emit('online-status-changed', { isOnline: true });
+        }
+      });
+
+      socket.on('reconnect', async () => {
+        if (socket.data.userId) {
+          console.log('User reconnected: ' + socket.data.userId);
+          this.updateUserStatus(+socket.data.userId, true);
+          this.connectedUser.set(socket.data.userId, socket);
+          this.server
+            .to(socket.data.userId.toString())
+            .emit('online-status-changed', { isOnline: true });
           this.logConnectedUsers();
         }
       });
@@ -55,6 +89,9 @@ export class NotificationGateway implements OnModuleInit {
           console.log('User disconnected: ' + socket.data.userId);
           this.connectedUser.delete(socket.data.userId);
           await this.updateUserStatus(+socket.data.userId, false);
+          this.server
+            .to(socket.data.userId.toString())
+            .emit('online-status-changed', { isOnline: false });
           this.logConnectedUsers();
         }
       });
