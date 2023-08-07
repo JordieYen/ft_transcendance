@@ -153,15 +153,6 @@ const Game = () => {
   const socket = useContext(SocketContext);
   // const socket = io("http://localhost:3000");
 
-  // useEffect(() => {
-  //   setGameData({
-  //     ...gameData,
-  //     playerOne: gameState!.player1User,
-  //     playerTwo: gameState!.player2User,
-  //   });
-  //   console.log("GMAE", gameData);
-  // }, [gameState, gameState?.player1User, gameState?.player2User]);
-
   useEffect(() => {
     if (socket) {
       socket.emit("initialize-game", {
