@@ -149,9 +149,30 @@ const Mute = ({
       content = (
         <div>
           <p className="mute-status">Status: {mutedTill}</p>
-          <button className="mute-buttons" onClick={() => {muteUser(1)}}>Mute for 1 day</button>
-          <button className="mute-buttons" onClick={() => {muteUser(3)}}>Mute for 3 days</button>
-          <button className="mute-buttons" onClick={() => {muteUser(7)}}>Mute for 7 days</button>
+          <button
+            className="mute-buttons"
+            onClick={() => {
+              muteUser(1);
+            }}
+          >
+            Mute for 1 day
+          </button>
+          <button
+            className="mute-buttons"
+            onClick={() => {
+              muteUser(3);
+            }}
+          >
+            Mute for 3 days
+          </button>
+          <button
+            className="mute-buttons"
+            onClick={() => {
+              muteUser(7);
+            }}
+          >
+            Mute for 7 days
+          </button>
         </div>
       );
     } else {
@@ -160,7 +181,14 @@ const Mute = ({
           <p className="mute-status-user">
             Status: muted till {mutedTill.substring(0, 10)}
           </p>
-          <button className="unmute-button" onClick={() => {muteUser(0)}}>Unmute</button>
+          <button
+            className="unmute-button"
+            onClick={() => {
+              muteUser(0);
+            }}
+          >
+            Unmute
+          </button>
         </div>
       );
     }
@@ -782,6 +810,42 @@ const ChangeChannelPassword = ({
   channel: any;
   channelUser: any;
 }) => {
+  const [oldChannelPassword, setOldChannelPassword] = useState("");
+  const [newChannelPassword, setNewChannelPassword] = useState("");
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
+  const socket = useContext(SocketContext);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(oldChannelPassword, newChannelPassword);
+    socket?.emit(
+      "change-password",
+      channel?.channel_uid,
+      oldChannelPassword,
+      newChannelPassword,
+      userData?.id,
+    );
+    setOldChannelPassword("");
+    setNewChannelPassword("");
+    closeModal();
+  };
+
+  const handleOldChannelPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setOldChannelPassword(e.target.value);
+  };
+
+  const handleNewChannelPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setNewChannelPassword(e.target.value);
+  };
+
   return (
     <>
       {isOpen && (
@@ -795,17 +859,19 @@ const ChangeChannelPassword = ({
               className={`ccpp-input`}
               type="text"
               placeholder="Old Password"
-              // value={channelPassword}
-              // onChange={handleChannelPasswordChange}
+              value={oldChannelPassword}
+              onChange={handleOldChannelPasswordChange}
             />
             <input
               className={`ccpp-input`}
               type="text"
               placeholder="New Password"
-              // value={channelPassword}
-              // onChange={handleChannelPasswordChange}
+              value={newChannelPassword}
+              onChange={handleNewChannelPasswordChange}
             />
-            <button className="ccpp-submit">Change</button>
+            <button className="ccpp-submit" onClick={handleSubmit}>
+              Change
+            </button>
           </div>
         </div>
       )}

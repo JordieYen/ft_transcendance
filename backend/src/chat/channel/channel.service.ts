@@ -301,7 +301,46 @@ export class ChannelService {
     }
   }
 
-  async changePassword(channelId: number, user: User, newChanneltype: string) {
+  async changeChannelPassword(
+    channelId: number,
+    oldPassword: string,
+    newPassword: string,
+    user: User,
+  ) {
+    this.validateUser(user);
+    const channel = await this.findChannelById(channelId);
+    // console.log(channel);
+
+    const pwMatches = await argon.verify(channel.channel_hash, oldPassword);
+
+    if (!pwMatches) {
+      console.log('Password Mismatch');
+    } else {
+      console.log('Password Matches');
+      if (newPassword != '') {
+        console.log('Password changed');
+        const channel_hash = await argon.hash(newPassword);
+        const test = await this.channelsRepository.save({
+          channel_uid: channelId,
+          channel_hash,
+        });
+        // console.log(test);
+      }
+    }
+
+    // if (channelUser.role == 'owner') {
+    //   this.channelsRepository.save({
+    //     channel_uid: channelId,
+    //     channel_type: newChanneltype,
+    //   });
+    // }
+  }
+
+  async changeChannelType(
+    channelId: number,
+    newChanneltype: string,
+    user: User,
+  ) {
     this.validateUser(user);
     const channelUser =
       await this.channelUserService.findChannelUserByChannelIdAndUserId(
