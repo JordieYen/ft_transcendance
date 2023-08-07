@@ -22,6 +22,8 @@ interface GameContextProps {
   player2User: UserData | null;
   setPlayer1User: (user: UserData | null) => void;
   setPlayer2User: (user: UserData | null) => void;
+  roomId: string | null;
+  setRoomId: (roomId: string | null) => void;
 }
 
 export interface GameInvitationProps {
@@ -47,6 +49,8 @@ const defaultGameContext: GameContextProps = {
   player2User: null,
   setPlayer1User: () => {},
   setPlayer2User: () => {},
+  roomId: null,
+  setRoomId: () => {},
 };
 
 export const GameContext = createContext<GameContextProps>(defaultGameContext);
@@ -78,6 +82,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         });
       },
       onDecline: () => {
+        socket?.emit("decline-game-invitation", {
+          user: data.user,
+          friend: data.friend,
+        });
         clearGameInvitation();
       },
     });
@@ -113,6 +121,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setPlayer1User,
         player2User,
         setPlayer2User,
+        roomId,
+        setRoomId,
       }}
     >
       {children}

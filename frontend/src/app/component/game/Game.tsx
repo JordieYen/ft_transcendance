@@ -161,7 +161,6 @@ const Game = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.emit("game-room", 1);
       socket.emit("initialize-game", {
         roomId: gameState!.roomId,
         pOneId: gameState!.player1User.id,
@@ -169,9 +168,11 @@ const Game = () => {
         gameProperties: gameProperties,
       });
       if (gameState!.player1User.socketId === socket.id) {
+        console.log("is player 1");
         currentPlayer.current = "p1";
         currentUser.current = gameState!.player1User;
       } else if (gameState!.player2User.socketId === socket.id) {
+        console.log("is player 2");
         currentPlayer.current = "p2";
         currentUser.current = gameState!.player2User;
       }

@@ -109,8 +109,12 @@ const MatchMaking = () => {
       <button className="bg-mygrey" onClick={handleGameOver}>
         {"Game Over"}
       </button>
-      {roomId && isMatchmaking && player1User && player2User && (
-        <LoadingScreen player1User={player1User} player2User={player2User} />
+      {roomId && isMatchmaking && player1User && player2User && roomId && (
+        <LoadingScreen
+          player1User={player1User}
+          player2User={player2User}
+          roomId={roomId}
+        />
       )}
     </div>
   );

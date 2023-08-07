@@ -11,8 +11,13 @@ const GameInvitationListener = () => {
     useContext(GameContext);
   const socket = useContext(SocketContext);
   const [showPopup, setShowPopup] = useState(false);
-  const { setGameState, isLoadingScreenVisible, player1User, player2User } =
-    useGameData();
+  const {
+    setGameState,
+    isLoadingScreenVisible,
+    player1User,
+    player2User,
+    roomId,
+  } = useGameData();
 
   useEffect(() => {
     console.log("GameInvitationListener");
@@ -22,7 +27,7 @@ const GameInvitationListener = () => {
       player2User,
       isLoadingScreenVisible,
     );
-    
+
     const handleInvite = (data: { user: UserData; friend: UserData }) => {
       console.log("handleInvite");
       handleInviteGame(data);
@@ -45,8 +50,12 @@ const GameInvitationListener = () => {
           onDecline={gameInvitation.onDecline}
         />
       )}
-      {isLoadingScreenVisible && player1User && player2User && (
-        <LoadingScreen player1User={player1User} player2User={player2User} />
+      {isLoadingScreenVisible && player1User && player2User && roomId && (
+        <LoadingScreen
+          player1User={player1User}
+          player2User={player2User}
+          roomId={roomId}
+        />
       )}
     </>
   );

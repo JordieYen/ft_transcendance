@@ -9,7 +9,9 @@ import {
   UserData,
   HandleGameStateParams,
   JoinRoomParams,
-  InitializeGameParam,
+  InitializeGameParams,
+  AcceptGameInvitationParams,
+  DeclineGameInvitationParams,
 } from './game.interface';
 import { FriendService } from 'src/friend/services/friend.service';
 import { MatchHistoryService } from 'src/match-history/services/match-history.service';
@@ -49,6 +51,16 @@ export class GameService {
     return {};
   }
 
+  /* returns available rooms by id */
+  findAvailableRoomById(rooms: Map<string, UserData[]>, uid: number) {
+    for (const [roomId, roomPlayers] of rooms) {
+      if (roomPlayers.length < 2 && roomPlayers[0].id === uid) {
+        return { roomId, roomPlayers };
+      }
+    }
+    return {};
+  }
+
   /* join a user into a room */
   async joinRooms(param: JoinRoomParams) {
     let { roomId, roomPlayers } = this.findAvailableRoom(param.rooms);
@@ -77,14 +89,14 @@ export class GameService {
     param.client.join(roomId);
     param.client.emit('joined-room', roomId);
 
+    // update friends in game status
     const friends = await this.friendService.getFriendsBoth(param.user.id);
     for (const friend of friends) {
       console.log('Friend: ', friend);
-      const result = await this.friendService.update(friend.id, {
+      await this.friendService.update(friend.id, {
         ...friend,
         roomId: roomId,
       });
-      console.log('result: ', result);
     }
 
     // start game if room has 2 players
@@ -99,9 +111,67 @@ export class GameService {
     this.logRooms(param.rooms);
   }
 
+  /* invite player into a game and join a room */
+  inviteGame(param: AcceptGameInvitationParams) {
+    param.client
+      .to(param.pTwo.id.toString())
+      .emit('invite-game', { user: param.pOne, friend: param.pTwo });
+
+    // temporary join private room
+    this.joinRooms({
+      server: param.server,
+      client: param.client,
+      rooms: param.rooms,
+      user: param.pOne,
+    });
+  }
+
+  /* put both players into a room after accepting invitation */
+  async acceptInvitation(param: AcceptGameInvitationParams) {
+    const { roomId, roomPlayers } = this.findAvailableRoomById(
+      param.rooms,
+      param.pOne.id,
+    );
+
+    roomPlayers.push(param.pTwo);
+    param.client.join(roomId);
+    param.client.to(param.pTwo.id.toString()).emit('joined-room', roomId);
+
+    // update friends in game status
+    const friends = await this.friendService.getFriendsBoth(param.pTwo.id);
+    for (const friend of friends) {
+      console.log('Friend: ', friend);
+      await this.friendService.update(friend.id, {
+        ...friend,
+        roomId: roomId,
+      });
+    }
+
+    param.server.to(roomId).emit('to-loading-screen', {
+      roomId,
+      player1User: param.pOne,
+      player2User: param.pTwo,
+    });
+    param.server.to(param.pOne.id.toString()).emit('to-loading-screen', {
+      roomId,
+      player1User: param.pOne,
+      player2User: param.pTwo,
+    });
+    this.logRooms(param.rooms);
+  }
+
+  /* remove inviter from private room after invitee declines invitation */
+  declineInvitation(param: DeclineGameInvitationParams) {
+    console.log('Declined Game Invitation');
+    const { roomId } = this.findAvailableRoomById(param.rooms, param.user.id);
+    this.clearRoomIdInFriend(param.user.id);
+    param.rooms.delete(roomId);
+    param.server.to(roomId).emit('room-closed');
+  }
+
   /* check if player exists in room, if one player exist, send opponent-disconnected */
   leaveRoom(param: LeaveRoomParams) {
-    const roomPlayers = param.roomArray.get(param.roomId);
+    const roomPlayers = param.rooms.get(param.roomId);
     if (roomPlayers) {
       const remainingPlayer = roomPlayers.find(
         (player) => player !== param.user,
@@ -114,7 +184,7 @@ export class GameService {
         player !== param.user;
       });
       // console.log('updated room player', updatedRoomPlayers);
-      param.roomArray.set(param.roomId, updatedRoomPlayers);
+      param.rooms.set(param.roomId, updatedRoomPlayers);
 
       // if room is empty, delete room and emit room-closed
       if (updatedRoomPlayers.length === 0) {
@@ -122,8 +192,8 @@ export class GameService {
         this.gameOver({
           server: param.server,
           roomId: param.roomId,
-          roomArray: param.roomArray,
-          gameArray: param.gameArray,
+          rooms: param.rooms,
+          games: param.games,
           gameInfo: param.gameInfo,
           gameProperties: null,
         });
@@ -209,7 +279,7 @@ export class GameService {
   }
 
   /* initilizes Game */
-  initializeGame(param: InitializeGameParam) {
+  initializeGame(param: InitializeGameParams) {
     const pOneId = param.pOneId;
     const pTwoId = param.pTwoId;
     const gameStart = 0;
@@ -287,12 +357,10 @@ export class GameService {
   async clearRoomIdInFriend(id: number) {
     const friends = await this.friendService.getFriendsBoth(id);
     for (const friend of friends) {
-      console.log('Friend: ', friend);
-      const result = await this.friendService.update(friend.id, {
+      await this.friendService.update(friend.id, {
         ...friend,
         roomId: null,
       });
-      console.log('result: ', result);
     }
   }
 
@@ -303,8 +371,8 @@ export class GameService {
     Engine.clear(param.gameInfo.engine);
     this.clearRoomIdInFriend(param.gameInfo.pOneId);
     this.clearRoomIdInFriend(param.gameInfo.pTwoId);
-    param.gameArray.delete(param.roomId);
-    param.roomArray.delete(param.roomId);
+    param.games.delete(param.roomId);
+    param.rooms.delete(param.roomId);
     param.server.to(param.roomId).emit('room-closed');
   }
 

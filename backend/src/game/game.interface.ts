@@ -56,7 +56,12 @@ export interface UserData {
 
 /* game_gateway.ts Params */
 
-export interface InitializeGameParam {
+export interface GameInvitationParams {
+  user: UserData;
+  friend: UserData;
+}
+
+export interface InitializeGameParams {
   roomId: string;
   pOneId: number;
   pTwoId: number;
@@ -89,11 +94,25 @@ export interface JoinRoomParams {
   user: UserData;
 }
 
+export interface AcceptGameInvitationParams {
+  server: Server;
+  client: Socket;
+  rooms: Map<string, UserData[]>;
+  pOne: UserData;
+  pTwo: UserData;
+}
+
+export interface DeclineGameInvitationParams {
+  server: Server;
+  rooms: Map<string, UserData[]>;
+  user: UserData;
+}
+
 export interface LeaveRoomParams {
   server: Server;
   roomId: string;
-  roomArray: Map<string, UserData[]>;
-  gameArray: Map<string, GameInfo>;
+  rooms: Map<string, UserData[]>;
+  games: Map<string, GameInfo>;
   gameInfo: GameInfo;
   user: UserData;
 }
@@ -110,8 +129,8 @@ export interface UpdatePaddleParams {
 export interface HandleGameStateParams {
   server: Server;
   roomId: string;
-  roomArray: Map<string, UserData[]>;
-  gameArray: Map<string, GameInfo>;
+  rooms: Map<string, UserData[]>;
+  games: Map<string, GameInfo>;
   gameInfo: GameInfo;
   gameProperties: GameElements;
 }
