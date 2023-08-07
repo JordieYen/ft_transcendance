@@ -124,6 +124,14 @@ export class GameService {
       rooms: param.rooms,
       user: param.pOne,
     });
+    const intervalId = setInterval(() => {
+      this.declineInvitation({
+        server: param.server,
+        rooms: param.rooms,
+        user: param.pOne,
+      });
+    }, 5000);
+    clearInterval(intervalId);
   }
 
   /* put both players into a room after accepting invitation */
@@ -402,18 +410,24 @@ export class GameService {
 
   /* update score */
   updateScore(param: HandleGameStateParams) {
-    if (param.gameInfo.ball.position.x < 0 && param.gameInfo.pTwoScore < 11)
+    if (param.gameInfo.ball.position.x < 0 && param.gameInfo.pTwoScore < 11) {
       param.gameInfo.pTwoScore++;
+      return 2;
+    }
     if (
       param.gameInfo.ball.position.x > param.gameProperties.screen.x &&
       param.gameInfo.pOneScore < 11
-    )
+    ) {
       param.gameInfo.pOneScore++;
+      return 1;
+    }
+    return 0;
   }
 
   /* reset ball position if out of bounds */
   resetBallPosition(param: HandleGameStateParams) {
-    this.updateScore(param);
+    const winner = this.updateScore(param);
+    const ballYPos = param.gameInfo.ball.position.y;
     Body.setPosition(param.gameInfo.ball, {
       x: param.gameProperties.screen.x / 2,
       y: param.gameProperties.screen.y / 2,
@@ -425,6 +439,8 @@ export class GameService {
     param.server.to(param.roomId).emit('reset-ball-speed');
     param.server.to(param.roomId).emit('reset-ball-position');
     param.server.to(param.roomId).emit('update-score', {
+      winner: winner,
+      ballYPos: ballYPos / param.gameProperties.screen.y,
       pOneScore: param.gameInfo.pOneScore,
       pTwoScore: param.gameInfo.pTwoScore,
     });

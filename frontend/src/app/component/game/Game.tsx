@@ -5,8 +5,11 @@ import { io, Socket } from "socket.io-client";
 import { useGameData } from "./GameContext";
 import useGameStore from "@/store/useGameStore";
 import router from "next/router";
+import ScoreExplosion from "@/components/game/ScoreExplosion";
 
 interface ScoreBoard {
+  winner: number;
+  ballYPos: number;
   pOneScore: number;
   pTwoScore: number;
 }
@@ -317,6 +320,7 @@ const Game = () => {
         p1Score: score.pOneScore,
         p2Score: score.pTwoScore,
       });
+      // ScoreExplosion({ winPlayer: score.winner, yPos: score.ballYPos });
     });
 
     /* end game and clear screen */
