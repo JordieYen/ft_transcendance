@@ -6,6 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { ChannelUserService } from 'src/chat/channel-user/channel-user.service';
 import { ChannelService } from 'src/chat/channel/channel.service';
 import { CreateChannelDto, JoinChannelDto } from 'src/chat/channel/dto';
 import { User } from 'src/users/decorators/user.decorator';
@@ -22,6 +23,7 @@ export class ChannelGateway implements OnModuleInit {
 
   constructor(
     private readonly channelService: ChannelService,
+    private readonly channelUserService: ChannelUserService,
     private readonly userService: UsersService,
   ) {}
 
@@ -107,6 +109,56 @@ export class ChannelGateway implements OnModuleInit {
           );
           // console.log(channels);
           this.server.emit('search-channels-complete-group', channels);
+        },
+      );
+
+      socket.on('leave-channel', async (channelId, userId) => {
+        const user = await this.userService.findUsersById(userId);
+        const dto: JoinChannelDto = {
+          channel_uid: channelId,
+        };
+        const channel = this.channelService.findChannelById(channelId);
+        try {
+          await this.channelService.leaveChannel(dto, user);
+          // this.server.emit('join-channel-complete');
+          // this.server.emit('channel-created', channel);
+        } catch (error) {
+          console.log('error=', error.message);
+        }
+      });
+
+      socket.on('change-role', async (role, newUserId, channelId, userId) => {
+        const user = await this.userService.findUsersById(userId);
+        try {
+          await this.channelUserService.updateRole(
+            role,
+            newUserId,
+            channelId,
+            user,
+          );
+          // this.server.emit('join-channel-complete');
+          // this.server.emit('channel-created', channel);
+        } catch (error) {
+          console.log('error=', error.message);
+        }
+      });
+
+      socket.on(
+        'mute-user',
+        async (newUserId, channelId, mutedDays, userId) => {
+          const user = await this.userService.findUsersById(userId);
+          try {
+            await this.channelUserService.updateMuteUserByUserIdAndChannelId(
+              newUserId,
+              channelId,
+              mutedDays,
+              user,
+            );
+            // this.server.emit('join-channel-complete');
+            // this.server.emit('channel-created', channel);
+          } catch (error) {
+            console.log('error=', error.message);
+          }
         },
       );
     });

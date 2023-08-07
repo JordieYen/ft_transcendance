@@ -14,6 +14,7 @@ import {
   faPen,
   faPenToSquare,
   faPlus,
+  faScrewdriver,
   faTableTennisPaddleBall,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
@@ -28,12 +29,50 @@ const Roles = ({
   closeModal,
   modalRef,
   channelUser,
+  currentChannelUser,
 }: {
   isOpen: boolean;
   closeModal: () => void;
   modalRef: RefObject<HTMLDivElement>;
   channelUser: any;
+  currentChannelUser: any;
 }) => {
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+  const socket = useContext(SocketContext);
+
+  const setAdmin = async () => {
+    console.log(
+      "user is now admin!",
+      channelUser?.user?.id,
+      channelUser?.channel?.channel_uid,
+    );
+    socket?.emit(
+      "change-role",
+      "admin",
+      channelUser?.user?.id,
+      channelUser?.channel?.channel_uid,
+      userData?.id,
+    );
+  };
+
+  const setUser = async () => {
+    console.log(
+      "user is now user!",
+      channelUser?.user?.id,
+      channelUser?.channel?.channel_uid,
+    );
+    socket?.emit(
+      "change-role",
+      "user",
+      channelUser?.user?.id,
+      channelUser?.channel?.channel_uid,
+      userData?.id,
+    );
+  };
+
   return (
     <>
       {isOpen && (
@@ -49,10 +88,7 @@ const Roles = ({
                 className={
                   channelUser?.role == "user" ? "r-btn-selected" : "r-btn"
                 }
-                // onClick={() => {
-                //   setChannelType("public");
-                //   setProtected(false);
-                // }}
+                onClick={setUser}
               >
                 User
               </button>
@@ -60,10 +96,7 @@ const Roles = ({
                 className={
                   channelUser?.role == "admin" ? "r-btn-selected" : "r-btn"
                 }
-                // onClick={() => {
-                //   setChannelType("protected");
-                //   setProtected(true);
-                // }}
+                onClick={setAdmin}
               >
                 Administrator
               </button>
@@ -90,6 +123,22 @@ const Mute = ({
 }) => {
   let mutedTill: string = channelUser?.mutedUntil;
   let content;
+  const socket = useContext(SocketContext);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
+  const muteUser = async (days: number) => {
+    console.log("user is being muted for ", days, " days");
+    socket?.emit(
+      "mute-user",
+      channelUser?.user?.id,
+      channelUser?.channel?.channel_uid,
+      days,
+      userData?.id,
+    );
+  };
 
   if (
     currentChannelUser?.role == "owner" ||
@@ -100,9 +149,9 @@ const Mute = ({
       content = (
         <div>
           <p className="mute-status">Status: {mutedTill}</p>
-          <button className="mute-buttons">Mute for 1 day</button>
-          <button className="mute-buttons">Mute for 3 days</button>
-          <button className="mute-buttons">Mute for 7 days</button>
+          <button className="mute-buttons" onClick={() => {muteUser(1)}}>Mute for 1 day</button>
+          <button className="mute-buttons" onClick={() => {muteUser(3)}}>Mute for 3 days</button>
+          <button className="mute-buttons" onClick={() => {muteUser(7)}}>Mute for 7 days</button>
         </div>
       );
     } else {
@@ -111,7 +160,7 @@ const Mute = ({
           <p className="mute-status-user">
             Status: muted till {mutedTill.substring(0, 10)}
           </p>
-          <button className="unmute-button">Unmute</button>
+          <button className="unmute-button" onClick={() => {muteUser(0)}}>Unmute</button>
         </div>
       );
     }
@@ -168,14 +217,42 @@ const ThreeDots = ({
   channelUser: any;
   currentChannelUser: any;
 }) => {
+  const socket = useContext(SocketContext);
   const [isRolesModalOpen, openRolesModal, closeRolesModal, modalRolesRef] =
     useModal(false);
   const [isMuteModalOpen, openMuteModal, closeMuteModal, modalMuteRef] =
     useModal(false);
 
   let buttons;
+  const router = useRouter();
 
-  if (channelUser?.role == "user") {
+  const handleClick = async (id: number) => {
+    try {
+      console.log("id in handleClick", id);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_NEST_HOST}/users/${id}`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        console.log("response in handleClick", response);
+        const user = await response.json();
+        router.push(`/users/${user.id}`);
+      }
+    } catch (error) {
+      console.log("Error redirect to profile:", error);
+    }
+  };
+
+  const kickUser = async (id: number) => {
+    console.log("kicking user");
+    socket?.emit("leave-channel", channelUser?.channel?.channel_uid, user.id);
+  };
+
+  if (channelUser?.role == "user" || channelUser?.role == "admin") {
     buttons = (
       <div>
         <button className="member-option-button" onClick={openRolesModal}>
@@ -184,8 +261,29 @@ const ThreeDots = ({
         <button className="member-option-button" onClick={openMuteModal}>
           Mute
         </button>
-        <button className="member-option-button">Check</button>
-        <button className="member-option-button">More...</button>
+        <button
+          className="member-option-button"
+          onClick={() => kickUser(user?.id)}
+        >
+          Kick
+        </button>
+        <button
+          className="member-option-button"
+          onClick={() => handleClick(user?.id)}
+        >
+          Check
+        </button>
+      </div>
+    );
+  } else if (channelUser?.role == "owner") {
+    buttons = (
+      <div>
+        <button
+          className="member-option-button"
+          onClick={() => handleClick(user?.id)}
+        >
+          Check
+        </button>
       </div>
     );
   }
@@ -206,6 +304,7 @@ const ThreeDots = ({
                 closeModal={closeRolesModal}
                 modalRef={modalRolesRef}
                 channelUser={channelUser}
+                currentChannelUser={currentChannelUser}
               />
             )}
             {isMuteModalOpen && (
@@ -591,12 +690,6 @@ const DisplayUser = ({
           icon={faCrown}
           size="lg"
           style={{ color: "#d1d0c5" }}
-        />
-        {/* <FontAwesomeIcon
-          className="dots-button"
-          icon={faEllipsisVertical}
-          size="lg"
-          style={{ color: "#d1d0c5" }}
           onClick={() => openModal()}
         />
         {isModalOpen && (
@@ -605,8 +698,10 @@ const DisplayUser = ({
             closeModal={closeModal}
             modalRef={modalRef}
             user={channelUser.user}
+            channelUser={channelUser}
+            currentChannelUser={currentChannelUser}
           />
-        )} */}
+        )}
       </div>
     );
   }
@@ -616,7 +711,7 @@ const DisplayUser = ({
       <p className="members-name">{channelUser?.user?.username}</p>
       <FontAwesomeIcon
         className="dots-button"
-        icon={faEllipsisVertical}
+        icon={channelUser?.role == "user" ? faEllipsisVertical : faScrewdriver}
         size="lg"
         style={{ color: "#d1d0c5" }}
         onClick={() => openModal()}
@@ -833,6 +928,13 @@ const MembersMore = ({
     modalChangeChannelPasswordRef,
   ] = useModal(false);
 
+  const socket = useContext(SocketContext);
+
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
   let buttons;
 
   if (channelUser?.role == "owner") {
@@ -874,6 +976,11 @@ const MembersMore = ({
     );
   }
 
+  const handleLeave = async () => {
+    console.log("I left");
+    socket?.emit("leave-channel", channel?.channel_uid, userData.id);
+  };
+
   return (
     <>
       {isOpen && (
@@ -892,14 +999,19 @@ const MembersMore = ({
               Created at &nbsp;&nbsp;: {channel?.createdAt}
             </p>
             {buttons}
-            <button className="mm-leave-channel">Leave Channel</button>
+            <button className="mm-leave-channel" onClick={handleLeave}>
+              Leave Channel
+            </button>
           </div>
         </div>
       )}
     </>
   );
 };
+
 import { useRouter } from "next/router";
+import { channel } from "diagnostics_channel";
+import UserData from "@/hooks/userData";
 
 const ChatBox: React.FC<any> = () => {
   const [chat_slide_out, setChatSlideOut] = useState(false);

@@ -7,9 +7,16 @@ import { MessageModule } from 'src/chat/message/message.module';
 import { GameGateway } from './game_gateway';
 import { ChannelModule } from 'src/chat/channel/channel.module';
 import { ChannelGateway } from './channelGateway';
+import { ChannelUserModule } from 'src/chat/channel-user/channel-user.module';
 
 @Module({
-  imports: [FriendModule, UsersModule, MessageModule, ChannelModule],
+  imports: [
+    FriendModule,
+    UsersModule,
+    MessageModule,
+    ChannelModule,
+    ChannelUserModule,
+  ],
   providers: [FriendGateway, MessageGateway, GameGateway, ChannelGateway],
 })
 export class GatewayModule {}
