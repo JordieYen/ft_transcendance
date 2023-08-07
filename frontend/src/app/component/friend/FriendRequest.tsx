@@ -24,7 +24,6 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
 
   useEffect(() => {
     if (userId) {
-      // socket?.emit('join', `${userId}`);
       socket?.on('friend-request', handleFriendRequestReceived);
       const storedStatus = localStorage.getItem("friendRequestStatus");
       if (storedStatus) {
