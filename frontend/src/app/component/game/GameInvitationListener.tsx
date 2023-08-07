@@ -22,8 +22,9 @@ const GameInvitationListener = () => {
       player2User,
       isLoadingScreenVisible,
     );
-    // socket?.on('invite-game', (data: any) => handleInviteGame(data));
+    
     const handleInvite = (data: { user: UserData; friend: UserData }) => {
+      console.log("handleInvite");
       handleInviteGame(data);
     };
 
