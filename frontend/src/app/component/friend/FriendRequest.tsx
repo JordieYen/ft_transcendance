@@ -37,7 +37,6 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
       fetchFriendRequests();
     }
     return () => {
-      socket?.emit('leave-room');
       socket?.off('friend-request', handleFriendRequestReceived);
     };
   }, [socket, userId]);
