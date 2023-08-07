@@ -892,8 +892,16 @@ const ChangeChannelType = ({
   channel: any;
   channelUser: any;
 }) => {
+  const [newChannelPassword, setNewChannelPassword] = useState("");
   const [channelType, setChannelType] = useState("");
   const [isProtected, setProtected] = useState(false);
+
+  const socket = useContext(SocketContext);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
   let displayPublic = "";
   let displayProtected = "";
   let displayPrivate = "";
@@ -905,6 +913,31 @@ const ChangeChannelType = ({
   } else if (channel?.channel_type == "private") {
     displayPrivate = "none";
   }
+
+  const handleNewChannelPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setNewChannelPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("changing channel type", channelType, newChannelPassword);
+    if (channelType != "") {
+      if (channelType != "protected" || newChannelPassword != '') {
+        console.log("change!");
+        socket?.emit(
+          "change-channel-type",
+          channel?.channel_uid,
+          channelType,
+          newChannelPassword,
+          userData?.id,
+          );
+      }
+    }
+    setNewChannelPassword("");
+    closeModal();
+  };
 
   return (
     <>
@@ -957,10 +990,10 @@ const ChangeChannelType = ({
               }`}
               type="text"
               placeholder=" Password"
-              // value={channelPassword}
-              // onChange={handleChannelPasswordChange}
+              value={newChannelPassword}
+              onChange={handleNewChannelPasswordChange}
             />
-            <button className="cct-submit">Change</button>
+            <button className="cct-submit" onClick={handleSubmit}>Change</button>
           </div>
         </div>
       )}

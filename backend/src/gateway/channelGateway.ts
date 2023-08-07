@@ -180,6 +180,25 @@ export class ChannelGateway implements OnModuleInit {
           }
         },
       );
+
+      socket.on(
+        'change-channel-type',
+        async (channelId, newChanneltype, newPassword, userId) => {
+          const user = await this.userService.findUsersById(userId);
+          try {
+            await this.channelService.changeChannelType(
+              channelId,
+              newChanneltype,
+              newPassword,
+              user,
+            );
+            // this.server.emit('join-channel-complete');
+            // this.server.emit('channel-created', channel);
+          } catch (error) {
+            console.log('error=', error.message);
+          }
+        },
+      );
     });
   }
 }

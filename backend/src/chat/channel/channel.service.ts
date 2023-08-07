@@ -309,22 +309,64 @@ export class ChannelService {
   ) {
     this.validateUser(user);
     const channel = await this.findChannelById(channelId);
-    // console.log(channel);
+    const channelUser =
+      await this.channelUserService.findChannelUserByChannelIdAndUserId(
+        channelId,
+        user.id,
+      );
 
-    const pwMatches = await argon.verify(channel.channel_hash, oldPassword);
+    if (channelUser.role == 'owner') {
+      const pwMatches = await argon.verify(channel.channel_hash, oldPassword);
 
-    if (!pwMatches) {
-      console.log('Password Mismatch');
-    } else {
-      console.log('Password Matches');
-      if (newPassword != '') {
-        console.log('Password changed');
+      if (!pwMatches) {
+        console.log('Password Mismatch');
+      } else {
+        console.log('Password Matches');
+        if (newPassword != '') {
+          console.log('Password changed');
+          const channel_hash = await argon.hash(newPassword);
+          await this.channelsRepository.save({
+            channel_uid: channelId,
+            channel_hash,
+          });
+        }
+      }
+    }
+  }
+
+  async changeChannelType(
+    channelId: number,
+    newChanneltype: string,
+    newPassword: string,
+    user: User,
+  ) {
+    this.validateUser(user);
+    const channel = await this.findChannelById(channelId);
+    console.log(channel);
+
+    const channelUser =
+      await this.channelUserService.findChannelUserByChannelIdAndUserId(
+        channelId,
+        user.id,
+      );
+
+    if (channelUser.role == 'owner') {
+      if (newChanneltype == 'protected') {
         const channel_hash = await argon.hash(newPassword);
-        const test = await this.channelsRepository.save({
+        const channel_type = newChanneltype;
+        await this.channelsRepository.save({
           channel_uid: channelId,
+          channel_type,
           channel_hash,
         });
-        // console.log(test);
+      } else {
+        const channel_type = newChanneltype;
+        const channel_hash = '';
+        await this.channelsRepository.save({
+          channel_uid: channelId,
+          channel_type,
+          channel_hash,
+        });
       }
     }
 
@@ -334,26 +376,6 @@ export class ChannelService {
     //     channel_type: newChanneltype,
     //   });
     // }
-  }
-
-  async changeChannelType(
-    channelId: number,
-    newChanneltype: string,
-    user: User,
-  ) {
-    this.validateUser(user);
-    const channelUser =
-      await this.channelUserService.findChannelUserByChannelIdAndUserId(
-        channelId,
-        user.id,
-      );
-
-    if (channelUser.role == 'owner') {
-      this.channelsRepository.save({
-        channel_uid: channelId,
-        channel_type: newChanneltype,
-      });
-    }
   }
 
   async deleteChannel(channelId: number, user: User) {
