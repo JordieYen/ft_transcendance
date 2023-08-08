@@ -13,6 +13,7 @@ import {
   MovePaddleParams,
   InitializeGameParams,
   GameInvitationParams,
+  SmashingPaddleParams,
 } from 'src/game/game.interface';
 
 @WebSocketGateway({
@@ -117,6 +118,28 @@ export class GameGateway implements OnModuleInit {
       roomId: param.roomId,
       player: param.player,
       mouseY: param.mouseY,
+      gameInfo: this.gameInfo.get(param.roomId),
+      gameProperties: param.gameProperties,
+    });
+  }
+
+  @SubscribeMessage('active-paddle')
+  activePaddle(client: Socket, param: SmashingPaddleParams) {
+    this.gameService.updatePaddleActiveState({
+      server: this.server,
+      roomId: param.roomId,
+      player: param.player,
+      gameInfo: this.gameInfo.get(param.roomId),
+      gameProperties: param.gameProperties,
+    });
+  }
+
+  @SubscribeMessage('passive-paddle')
+  passivePaddle(client: Socket, param: SmashingPaddleParams) {
+    this.gameService.updatePaddlePassiveState({
+      server: this.server,
+      roomId: param.roomId,
+      player: param.player,
       gameInfo: this.gameInfo.get(param.roomId),
       gameProperties: param.gameProperties,
     });

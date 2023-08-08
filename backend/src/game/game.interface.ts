@@ -6,6 +6,7 @@ export interface Ball {
   position: Vector;
   radius: number;
   speed: Vector;
+  smashSpeed: number;
   maxTimeFrame: number;
   perfectHitZone: number;
   perfectHitDuration: number;
@@ -15,6 +16,7 @@ export interface Paddle {
   width: number;
   height: number;
   position: Vector;
+  holdPosition: Vector;
 }
 
 export interface GameElements {
@@ -32,6 +34,8 @@ export interface GameInfo {
   ball: Body;
   pOneId: number;
   pTwoId: number;
+  pOnePing: number;
+  pTwoPing: number;
   gameStart: number;
   pOneScore: number;
   pTwoScore: number;
@@ -83,6 +87,12 @@ export interface MovePaddleParams {
   gameProperties: GameElements;
 }
 
+export interface SmashingPaddleParams {
+  roomId: string;
+  player: string;
+  gameProperties: GameElements;
+}
+
 export interface GameParams {
   user: UserData;
   roomId: string;
@@ -126,6 +136,22 @@ export interface UpdatePaddleParams {
   roomId: string;
   player: string;
   mouseY: number;
+  gameInfo: GameInfo;
+  gameProperties: GameElements;
+}
+
+export interface UpdatePaddleActiveStateParams {
+  server: Server;
+  roomId: string;
+  player: string;
+  gameInfo: GameInfo;
+  gameProperties: GameElements;
+}
+
+export interface UpdatePaddlePassiveStateParams {
+  server: Server;
+  roomId: string;
+  player: string;
   gameInfo: GameInfo;
   gameProperties: GameElements;
 }

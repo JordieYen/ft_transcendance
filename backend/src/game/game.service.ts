@@ -13,6 +13,8 @@ import {
   AcceptGameInvitationParams,
   DeclineGameInvitationParams,
   CheckGameModeParams,
+  UpdatePaddleActiveStateParams,
+  UpdatePaddlePassiveStateParams,
 } from './game.interface';
 import { FriendService } from 'src/friend/services/friend.service';
 import { MatchHistoryService } from 'src/match-history/services/match-history.service';
@@ -302,6 +304,8 @@ export class GameService {
   initializeGame(param: InitializeGameParams) {
     const pOneId = param.pOneId;
     const pTwoId = param.pTwoId;
+    const pOnePing = 0;
+    const pTwoPing = 0;
     const gameStart = 0;
     const pOneScore = 0;
     const pTwoScore = 0;
@@ -325,6 +329,8 @@ export class GameService {
       ball,
       pOneId,
       pTwoId,
+      pOnePing,
+      pTwoPing,
       gameStart,
       pOneScore,
       pTwoScore,
@@ -355,14 +361,103 @@ export class GameService {
     if (mousePos) param.mouseY = mousePos;
     if (param.player === 'p1') {
       Body.setPosition(param.gameInfo.leftPaddle, {
-        x: param.gameProperties.leftPaddle.position.x,
+        x: param.gameInfo.leftPaddle.position.x,
         y: param.mouseY,
       });
     }
     if (param.player === 'p2') {
       Body.setPosition(param.gameInfo.rightPaddle, {
-        x: param.gameProperties.rightPaddle.position.x,
+        x: param.gameInfo.rightPaddle.position.x,
         y: param.mouseY,
+      });
+    }
+    param.server
+      .to(param.roomId)
+      .emit('left-paddle-position', param.gameInfo.leftPaddle.position);
+    param.server
+      .to(param.roomId)
+      .emit('right-paddle-position', param.gameInfo.rightPaddle.position);
+  }
+
+  /* calculation on perfect timing sweetspot */
+  checkPerfectTiming(param: UpdatePaddleActiveStateParams) {
+    const pOnePing = param.gameInfo.pOnePing;
+    const pTwoPing = param.gameInfo.pTwoPing;
+    const ballPos = param.gameInfo.ball.position;
+    const leftPaddlePos = param.gameInfo.leftPaddle.position;
+    const rightPaddlePos = param.gameInfo.rightPaddle.position;
+    const perfectHitZone = param.gameProperties.ball.perfectHitZone;
+    const perfectHitDuration = param.gameProperties.ball.perfectHitDuration;
+
+    if (pOnePing >= 1 && pOnePing <= perfectHitDuration) {
+      if (
+        ballPos.x > leftPaddlePos.x &&
+        ballPos.x <= leftPaddlePos.x + perfectHitZone &&
+        ballPos.y >= leftPaddlePos.y - perfectHitZone &&
+        ballPos.y <= leftPaddlePos.y + perfectHitZone
+      ) {
+        console.log('p1 smashed', pOnePing);
+        Body.setVelocity(param.gameInfo.ball, {
+          x: param.gameInfo.ball.speed * param.gameProperties.ball.smashSpeed,
+          y: param.gameProperties.ball.speed.y,
+        });
+      }
+    }
+    if (pTwoPing >= 1 && pTwoPing <= perfectHitDuration) {
+      if (
+        ballPos.x < rightPaddlePos.x &&
+        ballPos.x >= rightPaddlePos.x - perfectHitZone &&
+        ballPos.y <= rightPaddlePos.y + perfectHitZone &&
+        ballPos.y >= rightPaddlePos.y - perfectHitZone
+      ) {
+        console.log('p2 smashed', pTwoPing);
+        Body.setVelocity(param.gameInfo.ball, {
+          x: param.gameInfo.ball.speed * param.gameProperties.ball.smashSpeed,
+          y: param.gameProperties.ball.speed.y,
+        });
+      }
+    }
+  }
+
+  /* on key down paddle movement with given input */
+  updatePaddleActiveState(param: UpdatePaddleActiveStateParams) {
+    if (param.player === 'p1') {
+      param.gameInfo.pOnePing++;
+      Body.setPosition(param.gameInfo.leftPaddle, {
+        x: param.gameProperties.leftPaddle.holdPosition.x,
+        y: param.gameInfo.leftPaddle.position.y,
+      });
+    }
+    if (param.player === 'p2') {
+      param.gameInfo.pTwoPing++;
+      Body.setPosition(param.gameInfo.rightPaddle, {
+        x: param.gameProperties.rightPaddle.holdPosition.x,
+        y: param.gameInfo.rightPaddle.position.y,
+      });
+    }
+    this.checkPerfectTiming(param);
+    param.server
+      .to(param.roomId)
+      .emit('left-paddle-position', param.gameInfo.leftPaddle.position);
+    param.server
+      .to(param.roomId)
+      .emit('right-paddle-position', param.gameInfo.rightPaddle.position);
+  }
+
+  /* on key up paddle movement with given input */
+  updatePaddlePassiveState(param: UpdatePaddlePassiveStateParams) {
+    if (param.player === 'p1') {
+      param.gameInfo.pOnePing = 0;
+      Body.setPosition(param.gameInfo.leftPaddle, {
+        x: param.gameProperties.leftPaddle.position.x,
+        y: param.gameInfo.leftPaddle.position.y,
+      });
+    }
+    if (param.player === 'p2') {
+      param.gameInfo.pTwoPing = 0;
+      Body.setPosition(param.gameInfo.rightPaddle, {
+        x: param.gameProperties.rightPaddle.position.x,
+        y: param.gameInfo.rightPaddle.position.y,
       });
     }
     param.server
@@ -496,14 +591,11 @@ export class GameService {
       if (this.checkBallStartPos(param)) {
         clearInterval(startGameInterval);
       }
-    }, 50);
+    }, 15);
   }
 
   /* handle game when it starts */
   handleGameState(param: HandleGameStateParams) {
-    param.server
-      .to(param.roomId)
-      .emit('ball-speed', param.gameProperties.ball.speed);
     Body.setVelocity(param.gameInfo.ball, {
       x: param.gameProperties.ball.speed.x,
       y: param.gameProperties.ball.speed.y,

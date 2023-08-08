@@ -24,6 +24,7 @@ interface Ball {
   position: Vector;
   radius: number;
   speed: Vector;
+  smashSpeed: number;
   maxTimeFrame: number;
   perfectHitZone: number;
   perfectHitDuration: number;
@@ -33,6 +34,7 @@ interface Paddle {
   width: number;
   height: number;
   position: Vector;
+  holdPosition: Vector;
 }
 
 interface GameElements {
@@ -47,10 +49,11 @@ const screenWidth = 2000 / 2;
 const screenHeight = 700;
 
 const borderWidth = screenWidth;
-const borderHeight = 20;
+const borderHeight = 100;
 
 const paddleWidth = 25;
 const paddleHeight = 150;
+const paddleHoldDiff = 15;
 
 const gameProperties: GameElements = {
   screen: { x: screenWidth, y: screenHeight },
@@ -59,19 +62,28 @@ const gameProperties: GameElements = {
     position: { x: screenWidth / 2, y: screenHeight / 2 },
     radius: 20,
     speed: { x: 20, y: 0 },
+    smashSpeed: 1.5,
     maxTimeFrame: 5,
     perfectHitZone: 50,
-    perfectHitDuration: 2,
+    perfectHitDuration: 10,
   },
   leftPaddle: {
     width: paddleWidth,
     height: paddleHeight,
     position: { x: paddleWidth * 2, y: screenHeight / 2 },
+    holdPosition: {
+      x: paddleWidth * 2 - paddleHoldDiff,
+      y: screenHeight / 2,
+    },
   },
   rightPaddle: {
     width: paddleWidth,
     height: paddleHeight,
     position: { x: screenWidth - paddleWidth * 2, y: screenHeight / 2 },
+    holdPosition: {
+      x: screenWidth - paddleWidth * 2 + paddleHoldDiff,
+      y: screenHeight / 2,
+    },
   },
 };
 
@@ -246,13 +258,53 @@ const Game = () => {
         });
       }
 
-      /* start game on " " */
+      /* start game and activate paddle on key press */
       if (" " in keyArr && keyArr[" "].keyPressDown) {
         socket?.emit("start-game", {
           user: currentUser.current,
           roomId: gameState!.roomId,
           gameProperties: gameProperties,
         });
+
+        socket?.emit("active-paddle", {
+          roomId: gameState!.roomId,
+          player: currentPlayer.current,
+          gameProperties: gameProperties,
+        });
+
+        if (currentPlayer.current === "p1") {
+          Matter.Body.setPosition(leftPaddle, {
+            x: gameProperties.leftPaddle.holdPosition.x,
+            y: leftPaddle.position.y,
+          });
+        }
+        if (currentPlayer.current === "p2") {
+          Matter.Body.setPosition(rightPaddle, {
+            x: gameProperties.rightPaddle.holdPosition.x,
+            y: rightPaddle.position.y,
+          });
+        }
+      }
+
+      /* deactivate paddle on key release */
+      if (" " in keyArr && !keyArr[" "].keyPressDown) {
+        socket?.emit("passive-paddle", {
+          roomId: gameState!.roomId,
+          player: currentPlayer.current,
+          gameProperties: gameProperties,
+        });
+        if (currentPlayer.current === "p1") {
+          Matter.Body.setPosition(leftPaddle, {
+            x: gameProperties.leftPaddle.position.x,
+            y: leftPaddle.position.y,
+          });
+        }
+        if (currentPlayer.current === "p2") {
+          Matter.Body.setPosition(rightPaddle, {
+            x: gameProperties.rightPaddle.position.x,
+            y: rightPaddle.position.y,
+          });
+        }
       }
     });
 
@@ -369,36 +421,6 @@ const Game = () => {
   //         });
   //       }
   //     }
-  //     /* move left paddle position backwards */
-  //     const paddle = Matter.Bodies.rectangle(
-  //       gameProperties.leftPaddle.position.x - 15,
-  //       leftPaddle.position.y,
-  //       gameProperties.leftPaddle.width,
-  //       gameProperties.leftPaddle.height,
-  //       {
-  //         isStatic: true,
-  //         density: 0.1,
-  //         friction: 0.2,
-  //         restitution: 0.8,
-  //       },
-  //     );
-  //     Matter.World.remove(engine.world, leftPaddle);
-  //     Matter.World.add(engine.world, paddle);
-  //     leftPaddle = paddle;
-  //   }
-  //   /* reset left paddle position to default on key release */
-  //   if (" " in keyArr && !keyArr[" "].keyPressDown) {
-  //     const paddle = Matter.Bodies.rectangle(
-  //       gameProperties.leftPaddle.position.x,
-  //       leftPaddle.position.y,
-  //       gameProperties.leftPaddle.width,
-  //       gameProperties.leftPaddle.height,
-  //       { isStatic: true },
-  //     );
-  //     Matter.World.remove(engine.world, leftPaddle);
-  //     Matter.World.add(engine.world, paddle);
-  //     leftPaddle = paddle;
-  //   }
   // });
 
   return null;
