@@ -12,6 +12,7 @@ import {
   InitializeGameParams,
   AcceptGameInvitationParams,
   DeclineGameInvitationParams,
+  CheckGameModeParams,
 } from './game.interface';
 import { FriendService } from 'src/friend/services/friend.service';
 import { MatchHistoryService } from 'src/match-history/services/match-history.service';
@@ -59,6 +60,23 @@ export class GameService {
       }
     }
     return {};
+  }
+
+  /* set current room */
+  checkGameMode(param: CheckGameModeParams) {
+    if (param.gameMode === 'classic') {
+      param.user.gameMode = param.gameMode;
+      return param.classicRooms;
+    } else {
+      param.user.gameMode = param.gameMode;
+      return param.rankingRooms;
+    }
+  }
+
+  /* set current room */
+  getGameMode(param: CheckGameModeParams) {
+    if (param.user.gameMode === 'classic') return param.classicRooms;
+    else return param.rankingRooms;
   }
 
   /* join a user into a room */
@@ -299,7 +317,6 @@ export class GameService {
       param.gameProperties.rightPaddle,
     );
     const ball = this.initializeBall(engine, param.gameProperties);
-    console.log('Game started');
     return {
       engine,
       leftPaddle,

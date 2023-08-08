@@ -51,10 +51,18 @@ export interface UserData {
   stat: Stat;
   userAchievement: string;
   firstTimeLogin: boolean;
+  gameMode: string;
   socketId: string;
 }
 
 /* game_gateway.ts Params */
+
+export interface CheckGameModeParams {
+  user: UserData;
+  gameMode: string;
+  classicRooms: Map<string, UserData[]>;
+  rankingRooms: Map<string, UserData[]>;
+}
 
 export interface GameInvitationParams {
   user: UserData;
@@ -75,12 +83,8 @@ export interface MovePaddleParams {
   gameProperties: GameElements;
 }
 
-export interface StartGameParams {
-  roomId: string;
-  gameProperties: GameElements;
-}
-
-export interface EndGameParams {
+export interface GameParams {
+  user: UserData;
   roomId: string;
   gameProperties: GameElements;
 }

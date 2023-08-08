@@ -9,8 +9,7 @@ import { Socket, Server } from 'socket.io';
 import {
   UserData,
   GameInfo,
-  StartGameParams,
-  EndGameParams,
+  GameParams,
   MovePaddleParams,
   InitializeGameParams,
   GameInvitationParams,
@@ -25,7 +24,8 @@ import {
 export class GameGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
-  rooms: Map<string, UserData[]> = new Map<string, UserData[]>();
+  classicRooms: Map<string, UserData[]> = new Map<string, UserData[]>();
+  rankingRooms: Map<string, UserData[]> = new Map<string, UserData[]>();
   privateRooms: Map<string, UserData[]> = new Map<string, UserData[]>();
   gameInfo: Map<string, GameInfo> = new Map<string, GameInfo>();
 
@@ -36,12 +36,19 @@ export class GameGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('join-room')
-  JoinRoom(client: Socket, data: { user: UserData }) {
+  JoinRoom(client: Socket, data: { user: UserData; gameMode: string }) {
     data.user.socketId = client.id;
+    console.log('gameMode from frontend', data.gameMode);
+    const currentRoom = this.gameService.checkGameMode({
+      user: data.user,
+      gameMode: data.gameMode,
+      classicRooms: this.classicRooms,
+      rankingRooms: this.rankingRooms,
+    });
     this.gameService.joinRooms({
       server: this.server,
       client: client,
-      rooms: this.rooms,
+      rooms: currentRoom,
       user: data.user,
     });
   }
@@ -72,7 +79,6 @@ export class GameGateway implements OnModuleInit {
 
   @SubscribeMessage('decline-game-invitation')
   declineGameInvitation(client: Socket, param: GameInvitationParams) {
-    param.friend.socketId = client.id;
     this.gameService.declineInvitation({
       server: this.server,
       rooms: this.privateRooms,
@@ -82,10 +88,16 @@ export class GameGateway implements OnModuleInit {
 
   @SubscribeMessage('clear-room')
   clearRoom(client: Socket, param: { roomId: string; user: UserData }) {
+    const currentRoom = this.gameService.getGameMode({
+      user: param.user,
+      gameMode: null,
+      classicRooms: this.classicRooms,
+      rankingRooms: this.rankingRooms,
+    });
     this.gameService.leaveRoom({
       server: this.server,
       roomId: param.roomId,
-      rooms: this.rooms,
+      rooms: currentRoom,
       games: this.gameInfo,
       gameInfo: this.gameInfo.get(param.roomId),
       user: param.user,
@@ -110,12 +122,18 @@ export class GameGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('start-game')
-  startGame(client: Socket, param: StartGameParams) {
+  startGame(client: Socket, param: GameParams) {
     if (this.gameInfo.get(param.roomId).gameStart < 1) {
+      const currentRoom = this.gameService.getGameMode({
+        user: param.user,
+        gameMode: null,
+        classicRooms: this.classicRooms,
+        rankingRooms: this.rankingRooms,
+      });
       this.gameService.handleGameState({
         server: this.server,
         roomId: param.roomId,
-        rooms: this.rooms,
+        rooms: currentRoom,
         games: this.gameInfo,
         gameInfo: this.gameInfo.get(param.roomId),
         gameProperties: param.gameProperties,
@@ -125,19 +143,7 @@ export class GameGateway implements OnModuleInit {
     }
   }
 
-  @SubscribeMessage('end-game')
-  endGame(client: Socket, param: EndGameParams) {
-    this.gameService.gameOver({
-      server: this.server,
-      roomId: param.roomId,
-      rooms: this.rooms,
-      games: this.gameInfo,
-      gameInfo: this.gameInfo.get(param.roomId),
-      gameProperties: param.gameProperties,
-    });
-  }
-
   handleDisconnect() {
-    console.log('disconnected from game socket gateway');
+    // does something on Module disconnect
   }
 }
