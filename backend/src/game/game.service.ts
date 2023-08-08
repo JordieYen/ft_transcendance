@@ -67,16 +67,17 @@ export class GameService {
     if (param.gameMode === 'classic') {
       param.user.gameMode = param.gameMode;
       return param.classicRooms;
-    } else {
+    } else if (param.gameMode === 'custom') {
       param.user.gameMode = param.gameMode;
       return param.rankingRooms;
-    }
+    } else return null;
   }
 
   /* set current room */
   getGameMode(param: CheckGameModeParams) {
     if (param.user.gameMode === 'classic') return param.classicRooms;
-    else return param.rankingRooms;
+    else if (param.user.gameMode === 'custom') return param.rankingRooms;
+    else return null;
   }
 
   /* join a user into a room */

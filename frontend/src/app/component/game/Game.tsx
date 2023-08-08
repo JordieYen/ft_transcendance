@@ -249,7 +249,7 @@ const Game = () => {
       /* start game on " " */
       if (" " in keyArr && keyArr[" "].keyPressDown) {
         socket?.emit("start-game", {
-          user: currentPlayer,
+          user: currentUser.current,
           roomId: gameState!.roomId,
           gameProperties: gameProperties,
         });

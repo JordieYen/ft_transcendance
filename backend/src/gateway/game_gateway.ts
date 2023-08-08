@@ -38,19 +38,20 @@ export class GameGateway implements OnModuleInit {
   @SubscribeMessage('join-room')
   JoinRoom(client: Socket, data: { user: UserData; gameMode: string }) {
     data.user.socketId = client.id;
-    console.log('gameMode from frontend', data.gameMode);
     const currentRoom = this.gameService.checkGameMode({
       user: data.user,
       gameMode: data.gameMode,
       classicRooms: this.classicRooms,
       rankingRooms: this.rankingRooms,
     });
-    this.gameService.joinRooms({
-      server: this.server,
-      client: client,
-      rooms: currentRoom,
-      user: data.user,
-    });
+    if (currentRoom) {
+      this.gameService.joinRooms({
+        server: this.server,
+        client: client,
+        rooms: currentRoom,
+        user: data.user,
+      });
+    }
   }
 
   @SubscribeMessage('invite-game')
