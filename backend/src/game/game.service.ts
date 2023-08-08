@@ -75,7 +75,6 @@ export class GameService {
         );
         roomId = existingRoomId;
         param.client.emit('in-room', roomId);
-        console.log('User is already in a room');
         return;
       }
     }
@@ -196,7 +195,6 @@ export class GameService {
 
       // if room is empty, delete room and emit room-closed
       if (updatedRoomPlayers.length === 0) {
-        console.log('both players left the game');
         this.gameOver({
           server: param.server,
           roomId: param.roomId,
@@ -205,7 +203,6 @@ export class GameService {
           gameInfo: param.gameInfo,
           gameProperties: null,
         });
-        console.log('after game over');
         param.server.to(param.roomId).emit('room-closed');
       }
     }
@@ -219,7 +216,6 @@ export class GameService {
     engine.gravity.y = 0;
     Runner.run(runner, engine);
 
-    console.log('Game engine started');
     return engine;
   }
 
@@ -243,7 +239,6 @@ export class GameService {
 
     /* add borders into world */
     Composite.add(engine.world, [topBorder, botBorder]);
-    console.log('added borders into engine');
   }
 
   /* initializes paddle */
@@ -259,7 +254,6 @@ export class GameService {
     /* add paddle into world */
     Composite.add(engine.world, [paddle]);
 
-    console.log('added paddle into engine');
     return paddle;
   }
 
@@ -282,7 +276,6 @@ export class GameService {
     /* add paddle into world */
     Composite.add(engine.world, [ball]);
 
-    console.log('added ball into engine');
     return ball;
   }
 
@@ -306,6 +299,7 @@ export class GameService {
       param.gameProperties.rightPaddle,
     );
     const ball = this.initializeBall(engine, param.gameProperties);
+    console.log('Game started');
     return {
       engine,
       leftPaddle,
@@ -374,11 +368,12 @@ export class GameService {
 
   /* ends game and remove everything */
   gameOver(param: HandleGameStateParams) {
-    console.log('Game Over');
-    World.clear(param.gameInfo.engine.world, true);
-    Engine.clear(param.gameInfo.engine);
-    this.clearRoomIdInFriend(param.gameInfo.pOneId);
-    this.clearRoomIdInFriend(param.gameInfo.pTwoId);
+    if (param.gameInfo) {
+      World.clear(param.gameInfo.engine.world, true);
+      Engine.clear(param.gameInfo.engine);
+      this.clearRoomIdInFriend(param.gameInfo.pOneId);
+      this.clearRoomIdInFriend(param.gameInfo.pTwoId);
+    }
     param.games.delete(param.roomId);
     param.rooms.delete(param.roomId);
     param.server.to(param.roomId).emit('room-closed');
@@ -404,6 +399,7 @@ export class GameService {
       });
 
       param.server.to(param.roomId).emit('game-over');
+      console.log('Game Over');
       this.gameOver(param);
     }
   }

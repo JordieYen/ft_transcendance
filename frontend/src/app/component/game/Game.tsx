@@ -148,8 +148,6 @@ const Game = () => {
     state.setGameData,
   ]);
 
-  console.log("GAME STATE", gameState);
-
   const socket = useContext(SocketContext);
   // const socket = io("http://localhost:3000");
 
@@ -162,15 +160,12 @@ const Game = () => {
         gameProperties: gameProperties,
       });
       if (gameState!.player1User.socketId === socket.id) {
-        console.log("is player 1");
         currentPlayer.current = "p1";
         currentUser.current = gameState!.player1User;
       } else if (gameState!.player2User.socketId === socket.id) {
-        console.log("is player 2");
         currentPlayer.current = "p2";
         currentUser.current = gameState!.player2User;
       }
-      console.log("current player", socket.id);
     }
 
     const keyArr: { [key: string]: KeyType } = {};
@@ -215,14 +210,12 @@ const Game = () => {
         keyArr[event.key].pressDuration <= gameProperties.ball.maxTimeFrame
       )
         keyArr[event.key].pressDuration += 1;
-      console.log("keydown ", keyArr[event.key]);
     };
 
     /* handle key up */
     const handleKeyUp = (event: KeyboardEvent) => {
       keyArr[event.key].keyPressDown = false;
       keyArr[event.key].pressDuration = 0;
-      console.log("keyup ", keyArr[event.key]);
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -316,7 +309,6 @@ const Game = () => {
 
     /* end game and clear screen */
     const endGame = () => {
-      console.log("interval", currentPlayer.current);
       clearInterval(movePaddleInterval);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
