@@ -897,15 +897,30 @@ const DisplayMessage = ({
 }) => {
   if (message?.message_type == "invite") {
     return (
-      <li>
-        <div className="invite">
-          <p>{message?.sender?.username} sent an Invite!</p>
-          <div className="invite-request">
-            <button className="ir-button">accept</button>
-            <button className="ir-button">decline</button>
+      <div>
+        <li className="list-item" key={index}>
+          <p
+            className={`sender-name ${
+              messages[index - 1]?.sender?.username !==
+              message?.sender?.username
+                ? null
+                : "invisible"
+            }`}
+          >
+            {message?.sender?.username}
+          </p>
+          <p className="sender-message"></p>
+        </li>
+        <li>
+          <div className="invite">
+            <p>{message?.sender?.username} sent an Invite!</p>
+            <div className="invite-request">
+              <button className="ir-button">accept</button>
+              <button className="ir-button">decline</button>
+            </div>
           </div>
-        </div>
-      </li>
+        </li>
+      </div>
     );
   }
 
@@ -1530,7 +1545,18 @@ const ChatBox: React.FC<any> = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim() !== "") {
-      socket?.emit("send-message", inputValue, "text", channelId, userData.id);
+      const mutedTill: string = currentChannelUser?.mutedUntil;
+      if (currentChannelUser?.status != "banned" && mutedTill == undefined) {
+        socket?.emit(
+          "send-message",
+          inputValue,
+          "text",
+          channelId,
+          userData.id,
+        );
+      } else {
+        console.log("error : unable to send message");
+      }
       setInputValue("");
     }
   };
