@@ -17,6 +17,7 @@ import {
   faScrewdriver,
   faTableTennisPaddleBall,
   faUserGroup,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
@@ -250,6 +251,10 @@ const ThreeDots = ({
     useModal(false);
   const [isMuteModalOpen, openMuteModal, closeMuteModal, modalMuteRef] =
     useModal(false);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
 
   let buttons;
   const router = useRouter();
@@ -280,29 +285,79 @@ const ThreeDots = ({
     socket?.emit("leave-channel", channelUser?.channel?.channel_uid, user.id);
   };
 
+  const banUser = async (id: number) => {
+    console.log("banning user", channelUser?.status);
+    console.log(channelUser?.user?.id, channelUser?.channel?.channel_uid);
+    if (channelUser?.status == "null") {
+      socket?.emit(
+        "ban-from-channel",
+        "banned",
+        channelUser?.user?.id,
+        channelUser?.channel?.channel_uid,
+        userData.id,
+      );
+    } else {
+      socket?.emit(
+        "ban-from-channel",
+        "null",
+        channelUser?.user?.id,
+        channelUser?.channel?.channel_uid,
+        userData.id,
+      );
+    }
+  };
+
   if (channelUser?.role == "user" || channelUser?.role == "admin") {
-    buttons = (
-      <div>
-        <button className="member-option-button" onClick={openRolesModal}>
-          Role
-        </button>
-        <button className="member-option-button" onClick={openMuteModal}>
-          Mute
-        </button>
-        <button
-          className="member-option-button"
-          onClick={() => kickUser(user?.id)}
-        >
-          Kick
-        </button>
-        <button
-          className="member-option-button"
-          onClick={() => handleClick(user?.id)}
-        >
-          Check
-        </button>
-      </div>
-    );
+    if (
+      currentChannelUser?.role == "owner" ||
+      currentChannelUser?.role == "admin"
+    ) {
+      buttons = (
+        <div>
+          <button className="member-option-button" onClick={openRolesModal}>
+            Role
+          </button>
+          <button className="member-option-button" onClick={openMuteModal}>
+            Mute
+          </button>
+          <button
+            className="member-option-button"
+            onClick={() => kickUser(user?.id)}
+          >
+            Kick
+          </button>
+          <button
+            className="member-option-button"
+            onClick={() => banUser(user?.id)}
+          >
+            {channelUser?.status == "null" ? "Ban" : "Unban"}
+          </button>
+          <button
+            className="member-option-button"
+            onClick={() => handleClick(user?.id)}
+          >
+            Check
+          </button>
+        </div>
+      );
+    } else {
+      buttons = (
+        <div>
+          <button className="member-option-button" onClick={openRolesModal}>
+            Role
+          </button>
+          <button className="member-option-button" onClick={openMuteModal}>
+            Mute
+          </button>
+          <button
+            className="member-option-button"
+            onClick={() => handleClick(user?.id)}
+          >
+            Check
+          </button>
+        </div>
+      );
+    }
   } else if (channelUser?.role == "owner") {
     buttons = (
       <div>
@@ -408,6 +463,7 @@ const CreateChat = ({
       setChannelName("");
       setChannelType("");
       setChannelPassword("");
+      await closeModal();
     }
 
     if (channelPassword != "") {
@@ -529,6 +585,7 @@ const JoinChat = ({
     if (channelPassword != "") {
       setChannelPassword("");
     }
+    await closeModal();
   };
 
   return (
@@ -602,6 +659,7 @@ const BrowseChats = ({
   modalRef: RefObject<HTMLDivElement>;
   // user: any;
 }) => {
+  const [refresh, setRefresh] = useState(0);
   const [channelType, setChannelType] = useState("all");
   const [channels, setChannels] = useState<any[]>([]);
 
@@ -615,7 +673,13 @@ const BrowseChats = ({
   useEffect(() => {
     changeChannelTypeSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelType]);
+  }, [channelType, refresh]);
+
+  useEffect(() => {
+    socket?.on("refresh-data", async function () {
+      setRefresh(refresh + 1);
+    });
+  }, [socket, refresh]);
 
   useEffect(() => {
     socket?.on("search-channels-complete", async (new_channels: any) => {
@@ -624,20 +688,61 @@ const BrowseChats = ({
     });
   }, [socket, channels]);
 
-  const changeChannelTypeSearch = () => {
-    socket?.emit("search-channel-type", channelType, userData.id);
+  const changeChannelTypeSearch = async () => {
+    try {
+      let response;
+      if (channelType == "all") {
+        response = await fetch("http://localhost:3000/channel/typeall", {
+          method: "GET",
+          credentials: "include",
+        });
+      } else {
+        response = await fetch(
+          "http://localhost:3000/channel/typeid/" + channelType,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+      }
+      if (response.ok) {
+        const Data = await response.json();
+        setChannels(Data);
+      } else {
+        throw new Error("Messages not found");
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
   };
 
-  const handleChannelSearchChange = (
+  const handleChannelSearchChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    // console.log(e.target.value);
-    socket?.emit(
-      "search-channel-with-name",
-      channelType,
-      e.target.value,
-      userData.id,
-    );
+    try {
+      if (e.target.value == "") {
+        changeChannelTypeSearch();
+      } else {
+        const response = await fetch(
+          "http://localhost:3000/channel/typesearch/" +
+            channelType +
+            "/" +
+            e.target.value,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+        if (response.ok) {
+          const Data = await response.json();
+          setChannels(Data);
+        } else {
+          throw new Error("Messages not found");
+        }
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
   };
 
   return (
@@ -716,6 +821,29 @@ const DisplayUser = ({
         <FontAwesomeIcon
           className="dots-button"
           icon={faCrown}
+          size="lg"
+          style={{ color: "#d1d0c5" }}
+          onClick={() => openModal()}
+        />
+        {isModalOpen && (
+          <ThreeDots
+            isOpen={isModalOpen}
+            closeModal={closeModal}
+            modalRef={modalRef}
+            user={channelUser.user}
+            channelUser={channelUser}
+            currentChannelUser={currentChannelUser}
+          />
+        )}
+      </div>
+    );
+  } else if (channelUser?.status == "banned") {
+    return (
+      <div className="members relative">
+        <p className="members-name">{channelUser?.user?.username}</p>
+        <FontAwesomeIcon
+          className="dots-button"
+          icon={faXmark}
           size="lg"
           style={{ color: "#d1d0c5" }}
           onClick={() => openModal()}
@@ -924,7 +1052,7 @@ const ChangeChannelType = ({
     e.preventDefault();
     console.log("changing channel type", channelType, newChannelPassword);
     if (channelType != "") {
-      if (channelType != "protected" || newChannelPassword != '') {
+      if (channelType != "protected" || newChannelPassword != "") {
         console.log("change!");
         socket?.emit(
           "change-channel-type",
@@ -932,7 +1060,7 @@ const ChangeChannelType = ({
           channelType,
           newChannelPassword,
           userData?.id,
-          );
+        );
       }
     }
     setNewChannelPassword("");
@@ -993,7 +1121,9 @@ const ChangeChannelType = ({
               value={newChannelPassword}
               onChange={handleNewChannelPasswordChange}
             />
-            <button className="cct-submit" onClick={handleSubmit}>Change</button>
+            <button className="cct-submit" onClick={handleSubmit}>
+              Change
+            </button>
           </div>
         </div>
       )}
@@ -1113,6 +1243,7 @@ import { channel } from "diagnostics_channel";
 import UserData from "@/hooks/userData";
 
 const ChatBox: React.FC<any> = () => {
+  const [refresh, setRefresh] = useState(0);
   const [chat_slide_out, setChatSlideOut] = useState(false);
   const [group_slide_out, setGroupSlideOut] = useState(false);
   const [chat_members_slide_out, setChatMembersSlideOut] = useState(false);
@@ -1171,11 +1302,17 @@ const ChatBox: React.FC<any> = () => {
     fetchCurrentChannelData();
     fetchCurrentChannelUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userData, channelId]);
+  }, [userData, channelId, refresh]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    socket?.on("refresh-data", async function () {
+      setRefresh(refresh + 1);
+    });
+  }, [socket, refresh]);
 
   useEffect(() => {
     socket?.on(
@@ -1226,14 +1363,9 @@ const ChatBox: React.FC<any> = () => {
           credentials: "include",
         },
       );
-      // const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/message`, {
-      //   method: "GET",
-      //   credentials: "include",
-      // });
       if (response.ok) {
         const messageData = await response.json();
         setMessages(messageData);
-        // console.log("message", messages);
       } else {
         throw new Error("Messages not found");
       }
@@ -1417,8 +1549,28 @@ const ChatBox: React.FC<any> = () => {
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     // console.log(e.target.value);
-    // socket?.emit("search-channel-with-name-group");
-    socket?.emit("search-channel-with-name-group", e.target.value, userData.id);
+    // socket?.emit("search-channel-with-name-group", e.target.value, userData.id);
+    try {
+      if (e.target.value == "") {
+        fetchChannelData();
+      } else {
+        const response = await fetch(
+          "http://localhost:3000/channel/searchgroup/" + e.target.value,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+        if (response.ok) {
+          const Data = await response.json();
+          setChannels(Data);
+        } else {
+          throw new Error("Messages not found");
+        }
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
   };
 
   return (

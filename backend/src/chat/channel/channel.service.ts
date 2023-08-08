@@ -134,7 +134,7 @@ export class ChannelService {
   async searchChannelsGroup(name: string, userId: number) {
     return await this.channelsRepository.find({
       where: {
-        channelUser: { user: { id: userId } },
+        channelUser: { user: { id: userId }, status: Status.Null },
         channel_name: ILike('%' + name + '%'),
       },
     });
