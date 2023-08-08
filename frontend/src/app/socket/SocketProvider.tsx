@@ -1,5 +1,5 @@
 
-import useUserStore from "@/store/useUserStore";
+import useUserStore, { UserData } from "@/store/useUserStore";
 import { loadWebFont } from "pixi.js";
 import { useState, createContext, useContext, use, useEffect, ReactNode } from "react";
 import { io, Socket } from 'socket.io-client';
@@ -26,11 +26,17 @@ export const SocketProvider =  ({ children }: SocketProviderProps) => {
             console.log('Connected to socket server', socket.id);
         });
         setSocket(socket);
-        window.addEventListener('beforeunload', () => {
+        const disconnectSocket = () => {
+            if (userData?.id) {
+                socket.emit('leave-room', userData.id);
+            }
             socket.disconnect();
+        };
+        window.addEventListener('beforeunload', () => {
+            disconnectSocket
         });
         return () => {
-            socket.disconnect();
+            disconnectSocket
             window.removeEventListener('beforeunload', () => {});
         }
     }, []);
@@ -39,9 +45,6 @@ export const SocketProvider =  ({ children }: SocketProviderProps) => {
         if (userData) {
             console.log('Joining room', userData.id);
             socket?.emit('join', userData.id);
-        }
-        return () => {
-            socket?.emit('leave-room', userData?.id);
         }
     }, [userData]);
 
@@ -52,21 +55,15 @@ export const SocketProvider =  ({ children }: SocketProviderProps) => {
     useEffect(() => {
         document.addEventListener('mousemove', handleUserActivity);
         document.addEventListener('keydown', handleUserActivity);
-        socket?.on('online-status-changed', (isOnline: boolean) => {
-            console.log('online-status-changed', isOnline);
-            // setUserData((prevUserData: UserData) => ({ 
-            //     ...prevUserData,
-            //     online: isOnline,
-            // }));
-            
-        });
-    
+        // socket?.on('online-status-changed', (isOnline: boolean) => {
+        //     console.log('online-status-changed', isOnline);
+        //     setUserData({ ...userData, online: isOnline });
+        // });
         return () => {
           document.removeEventListener('mousemove', handleUserActivity);
           document.removeEventListener('keydown', handleUserActivity);
         };
-    // }, [socket]);
-    }, []);
+    }, [socket]);
 
     return (
         <SocketContext.Provider value={socket}>

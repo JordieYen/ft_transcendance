@@ -24,7 +24,6 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
 
   useEffect(() => {
     if (userId) {
-      // socket?.emit('join', `${userId}`);
       socket?.on('friend-request', handleFriendRequestReceived);
       const storedStatus = localStorage.getItem("friendRequestStatus");
       if (storedStatus) {
@@ -37,7 +36,6 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
       fetchFriendRequests();
     }
     return () => {
-      socket?.emit('leave-room');
       socket?.off('friend-request', handleFriendRequestReceived);
     };
   }, [socket, userId]);

@@ -34,6 +34,7 @@ const Roles = ({
   modalRef: RefObject<HTMLDivElement>;
   channelUser: any;
 }) => {
+
   return (
     <>
       {isOpen && (
@@ -900,6 +901,8 @@ const MembersMore = ({
   );
 };
 import { useRouter } from "next/router";
+import MatchMakingButton from "../game/MatchMakingButton";
+import ChooseGameMode from "../game/ChooseGameMode";
 
 const ChatBox: React.FC<any> = () => {
   const [chat_slide_out, setChatSlideOut] = useState(false);
@@ -950,6 +953,21 @@ const ChatBox: React.FC<any> = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  /**** game part begin *******/
+  const [selectedGameMode, setSelectedGameMode] = useState<string>("");
+
+  const handleSelectGameMode = (gameMode: any) => {
+    setSelectedGameMode(gameMode);
+  };
+
+  const [isMatchmaking, setIsMatchmaking] = useState(false);
+
+  const handleMatchmaking = () => {
+    setIsMatchmaking(!isMatchmaking);
+  };
+
+   /**** game part end *******/
 
   useEffect(() => {
     fetchMessageData();
@@ -1426,12 +1444,15 @@ const ChatBox: React.FC<any> = () => {
           Friends
         </button> */}
         <button className="bottom-nav-buttons">Friends</button>
-        <button
+        {/* <button
           className="bottom-nav-buttons"
           onClick={() => router.push("game-loading")}
         >
           Find match
-        </button>
+        </button> */}
+        {/* <MatchMakingButton/> */}
+        <ChooseGameMode onSelectGameMode={handleSelectGameMode} isMatchmaking={isMatchmaking} />
+        <MatchMakingButton gameMode={selectedGameMode} onMatchMaking={handleMatchmaking}/>
       </div>
     </div>
   );
