@@ -11,7 +11,7 @@ interface LoadingScreenProps {
   player2User: UserData;
 }
 
-const LoadingScreen = ({ player1User, player2User }: LoadingScreenProps) => {
+const LoadingScreen = ({ player1User, player2User, roomId }: LoadingScreenProps) => {
   const router = useRouter();
   const { setLoadingScreenVisible } = useGameData();
   const updateLoadingBarWidth = (

@@ -121,7 +121,7 @@ const MatchMakingButton = ( {gameMode, onMatchMaking } : MatchMakingButtonProps)
             {isMatchmaking ? "Matchmaking in progress" : "Matchmaking"}
         </button>
         {roomId && isMatchmaking && player1User && player2User && (
-            <LoadingScreen player1User={player1User} player2User={player2User} />
+            <LoadingScreen player1User={player1User} player2User={player2User} roomId={roomId}/>
         )}
     </>
   );
