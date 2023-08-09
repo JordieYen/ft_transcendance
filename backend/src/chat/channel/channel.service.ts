@@ -37,7 +37,7 @@ export class ChannelService {
   async findChannelsByUserId(user_id: number) {
     return await this.channelsRepository.find({
       where: {
-        channelUser: { user: { id: user_id } },
+        channelUser: { user: { id: user_id }, status: Status.Null },
       },
     });
   }
@@ -232,8 +232,8 @@ export class ChannelService {
       this.channelUserService.createChannelUser(createChannelDto, user);
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
-      throw new InternalServerErrorException('Channel not found');
+      // throw error;
+      // throw new InternalServerErrorException('Channel not found');
     }
   }
 
@@ -266,8 +266,8 @@ export class ChannelService {
       this.channelUserService.createChannelUser(createChannelDto, newUser);
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
-      throw new InternalServerErrorException('Channel not found');
+      // throw error;
+      // throw new InternalServerErrorException('Channel not found');
     }
   }
 
@@ -296,8 +296,8 @@ export class ChannelService {
       );
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
-      throw new InternalServerErrorException('Channel not found');
+      // throw error;
+      // throw new InternalServerErrorException('Channel not found');
     }
   }
 
@@ -412,7 +412,7 @@ export class ChannelService {
       });
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
+      // throw error;
     }
   }
 

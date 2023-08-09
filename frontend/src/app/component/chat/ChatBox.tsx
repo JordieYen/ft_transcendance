@@ -143,8 +143,9 @@ const Mute = ({
 
   if (
     currentChannelUser?.role == "owner" ||
-    currentChannelUser?.role == "administrator"
+    currentChannelUser?.role == "admin"
   ) {
+    console.log("mutedtill", mutedTill);
     if (mutedTill == undefined) {
       mutedTill = "not muted";
       content = (
@@ -1270,7 +1271,7 @@ const ChatBox: React.FC<any> = () => {
   const messagesEndRef = useRef(null);
   const [channels, setChannels] = useState<any[]>([]);
   const [channelUsers, setChannelUsers] = useState<any[]>([]);
-  const [channelId, setChannelId] = useState("2");
+  const [channelId, setChannelId] = useState("-1");
   const [currentChannel, setCurrentChannel] = useState<any>(null);
   const [currentChannelUser, setCurrentChannelUser] = useState<any>(null);
   const [
@@ -1685,7 +1686,7 @@ const ChatBox: React.FC<any> = () => {
                   </div>
                 </div>
               ))}
-              {allUsers.map((user, index) => (
+              {/* {allUsers.map((user, index) => (
                 <div
                   key={index}
                   className={`friend ${user?.online ? null : "offline"}`}
@@ -1698,7 +1699,7 @@ const ChatBox: React.FC<any> = () => {
                     </p>
                   </div>
                 </div>
-              ))}
+              ))} */}
               <FontAwesomeIcon
                 className="search-group"
                 icon={faMagnifyingGlass}

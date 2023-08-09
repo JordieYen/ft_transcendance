@@ -112,7 +112,7 @@ export class ChannelUserService {
       );
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
+      // throw error;
     }
   }
 
@@ -137,7 +137,7 @@ export class ChannelUserService {
       }
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
+      // throw error;
     }
   }
 
@@ -200,7 +200,7 @@ export class ChannelUserService {
       }
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
+      // throw error;
     }
   }
 
@@ -246,7 +246,7 @@ export class ChannelUserService {
       }
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
+      // throw error;
     }
   }
 
