@@ -1615,7 +1615,7 @@ const ChatBox: React.FC<any> = () => {
             className={`slide-button ${chat_slide_out ? "hide" : "display"}`}
             icon={faComments}
             style={{ color: "#d1d0c5" }}
-            onClick={() => {setGroupSlideOut((current) => !current); setChatSlideOut((current) => !current);}}
+            onClick={async () => {await setGroupSlideOut(true); setChatSlideOut((current) => !current);}}
           />
         </div>
         {/* <div
@@ -1736,21 +1736,24 @@ const ChatBox: React.FC<any> = () => {
           <div className="chat-nav">
             <div className="chat-title">
               <FontAwesomeIcon
-                className="more-chats-button"
+                className={`more-chats-button ${channelId != "-1" ? "" : "increase-size"}`}
                 icon={faBars}
                 size="lg"
                 style={{ color: "#d1d0c5" }}
                 onClick={() => setGroupSlideOut((current) => !current)}
               />
             </div>
-            <h1 className="chat-name">{currentChannel?.channel_name}</h1>
+            <h1 className="chat-name">{currentChannel?.channel_name}{channelId != "-1" ? "" : "Why did u do that?"}</h1>
             <FontAwesomeIcon
-              className="more-button"
+              className={`more-button ${channelId != "-1" ? "" : "invisible"}`}
               icon={chat_members_slide_out ? faChevronUp : faChevronDown}
               size="lg"
               style={{ color: "#d1d0c5" }}
               onClick={() => setChatMembersSlideOut((current) => !current)}
             />
+          </div>
+          <div>
+            
           </div>
           <div
             className={`chat-members ${
@@ -1790,7 +1793,7 @@ const ChatBox: React.FC<any> = () => {
             ))}
             <li ref={messagesEndRef}></li>
           </ul>
-          <div className="message-div">
+          <div className={`message-div ${channelId != "-1" ? "" : "invisible"}`}>
             <form className="message-bar chat-style" onSubmit={handleSubmit}>
               <input
                 type="text"
