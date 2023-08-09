@@ -111,6 +111,11 @@ export interface JoinRoomParams {
   user: UserData;
 }
 
+export interface FindRoomByIdParams {
+  roomId: string;
+  rooms: Map<string, UserData[]>[];
+}
+
 export interface AcceptGameInvitationParams {
   server: Server;
   client: Socket;
@@ -126,6 +131,7 @@ export interface DeclineGameInvitationParams {
 }
 
 export interface LeaveRoomParams {
+  client: Socket;
   server: Server;
   roomId: string;
   rooms: Map<string, UserData[]>;
@@ -160,6 +166,7 @@ export interface UpdatePaddlePassiveStateParams {
 }
 
 export interface HandleGameStateParams {
+  client: Socket;
   server: Server;
   roomId: string;
   player: string;

@@ -350,7 +350,6 @@ const Game = () => {
     });
 
     socket?.on("update-score", (score: ScoreBoard) => {
-      // do stuff with score here
       setGameData({
         ...gameData,
         p1Score: score.pOneScore,
@@ -377,10 +376,13 @@ const Game = () => {
       });
     };
 
+    /* ends game from backend */
     socket?.on("game-over", () => {
       endGame();
+      router.push("/main-menu");
     });
 
+    /* ends game to backend */
     const handleRouteChange = () => {
       endGame();
       socket?.emit("clear-room", {
@@ -388,12 +390,12 @@ const Game = () => {
         user: currentUser.current,
       });
     };
-
     router.events.on("routeChangeStart", handleRouteChange);
 
     return () => {
       clearInterval(movePaddleInterval);
     };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 

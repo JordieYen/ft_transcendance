@@ -56,6 +56,16 @@ export class GameGateway implements OnModuleInit {
     }
   }
 
+  @SubscribeMessage('view-game')
+  async viewGame(client: Socket, data: { roomId: string }) {
+    client.join(data.roomId);
+    const gameState = this.gameService.findAvailableRoomByRoomId({
+      roomId: data.roomId,
+      rooms: [this.classicRooms, this.rankingRooms, this.privateRooms],
+    });
+    this.server.to(data.roomId).emit('game-update', gameState);
+  }
+
   @SubscribeMessage('invite-game')
   inviteGame(client: Socket, param: GameInvitationParams) {
     param.user.socketId = client.id;
@@ -103,6 +113,7 @@ export class GameGateway implements OnModuleInit {
       privateRooms: this.privateRooms,
     });
     this.gameService.leaveRoom({
+      client: client,
       server: this.server,
       roomId: param.roomId,
       rooms: currentRoom,
@@ -164,6 +175,7 @@ export class GameGateway implements OnModuleInit {
           privateRooms: this.privateRooms,
         });
         this.gameService.handleGameState({
+          client: client,
           server: this.server,
           roomId: param.roomId,
           player: param.player,
@@ -180,26 +192,5 @@ export class GameGateway implements OnModuleInit {
 
   handleDisconnect() {
     // does something on Module disconnect
-  }
-
-  @SubscribeMessage('view-game')
-  async viewGame(client: Socket, data: { roomId: string }) {
-    client.join(data.roomId);
-    console.log(data.roomId);
-    // emit game data state to client
-    const gameInfo = this.gameInfo.get(data.roomId);
-    console.log('gameInfo', gameInfo);
-    if (gameInfo) {
-      this.gameService.emitGameUpdate({
-        server: this.server,
-        roomId: data.roomId,
-        roomArray: this.rooms,
-        gameArray: this.gameInfo,
-        gameInfo: gameInfo,
-        gameProperties: null, // need to get from data from front end
-      });
-    } else {
-      console.error(`GameInfo for roomId ${data.roomId} not found.`);
-    }
   }
 }

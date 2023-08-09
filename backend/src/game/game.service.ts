@@ -15,6 +15,7 @@ import {
   CheckGameModeParams,
   UpdatePaddleActiveStateParams,
   UpdatePaddlePassiveStateParams,
+  FindRoomByIdParams,
 } from './game.interface';
 import { FriendService } from 'src/friend/services/friend.service';
 import { MatchHistoryService } from 'src/match-history/services/match-history.service';
@@ -49,6 +50,21 @@ export class GameService {
     for (const [roomId, roomPlayers] of rooms) {
       if (roomPlayers.length < 2) {
         return { roomId, roomPlayers };
+      }
+    }
+    return {};
+  }
+
+  /* returns room by roomId */
+  findAvailableRoomByRoomId(param: FindRoomByIdParams) {
+    for (let i = 0; i < 3; ++i) {
+      for (const [roomId, roomPlayers] of param.rooms[i]) {
+        if (roomId === param.roomId)
+          return {
+            roomId,
+            player1User: roomPlayers[0],
+            player2User: roomPlayers[1],
+          };
       }
     }
     return {};
@@ -218,6 +234,7 @@ export class GameService {
       // if room is empty, delete room and emit room-closed
       if (updatedRoomPlayers.length === 0) {
         this.gameOver({
+          client: param.client,
           server: param.server,
           roomId: param.roomId,
           player: null,
@@ -226,6 +243,7 @@ export class GameService {
           gameInfo: param.gameInfo,
           gameProperties: null,
         });
+        param.server.to(param.roomId).emit('game-over');
         param.server.to(param.roomId).emit('room-closed');
       }
     }
@@ -495,6 +513,7 @@ export class GameService {
       this.clearRoomIdInFriend(param.gameInfo.pOneId);
       this.clearRoomIdInFriend(param.gameInfo.pTwoId);
     }
+    // param.client.leave(param.roomId);
     param.games.delete(param.roomId);
     param.rooms.delete(param.roomId);
     param.server.to(param.roomId).emit('room-closed');
@@ -507,6 +526,10 @@ export class GameService {
       if (param.gameInfo.pOneScore == 11) winner_uid = param.gameInfo.pOneId;
       else winner_uid = param.gameInfo.pTwoId;
 
+      param.server.to(param.roomId).emit('game-over');
+      console.log('Game Over');
+      this.gameOver(param);
+
       await this.matchHistoryService.create({
         winner_uid: winner_uid,
         p1: param.gameInfo.pOneId,
@@ -518,10 +541,6 @@ export class GameService {
         p1_mmr: 1000,
         p2_mmr: 1000,
       });
-
-      console.log('Game Over');
-      this.gameOver(param);
-      param.server.to(param.roomId).emit('game-over');
     }
   }
 
@@ -624,19 +643,5 @@ export class GameService {
       y: param.gameInfo.ballSpeed.y,
     });
     this.startRound(param);
-  }
-
-  /* emit game update */
-  emitGameUpdate(param: HandleGameStateParams) {
-    const gameInfo = {
-      pOneScore: param.gameInfo.pOneScore,
-      pTwoScore: param.gameInfo.pTwoScore,
-      pOneSmash: param.gameInfo.pOneSmash,
-      pTwoSmash: param.gameInfo.pTwoSmash,
-      ballPosition: param.gameInfo.ball.position,
-      leftPaddlePosition: param.gameInfo.leftPaddle.position,
-      rightPaddlePosition: param.gameInfo.rightPaddle.position,
-    };
-    param.server.to(param.roomId).emit('game-update', gameInfo);
   }
 }
