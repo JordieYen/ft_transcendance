@@ -36,7 +36,7 @@ export const SocketProvider =  ({ children }: SocketProviderProps) => {
             disconnectSocket
         });
         return () => {
-            disconnectSocket
+            disconnectSocket;
             window.removeEventListener('beforeunload', () => {});
         }
     }, []);
