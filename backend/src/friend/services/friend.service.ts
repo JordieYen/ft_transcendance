@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -11,12 +12,15 @@ import { UsersService } from 'src/users/services/users.service';
 import { CreateFriendDto } from '../dto/create-friend.dto';
 import { UpdateFriendDto } from '../dto/update-friend.dto';
 import { Repository } from 'typeorm';
+import { ChannelService } from 'src/chat/channel/channel.service';
+import { CreateChannelDto, JoinChannelDto } from 'src/chat/channel/dto';
 
 @Injectable()
 export class FriendService {
   constructor(
     @InjectRepository(Friend) private friendRepository: Repository<Friend>,
     private readonly userService: UsersService,
+    private readonly channelService: ChannelService,
   ) {}
 
   async create(createFriendDto: CreateFriendDto) {
@@ -153,9 +157,36 @@ export class FriendService {
     await this.friendRepository.update(friendRequestId, {
       status: FriendStatus.Friended,
     });
+    console.log('friendRequestId', friendRequestId);
+
     const updatedFriendRequest = await this.findOne(friendRequestId);
+    const sender = await this.userService.findUsersById(
+      updatedFriendRequest.sender.id,
+    );
+    const receiver = await this.userService.findUsersById(
+      updatedFriendRequest.receiver.id,
+    );
+    const dto: CreateChannelDto = {
+      channel_name: `${sender.username + '+' + receiver.username}`,
+      channel_type: 'direct message',
+    };
+    const channel = await this.channelService.createChannel(dto, sender);
+    console.log('channel', channel);
+
+    const dto_join: JoinChannelDto = {
+      channel_uid: channel.channel_uid,
+    };
+    await this.channelService.joinChannel(dto_join, receiver);
     return updatedFriendRequest;
   }
+
+  // async acceptFriendRequest(friendRequestId: number) {
+  //   await this.friendRepository.update(friendRequestId, {
+  //     status: FriendStatus.Friended,
+  //   });
+  //   const updatedFriendRequest = await this.findOne(friendRequestId);
+  //   return updatedFriendRequest;
+  // }
 
   async declineFriendRequest(friendRequestId: number) {
     await this.friendRepository.update(friendRequestId, {
