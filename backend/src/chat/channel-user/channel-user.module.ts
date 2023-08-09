@@ -12,5 +12,6 @@ import { StatModule } from 'src/stat/stat.module';
   imports: [TypeOrmModule.forFeature([Channel, ChannelUser, User]), StatModule],
   controllers: [ChannelUserController],
   providers: [ChannelUserService, UsersService],
+  exports: [ChannelUserService, TypeOrmModule],
 })
 export class ChannelUserModule {}

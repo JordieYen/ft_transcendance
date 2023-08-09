@@ -55,7 +55,7 @@ export class MessageService {
       return await this.messageRepository.save(newMessage);
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
+      // throw error;
     }
   }
 

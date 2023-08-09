@@ -37,7 +37,7 @@ export class ChannelService {
   async findChannelsByUserId(user_id: number) {
     return await this.channelsRepository.find({
       where: {
-        channelUser: { user: { id: user_id } },
+        channelUser: { user: { id: user_id }, status: Status.Null },
       },
     });
   }
@@ -134,7 +134,7 @@ export class ChannelService {
   async searchChannelsGroup(name: string, userId: number) {
     return await this.channelsRepository.find({
       where: {
-        channelUser: { user: { id: userId } },
+        channelUser: { user: { id: userId }, status: Status.Null },
         channel_name: ILike('%' + name + '%'),
       },
     });
@@ -232,8 +232,8 @@ export class ChannelService {
       this.channelUserService.createChannelUser(createChannelDto, user);
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
-      throw new InternalServerErrorException('Channel not found');
+      // throw error;
+      // throw new InternalServerErrorException('Channel not found');
     }
   }
 
@@ -266,8 +266,8 @@ export class ChannelService {
       this.channelUserService.createChannelUser(createChannelDto, newUser);
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
-      throw new InternalServerErrorException('Channel not found');
+      // throw error;
+      // throw new InternalServerErrorException('Channel not found');
     }
   }
 
@@ -296,13 +296,19 @@ export class ChannelService {
       );
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
-      throw new InternalServerErrorException('Channel not found');
+      // throw error;
+      // throw new InternalServerErrorException('Channel not found');
     }
   }
 
-  async changePassword(channelId: number, user: User, newChanneltype: string) {
+  async changeChannelPassword(
+    channelId: number,
+    oldPassword: string,
+    newPassword: string,
+    user: User,
+  ) {
     this.validateUser(user);
+    const channel = await this.findChannelById(channelId);
     const channelUser =
       await this.channelUserService.findChannelUserByChannelIdAndUserId(
         channelId,
@@ -310,11 +316,66 @@ export class ChannelService {
       );
 
     if (channelUser.role == 'owner') {
-      this.channelsRepository.save({
-        channel_uid: channelId,
-        channel_type: newChanneltype,
-      });
+      const pwMatches = await argon.verify(channel.channel_hash, oldPassword);
+
+      if (!pwMatches) {
+        console.log('Password Mismatch');
+      } else {
+        console.log('Password Matches');
+        if (newPassword != '') {
+          console.log('Password changed');
+          const channel_hash = await argon.hash(newPassword);
+          await this.channelsRepository.save({
+            channel_uid: channelId,
+            channel_hash,
+          });
+        }
+      }
     }
+  }
+
+  async changeChannelType(
+    channelId: number,
+    newChanneltype: string,
+    newPassword: string,
+    user: User,
+  ) {
+    this.validateUser(user);
+    const channel = await this.findChannelById(channelId);
+    console.log(channel);
+
+    const channelUser =
+      await this.channelUserService.findChannelUserByChannelIdAndUserId(
+        channelId,
+        user.id,
+      );
+
+    if (channelUser.role == 'owner') {
+      if (newChanneltype == 'protected') {
+        const channel_hash = await argon.hash(newPassword);
+        const channel_type = newChanneltype;
+        await this.channelsRepository.save({
+          channel_uid: channelId,
+          channel_type,
+          channel_hash,
+        });
+      } else {
+        const channel_type = newChanneltype;
+        const channel_hash = '';
+        await this.channelsRepository.save({
+          channel_uid: channelId,
+          channel_type,
+          channel_hash,
+        });
+      }
+    }
+
+    // if (channelUser.role == 'owner') {
+    //   this.channelsRepository.save({
+    //     channel_uid: channelId,
+    //     channel_type: newChanneltype,
+    //   });
+    // }
   }
 
   async deleteChannel(channelId: number, user: User) {
@@ -351,7 +412,7 @@ export class ChannelService {
       });
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
+      // throw error;
     }
   }
 

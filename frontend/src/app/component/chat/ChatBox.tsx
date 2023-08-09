@@ -14,8 +14,10 @@ import {
   faPen,
   faPenToSquare,
   faPlus,
+  faScrewdriver,
   faTableTennisPaddleBall,
   faUserGroup,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
@@ -28,12 +30,50 @@ const Roles = ({
   closeModal,
   modalRef,
   channelUser,
+  currentChannelUser,
 }: {
   isOpen: boolean;
   closeModal: () => void;
   modalRef: RefObject<HTMLDivElement>;
   channelUser: any;
+  currentChannelUser: any;
 }) => {
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+  const socket = useContext(SocketContext);
+
+  const setAdmin = async () => {
+    console.log(
+      "user is now admin!",
+      channelUser?.user?.id,
+      channelUser?.channel?.channel_uid,
+    );
+    socket?.emit(
+      "change-role",
+      "admin",
+      channelUser?.user?.id,
+      channelUser?.channel?.channel_uid,
+      userData?.id,
+    );
+  };
+
+  const setUser = async () => {
+    console.log(
+      "user is now user!",
+      channelUser?.user?.id,
+      channelUser?.channel?.channel_uid,
+    );
+    socket?.emit(
+      "change-role",
+      "user",
+      channelUser?.user?.id,
+      channelUser?.channel?.channel_uid,
+      userData?.id,
+    );
+  };
+
   return (
     <>
       {isOpen && (
@@ -49,10 +89,7 @@ const Roles = ({
                 className={
                   channelUser?.role == "user" ? "r-btn-selected" : "r-btn"
                 }
-                // onClick={() => {
-                //   setChannelType("public");
-                //   setProtected(false);
-                // }}
+                onClick={setUser}
               >
                 User
               </button>
@@ -60,10 +97,7 @@ const Roles = ({
                 className={
                   channelUser?.role == "admin" ? "r-btn-selected" : "r-btn"
                 }
-                // onClick={() => {
-                //   setChannelType("protected");
-                //   setProtected(true);
-                // }}
+                onClick={setAdmin}
               >
                 Administrator
               </button>
@@ -90,19 +124,57 @@ const Mute = ({
 }) => {
   let mutedTill: string = channelUser?.mutedUntil;
   let content;
+  const socket = useContext(SocketContext);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
+  const muteUser = async (days: number) => {
+    console.log("user is being muted for ", days, " days");
+    socket?.emit(
+      "mute-user",
+      channelUser?.user?.id,
+      channelUser?.channel?.channel_uid,
+      days,
+      userData?.id,
+    );
+  };
 
   if (
     currentChannelUser?.role == "owner" ||
-    currentChannelUser?.role == "administrator"
+    currentChannelUser?.role == "admin"
   ) {
+    console.log("mutedtill", mutedTill);
     if (mutedTill == undefined) {
       mutedTill = "not muted";
       content = (
         <div>
           <p className="mute-status">Status: {mutedTill}</p>
-          <button className="mute-buttons">Mute for 1 day</button>
-          <button className="mute-buttons">Mute for 3 days</button>
-          <button className="mute-buttons">Mute for 7 days</button>
+          <button
+            className="mute-buttons"
+            onClick={() => {
+              muteUser(1);
+            }}
+          >
+            Mute for 1 day
+          </button>
+          <button
+            className="mute-buttons"
+            onClick={() => {
+              muteUser(3);
+            }}
+          >
+            Mute for 3 days
+          </button>
+          <button
+            className="mute-buttons"
+            onClick={() => {
+              muteUser(7);
+            }}
+          >
+            Mute for 7 days
+          </button>
         </div>
       );
     } else {
@@ -111,7 +183,14 @@ const Mute = ({
           <p className="mute-status-user">
             Status: muted till {mutedTill.substring(0, 10)}
           </p>
-          <button className="unmute-button">Unmute</button>
+          <button
+            className="unmute-button"
+            onClick={() => {
+              muteUser(0);
+            }}
+          >
+            Unmute
+          </button>
         </div>
       );
     }
@@ -168,24 +247,127 @@ const ThreeDots = ({
   channelUser: any;
   currentChannelUser: any;
 }) => {
+  const socket = useContext(SocketContext);
   const [isRolesModalOpen, openRolesModal, closeRolesModal, modalRolesRef] =
     useModal(false);
   const [isMuteModalOpen, openMuteModal, closeMuteModal, modalMuteRef] =
     useModal(false);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
 
   let buttons;
+  const router = useRouter();
 
-  if (channelUser?.role == "user") {
+  const handleClick = async (id: number) => {
+    try {
+      console.log("id in handleClick", id);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_NEST_HOST}/users/${id}`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        console.log("response in handleClick", response);
+        const user = await response.json();
+        router.push(`/users/${user.id}`);
+      }
+    } catch (error) {
+      console.log("Error redirect to profile:", error);
+    }
+  };
+
+  const kickUser = async (id: number) => {
+    console.log("kicking user");
+    socket?.emit("leave-channel", channelUser?.channel?.channel_uid, user.id);
+  };
+
+  const banUser = async (id: number) => {
+    console.log("banning user", channelUser?.status);
+    console.log(channelUser?.user?.id, channelUser?.channel?.channel_uid);
+    if (channelUser?.status == "null") {
+      socket?.emit(
+        "ban-from-channel",
+        "banned",
+        channelUser?.user?.id,
+        channelUser?.channel?.channel_uid,
+        userData.id,
+      );
+    } else {
+      socket?.emit(
+        "ban-from-channel",
+        "null",
+        channelUser?.user?.id,
+        channelUser?.channel?.channel_uid,
+        userData.id,
+      );
+    }
+  };
+
+  if (channelUser?.role == "user" || channelUser?.role == "admin") {
+    if (
+      currentChannelUser?.role == "owner" ||
+      currentChannelUser?.role == "admin"
+    ) {
+      buttons = (
+        <div>
+          <button className="member-option-button" onClick={openRolesModal}>
+            Role
+          </button>
+          <button className="member-option-button" onClick={openMuteModal}>
+            Mute
+          </button>
+          <button
+            className="member-option-button"
+            onClick={() => kickUser(user?.id)}
+          >
+            Kick
+          </button>
+          <button
+            className="member-option-button"
+            onClick={() => banUser(user?.id)}
+          >
+            {channelUser?.status == "null" ? "Ban" : "Unban"}
+          </button>
+          <button
+            className="member-option-button"
+            onClick={() => handleClick(user?.id)}
+          >
+            Check
+          </button>
+        </div>
+      );
+    } else {
+      buttons = (
+        <div>
+          <button className="member-option-button" onClick={openRolesModal}>
+            Role
+          </button>
+          <button className="member-option-button" onClick={openMuteModal}>
+            Mute
+          </button>
+          <button
+            className="member-option-button"
+            onClick={() => handleClick(user?.id)}
+          >
+            Check
+          </button>
+        </div>
+      );
+    }
+  } else if (channelUser?.role == "owner") {
     buttons = (
       <div>
-        <button className="member-option-button" onClick={openRolesModal}>
-          Role
+        <button
+          className="member-option-button"
+          onClick={() => handleClick(user?.id)}
+        >
+          Check
         </button>
-        <button className="member-option-button" onClick={openMuteModal}>
-          Mute
-        </button>
-        <button className="member-option-button">Check</button>
-        <button className="member-option-button">More...</button>
       </div>
     );
   }
@@ -206,6 +388,7 @@ const ThreeDots = ({
                 closeModal={closeRolesModal}
                 modalRef={modalRolesRef}
                 channelUser={channelUser}
+                currentChannelUser={currentChannelUser}
               />
             )}
             {isMuteModalOpen && (
@@ -281,6 +464,7 @@ const CreateChat = ({
       setChannelName("");
       setChannelType("");
       setChannelPassword("");
+      await closeModal();
     }
 
     if (channelPassword != "") {
@@ -402,6 +586,7 @@ const JoinChat = ({
     if (channelPassword != "") {
       setChannelPassword("");
     }
+    await closeModal();
   };
 
   return (
@@ -475,6 +660,7 @@ const BrowseChats = ({
   modalRef: RefObject<HTMLDivElement>;
   // user: any;
 }) => {
+  const [refresh, setRefresh] = useState(0);
   const [channelType, setChannelType] = useState("all");
   const [channels, setChannels] = useState<any[]>([]);
 
@@ -488,7 +674,13 @@ const BrowseChats = ({
   useEffect(() => {
     changeChannelTypeSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelType]);
+  }, [channelType, refresh]);
+
+  useEffect(() => {
+    socket?.on("refresh-data", async function () {
+      setRefresh(refresh + 1);
+    });
+  }, [socket, refresh]);
 
   useEffect(() => {
     socket?.on("search-channels-complete", async (new_channels: any) => {
@@ -497,20 +689,61 @@ const BrowseChats = ({
     });
   }, [socket, channels]);
 
-  const changeChannelTypeSearch = () => {
-    socket?.emit("search-channel-type", channelType, userData.id);
+  const changeChannelTypeSearch = async () => {
+    try {
+      let response;
+      if (channelType == "all") {
+        response = await fetch("http://localhost:3000/channel/typeall", {
+          method: "GET",
+          credentials: "include",
+        });
+      } else {
+        response = await fetch(
+          "http://localhost:3000/channel/typeid/" + channelType,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+      }
+      if (response.ok) {
+        const Data = await response.json();
+        setChannels(Data);
+      } else {
+        throw new Error("Messages not found");
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
   };
 
-  const handleChannelSearchChange = (
+  const handleChannelSearchChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    // console.log(e.target.value);
-    socket?.emit(
-      "search-channel-with-name",
-      channelType,
-      e.target.value,
-      userData.id,
-    );
+    try {
+      if (e.target.value == "") {
+        changeChannelTypeSearch();
+      } else {
+        const response = await fetch(
+          "http://localhost:3000/channel/typesearch/" +
+            channelType +
+            "/" +
+            e.target.value,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+        if (response.ok) {
+          const Data = await response.json();
+          setChannels(Data);
+        } else {
+          throw new Error("Messages not found");
+        }
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
   };
 
   return (
@@ -591,10 +824,27 @@ const DisplayUser = ({
           icon={faCrown}
           size="lg"
           style={{ color: "#d1d0c5" }}
+          onClick={() => openModal()}
         />
-        {/* <FontAwesomeIcon
+        {isModalOpen && (
+          <ThreeDots
+            isOpen={isModalOpen}
+            closeModal={closeModal}
+            modalRef={modalRef}
+            user={channelUser.user}
+            channelUser={channelUser}
+            currentChannelUser={currentChannelUser}
+          />
+        )}
+      </div>
+    );
+  } else if (channelUser?.status == "banned") {
+    return (
+      <div className="members relative">
+        <p className="members-name">{channelUser?.user?.username}</p>
+        <FontAwesomeIcon
           className="dots-button"
-          icon={faEllipsisVertical}
+          icon={faXmark}
           size="lg"
           style={{ color: "#d1d0c5" }}
           onClick={() => openModal()}
@@ -605,8 +855,10 @@ const DisplayUser = ({
             closeModal={closeModal}
             modalRef={modalRef}
             user={channelUser.user}
+            channelUser={channelUser}
+            currentChannelUser={currentChannelUser}
           />
-        )} */}
+        )}
       </div>
     );
   }
@@ -616,7 +868,7 @@ const DisplayUser = ({
       <p className="members-name">{channelUser?.user?.username}</p>
       <FontAwesomeIcon
         className="dots-button"
-        icon={faEllipsisVertical}
+        icon={channelUser?.role == "user" ? faEllipsisVertical : faScrewdriver}
         size="lg"
         style={{ color: "#d1d0c5" }}
         onClick={() => openModal()}
@@ -646,15 +898,30 @@ const DisplayMessage = ({
 }) => {
   if (message?.message_type == "invite") {
     return (
-      <li>
-        <div className="invite">
-          <p>{message?.sender?.username} sent an Invite!</p>
-          <div className="invite-request">
-            <button className="ir-button">accept</button>
-            <button className="ir-button">decline</button>
+      <div>
+        <li className="list-item" key={index}>
+          <p
+            className={`sender-name ${
+              messages[index - 1]?.sender?.username !==
+              message?.sender?.username
+                ? null
+                : "invisible"
+            }`}
+          >
+            {message?.sender?.username}
+          </p>
+          <p className="sender-message"></p>
+        </li>
+        <li>
+          <div className="invite">
+            <p>{message?.sender?.username} sent an Invite!</p>
+            <div className="invite-request">
+              <button className="ir-button">accept</button>
+              <button className="ir-button">decline</button>
+            </div>
           </div>
-        </div>
-      </li>
+        </li>
+      </div>
     );
   }
 
@@ -687,6 +954,42 @@ const ChangeChannelPassword = ({
   channel: any;
   channelUser: any;
 }) => {
+  const [oldChannelPassword, setOldChannelPassword] = useState("");
+  const [newChannelPassword, setNewChannelPassword] = useState("");
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
+  const socket = useContext(SocketContext);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(oldChannelPassword, newChannelPassword);
+    socket?.emit(
+      "change-password",
+      channel?.channel_uid,
+      oldChannelPassword,
+      newChannelPassword,
+      userData?.id,
+    );
+    setOldChannelPassword("");
+    setNewChannelPassword("");
+    closeModal();
+  };
+
+  const handleOldChannelPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setOldChannelPassword(e.target.value);
+  };
+
+  const handleNewChannelPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setNewChannelPassword(e.target.value);
+  };
+
   return (
     <>
       {isOpen && (
@@ -700,17 +1003,19 @@ const ChangeChannelPassword = ({
               className={`ccpp-input`}
               type="text"
               placeholder="Old Password"
-              // value={channelPassword}
-              // onChange={handleChannelPasswordChange}
+              value={oldChannelPassword}
+              onChange={handleOldChannelPasswordChange}
             />
             <input
               className={`ccpp-input`}
               type="text"
               placeholder="New Password"
-              // value={channelPassword}
-              // onChange={handleChannelPasswordChange}
+              value={newChannelPassword}
+              onChange={handleNewChannelPasswordChange}
             />
-            <button className="ccpp-submit">Change</button>
+            <button className="ccpp-submit" onClick={handleSubmit}>
+              Change
+            </button>
           </div>
         </div>
       )}
@@ -731,8 +1036,16 @@ const ChangeChannelType = ({
   channel: any;
   channelUser: any;
 }) => {
+  const [newChannelPassword, setNewChannelPassword] = useState("");
   const [channelType, setChannelType] = useState("");
   const [isProtected, setProtected] = useState(false);
+
+  const socket = useContext(SocketContext);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
   let displayPublic = "";
   let displayProtected = "";
   let displayPrivate = "";
@@ -744,6 +1057,31 @@ const ChangeChannelType = ({
   } else if (channel?.channel_type == "private") {
     displayPrivate = "none";
   }
+
+  const handleNewChannelPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setNewChannelPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("changing channel type", channelType, newChannelPassword);
+    if (channelType != "") {
+      if (channelType != "protected" || newChannelPassword != "") {
+        console.log("change!");
+        socket?.emit(
+          "change-channel-type",
+          channel?.channel_uid,
+          channelType,
+          newChannelPassword,
+          userData?.id,
+        );
+      }
+    }
+    setNewChannelPassword("");
+    closeModal();
+  };
 
   return (
     <>
@@ -796,10 +1134,12 @@ const ChangeChannelType = ({
               }`}
               type="text"
               placeholder=" Password"
-              // value={channelPassword}
-              // onChange={handleChannelPasswordChange}
+              value={newChannelPassword}
+              onChange={handleNewChannelPasswordChange}
             />
-            <button className="cct-submit">Change</button>
+            <button className="cct-submit" onClick={handleSubmit}>
+              Change
+            </button>
           </div>
         </div>
       )}
@@ -832,6 +1172,13 @@ const MembersMore = ({
     closeChangeChannelPasswordModal,
     modalChangeChannelPasswordRef,
   ] = useModal(false);
+
+  const socket = useContext(SocketContext);
+
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
 
   let buttons;
 
@@ -874,6 +1221,11 @@ const MembersMore = ({
     );
   }
 
+  const handleLeave = async () => {
+    console.log("I left");
+    socket?.emit("leave-channel", channel?.channel_uid, userData.id);
+  };
+
   return (
     <>
       {isOpen && (
@@ -892,18 +1244,22 @@ const MembersMore = ({
               Created at &nbsp;&nbsp;: {channel?.createdAt}
             </p>
             {buttons}
-            <button className="mm-leave-channel">Leave Channel</button>
+            <button className="mm-leave-channel" onClick={handleLeave}>
+              Leave Channel
+            </button>
           </div>
         </div>
       )}
     </>
   );
 };
+
 import { useRouter } from "next/router";
 import MatchMakingButton from "../game/MatchMakingButton";
 import ChooseGameMode from "../game/ChooseGameMode";
 
 const ChatBox: React.FC<any> = () => {
+  const [refresh, setRefresh] = useState(0);
   const [chat_slide_out, setChatSlideOut] = useState(false);
   const [group_slide_out, setGroupSlideOut] = useState(false);
   const [chat_members_slide_out, setChatMembersSlideOut] = useState(false);
@@ -915,7 +1271,7 @@ const ChatBox: React.FC<any> = () => {
   const messagesEndRef = useRef(null);
   const [channels, setChannels] = useState<any[]>([]);
   const [channelUsers, setChannelUsers] = useState<any[]>([]);
-  const [channelId, setChannelId] = useState("2");
+  const [channelId, setChannelId] = useState("-1");
   const [currentChannel, setCurrentChannel] = useState<any>(null);
   const [currentChannelUser, setCurrentChannelUser] = useState<any>(null);
   const [
@@ -977,11 +1333,17 @@ const ChatBox: React.FC<any> = () => {
     fetchCurrentChannelData();
     fetchCurrentChannelUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userData, channelId]);
+  }, [userData, channelId, refresh]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    socket?.on("refresh-data", async function () {
+      setRefresh(refresh + 1);
+    });
+  }, [socket, refresh]);
 
   useEffect(() => {
     socket?.on(
@@ -1032,14 +1394,9 @@ const ChatBox: React.FC<any> = () => {
           credentials: "include",
         },
       );
-      // const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/message`, {
-      //   method: "GET",
-      //   credentials: "include",
-      // });
       if (response.ok) {
         const messageData = await response.json();
         setMessages(messageData);
-        // console.log("message", messages);
       } else {
         throw new Error("Messages not found");
       }
@@ -1204,7 +1561,18 @@ const ChatBox: React.FC<any> = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim() !== "") {
-      socket?.emit("send-message", inputValue, "text", channelId, userData.id);
+      const mutedTill: string = currentChannelUser?.mutedUntil;
+      if (currentChannelUser?.status != "banned" && mutedTill == undefined) {
+        socket?.emit(
+          "send-message",
+          inputValue,
+          "text",
+          channelId,
+          userData.id,
+        );
+      } else {
+        console.log("error : unable to send message");
+      }
       setInputValue("");
     }
   };
@@ -1223,8 +1591,28 @@ const ChatBox: React.FC<any> = () => {
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     // console.log(e.target.value);
-    // socket?.emit("search-channel-with-name-group");
-    socket?.emit("search-channel-with-name-group", e.target.value, userData.id);
+    // socket?.emit("search-channel-with-name-group", e.target.value, userData.id);
+    try {
+      if (e.target.value == "") {
+        fetchChannelData();
+      } else {
+        const response = await fetch(
+          "http://localhost:3000/channel/searchgroup/" + e.target.value,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+        if (response.ok) {
+          const Data = await response.json();
+          setChannels(Data);
+        } else {
+          throw new Error("Messages not found");
+        }
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
   };
 
   return (
@@ -1242,7 +1630,7 @@ const ChatBox: React.FC<any> = () => {
             className={`slide-button ${chat_slide_out ? "hide" : "display"}`}
             icon={faComments}
             style={{ color: "#d1d0c5" }}
-            onClick={() => setChatSlideOut((current) => !current)}
+            onClick={async () => {await setGroupSlideOut(true); setChatSlideOut((current) => !current);}}
           />
         </div>
         {/* <div
@@ -1303,6 +1691,7 @@ const ChatBox: React.FC<any> = () => {
                   onClick={() => {
                     setChannelId(channel?.channel_uid);
                     setGroupSlideOut((current) => !current);
+
                   }}
                 >
                   <img src="gc.jpg" className="friend-profile-pictures" />
@@ -1313,7 +1702,7 @@ const ChatBox: React.FC<any> = () => {
                   </div>
                 </div>
               ))}
-              {allUsers.map((user, index) => (
+              {/* {allUsers.map((user, index) => (
                 <div
                   key={index}
                   className={`friend ${user?.online ? null : "offline"}`}
@@ -1326,7 +1715,7 @@ const ChatBox: React.FC<any> = () => {
                     </p>
                   </div>
                 </div>
-              ))}
+              ))} */}
               <FontAwesomeIcon
                 className="search-group"
                 icon={faMagnifyingGlass}
@@ -1362,21 +1751,24 @@ const ChatBox: React.FC<any> = () => {
           <div className="chat-nav">
             <div className="chat-title">
               <FontAwesomeIcon
-                className="more-chats-button"
+                className={`more-chats-button ${channelId != "-1" ? "" : "increase-size"}`}
                 icon={faBars}
                 size="lg"
                 style={{ color: "#d1d0c5" }}
                 onClick={() => setGroupSlideOut((current) => !current)}
               />
             </div>
-            <h1 className="chat-name">{currentChannel?.channel_name}</h1>
+            <h1 className="chat-name">{currentChannel?.channel_name}{channelId != "-1" ? "" : "Why did u do that?"}</h1>
             <FontAwesomeIcon
-              className="more-button"
+              className={`more-button ${channelId != "-1" ? "" : "invisible"}`}
               icon={chat_members_slide_out ? faChevronUp : faChevronDown}
               size="lg"
               style={{ color: "#d1d0c5" }}
               onClick={() => setChatMembersSlideOut((current) => !current)}
             />
+          </div>
+          <div>
+            
           </div>
           <div
             className={`chat-members ${
@@ -1416,7 +1808,7 @@ const ChatBox: React.FC<any> = () => {
             ))}
             <li ref={messagesEndRef}></li>
           </ul>
-          <div className="message-div">
+          <div className={`message-div ${channelId != "-1" ? "" : "invisible"}`}>
             <form className="message-bar chat-style" onSubmit={handleSubmit}>
               <input
                 type="text"

@@ -17,6 +17,7 @@ import { UserAchievementService } from 'src/user_achievement/services/user_achie
 import { ChannelModule } from 'src/chat/channel/channel.module';
 import { ChannelGateway } from './channelGateway';
 import { NotificationGateway } from './notification_gateway';
+import { ChannelUserModule } from 'src/chat/channel-user/channel-user.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { NotificationGateway } from './notification_gateway';
     AchievementModule,
     MatchHistoryModule,
     UserAchievementModule,
+    ChannelUserModule,
   ],
   providers: [
     GameGateway,

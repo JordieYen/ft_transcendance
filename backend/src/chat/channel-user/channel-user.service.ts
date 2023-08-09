@@ -112,7 +112,7 @@ export class ChannelUserService {
       );
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
+      // throw error;
     }
   }
 
@@ -137,7 +137,7 @@ export class ChannelUserService {
       }
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
+      // throw error;
     }
   }
 
@@ -200,7 +200,7 @@ export class ChannelUserService {
       }
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
+      // throw error;
     }
   }
 
@@ -211,7 +211,7 @@ export class ChannelUserService {
     user: User,
   ) {
     try {
-      if (role === Role.Admin || role === Role.Owner || role === Role.User) {
+      if (role === Role.Admin || role === Role.User) {
         if (!user) throw new ForbiddenException('Not logged in');
         const channelOwner = await this.findChannelUserByChannelIdAndUserId(
           channel_id,
@@ -246,7 +246,7 @@ export class ChannelUserService {
       }
     } catch (error) {
       console.log('error=', error.message);
-      throw error;
+      // throw error;
     }
   }
 

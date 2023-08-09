@@ -965,6 +965,11 @@
 	padding-right: 5%;
 }
 
+.increase-size {
+	/* height: 40px;
+	padding-top: 50%; */
+}
+
 .r-btn-selected {
 	padding: 2%;
 	padding-left: 5%;
