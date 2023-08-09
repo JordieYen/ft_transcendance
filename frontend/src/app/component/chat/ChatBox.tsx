@@ -1615,7 +1615,7 @@ const ChatBox: React.FC<any> = () => {
             className={`slide-button ${chat_slide_out ? "hide" : "display"}`}
             icon={faComments}
             style={{ color: "#d1d0c5" }}
-            onClick={() => setChatSlideOut((current) => !current)}
+            onClick={() => {setGroupSlideOut((current) => !current); setChatSlideOut((current) => !current);}}
           />
         </div>
         {/* <div
@@ -1676,6 +1676,7 @@ const ChatBox: React.FC<any> = () => {
                   onClick={() => {
                     setChannelId(channel?.channel_uid);
                     setGroupSlideOut((current) => !current);
+
                   }}
                 >
                   <img src="gc.jpg" className="friend-profile-pictures" />
