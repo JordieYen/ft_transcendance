@@ -111,15 +111,17 @@ export class GameGateway implements OnModuleInit {
       rankingRooms: this.rankingRooms,
       privateRooms: this.privateRooms,
     });
-    this.gameService.leaveRoom({
-      client: client,
-      server: this.server,
-      roomId: param.roomId,
-      rooms: currentRoom,
-      games: this.gameInfo,
-      gameInfo: this.gameInfo.get(param.roomId),
-      user: param.user,
-    });
+    if (currentRoom) {
+      this.gameService.leaveRoom({
+        client: client,
+        server: this.server,
+        roomId: param.roomId,
+        rooms: currentRoom,
+        games: this.gameInfo,
+        gameInfo: this.gameInfo.get(param.roomId),
+        user: param.user,
+      });
+    }
   }
 
   @SubscribeMessage('initialize-game')
@@ -176,19 +178,21 @@ export class GameGateway implements OnModuleInit {
           rankingRooms: this.rankingRooms,
           privateRooms: this.privateRooms,
         });
-        this.gameService.handleGameState({
-          client: client,
-          server: this.server,
-          roomId: param.roomId,
-          player: param.player,
-          rooms: currentRoom,
-          games: this.gameInfo,
-          gameInfo: this.gameInfo.get(param.roomId),
-          gameProperties: param.gameProperties,
-        });
-        if (this.gameInfo.get(param.roomId).gameStart < 3)
-          this.gameInfo.get(param.roomId).gameStart++;
+        if (currentRoom) {
+          this.gameService.handleGameState({
+            client: client,
+            server: this.server,
+            roomId: param.roomId,
+            player: param.player,
+            rooms: currentRoom,
+            games: this.gameInfo,
+            gameInfo: this.gameInfo.get(param.roomId),
+            gameProperties: param.gameProperties,
+          });
+        }
       }
+      if (this.gameInfo.get(param.roomId).gameStart < 3)
+        this.gameInfo.get(param.roomId).gameStart++;
     }
   }
 

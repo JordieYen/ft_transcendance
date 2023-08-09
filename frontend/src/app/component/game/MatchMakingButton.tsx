@@ -7,12 +7,14 @@ import LoadingScreen from "./LoadingScreen";
 import "../chat/ChatBox.css";
 
 interface MatchMakingButtonProps {
-    gameMode: string;
-    onMatchMaking: () => void;
+  gameMode: string;
+  onMatchMaking: () => void;
 }
-  
 
-const MatchMakingButton = ( {gameMode, onMatchMaking } : MatchMakingButtonProps) => {
+const MatchMakingButton = ({
+  gameMode,
+  onMatchMaking,
+}: MatchMakingButtonProps) => {
   const [isMatchmaking, setIsMatchmaking] = useState(false);
   const [userData, setUserData] = useUserStore((state) => [
     state.userData,
@@ -28,9 +30,8 @@ const MatchMakingButton = ( {gameMode, onMatchMaking } : MatchMakingButtonProps)
   const router = useRouter();
   const { setGameState } = useGameData();
 
-  console.log("MatchMakingButton", gameMode);
-
   useEffect(() => {
+    console.log("MatchMakingButton", gameMode);
     if (socket && userData.id) {
       socket?.on("loading-screen", ({ roomId, players }: any) => {
         console.log("loading-screen");
@@ -59,17 +60,17 @@ const MatchMakingButton = ( {gameMode, onMatchMaking } : MatchMakingButtonProps)
 
   const handleMatchmaking = () => {
     if (isMatchmaking === false) {
-        console.log("start match");
-        onMatchMaking();
-        setIsMatchmaking(true);
-        socket?.emit("join-room", {
-            user: userData,
-            gameMode: gameMode,
-        });
+      console.log("start match");
+      onMatchMaking();
+      setIsMatchmaking(true);
+      socket?.emit("join-room", {
+        user: userData,
+        gameMode: gameMode,
+      });
     } else {
-        console.log("cancel match");
-        onMatchMaking();
-        cancelMatchMaking();
+      console.log("cancel match");
+      onMatchMaking();
+      cancelMatchMaking();
     }
   };
 
@@ -114,15 +115,16 @@ const MatchMakingButton = ( {gameMode, onMatchMaking } : MatchMakingButtonProps)
 
   return (
     <>
-        <button
-            className="bottom-nav-buttons"
-            onClick={handleMatchmaking}
-        >
-            {isMatchmaking ? "Matchmaking in progress" : "Matchmaking"}
-        </button>
-        {roomId && isMatchmaking && player1User && player2User && (
-            <LoadingScreen player1User={player1User} player2User={player2User} roomId={roomId}/>
-        )}
+      <button className="bottom-nav-buttons" onClick={handleMatchmaking}>
+        {isMatchmaking ? "Matchmaking in progress" : "Matchmaking"}
+      </button>
+      {roomId && isMatchmaking && player1User && player2User && (
+        <LoadingScreen
+          player1User={player1User}
+          player2User={player2User}
+          roomId={roomId}
+        />
+      )}
     </>
   );
 };

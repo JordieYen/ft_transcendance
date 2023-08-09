@@ -259,9 +259,9 @@ const Game = () => {
       }
 
       /* start game */
-      if ("s" in keyArr && keyArr["s"].keyPressDown) {
+      if (" " in keyArr && keyArr[" "].keyPressDown) {
         socket?.emit("start-game", {
-          user: currentUser.current,
+          gameMode: gameMode.current,
           roomId: gameState!.roomId,
           player: currentPlayer.current,
           gameProperties: gameProperties,
@@ -385,6 +385,12 @@ const Game = () => {
         p1Score: 0,
         p2Score: 0,
       });
+      socket?.off("ball-speed");
+      socket?.off("ball-position");
+      socket?.off("reset-ball-speed");
+      socket?.off("left-paddle-position");
+      socket?.off("right-paddle-position");
+      socket?.off("update-score");
     };
 
     /* ends game from backend */
@@ -396,6 +402,7 @@ const Game = () => {
     /* ends game to backend */
     const handleRouteChange = () => {
       endGame();
+      console.log("on route change");
       socket?.emit("clear-room", {
         roomId: gameState!.roomId,
         user: currentUser.current,
@@ -404,6 +411,7 @@ const Game = () => {
     router.events.on("routeChangeStart", handleRouteChange);
 
     return () => {
+      socket?.off("game-over");
       clearInterval(movePaddleInterval);
     };
 
