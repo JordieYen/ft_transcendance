@@ -24,6 +24,7 @@ export interface UserData {
   stat: Stat;
   firstTimeLogin: boolean;
   socketId: string;
+  gameMode: string;
 }
 
 interface UserStore {
@@ -54,6 +55,7 @@ const useUserStore = create<UserStore>((set) => ({
     },
     firstTimeLogin: false,
     socketId: "",
+    gameMode: "",
   },
   setUserData: (userData) => set({ userData }),
 }));

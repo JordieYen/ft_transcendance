@@ -23,7 +23,6 @@ interface KeyType {
 interface Ball {
   position: Vector;
   radius: number;
-  speed: Vector;
   smashSpeed: number;
   maxTimeFrame: number;
   perfectHitZone: number;
@@ -61,7 +60,6 @@ const gameProperties: GameElements = {
   ball: {
     position: { x: screenWidth / 2, y: screenHeight / 2 },
     radius: 20,
-    speed: { x: 20, y: 0 },
     smashSpeed: 1.5,
     maxTimeFrame: 5,
     perfectHitZone: 50,
@@ -263,6 +261,7 @@ const Game = () => {
         socket?.emit("start-game", {
           user: currentUser.current,
           roomId: gameState!.roomId,
+          player: currentPlayer.current,
           gameProperties: gameProperties,
         });
 
@@ -397,31 +396,6 @@ const Game = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
-
-  // Matter.Events.on(engine, "beforeUpdate", function () {
-  //   /* handle perfect timing and move left paddle position when key press */
-  //   if (" " in keyArr && keyArr[" "].keyPressDown) {
-  //     // set perfect hit timeframe
-  //     if (
-  //       keyArr[" "].pressDuration >= 1 &&
-  //       keyArr[" "].pressDuration <= gameProperties.ball.perfectHitDuration
-  //     ) {
-  //       if (
-  //         ball.position.x > leftPaddle.position.x &&
-  //         ball.position.x <=
-  //           leftPaddle.position.x + gameProperties.ball.perfectHitZone &&
-  //         ball.position.y >=
-  //           leftPaddle.position.y - gameProperties.ball.perfectHitZone &&
-  //         ball.position.y <=
-  //           leftPaddle.position.y + gameProperties.ball.perfectHitZone
-  //       ) {
-  //         Matter.Body.setVelocity(ball, {
-  //           x: ball.speed * 1.5,
-  //           y: gameProperties.ball.speed.y,
-  //         });
-  //       }
-  //     }
-  // });
 
   return null;
 };

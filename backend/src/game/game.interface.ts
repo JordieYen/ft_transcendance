@@ -5,7 +5,6 @@ import { Stat } from 'src/typeorm/stats.entity';
 export interface Ball {
   position: Vector;
   radius: number;
-  speed: Vector;
   smashSpeed: number;
   maxTimeFrame: number;
   perfectHitZone: number;
@@ -41,6 +40,8 @@ export interface GameInfo {
   pTwoScore: number;
   pOneSmash: number;
   pTwoSmash: number;
+  ballSpeed: Vector;
+  roundWinner: string;
 }
 
 export interface UserData {
@@ -66,6 +67,7 @@ export interface CheckGameModeParams {
   gameMode: string;
   classicRooms: Map<string, UserData[]>;
   rankingRooms: Map<string, UserData[]>;
+  privateRooms: Map<string, UserData[]>;
 }
 
 export interface GameInvitationParams {
@@ -96,6 +98,7 @@ export interface SmashingPaddleParams {
 export interface GameParams {
   user: UserData;
   roomId: string;
+  player: string;
   gameProperties: GameElements;
 }
 
@@ -159,6 +162,7 @@ export interface UpdatePaddlePassiveStateParams {
 export interface HandleGameStateParams {
   server: Server;
   roomId: string;
+  player: string;
   rooms: Map<string, UserData[]>;
   games: Map<string, GameInfo>;
   gameInfo: GameInfo;

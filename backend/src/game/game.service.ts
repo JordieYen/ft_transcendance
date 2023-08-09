@@ -72,14 +72,15 @@ export class GameService {
     } else if (param.gameMode === 'custom') {
       param.user.gameMode = param.gameMode;
       return param.rankingRooms;
-    } else return null;
+    } else return param.classicRooms;
   }
 
   /* set current room */
   getGameMode(param: CheckGameModeParams) {
     if (param.user.gameMode === 'classic') return param.classicRooms;
     else if (param.user.gameMode === 'custom') return param.rankingRooms;
-    else return null;
+    else if (param.user.gameMode === 'private') return param.rankingRooms;
+    else return param.classicRooms;
   }
 
   /* join a user into a room */
@@ -219,6 +220,7 @@ export class GameService {
         this.gameOver({
           server: param.server,
           roomId: param.roomId,
+          player: null,
           rooms: param.rooms,
           games: param.games,
           gameInfo: param.gameInfo,
@@ -311,6 +313,8 @@ export class GameService {
     const pTwoScore = 0;
     const pOneSmash = 0;
     const pTwoSmash = 0;
+    const ballSpeed = { x: 0, y: 0 };
+    const roundWinner = null;
     const engine = this.initializeEngine();
     this.initializeBorders(engine, param.gameProperties);
     const leftPaddle = this.initializePaddle(
@@ -336,6 +340,8 @@ export class GameService {
       pTwoScore,
       pOneSmash,
       pTwoSmash,
+      ballSpeed,
+      roundWinner,
     };
   }
 
@@ -396,11 +402,12 @@ export class GameService {
         ballPos.y >= leftPaddlePos.y - perfectHitZone &&
         ballPos.y <= leftPaddlePos.y + perfectHitZone
       ) {
-        console.log('p1 smashed', pOnePing);
+        param.gameInfo.pOneSmash++;
         Body.setVelocity(param.gameInfo.ball, {
           x: param.gameInfo.ball.speed * param.gameProperties.ball.smashSpeed,
-          y: param.gameProperties.ball.speed.y,
+          y: param.gameInfo.ballSpeed.y,
         });
+        return;
       }
     }
     if (pTwoPing >= 1 && pTwoPing <= perfectHitDuration) {
@@ -410,11 +417,12 @@ export class GameService {
         ballPos.y <= rightPaddlePos.y + perfectHitZone &&
         ballPos.y >= rightPaddlePos.y - perfectHitZone
       ) {
-        console.log('p2 smashed', pTwoPing);
+        param.gameInfo.pTwoSmash++;
         Body.setVelocity(param.gameInfo.ball, {
           x: param.gameInfo.ball.speed * param.gameProperties.ball.smashSpeed,
-          y: param.gameProperties.ball.speed.y,
+          y: param.gameInfo.ballSpeed.y,
         });
+        return;
       }
     }
   }
@@ -493,13 +501,13 @@ export class GameService {
   }
 
   /* set winner uid, create match-history, end game */
-  handleGameEnd(param: HandleGameStateParams) {
+  async handleGameEnd(param: HandleGameStateParams) {
     if (param.gameInfo.pOneScore == 11 || param.gameInfo.pTwoScore == 11) {
       let winner_uid = 0;
       if (param.gameInfo.pOneScore == 11) winner_uid = param.gameInfo.pOneId;
       else winner_uid = param.gameInfo.pTwoId;
 
-      this.matchHistoryService.create({
+      await this.matchHistoryService.create({
         winner_uid: winner_uid,
         p1: param.gameInfo.pOneId,
         p2: param.gameInfo.pTwoId,
@@ -511,9 +519,9 @@ export class GameService {
         p2_mmr: 1000,
       });
 
-      param.server.to(param.roomId).emit('game-over');
       console.log('Game Over');
       this.gameOver(param);
+      param.server.to(param.roomId).emit('game-over');
     }
   }
 
@@ -521,21 +529,21 @@ export class GameService {
   updateScore(param: HandleGameStateParams) {
     if (param.gameInfo.ball.position.x < 0 && param.gameInfo.pTwoScore < 11) {
       param.gameInfo.pTwoScore++;
-      return 2;
+      return 'p2';
     }
     if (
       param.gameInfo.ball.position.x > param.gameProperties.screen.x &&
       param.gameInfo.pOneScore < 11
     ) {
       param.gameInfo.pOneScore++;
-      return 1;
+      return 'p1';
     }
-    return 0;
+    return null;
   }
 
   /* reset ball position if out of bounds */
   resetBallPosition(param: HandleGameStateParams) {
-    const winner = this.updateScore(param);
+    param.gameInfo.roundWinner = this.updateScore(param);
     const ballYPos = param.gameInfo.ball.position.y;
     Body.setPosition(param.gameInfo.ball, {
       x: param.gameProperties.screen.x / 2,
@@ -548,7 +556,7 @@ export class GameService {
     param.server.to(param.roomId).emit('reset-ball-speed');
     param.server.to(param.roomId).emit('reset-ball-position');
     param.server.to(param.roomId).emit('update-score', {
-      winner: winner,
+      winner: param.gameInfo.roundWinner,
       ballYPos: ballYPos / param.gameProperties.screen.y,
       pOneScore: param.gameInfo.pOneScore,
       pTwoScore: param.gameInfo.pTwoScore,
@@ -594,11 +602,26 @@ export class GameService {
     }, 15);
   }
 
+  /* generate a number speed for */
+  generateSpeed(roundWinner: string) {
+    const x = Math.random() * 20;
+    const y = 20 - x;
+
+    let result = { x: x, y: y };
+    if (x < y) result = { x: y, y: x };
+    if (Math.random() < 0.5) result.y *= -1;
+    if (roundWinner === 'p2') result.x *= -1;
+
+    console.log(result);
+    return result;
+  }
+
   /* handle game when it starts */
   handleGameState(param: HandleGameStateParams) {
+    param.gameInfo.ballSpeed = this.generateSpeed(param.gameInfo.roundWinner);
     Body.setVelocity(param.gameInfo.ball, {
-      x: param.gameProperties.ball.speed.x,
-      y: param.gameProperties.ball.speed.y,
+      x: param.gameInfo.ballSpeed.x,
+      y: param.gameInfo.ballSpeed.y,
     });
     this.startRound(param);
   }

@@ -44,6 +44,7 @@ export class GameGateway implements OnModuleInit {
       gameMode: data.gameMode,
       classicRooms: this.classicRooms,
       rankingRooms: this.rankingRooms,
+      privateRooms: this.privateRooms,
     });
     if (currentRoom) {
       this.gameService.joinRooms({
@@ -58,6 +59,7 @@ export class GameGateway implements OnModuleInit {
   @SubscribeMessage('invite-game')
   inviteGame(client: Socket, param: GameInvitationParams) {
     param.user.socketId = client.id;
+    param.user.gameMode = 'private';
     this.gameService.inviteGame({
       server: this.server,
       client: client,
@@ -70,6 +72,7 @@ export class GameGateway implements OnModuleInit {
   @SubscribeMessage('accept-game-invitation')
   acceptGameInvitation(client: Socket, param: GameInvitationParams) {
     param.friend.socketId = client.id;
+    param.friend.gameMode = 'private';
     this.gameService.acceptInvitation({
       server: this.server,
       client: client,
@@ -81,6 +84,8 @@ export class GameGateway implements OnModuleInit {
 
   @SubscribeMessage('decline-game-invitation')
   declineGameInvitation(client: Socket, param: GameInvitationParams) {
+    param.user.gameMode = null;
+    param.friend.gameMode = null;
     this.gameService.declineInvitation({
       server: this.server,
       rooms: this.privateRooms,
@@ -95,6 +100,7 @@ export class GameGateway implements OnModuleInit {
       gameMode: null,
       classicRooms: this.classicRooms,
       rankingRooms: this.rankingRooms,
+      privateRooms: this.privateRooms,
     });
     this.gameService.leaveRoom({
       server: this.server,
@@ -147,23 +153,28 @@ export class GameGateway implements OnModuleInit {
 
   @SubscribeMessage('start-game')
   startGame(client: Socket, param: GameParams) {
-    if (this.gameInfo.get(param.roomId).gameStart < 1) {
-      const currentRoom = this.gameService.getGameMode({
-        user: param.user,
-        gameMode: null,
-        classicRooms: this.classicRooms,
-        rankingRooms: this.rankingRooms,
-      });
-      this.gameService.handleGameState({
-        server: this.server,
-        roomId: param.roomId,
-        rooms: currentRoom,
-        games: this.gameInfo,
-        gameInfo: this.gameInfo.get(param.roomId),
-        gameProperties: param.gameProperties,
-      });
-      if (this.gameInfo.get(param.roomId).gameStart < 3)
-        this.gameInfo.get(param.roomId).gameStart++;
+    const roundWinner = this.gameInfo.get(param.roomId).roundWinner;
+    if (roundWinner === null || roundWinner === param.player) {
+      if (this.gameInfo.get(param.roomId).gameStart < 1) {
+        const currentRoom = this.gameService.getGameMode({
+          user: param.user,
+          gameMode: null,
+          classicRooms: this.classicRooms,
+          rankingRooms: this.rankingRooms,
+          privateRooms: this.privateRooms,
+        });
+        this.gameService.handleGameState({
+          server: this.server,
+          roomId: param.roomId,
+          player: param.player,
+          rooms: currentRoom,
+          games: this.gameInfo,
+          gameInfo: this.gameInfo.get(param.roomId),
+          gameProperties: param.gameProperties,
+        });
+        if (this.gameInfo.get(param.roomId).gameStart < 3)
+          this.gameInfo.get(param.roomId).gameStart++;
+      }
     }
   }
 
