@@ -86,7 +86,7 @@ export class GameService {
     param.user.gameMode = param.gameMode;
     if (param.gameMode === 'classic') return param.classicRooms;
     else if (param.gameMode === 'custom') return param.rankingRooms;
-    else return param.classicRooms;
+    else return null;
   }
 
   /* set current room */
@@ -94,7 +94,7 @@ export class GameService {
     if (param.gameMode === 'classic') return param.classicRooms;
     else if (param.gameMode === 'custom') return param.rankingRooms;
     else if (param.gameMode === 'private') return param.rankingRooms;
-    else return param.classicRooms;
+    else return null;
   }
 
   /* join a user into a room */
@@ -102,17 +102,18 @@ export class GameService {
     let { roomId, roomPlayers } = this.findAvailableRoom(param.rooms);
 
     // check if user is already in a room
-    for (const [existingRoomId, existingRoomPlayers] of param.rooms) {
-      if (existingRoomPlayers.includes(param.user)) {
-        console.log(
-          'User is already in a room',
-          param.user.username,
-          existingRoomId,
-        );
-        roomId = existingRoomId;
-        param.client.emit('in-room', roomId);
-        return;
-      }
+    const existingRoomId = this.findAvailableRoomById(
+      param.rooms,
+      param.user.id,
+    ).roomId;
+    if (existingRoomId) {
+      console.log(
+        'User is already in a room',
+        param.user.username,
+        existingRoomId,
+      );
+      param.client.emit('in-room', { roomId: existingRoomId });
+      return;
     }
 
     // create a room and place player in room
@@ -150,7 +151,7 @@ export class GameService {
   inviteGame(param: AcceptGameInvitationParams) {
     param.client
       .to(param.pTwo.id.toString())
-      .emit('invite-game', { user: param.pOne, friend: param.pTwo });
+      .emit('invite-player', { user: param.pOne, friend: param.pTwo });
 
     // temporary join private room
     this.joinRooms({
@@ -159,14 +160,6 @@ export class GameService {
       rooms: param.rooms,
       user: param.pOne,
     });
-    const intervalId = setInterval(() => {
-      this.declineInvitation({
-        server: param.server,
-        rooms: param.rooms,
-        user: param.pOne,
-      });
-    }, 5000);
-    clearInterval(intervalId);
   }
 
   /* put both players into a room after accepting invitation */
@@ -230,6 +223,7 @@ export class GameService {
       param.rooms.set(param.roomId, updatedRoomPlayers);
 
       // if room is empty, delete room and emit room-closed
+      param.server.to(param.roomId).emit('game-over');
       if (updatedRoomPlayers.length === 0) {
         this.gameOver({
           client: param.client,
@@ -241,7 +235,6 @@ export class GameService {
           gameInfo: param.gameInfo,
           gameProperties: null,
         });
-        param.server.to(param.roomId).emit('game-over');
         param.server.to(param.roomId).emit('room-closed');
       }
     }
@@ -505,12 +498,10 @@ export class GameService {
 
   /* ends game and remove everything */
   gameOver(param: HandleGameStateParams) {
-    if (param.gameInfo) {
-      World.clear(param.gameInfo.engine.world, true);
-      Engine.clear(param.gameInfo.engine);
-      this.clearRoomIdInFriend(param.gameInfo.pOneId);
-      this.clearRoomIdInFriend(param.gameInfo.pTwoId);
-    }
+    World.clear(param.gameInfo.engine.world, true);
+    Engine.clear(param.gameInfo.engine);
+    this.clearRoomIdInFriend(param.gameInfo.pOneId);
+    this.clearRoomIdInFriend(param.gameInfo.pTwoId);
     // param.client.leave(param.roomId);
     param.games.delete(param.roomId);
     param.rooms.delete(param.roomId);
@@ -612,9 +603,11 @@ export class GameService {
       if (this.checkBallOutOfBounds(param)) {
         this.resetBallPosition(param);
         this.handleGameEnd(param);
+        param.gameInfo.gameStart = 0;
       }
       if (this.checkBallStartPos(param)) {
         clearInterval(startGameInterval);
+        param.gameInfo.gameStart = 0;
       }
     }, 15);
   }

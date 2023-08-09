@@ -33,9 +33,9 @@ const GameInvitationListener = () => {
       handleInviteGame(data);
     };
 
-    socket?.on("invite-game", handleInvite);
+    socket?.on("invite-player", handleInvite);
     return () => {
-      socket?.off("invite-game", handleInviteGame);
+      socket?.off("invite-player", handleInviteGame);
       clearGameInvitation();
     };
   }, [socket]);

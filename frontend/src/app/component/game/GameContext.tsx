@@ -100,10 +100,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setPlayer2User(data.player2User);
       setGameState(data);
     });
-    console.log("roomId", roomId);
-    console.log("gamestate", gameState);
-    console.log("player1", player1User);
-    console.log("player2", player2User);
     clearGameInvitation();
   }, [gameState]);
 
