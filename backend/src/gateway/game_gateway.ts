@@ -7,12 +7,13 @@ import {
 import { GameService } from 'src/game/game.service';
 import { Socket, Server } from 'socket.io';
 import {
-  GameInfo,
-  MovePaddleParams,
-  StartGameParams,
   UserData,
-  InitializeGameParam,
-  EndGameParams,
+  GameInfo,
+  GameParams,
+  MovePaddleParams,
+  InitializeGameParams,
+  GameInvitationParams,
+  SmashingPaddleParams,
 } from 'src/game/game.interface';
 
 @WebSocketGateway({
@@ -24,147 +25,174 @@ import {
 export class GameGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
-  rooms: Map<string, UserData[]> = new Map<string, UserData[]>();
+  classicRooms: Map<string, UserData[]> = new Map<string, UserData[]>();
+  rankingRooms: Map<string, UserData[]> = new Map<string, UserData[]>();
+  privateRooms: Map<string, UserData[]> = new Map<string, UserData[]>();
   gameInfo: Map<string, GameInfo> = new Map<string, GameInfo>();
 
   constructor(private readonly gameService: GameService) {}
 
-  async onModuleInit() {
+  onModuleInit() {
     // does something on Game Module init
   }
 
   @SubscribeMessage('join-room')
-  handleJoinRoom(client: Socket, data: { user: UserData }) {
-    data.user.socketId = client.id;
-    this.gameService.joinRooms({
+  JoinRoom(client: Socket, param: { user: UserData; gameMode: string }) {
+    param.user.socketId = client.id;
+    const currentRoom = this.gameService.checkGameMode({
+      user: param.user,
+      gameMode: param.gameMode,
+      classicRooms: this.classicRooms,
+      rankingRooms: this.rankingRooms,
+      privateRooms: this.privateRooms,
+    });
+    if (currentRoom) {
+      this.gameService.joinRooms({
+        server: this.server,
+        client: client,
+        rooms: currentRoom,
+        user: param.user,
+      });
+    }
+  }
+
+  @SubscribeMessage('view-game')
+  async viewGame(client: Socket, param: { roomId: string }) {
+    client.join(param.roomId);
+    const gameState = this.gameService.findAvailableRoomByRoomId({
+      roomId: param.roomId,
+      rooms: [this.classicRooms, this.rankingRooms, this.privateRooms],
+    });
+    this.server.to(param.roomId).emit('game-update', gameState);
+  }
+
+  @SubscribeMessage('invite-game')
+  inviteGame(client: Socket, param: GameInvitationParams) {
+    param.user.socketId = client.id;
+    param.user.gameMode = 'private';
+    this.gameService.inviteGame({
       server: this.server,
       client: client,
-      rooms: this.rooms,
-      user: data.user,
+      rooms: this.privateRooms,
+      pOne: param.user,
+      pTwo: param.friend,
+    });
+  }
+
+  @SubscribeMessage('accept-game-invitation')
+  acceptGameInvitation(client: Socket, param: GameInvitationParams) {
+    param.friend.socketId = client.id;
+    param.friend.gameMode = 'private';
+    this.gameService.acceptInvitation({
+      server: this.server,
+      client: client,
+      rooms: this.privateRooms,
+      pOne: param.user,
+      pTwo: param.friend,
+    });
+  }
+
+  @SubscribeMessage('decline-game-invitation')
+  declineGameInvitation(client: Socket, param: GameInvitationParams) {
+    param.user.gameMode = null;
+    param.friend.gameMode = null;
+    this.gameService.declineInvitation({
+      server: this.server,
+      rooms: this.privateRooms,
+      user: param.user,
     });
   }
 
   @SubscribeMessage('clear-room')
-  clearRoom(client: Socket, data: { roomId: string; user: UserData }) {
+  clearRoom(client: Socket, param: { roomId: string; user: UserData }) {
+    const currentRoom = this.gameService.getGameMode({
+      gameMode: param.user.gameMode,
+      classicRooms: this.classicRooms,
+      rankingRooms: this.rankingRooms,
+      privateRooms: this.privateRooms,
+    });
     this.gameService.leaveRoom({
+      client: client,
       server: this.server,
-      roomId: data.roomId,
-      roomArray: this.rooms,
-      gameArray: this.gameInfo,
-      gameInfo: this.gameInfo.get(data.roomId),
-      user: data.user,
+      roomId: param.roomId,
+      rooms: currentRoom,
+      games: this.gameInfo,
+      gameInfo: this.gameInfo.get(param.roomId),
+      user: param.user,
     });
   }
 
   @SubscribeMessage('initialize-game')
-  async initializeGame(client: Socket, data: InitializeGameParam) {
-    this.gameInfo.set(data.roomId, this.gameService.initializeGame(data));
+  initializeGame(client: Socket, param: InitializeGameParams) {
+    this.gameInfo.set(param.roomId, this.gameService.initializeGame(param));
   }
 
   @SubscribeMessage('mouse-position')
-  async movePaddle(client: Socket, data: MovePaddleParams) {
+  movePaddle(client: Socket, param: MovePaddleParams) {
     this.gameService.updatePaddlePos({
       server: this.server,
-      roomId: data.roomId,
-      player: data.player,
-      mouseY: data.mouseY,
-      gameInfo: this.gameInfo.get(data.roomId),
-      gameProperties: data.gameProperties,
+      roomId: param.roomId,
+      player: param.player,
+      mouseY: param.mouseY,
+      gameInfo: this.gameInfo.get(param.roomId),
+      gameProperties: param.gameProperties,
     });
+  }
+
+  @SubscribeMessage('active-paddle')
+  activePaddle(client: Socket, param: SmashingPaddleParams) {
+    if (param.gameMode === 'custom') {
+      this.gameService.updatePaddleActiveState({
+        server: this.server,
+        roomId: param.roomId,
+        player: param.player,
+        gameInfo: this.gameInfo.get(param.roomId),
+        gameProperties: param.gameProperties,
+      });
+    }
+  }
+
+  @SubscribeMessage('passive-paddle')
+  passivePaddle(client: Socket, param: SmashingPaddleParams) {
+    if (param.gameMode === 'custom') {
+      this.gameService.updatePaddlePassiveState({
+        server: this.server,
+        roomId: param.roomId,
+        player: param.player,
+        gameInfo: this.gameInfo.get(param.roomId),
+        gameProperties: param.gameProperties,
+      });
+    }
   }
 
   @SubscribeMessage('start-game')
-  async startGame(client: Socket, data: StartGameParams) {
-    if (this.gameInfo.get(data.roomId).gameStart < 1) {
-      this.gameService.handleGameState({
-        server: this.server,
-        roomId: data.roomId,
-        roomArray: this.rooms,
-        gameArray: this.gameInfo,
-        gameInfo: this.gameInfo.get(data.roomId),
-        gameProperties: data.gameProperties,
-      });
-      if (this.gameInfo.get(data.roomId).gameStart < 3)
-        this.gameInfo.get(data.roomId).gameStart++;
+  startGame(client: Socket, param: GameParams) {
+    const roundWinner = this.gameInfo.get(param.roomId).roundWinner;
+    if (roundWinner === null || roundWinner === param.player) {
+      if (this.gameInfo.get(param.roomId).gameStart < 1) {
+        const currentRoom = this.gameService.getGameMode({
+          gameMode: param.gameMode,
+          classicRooms: this.classicRooms,
+          rankingRooms: this.rankingRooms,
+          privateRooms: this.privateRooms,
+        });
+        this.gameService.handleGameState({
+          client: client,
+          server: this.server,
+          roomId: param.roomId,
+          player: param.player,
+          rooms: currentRoom,
+          games: this.gameInfo,
+          gameInfo: this.gameInfo.get(param.roomId),
+          gameProperties: param.gameProperties,
+        });
+        if (this.gameInfo.get(param.roomId).gameStart < 3)
+          this.gameInfo.get(param.roomId).gameStart++;
+      }
     }
-  }
-
-  @SubscribeMessage('end-game')
-  async endGame(client: Socket, data: EndGameParams) {
-    this.gameService.gameOver({
-      server: this.server,
-      roomId: data.roomId,
-      roomArray: this.rooms,
-      gameArray: this.gameInfo,
-      gameInfo: this.gameInfo.get(data.roomId),
-      gameProperties: data.gameProperties,
-    });
-  }
-
-  @SubscribeMessage('invite-game')
-  async handleInviteGame(
-    client: Socket,
-    data: { user: UserData; friend: UserData },
-  ) {
-    const user = data.user;
-    const friend = data.friend;
-    client.to(friend.id.toString()).emit('invite-game', { user, friend });
-  }
-
-  @SubscribeMessage('accept-game-invitation')
-  async handleAcceptGameInvitation(
-    client: Socket,
-    data: { user: UserData; friend: UserData },
-  ) {
-    const user = data.user;
-    const friend = data.friend;
-
-    const roomId = this.gameService.generateRoomId(this.rooms);
-    this.rooms.set(roomId, [user, friend]);
-
-    client.join(roomId);
-    client.to(friend.id.toString()).emit('joined-room', roomId);
-
-    // const playersData = [user, friend].map((player) => ({ player: player }));
-    // this.server.to(roomId).emit('to-loading-screen', { roomId, playersData });
-    this.server.to(roomId).emit('to-loading-screen', {
-      roomId,
-      player1User: user,
-      player2User: friend,
-    });
-    this.server
-      .to(user.id.toString())
-      // .emit('to-loading-screen', { roomId, playersData });
-      .emit('to-loading-screen', {
-        roomId,
-        player1User: user,
-        player2User: friend,
-      });
-    this.gameService.logRooms(this.rooms);
   }
 
   handleDisconnect() {
-    console.log('disconnected from game socket gateway');
-  }
-
-  @SubscribeMessage('view-game')
-  async viewGame(client: Socket, data: { roomId: string }) {
-    client.join(data.roomId);
-    console.log(data.roomId);
-    // emit game data state to client
-    const gameInfo = this.gameInfo.get(data.roomId);
-    console.log('gameInfo', gameInfo);
-    if (gameInfo) {
-      this.gameService.emitGameUpdate({
-        server: this.server,
-        roomId: data.roomId,
-        roomArray: this.rooms,
-        gameArray: this.gameInfo,
-        gameInfo: gameInfo,
-        gameProperties: null, // need to get from data from front end
-      });
-    } else {
-      console.error(`GameInfo for roomId ${data.roomId} not found.`);
-    }
+    // does something on Module disconnect
   }
 }

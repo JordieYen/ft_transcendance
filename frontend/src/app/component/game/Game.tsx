@@ -5,8 +5,11 @@ import { io, Socket } from "socket.io-client";
 import { useGameData } from "./GameContext";
 import useGameStore from "@/store/useGameStore";
 import router from "next/router";
+import ScoreExplosion from "@/components/game/ScoreExplosion";
 
 interface ScoreBoard {
+  winner: number;
+  ballYPos: number;
   pOneScore: number;
   pTwoScore: number;
 }
@@ -20,7 +23,7 @@ interface KeyType {
 interface Ball {
   position: Vector;
   radius: number;
-  speed: Vector;
+  smashSpeed: number;
   maxTimeFrame: number;
   perfectHitZone: number;
   perfectHitDuration: number;
@@ -30,6 +33,7 @@ interface Paddle {
   width: number;
   height: number;
   position: Vector;
+  holdPosition: Vector;
 }
 
 interface GameElements {
@@ -44,10 +48,11 @@ const screenWidth = 2000 / 2;
 const screenHeight = 700;
 
 const borderWidth = screenWidth;
-const borderHeight = 20;
+const borderHeight = 100;
 
 const paddleWidth = 25;
 const paddleHeight = 150;
+const paddleHoldDiff = 15;
 
 const gameProperties: GameElements = {
   screen: { x: screenWidth, y: screenHeight },
@@ -55,20 +60,28 @@ const gameProperties: GameElements = {
   ball: {
     position: { x: screenWidth / 2, y: screenHeight / 2 },
     radius: 20,
-    speed: { x: 20, y: 0 },
+    smashSpeed: 1.5,
     maxTimeFrame: 5,
     perfectHitZone: 50,
-    perfectHitDuration: 2,
+    perfectHitDuration: 10,
   },
   leftPaddle: {
     width: paddleWidth,
     height: paddleHeight,
     position: { x: paddleWidth * 2, y: screenHeight / 2 },
+    holdPosition: {
+      x: paddleWidth * 2 - paddleHoldDiff,
+      y: screenHeight / 2,
+    },
   },
   rightPaddle: {
     width: paddleWidth,
     height: paddleHeight,
     position: { x: screenWidth - paddleWidth * 2, y: screenHeight / 2 },
+    holdPosition: {
+      x: screenWidth - paddleWidth * 2 + paddleHoldDiff,
+      y: screenHeight / 2,
+    },
   },
 };
 
@@ -137,6 +150,7 @@ const initializeGame = () => {
 };
 
 const Game = () => {
+  const gameMode = useRef("");
   const currentPlayer = useRef("");
   const currentUser = useRef();
   const gameState = useGameData().gameState;
@@ -145,23 +159,11 @@ const Game = () => {
     state.setGameData,
   ]);
 
-  console.log("GAME STATE", gameState);
-
   const socket = useContext(SocketContext);
   // const socket = io("http://localhost:3000");
 
-  // useEffect(() => {
-  //   setGameData({
-  //     ...gameData,
-  //     playerOne: gameState!.player1User,
-  //     playerTwo: gameState!.player2User,
-  //   });
-  //   console.log("GMAE", gameData);
-  // }, [gameState, gameState?.player1User, gameState?.player2User]);
-
   useEffect(() => {
     if (socket) {
-      socket.emit("game-room", 1);
       socket.emit("initialize-game", {
         roomId: gameState!.roomId,
         pOneId: gameState!.player1User.id,
@@ -175,7 +177,7 @@ const Game = () => {
         currentPlayer.current = "p2";
         currentUser.current = gameState!.player2User;
       }
-      console.log("current player", socket.id);
+      gameMode.current = gameState!.player1User.gameMode;
     }
 
     const keyArr: { [key: string]: KeyType } = {};
@@ -220,14 +222,12 @@ const Game = () => {
         keyArr[event.key].pressDuration <= gameProperties.ball.maxTimeFrame
       )
         keyArr[event.key].pressDuration += 1;
-      console.log("keydown ", keyArr[event.key]);
     };
 
     /* handle key up */
     const handleKeyUp = (event: KeyboardEvent) => {
       keyArr[event.key].keyPressDown = false;
       keyArr[event.key].pressDuration = 0;
-      console.log("keyup ", keyArr[event.key]);
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -258,12 +258,63 @@ const Game = () => {
         });
       }
 
-      /* start game on " " */
-      if (" " in keyArr && keyArr[" "].keyPressDown) {
+      /* start game */
+      if ("s" in keyArr && keyArr["s"].keyPressDown) {
         socket?.emit("start-game", {
+          user: currentUser.current,
           roomId: gameState!.roomId,
+          player: currentPlayer.current,
           gameProperties: gameProperties,
         });
+      }
+
+      /* activate paddle on key press */
+      if (" " in keyArr && keyArr[" "].keyPressDown) {
+        socket?.emit("active-paddle", {
+          gameMode: gameMode.current,
+          roomId: gameState!.roomId,
+          player: currentPlayer.current,
+          gameProperties: gameProperties,
+        });
+
+        if (gameMode.current === "custom") {
+          if (currentPlayer.current === "p1") {
+            Matter.Body.setPosition(leftPaddle, {
+              x: gameProperties.leftPaddle.holdPosition.x,
+              y: leftPaddle.position.y,
+            });
+          }
+          if (currentPlayer.current === "p2") {
+            Matter.Body.setPosition(rightPaddle, {
+              x: gameProperties.rightPaddle.holdPosition.x,
+              y: rightPaddle.position.y,
+            });
+          }
+        }
+      }
+
+      /* deactivate paddle on key release */
+      if (" " in keyArr && !keyArr[" "].keyPressDown) {
+        socket?.emit("passive-paddle", {
+          gameMode: gameMode.current,
+          roomId: gameState!.roomId,
+          player: currentPlayer.current,
+          gameProperties: gameProperties,
+        });
+        if (gameMode.current === "custom") {
+          if (currentPlayer.current === "p1") {
+            Matter.Body.setPosition(leftPaddle, {
+              x: gameProperties.leftPaddle.position.x,
+              y: leftPaddle.position.y,
+            });
+          }
+          if (currentPlayer.current === "p2") {
+            Matter.Body.setPosition(rightPaddle, {
+              x: gameProperties.rightPaddle.position.x,
+              y: rightPaddle.position.y,
+            });
+          }
+        }
       }
     });
 
@@ -310,17 +361,16 @@ const Game = () => {
     });
 
     socket?.on("update-score", (score: ScoreBoard) => {
-      // do stuff with score here
       setGameData({
         ...gameData,
         p1Score: score.pOneScore,
         p2Score: score.pTwoScore,
       });
+      // ScoreExplosion({ winPlayer: score.winner, yPos: score.ballYPos });
     });
 
     /* end game and clear screen */
     const endGame = () => {
-      console.log("interval", currentPlayer.current);
       clearInterval(movePaddleInterval);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
@@ -337,10 +387,13 @@ const Game = () => {
       });
     };
 
+    /* ends game from backend */
     socket?.on("game-over", () => {
       endGame();
+      router.push("/main-menu");
     });
 
+    /* ends game to backend */
     const handleRouteChange = () => {
       endGame();
       socket?.emit("clear-room", {
@@ -348,69 +401,14 @@ const Game = () => {
         user: currentUser.current,
       });
     };
-
     router.events.on("routeChangeStart", handleRouteChange);
 
     return () => {
       clearInterval(movePaddleInterval);
     };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
-
-  // Matter.Events.on(engine, "beforeUpdate", function () {
-  //   /* handle perfect timing and move left paddle position when key press */
-  //   if (" " in keyArr && keyArr[" "].keyPressDown) {
-  //     // set perfect hit timeframe
-  //     if (
-  //       keyArr[" "].pressDuration >= 1 &&
-  //       keyArr[" "].pressDuration <= gameProperties.ball.perfectHitDuration
-  //     ) {
-  //       if (
-  //         ball.position.x > leftPaddle.position.x &&
-  //         ball.position.x <=
-  //           leftPaddle.position.x + gameProperties.ball.perfectHitZone &&
-  //         ball.position.y >=
-  //           leftPaddle.position.y - gameProperties.ball.perfectHitZone &&
-  //         ball.position.y <=
-  //           leftPaddle.position.y + gameProperties.ball.perfectHitZone
-  //       ) {
-  //         Matter.Body.setVelocity(ball, {
-  //           x: ball.speed * 1.5,
-  //           y: gameProperties.ball.speed.y,
-  //         });
-  //       }
-  //     }
-  //     /* move left paddle position backwards */
-  //     const paddle = Matter.Bodies.rectangle(
-  //       gameProperties.leftPaddle.position.x - 15,
-  //       leftPaddle.position.y,
-  //       gameProperties.leftPaddle.width,
-  //       gameProperties.leftPaddle.height,
-  //       {
-  //         isStatic: true,
-  //         density: 0.1,
-  //         friction: 0.2,
-  //         restitution: 0.8,
-  //       },
-  //     );
-  //     Matter.World.remove(engine.world, leftPaddle);
-  //     Matter.World.add(engine.world, paddle);
-  //     leftPaddle = paddle;
-  //   }
-  //   /* reset left paddle position to default on key release */
-  //   if (" " in keyArr && !keyArr[" "].keyPressDown) {
-  //     const paddle = Matter.Bodies.rectangle(
-  //       gameProperties.leftPaddle.position.x,
-  //       leftPaddle.position.y,
-  //       gameProperties.leftPaddle.width,
-  //       gameProperties.leftPaddle.height,
-  //       { isStatic: true },
-  //     );
-  //     Matter.World.remove(engine.world, leftPaddle);
-  //     Matter.World.add(engine.world, paddle);
-  //     leftPaddle = paddle;
-  //   }
-  // });
 
   return null;
 };

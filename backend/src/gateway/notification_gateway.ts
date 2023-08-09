@@ -17,7 +17,7 @@ export class NotificationGateway implements OnModuleInit {
 
   async onModuleInit() {
     this.server.on('connection', (socket) => {
-      console.log(socket.id, ' connected');
+      console.log(socket.id, 'connected');
 
       const heartbeat = setInterval(() => {
         if (!socket.connected) {
@@ -64,7 +64,7 @@ export class NotificationGateway implements OnModuleInit {
 
       socket.on('activity', () => {
         if (socket.data.userId) {
-          console.log('User activity: ' + socket.data.userId);
+          // console.log('User activity: ' + socket.data.userId);
           this.updateUserStatus(socket.data.userId, true);
           this.connectedUser.set(socket.data.userId, socket);
           // this.server
