@@ -150,6 +150,7 @@ const initializeGame = () => {
 };
 
 const Game = () => {
+  const gameMode = useRef("");
   const currentPlayer = useRef("");
   const currentUser = useRef();
   const gameState = useGameData().gameState;
@@ -176,6 +177,7 @@ const Game = () => {
         currentPlayer.current = "p2";
         currentUser.current = gameState!.player2User;
       }
+      gameMode.current = gameState!.player1User.gameMode;
     }
 
     const keyArr: { [key: string]: KeyType } = {};
@@ -256,53 +258,62 @@ const Game = () => {
         });
       }
 
-      /* start game and activate paddle on key press */
-      if (" " in keyArr && keyArr[" "].keyPressDown) {
+      /* start game */
+      if ("s" in keyArr && keyArr["s"].keyPressDown) {
         socket?.emit("start-game", {
           user: currentUser.current,
           roomId: gameState!.roomId,
           player: currentPlayer.current,
           gameProperties: gameProperties,
         });
+      }
 
+      /* activate paddle on key press */
+      if (" " in keyArr && keyArr[" "].keyPressDown) {
         socket?.emit("active-paddle", {
+          gameMode: gameMode.current,
           roomId: gameState!.roomId,
           player: currentPlayer.current,
           gameProperties: gameProperties,
         });
 
-        if (currentPlayer.current === "p1") {
-          Matter.Body.setPosition(leftPaddle, {
-            x: gameProperties.leftPaddle.holdPosition.x,
-            y: leftPaddle.position.y,
-          });
-        }
-        if (currentPlayer.current === "p2") {
-          Matter.Body.setPosition(rightPaddle, {
-            x: gameProperties.rightPaddle.holdPosition.x,
-            y: rightPaddle.position.y,
-          });
+        if (gameMode.current === "custom") {
+          if (currentPlayer.current === "p1") {
+            Matter.Body.setPosition(leftPaddle, {
+              x: gameProperties.leftPaddle.holdPosition.x,
+              y: leftPaddle.position.y,
+            });
+          }
+          if (currentPlayer.current === "p2") {
+            Matter.Body.setPosition(rightPaddle, {
+              x: gameProperties.rightPaddle.holdPosition.x,
+              y: rightPaddle.position.y,
+            });
+          }
         }
       }
 
       /* deactivate paddle on key release */
       if (" " in keyArr && !keyArr[" "].keyPressDown) {
         socket?.emit("passive-paddle", {
+          gameMode: gameMode.current,
           roomId: gameState!.roomId,
           player: currentPlayer.current,
           gameProperties: gameProperties,
         });
-        if (currentPlayer.current === "p1") {
-          Matter.Body.setPosition(leftPaddle, {
-            x: gameProperties.leftPaddle.position.x,
-            y: leftPaddle.position.y,
-          });
-        }
-        if (currentPlayer.current === "p2") {
-          Matter.Body.setPosition(rightPaddle, {
-            x: gameProperties.rightPaddle.position.x,
-            y: rightPaddle.position.y,
-          });
+        if (gameMode.current === "custom") {
+          if (currentPlayer.current === "p1") {
+            Matter.Body.setPosition(leftPaddle, {
+              x: gameProperties.leftPaddle.position.x,
+              y: leftPaddle.position.y,
+            });
+          }
+          if (currentPlayer.current === "p2") {
+            Matter.Body.setPosition(rightPaddle, {
+              x: gameProperties.rightPaddle.position.x,
+              y: rightPaddle.position.y,
+            });
+          }
         }
       }
     });

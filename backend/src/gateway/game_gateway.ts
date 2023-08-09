@@ -37,11 +37,11 @@ export class GameGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('join-room')
-  JoinRoom(client: Socket, data: { user: UserData; gameMode: string }) {
-    data.user.socketId = client.id;
+  JoinRoom(client: Socket, param: { user: UserData; gameMode: string }) {
+    param.user.socketId = client.id;
     const currentRoom = this.gameService.checkGameMode({
-      user: data.user,
-      gameMode: data.gameMode,
+      user: param.user,
+      gameMode: param.gameMode,
       classicRooms: this.classicRooms,
       rankingRooms: this.rankingRooms,
       privateRooms: this.privateRooms,
@@ -51,19 +51,19 @@ export class GameGateway implements OnModuleInit {
         server: this.server,
         client: client,
         rooms: currentRoom,
-        user: data.user,
+        user: param.user,
       });
     }
   }
 
   @SubscribeMessage('view-game')
-  async viewGame(client: Socket, data: { roomId: string }) {
-    client.join(data.roomId);
+  async viewGame(client: Socket, param: { roomId: string }) {
+    client.join(param.roomId);
     const gameState = this.gameService.findAvailableRoomByRoomId({
-      roomId: data.roomId,
+      roomId: param.roomId,
       rooms: [this.classicRooms, this.rankingRooms, this.privateRooms],
     });
-    this.server.to(data.roomId).emit('game-update', gameState);
+    this.server.to(param.roomId).emit('game-update', gameState);
   }
 
   @SubscribeMessage('invite-game')
@@ -106,8 +106,7 @@ export class GameGateway implements OnModuleInit {
   @SubscribeMessage('clear-room')
   clearRoom(client: Socket, param: { roomId: string; user: UserData }) {
     const currentRoom = this.gameService.getGameMode({
-      user: param.user,
-      gameMode: null,
+      gameMode: param.user.gameMode,
       classicRooms: this.classicRooms,
       rankingRooms: this.rankingRooms,
       privateRooms: this.privateRooms,
@@ -142,24 +141,28 @@ export class GameGateway implements OnModuleInit {
 
   @SubscribeMessage('active-paddle')
   activePaddle(client: Socket, param: SmashingPaddleParams) {
-    this.gameService.updatePaddleActiveState({
-      server: this.server,
-      roomId: param.roomId,
-      player: param.player,
-      gameInfo: this.gameInfo.get(param.roomId),
-      gameProperties: param.gameProperties,
-    });
+    if (param.gameMode === 'custom') {
+      this.gameService.updatePaddleActiveState({
+        server: this.server,
+        roomId: param.roomId,
+        player: param.player,
+        gameInfo: this.gameInfo.get(param.roomId),
+        gameProperties: param.gameProperties,
+      });
+    }
   }
 
   @SubscribeMessage('passive-paddle')
   passivePaddle(client: Socket, param: SmashingPaddleParams) {
-    this.gameService.updatePaddlePassiveState({
-      server: this.server,
-      roomId: param.roomId,
-      player: param.player,
-      gameInfo: this.gameInfo.get(param.roomId),
-      gameProperties: param.gameProperties,
-    });
+    if (param.gameMode === 'custom') {
+      this.gameService.updatePaddlePassiveState({
+        server: this.server,
+        roomId: param.roomId,
+        player: param.player,
+        gameInfo: this.gameInfo.get(param.roomId),
+        gameProperties: param.gameProperties,
+      });
+    }
   }
 
   @SubscribeMessage('start-game')
@@ -168,8 +171,7 @@ export class GameGateway implements OnModuleInit {
     if (roundWinner === null || roundWinner === param.player) {
       if (this.gameInfo.get(param.roomId).gameStart < 1) {
         const currentRoom = this.gameService.getGameMode({
-          user: param.user,
-          gameMode: null,
+          gameMode: param.gameMode,
           classicRooms: this.classicRooms,
           rankingRooms: this.rankingRooms,
           privateRooms: this.privateRooms,

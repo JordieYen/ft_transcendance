@@ -62,14 +62,6 @@ export interface UserData {
 
 /* game_gateway.ts Params */
 
-export interface CheckGameModeParams {
-  user: UserData;
-  gameMode: string;
-  classicRooms: Map<string, UserData[]>;
-  rankingRooms: Map<string, UserData[]>;
-  privateRooms: Map<string, UserData[]>;
-}
-
 export interface GameInvitationParams {
   user: UserData;
   friend: UserData;
@@ -92,17 +84,33 @@ export interface MovePaddleParams {
 export interface SmashingPaddleParams {
   roomId: string;
   player: string;
+  gameMode: string;
   gameProperties: GameElements;
 }
 
 export interface GameParams {
-  user: UserData;
   roomId: string;
   player: string;
+  gameMode: string;
   gameProperties: GameElements;
 }
 
 /* game_service.ts Params */
+
+export interface CheckGameModeParams {
+  user: UserData;
+  gameMode: string;
+  classicRooms: Map<string, UserData[]>;
+  rankingRooms: Map<string, UserData[]>;
+  privateRooms: Map<string, UserData[]>;
+}
+
+export interface GetGameModeParams {
+  gameMode: string;
+  classicRooms: Map<string, UserData[]>;
+  rankingRooms: Map<string, UserData[]>;
+  privateRooms: Map<string, UserData[]>;
+}
 
 export interface JoinRoomParams {
   server: Server;

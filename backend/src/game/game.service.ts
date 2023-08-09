@@ -16,6 +16,7 @@ import {
   UpdatePaddleActiveStateParams,
   UpdatePaddlePassiveStateParams,
   FindRoomByIdParams,
+  GetGameModeParams,
 } from './game.interface';
 import { FriendService } from 'src/friend/services/friend.service';
 import { MatchHistoryService } from 'src/match-history/services/match-history.service';
@@ -82,20 +83,17 @@ export class GameService {
 
   /* set current room */
   checkGameMode(param: CheckGameModeParams) {
-    if (param.gameMode === 'classic') {
-      param.user.gameMode = param.gameMode;
-      return param.classicRooms;
-    } else if (param.gameMode === 'custom') {
-      param.user.gameMode = param.gameMode;
-      return param.rankingRooms;
-    } else return param.classicRooms;
+    param.user.gameMode = param.gameMode;
+    if (param.gameMode === 'classic') return param.classicRooms;
+    else if (param.gameMode === 'custom') return param.rankingRooms;
+    else return param.classicRooms;
   }
 
   /* set current room */
-  getGameMode(param: CheckGameModeParams) {
-    if (param.user.gameMode === 'classic') return param.classicRooms;
-    else if (param.user.gameMode === 'custom') return param.rankingRooms;
-    else if (param.user.gameMode === 'private') return param.rankingRooms;
+  getGameMode(param: GetGameModeParams) {
+    if (param.gameMode === 'classic') return param.classicRooms;
+    else if (param.gameMode === 'custom') return param.rankingRooms;
+    else if (param.gameMode === 'private') return param.rankingRooms;
     else return param.classicRooms;
   }
 
@@ -631,7 +629,6 @@ export class GameService {
     if (Math.random() < 0.5) result.y *= -1;
     if (roundWinner === 'p2') result.x *= -1;
 
-    console.log(result);
     return result;
   }
 
