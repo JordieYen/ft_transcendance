@@ -625,4 +625,18 @@ export class GameService {
     });
     this.startRound(param);
   }
+
+  /* emit game update */
+  emitGameUpdate(param: HandleGameStateParams) {
+    const gameInfo = {
+      pOneScore: param.gameInfo.pOneScore,
+      pTwoScore: param.gameInfo.pTwoScore,
+      pOneSmash: param.gameInfo.pOneSmash,
+      pTwoSmash: param.gameInfo.pTwoSmash,
+      ballPosition: param.gameInfo.ball.position,
+      leftPaddlePosition: param.gameInfo.leftPaddle.position,
+      rightPaddlePosition: param.gameInfo.rightPaddle.position,
+    };
+    param.server.to(param.roomId).emit('game-update', gameInfo);
+  }
 }
