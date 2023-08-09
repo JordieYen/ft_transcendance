@@ -146,4 +146,25 @@ export class GameGateway implements OnModuleInit {
   handleDisconnect() {
     console.log('disconnected from game socket gateway');
   }
+
+  @SubscribeMessage('view-game')
+  async viewGame(client: Socket, data: { roomId: string }) {
+    client.join(data.roomId);
+    console.log(data.roomId);
+    // emit game data state to client
+    const gameInfo = this.gameInfo.get(data.roomId);
+    console.log('gameInfo', gameInfo);
+    if (gameInfo) {
+      this.gameService.emitGameUpdate({
+        server: this.server,
+        roomId: data.roomId,
+        roomArray: this.rooms,
+        gameArray: this.gameInfo,
+        gameInfo: gameInfo,
+        gameProperties: null, // need to get from data from front end
+      });
+    } else {
+      console.error(`GameInfo for roomId ${data.roomId} not found.`);
+    }
+  }
 }
