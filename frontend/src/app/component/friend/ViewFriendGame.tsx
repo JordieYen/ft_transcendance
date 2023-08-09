@@ -1,23 +1,40 @@
-import React from 'react';
-
+import React, { useContext, useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGamepad } from "@fortawesome/free-solid-svg-icons";
+import { SocketContext } from "@/app/socket/SocketProvider";
+import router from "next/router";
+import { useGameData } from "../game/GameContext";
 
 const ViewFriendGame = ({ roomId }: any) => {
+  const socket = useContext(SocketContext);
+  const { setGameState } = useGameData();
+
+  useEffect(() => {
+    const handleGameUpdate = (data: any) => {
+      console.log("handleGameUpdate", data);
+      setGameState(data);
+      router.push("/game");
+    };
+    socket?.on("game-update", handleGameUpdate);
+    return () => {
+      socket?.off("game-update", handleGameUpdate);
+    };
+  }, [socket]);
+
   const handleViewGame = () => {
     console.log(`Viewing game of friend with ID: ${roomId}`);
-    // Implement the logic to view the game using the friendId
-    // For example, navigate to the game view or display game details
+    socket?.emit("view-game", {
+      roomId: roomId,
+    });
   };
 
   return (
     <>
-      {roomId ? (
-        <div
-          className="bg-blue-500 my-2 text-white px-4 py-2 rounded cursor-pointer"
-          onClick={handleViewGame}
-        >
-          In game
-        </div>
-      ) : null}
+      {roomId && (
+        <button onClick={handleViewGame}>
+          <FontAwesomeIcon icon={faGamepad} />
+        </button>
+      )}
     </>
   );
 };

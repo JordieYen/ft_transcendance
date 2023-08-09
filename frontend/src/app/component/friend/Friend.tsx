@@ -2,8 +2,12 @@ import { SocketContext } from "@/app/socket/SocketProvider";
 import useUserStore from "@/store/useUserStore";
 import { use, useContext, useEffect, useState } from "react";
 import Avatar from "../header_icon/Avatar";
+import { toUserProfile } from "./handleClick";
 import InviteFriendGame from "./InviteFriendGame";
 import ViewFriendGame from "./ViewFriendGame";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserTimes, faBan } from '@fortawesome/free-solid-svg-icons';
+import { toast } from "react-hot-toast";
 
 interface FriendProps {
   userDataId: number;
@@ -62,7 +66,9 @@ const Friend = ({
 
 
   useEffect(() => {
-    console.log("friends", friends);
+    if (friends.length > 0) {
+      console.log("friends", friends);
+    }
   }, [friends]);
 
   const fetchFriends = async () => {
@@ -88,60 +94,137 @@ const Friend = ({
     }
   };
 
+  // const unfriend = async (friendId: number) => {
+  //   try {
+  //     const confirmation = window.confirm(
+  //       "Are you sure you want to unfriend this friend?",
+  //     );
+  //     if (confirmation) {
+  //       socket?.emit("unfriend", {
+  //         userId: userDataId,
+  //         friendId: friendId,
+  //       });
+  //       setFriends((prevFriends) =>
+  //         prevFriends.filter((friend) => friend.id !== friendId),
+  //       );
+  //       setFriendRequestStatus((prevStatus) => {
+  //         return {
+  //           ...prevStatus,
+  //           [friendId]: false,
+  //           [userDataId]: false,
+  //         };
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log("Error unfriending friend:", error);
+  //   }
+  // };
+
   const unfriend = async (friendId: number) => {
     try {
-      const confirmation = window.confirm(
-        "Are you sure you want to unfriend this friend?",
+      const confirmation = await toast.promise(
+        new Promise<void>((resolve, reject) => {
+          const userConfirmation = confirm(
+            "Are you sure you want to unfriend this friend?",
+          );
+          if (userConfirmation) {
+            socket?.emit("unfriend", {
+              userId: userDataId,
+              friendId: friendId,
+            });
+            setFriends((prevFriends) =>
+              prevFriends.filter((friend) => friend.id !== friendId),
+            );
+            setFriendRequestStatus((prevStatus) => {
+              return {
+                ...prevStatus,
+                [friendId]: false,
+                [userDataId]: false,
+              };
+            }
+            );
+            resolve();
+          } else {
+            reject();
+          }
+        }),
+        {
+          loading: "Unfriending...",
+          success: "Unfriended!",
+          error: "Cancel unfriending friend",
+        },
       );
-      if (confirmation) {
-        socket?.emit("unfriend", {
-          userId: userDataId,
-          friendId: friendId,
-        });
-        setFriends((prevFriends) =>
-          prevFriends.filter((friend) => friend.id !== friendId),
-        );
-        setFriendRequestStatus((prevStatus) => {
-          return {
-            ...prevStatus,
-            [friendId]: false,
-            [userDataId]: false,
-          };
-        });
-      }
     } catch (error) {
       console.log("Error unfriending friend:", error);
     }
   };
 
+  // const block = async (friendId: number) => {
+  //   try {
+  //     const confirmation = window.confirm(
+  //       "Are you sure you want to block this friend?",
+  //     );
+  //     if (confirmation) {
+  //       socket?.emit("block", {
+  //         blockerId: userDataId,
+  //         friendId: friendId,
+  //       });
+  //       setFriends((prevFriends) =>
+  //         prevFriends.filter((friend) => friend.id !== friendId),
+  //       );
+  //       setFriendRequestStatus((prevStatus) => {
+  //         return {
+  //           ...prevStatus,
+  //           [friendId]: false,
+  //           [userDataId]: false,
+  //         };
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log("Error blocking friend:", error);
+  //   }
+  // };
+
   const block = async (friendId: number) => {
     try {
-      const confirmation = window.confirm(
-        "Are you sure you want to block this friend?",
+      const confirmation = await toast.promise(
+        new Promise<void>((resolve, reject) => {
+          const userConfirmation = confirm(
+            "Are you sure you want to block this friend?",
+          );
+          if (userConfirmation) {
+            socket?.emit("block", {
+              blockerId: userDataId,
+              friendId: friendId,
+            });
+            setFriends((prevFriends) =>
+              prevFriends.filter((friend) => friend.id !== friendId),
+            );
+            setFriendRequestStatus((prevStatus) => {
+              return {
+                ...prevStatus,
+                [friendId]: false,
+                [userDataId]: false,
+              };
+            });
+            resolve();
+          } else {
+            reject();
+          }
+        }),
+        {
+          loading: "Blocking...",
+          success: "Blocked!",
+          error: "Cancel blocking friend",
+        },
       );
-      if (confirmation) {
-        socket?.emit("block", {
-          blockerId: userDataId,
-          friendId: friendId,
-        });
-        setFriends((prevFriends) =>
-          prevFriends.filter((friend) => friend.id !== friendId),
-        );
-        setFriendRequestStatus((prevStatus) => {
-          return {
-            ...prevStatus,
-            [friendId]: false,
-            [userDataId]: false,
-          };
-        });
-      }
     } catch (error) {
       console.log("Error blocking friend:", error);
     }
-  };
+  }
 
   return (
-    <div className="friend flex-col">
+    <div className="friend-list flex-col">
       <h1>Friends</h1>
       {friends &&
         friends.map((friend) => (
@@ -152,6 +235,7 @@ const Friend = ({
                 alt="user avatar"
                 width={50}
                 height={50}
+                onClick={() => toUserProfile(friend?.id)}
               />
             </div>
             <div className="flex-col gap-1">
@@ -165,16 +249,17 @@ const Friend = ({
                 <span>{friend?.online ? "online" : "offline"}</span>
               </div>
               {/* Display Game Status */}
-              {
-                friend?.roomId !== "null" ? (
-                  <ViewFriendGame roomId={friend.roomId} />
-                ) : (
-                  <InviteFriendGame friend={friend} user={userData} socket={socket}/>
-                )
-              }
-              <div className="flex gap-2">
-                <button className="bg-mygrey" onClick={() => unfriend(friend?.id)}>Unfriend</button>
-                <button className="bg-mygrey" onClick={() => block(friend?.id)}>Block</button>
+              <div className="flex gap-3 p-2">
+                {
+                  (friend?.roomId !== "null" && friend?.roomId !== null) ? (
+                    <ViewFriendGame roomId={friend.roomId} />
+                  ) : (
+                    <InviteFriendGame friend={friend} user={userData} socket={socket}/>
+                  )
+                }
+                <button onClick={() => unfriend(friend?.id)}> <FontAwesomeIcon icon={faUserTimes} />
+                </button>
+                <button onClick={() => block(friend?.id)}><FontAwesomeIcon icon={faBan} /></button>
               </div>
             </div>
           </div>

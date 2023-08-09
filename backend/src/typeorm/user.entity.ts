@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { ChannelUser } from './channel_user.entity';
 import { Friend } from './friends.entity';
+import { GameInvitation } from './game_invitation.entity';
 import { MatchHistory } from './match_history.entity';
 import { Message } from './message.entity';
 import { Stat } from './stats.entity';
@@ -82,6 +83,12 @@ export class User {
 
   @OneToMany(() => Message, (message) => message.sender)
   messages: Message[];
+
+  @OneToMany(() => GameInvitation, (GameInvitation) => GameInvitation.sender)
+  sentGameInvitations: GameInvitation[];
+
+  @OneToMany(() => GameInvitation, (GameInvitation) => GameInvitation.receiver)
+  receiveGameInvitations: GameInvitation[];
 
   @BeforeInsert()
   updateUpdatedAt() {

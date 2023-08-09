@@ -1255,8 +1255,8 @@ const MembersMore = ({
 };
 
 import { useRouter } from "next/router";
-import { channel } from "diagnostics_channel";
-import UserData from "@/hooks/userData";
+import MatchMakingButton from "../game/MatchMakingButton";
+import ChooseGameMode from "../game/ChooseGameMode";
 
 const ChatBox: React.FC<any> = () => {
   const [refresh, setRefresh] = useState(0);
@@ -1308,6 +1308,21 @@ const ChatBox: React.FC<any> = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  /**** game part begin *******/
+  const [selectedGameMode, setSelectedGameMode] = useState<string>("classic");
+
+  const handleSelectGameMode = (gameMode: any) => {
+    setSelectedGameMode(gameMode);
+  };
+
+  const [isMatchmaking, setIsMatchmaking] = useState(false);
+
+  const handleMatchmaking = () => {
+    setIsMatchmaking(!isMatchmaking);
+  };
+
+  /**** game part end *******/
 
   useEffect(() => {
     fetchMessageData();
@@ -1820,12 +1835,21 @@ const ChatBox: React.FC<any> = () => {
           Friends
         </button> */}
         <button className="bottom-nav-buttons">Friends</button>
-        <button
+        {/* <button
           className="bottom-nav-buttons"
           onClick={() => router.push("game-loading")}
         >
           Find match
-        </button>
+        </button> */}
+        {/* <MatchMakingButton/> */}
+        <ChooseGameMode
+          onSelectGameMode={handleSelectGameMode}
+          isMatchmaking={isMatchmaking}
+        />
+        <MatchMakingButton
+          gameMode={selectedGameMode}
+          onMatchMaking={handleMatchmaking}
+        />
       </div>
     </div>
   );
