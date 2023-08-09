@@ -34,7 +34,6 @@ const Roles = ({
   modalRef: RefObject<HTMLDivElement>;
   channelUser: any;
 }) => {
-
   return (
     <>
       {isOpen && (
@@ -955,7 +954,7 @@ const ChatBox: React.FC<any> = () => {
   };
 
   /**** game part begin *******/
-  const [selectedGameMode, setSelectedGameMode] = useState<string>("");
+  const [selectedGameMode, setSelectedGameMode] = useState<string>("classic");
 
   const handleSelectGameMode = (gameMode: any) => {
     setSelectedGameMode(gameMode);
@@ -967,7 +966,7 @@ const ChatBox: React.FC<any> = () => {
     setIsMatchmaking(!isMatchmaking);
   };
 
-   /**** game part end *******/
+  /**** game part end *******/
 
   useEffect(() => {
     fetchMessageData();
@@ -1451,8 +1450,14 @@ const ChatBox: React.FC<any> = () => {
           Find match
         </button> */}
         {/* <MatchMakingButton/> */}
-        <ChooseGameMode onSelectGameMode={handleSelectGameMode} isMatchmaking={isMatchmaking} />
-        <MatchMakingButton gameMode={selectedGameMode} onMatchMaking={handleMatchmaking}/>
+        <ChooseGameMode
+          onSelectGameMode={handleSelectGameMode}
+          isMatchmaking={isMatchmaking}
+        />
+        <MatchMakingButton
+          gameMode={selectedGameMode}
+          onMatchMaking={handleMatchmaking}
+        />
       </div>
     </div>
   );
