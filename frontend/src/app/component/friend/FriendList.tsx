@@ -285,7 +285,6 @@ const FriendList = () => {
                               : isSent(user?.id)
                               ? "Friend Request Pending "
                               : "Add Friend "}
-                            {user?.id}
                           </button>
                         </div>
                       </div>

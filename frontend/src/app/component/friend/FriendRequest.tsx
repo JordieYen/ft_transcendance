@@ -166,7 +166,7 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
   };
 
   return (
-      <div className="friend-request flex-col">
+      <div className="friend-request flex-col bg-mydarkgrey">
         <h1>Friend Requests</h1>
         { friendRequests?.length > 0 ? (
           friendRequests
