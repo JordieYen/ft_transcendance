@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -11,12 +12,15 @@ import { UsersService } from 'src/users/services/users.service';
 import { CreateFriendDto } from '../dto/create-friend.dto';
 import { UpdateFriendDto } from '../dto/update-friend.dto';
 import { Repository } from 'typeorm';
+import { ChannelService } from 'src/chat/channel/channel.service';
+import { CreateChannelDto, JoinChannelDto } from 'src/chat/channel/dto';
 
 @Injectable()
 export class FriendService {
   constructor(
     @InjectRepository(Friend) private friendRepository: Repository<Friend>,
     private readonly userService: UsersService,
+    private readonly channelService: ChannelService,
   ) {}
 
   async create(createFriendDto: CreateFriendDto) {
@@ -70,15 +74,24 @@ export class FriendService {
     }
     const friend = await this.findOne(id);
     try {
-      const sender = await this.userService.findUsersById(
-        updateFriendDto.senderId,
-      );
-      const receiver = await this.userService.findUsersById(
-        updateFriendDto.receiverId,
-      );
-      friend.sender = sender;
-      friend.receiver = receiver;
-      friend.status = updateFriendDto.status;
+      if (updateFriendDto.senderId) {
+        const sender = await this.userService.findUsersById(
+          updateFriendDto.senderId,
+        );
+        friend.sender = sender;
+      }
+      if (updateFriendDto.receiverId) {
+        const receiver = await this.userService.findUsersById(
+          updateFriendDto.receiverId,
+        );
+        friend.receiver = receiver;
+      }
+      if (updateFriendDto.status) {
+        friend.status = updateFriendDto.status;
+      }
+      if (updateFriendDto.roomId) {
+        friend.roomId = updateFriendDto.roomId;
+      } else friend.roomId = null;
       await this.friendRepository.update(id, friend);
       return await this.findOne(id);
     } catch (error) {
@@ -144,9 +157,36 @@ export class FriendService {
     await this.friendRepository.update(friendRequestId, {
       status: FriendStatus.Friended,
     });
+    console.log('friendRequestId', friendRequestId);
+
     const updatedFriendRequest = await this.findOne(friendRequestId);
+    const sender = await this.userService.findUsersById(
+      updatedFriendRequest.sender.id,
+    );
+    const receiver = await this.userService.findUsersById(
+      updatedFriendRequest.receiver.id,
+    );
+    const dto: CreateChannelDto = {
+      channel_name: `${sender.username + '+' + receiver.username}`,
+      channel_type: 'direct message',
+    };
+    const channel = await this.channelService.createChannel(dto, sender);
+    console.log('channel', channel);
+
+    const dto_join: JoinChannelDto = {
+      channel_uid: channel.channel_uid,
+    };
+    await this.channelService.joinChannel(dto_join, receiver);
     return updatedFriendRequest;
   }
+
+  // async acceptFriendRequest(friendRequestId: number) {
+  //   await this.friendRepository.update(friendRequestId, {
+  //     status: FriendStatus.Friended,
+  //   });
+  //   const updatedFriendRequest = await this.findOne(friendRequestId);
+  //   return updatedFriendRequest;
+  // }
 
   async declineFriendRequest(friendRequestId: number) {
     await this.friendRepository.update(friendRequestId, {
@@ -179,6 +219,7 @@ export class FriendService {
 
     const blocker = await this.userService.findUsersById(blockerId);
     const blocked = await this.userService.findUsersById(blockedId);
+    friendRequest.roomId = null;
 
     if (friendRequest) {
       friendRequest.status = FriendStatus.Blocked;
@@ -279,13 +320,28 @@ export class FriendService {
     });
 
     const filteredFriends = friends.map((friend) => {
-      if (friend.sender.id === userId) {
-        return friend.receiver;
-      } else {
-        return friend.sender;
-      }
+      const friendData =
+        friend.sender.id === userId ? friend.receiver : friend.sender;
+      return { ...friendData, roomId: friend.roomId };
     });
     return filteredFriends;
+  }
+
+  async getFriendsBoth(userId: number) {
+    const friends = await this.friendRepository.find({
+      where: [
+        {
+          sender: { id: userId },
+          status: FriendStatus.Friended,
+        },
+        {
+          receiver: { id: userId },
+          status: FriendStatus.Friended,
+        },
+      ],
+      relations: ['sender', 'receiver'],
+    });
+    return friends;
   }
 
   async findFriendship(senderId: number, receiverId: number) {

@@ -12,9 +12,10 @@ interface AvatarProps {
 
 const Avatar = ({ src, alt, width, height, onClick }: AvatarProps) => {
   return (
+    // transform cause avatar to be on top of other elements
     <span className="icon-container" onClick={onClick}>
       <Image
-        className="avatar-image transform hover:scale-125 object-cover"
+        className="avatar-image hover:scale-125 object-cover"
         src={src}
         alt={alt}
         width={width}

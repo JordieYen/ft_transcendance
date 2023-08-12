@@ -34,9 +34,54 @@ export class MatchHistoryController {
     return this.matchHistoryService.getByScore(+score);
   }
 
+  @Get('loss')
+  async getTotalLossByPlayerUid(@Query('uid') uid: string): Promise<number> {
+    return this.matchHistoryService.getTotalLossByPlayerUid(+uid);
+  }
+
   @Get('current-mmr')
   async getMmrByPlayerUid(@Query('uid') uid: string): Promise<number> {
     return this.matchHistoryService.getMmrByPlayerUid(+uid);
+  }
+
+  @Get('top-mmr')
+  async getHighestMmrByPlayerUid(@Query('uid') uid: string): Promise<number> {
+    return this.matchHistoryService.getHighestMmrByPlayerUid(+uid);
+  }
+
+  @Get('winstreak')
+  async getLifetimeWinstreakByPlayerUid(
+    @Query('uid') uid: string,
+  ): Promise<number> {
+    return this.matchHistoryService.getLifetimeWinstreakByPlayerUid(+uid);
+  }
+
+  @Get('kills')
+  async getLifetimeKillsByPlayerUid(
+    @Query('uid') uid: string,
+  ): Promise<number> {
+    return this.matchHistoryService.getLifetimeKillsByPlayerUid(+uid);
+  }
+
+  @Get('deaths')
+  async getLifetimeDeathsByPlayerUid(
+    @Query('uid') uid: string,
+  ): Promise<number> {
+    return this.matchHistoryService.getLifetimeDeathsByPlayerUid(+uid);
+  }
+
+  @Get('kdr')
+  async getKillDeathRatioByPlayerUid(
+    @Query('uid') uid: string,
+  ): Promise<string> {
+    return this.matchHistoryService.getKillDeathRatioByPlayerUid(+uid);
+  }
+
+  @Get('smashes')
+  async getLifetimeSmashesByPlayerUid(
+    @Query('uid') uid: string,
+  ): Promise<number> {
+    return this.matchHistoryService.getLifetimeSmashesByPlayerUid(+uid);
   }
 
   @Post()
@@ -45,6 +90,11 @@ export class MatchHistoryController {
   ): Promise<void> {
     return this.matchHistoryService.create(createMatchHistoryDto);
   }
+
+  // @Patch('match')
+  // update(@Query('uid') uid: string, @Body() UpdateMatchHistoryDto: UpdateMatchHistoryDto) {
+  //   return this.matchHistoryService.updateMmr(+uid, UpdateMatchHistoryDto);
+  // }
 
   @Delete('match')
   async remove(@Query('uid') uid: string) {

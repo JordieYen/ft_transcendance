@@ -42,6 +42,36 @@ export class ChannelController {
     return this.channelService.findChannelsByChannelType(channel_type);
   }
 
+  @Get('typeid/:channel_type')
+  findChannelsByChannelTypeWithId(
+    @Param('channel_type') channel_type: string,
+    @User() user,
+  ) {
+    return this.channelService.findChannelsByChannelTypeWithId(
+      channel_type,
+      user.id,
+    );
+  }
+
+  @Get('typeall')
+  findPublicAndProtectedChannels(@User() user) {
+    return this.channelService.findPublicAndProtectedChannels(user.id);
+  }
+
+  @Get('typesearch/:channel_type/:name')
+  searchChannels(
+    @Param('channel_type') channel_type: string,
+    @Param('name') name: string,
+    @User() user,
+  ) {
+    return this.channelService.searchChannels(channel_type, name, user.id);
+  }
+
+  @Get('searchgroup/:name')
+  searchChannelsGroup(@Param('name') name: string, @User() user) {
+    return this.channelService.searchChannelsGroup(name, user.id);
+  }
+
   @Post('create')
   createChannel(@Body() dto: CreateChannelDto, @User() user) {
     return this.channelService.createChannel(dto, user);

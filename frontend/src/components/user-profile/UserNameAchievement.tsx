@@ -8,11 +8,11 @@ import "@/styles/globals.css";
 const RenderAchievementIcon = ({
   achv,
   achvImage,
-  key,
+  index,
 }: {
   achv: any;
   achvImage: string;
-  key: number;
+  index: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -115,6 +115,7 @@ const UserAchievement = ({ mode }: { mode: number }) => {
                   achv={achv}
                   achvImage={achvImage}
                   key={i}
+                  index={i}
                 />
               );
             })}
@@ -131,6 +132,7 @@ const UserAchievement = ({ mode }: { mode: number }) => {
                   achv={achv}
                   achvImage={achvImage}
                   key={i}
+                  index={i + 5}
                 />
               );
             })}
@@ -164,16 +166,16 @@ const LifetimeScore = ({ mode }: { mode: number }) => {
       <div className="flex flex-col w-1/3">
         <p className="text-xs">lifetime games</p>
         <p className="text-timberwolf text-4xl">
-          {userData.stat.wins + userData.stat.losses}
+          {userData.stat?.wins + userData.stat?.losses}
         </p>
       </div>
       <div className="flex flex-col w-1/3">
         <p className="text-xs">lifetime wins</p>
-        <p className="text-timberwolf text-4xl">{userData.stat.wins}</p>
+        <p className="text-timberwolf text-4xl">{userData.stat?.wins}</p>
       </div>
       <div className="flex flex-col w-1/3">
         <p className="text-xs">longest win streak</p>
-        <p className="text-timberwolf text-4xl">{userData.stat.win_streak}</p>
+        <p className="text-timberwolf text-4xl">{userData.stat?.win_streak}</p>
       </div>
     </div>
   );

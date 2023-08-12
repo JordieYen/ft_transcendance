@@ -43,7 +43,7 @@ export class AuthService {
           grant_type: 'authorization_code',
           client_id: this.configService.get<string>('CLIENT_ID'),
           client_secret: this.configService.get<string>('CLIENT_SECRET'),
-          redirect_uri: 'http://localhost:3000/auth/callback',
+          redirect_uri: `${process.env.NEST_HOST}/auth/callback`,
           code,
         },
       );
@@ -95,7 +95,7 @@ export class AuthService {
       newUser.username = profile.username;
       newUser.avatar =
         profile._json.image.link ||
-        'http://localhost:3000/public/default_avatar.png';
+        `${process.env.NEST_HOST}/public/default_avatar.png`;
       newUser.online = false;
       returnUser = await this.userService.createUser(newUser);
     }

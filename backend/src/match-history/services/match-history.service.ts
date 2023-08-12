@@ -79,13 +79,13 @@ export class MatchHistoryService {
     });
   }
 
-  // Return total games played from a player
+  // Return total games played by a player
   async getTotalGamesByPlayerUid(uid: number): Promise<number> {
     const total = (await this.getByPlayerUid(uid)).length;
     return total;
   }
 
-  // Return total wins from a player
+  // Return total wins by a player
   async getTotalWinsByPlayerUid(uid: number): Promise<number> {
     const total = (await this.getWinsByPlayerUid(uid)).length;
     return total;
@@ -339,9 +339,9 @@ export class MatchHistoryService {
       await this.updateMmr(newMatch);
       await this.updateStat(newMatch.p1);
       await this.updateStat(newMatch.p2);
-      // await this.updateKillChainAchievement(newMatch);
-      // await this.updateUserAchievement(newMatch.p1.id);
-      // await this.updateUserAchievement(newMatch.p2.id);
+      await this.updateKillChainAchievement(newMatch);
+      await this.updateUserAchievement(newMatch.p1.id);
+      await this.updateUserAchievement(newMatch.p2.id);
     } catch (error) {
       console.log('error=', error.message);
       throw new InternalServerErrorException('Could not create match-history');

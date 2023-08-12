@@ -15,7 +15,7 @@ const UserProfile = (userId: number) => {
 
     const fetchUserProfileData = async (signal: AbortSignal) => {
         try {
-            const response = await fetch(`http://localhost:3000/users/${userId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/users/${userId}`, {
                 credentials: "include",
                 signal: signal,
             });

@@ -9,8 +9,8 @@ import Block from "./Block";
 import useSessionStorageState from "@/app/utils/useSessionStorageState";
 import useUserStore from "@/store/useUserStore";
 import { useRouter } from "next/router";
-import { log } from "console";
 import Avatar from "../header_icon/Avatar";
+import { toUserProfile } from "./handleClick";
 
 const FriendList = () => {
   const [usersList, setUserList] = useState<any[]>([]);
@@ -35,13 +35,14 @@ const FriendList = () => {
     state.userData,
     state.setUserData,
   ]);
-  const router = useRouter();
+  // const { setGameState, isLoadingScreenVisible, player1, player2 } = useGameData();
+
 
   useEffect(() => {
     if (userData.id) {
-      console.log("userData", userData.id);
-
-      socket?.emit("join", `${userData?.id}`);
+      // console.log('players from game state', player1, player2, isLoadingScreenVisible);
+      // console.log("userData", userData.id);
+      // socket?.emit("join", `${userData?.id}`);
       socket?.on("friend-request-received", (receivedFriendRequest: any) => {
         console.log("friend-request-received socket", receivedFriendRequest);
         setFriendRequestArray((prevArray: any) => {
@@ -89,9 +90,10 @@ const FriendList = () => {
     };
   }, [socket, userData]);
 
+
   const fetchUsersList = async () => {
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/users`, {
         credentials: "include",
       });
       if (response.ok) {
@@ -176,7 +178,7 @@ const FriendList = () => {
       const userId = user1.id;
       const friendId = user2.id;
       const response = await fetch(
-        `http://localhost:3000/friend/check-relationship/${userId}/${friendId}`,
+        `${process.env.NEXT_PUBLIC_NEST_HOST}/friend/check-relationship/${userId}/${friendId}`,
         {
           method: "GET",
           credentials: "include",
@@ -198,24 +200,6 @@ const FriendList = () => {
       }
     } catch (error) {
       console.log("Error fetching friend request:", error);
-    }
-  };
-
-  const handleClick = async (id: number) => {
-    try {
-      console.log("id in handleClick", id);
-
-      const response = await fetch(`http://localhost:3000/users/${id}`, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (response.ok) {
-        console.log("response in handleClick", response);
-        const user = await response.json();
-        router.push(`/users/${user.id}`);
-      }
-    } catch (error) {
-      console.log("Error redirect to profile:", error);
     }
   };
 
@@ -262,7 +246,7 @@ const FriendList = () => {
                             alt="user avatar"
                             width={100}
                             height={125}
-                            onClick={() => handleClick(user?.id)}
+                            onClick={() => toUserProfile(user?.id)}
                           />
                         </div>
                         <div className="card-details">
@@ -301,7 +285,6 @@ const FriendList = () => {
                               : isSent(user?.id)
                               ? "Friend Request Pending "
                               : "Add Friend "}
-                            {user?.id}
                           </button>
                         </div>
                       </div>

@@ -10,6 +10,7 @@ interface Stat {
   best_mmr: number;
   win_streak: number;
 }
+
 export interface UserData {
   avatar: string;
   id: number | null;
@@ -22,6 +23,8 @@ export interface UserData {
   p1_match: string;
   stat: Stat;
   firstTimeLogin: boolean;
+  socketId: string;
+  gameMode: string;
 }
 
 interface UserStore {
@@ -51,6 +54,8 @@ const useUserStore = create<UserStore>((set) => ({
       win_streak: 0,
     },
     firstTimeLogin: false,
+    socketId: "",
+    gameMode: "",
   },
   setUserData: (userData) => set({ userData }),
 }));

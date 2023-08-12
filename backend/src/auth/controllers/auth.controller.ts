@@ -16,14 +16,12 @@ import { InvalidOtpException } from '../util/invalid_otp_exception';
 import { JwtService } from '@nestjs/jwt/dist/jwt.service';
 import { JwtAuthGuard } from '../util/jwt-auth.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UsersService } from 'src/users/services/users.service';
 
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   // Using 42 Passport
   @UseGuards(FortyTwoAuthGuard)
@@ -39,13 +37,14 @@ export class AuthController {
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
   async callback(@Req() req: Request, @Res() res: Response): Promise<void> {
+    console.log('callback');
     return res.redirect(`${process.env.NEXT_HOST}/setup`);
   }
 
-  @Get('callback/42-school')
-  async callback42() {
-    console.log('callback 42 school');
-  }
+  // @Get('callback/42-school')
+  // async callback42() {
+  //   console.log('callback 42 school');
+  // }
 
   // @Get('/callback/42-school')
   // async callback42School(@Req() req: Request, @Res() res: Response) {

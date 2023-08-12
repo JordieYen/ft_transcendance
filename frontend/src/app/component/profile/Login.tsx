@@ -3,9 +3,9 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 
 const Login = () => {
-  const handleLogin = () => {
-    signIn("42-school");
-  };
+  // const handleLogin = () => {
+  //   signIn("42-school");
+  // };
 
   return (
     <div className="flex items-center justify-center h-screen gap-3">

@@ -50,8 +50,8 @@ export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
 export const LogoutIcon = () => {
   const router = useRouter();
   const handleLogout = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/auth/logout", {
+    try {      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/auth/logout`, {
         credentials: "include",
       });
       router.push("/login").then(() => {
@@ -154,7 +154,7 @@ export const HeaderIcon = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/auth/profile", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/auth/profile`, {
           credentials: "include",
         });
         if (response.ok) {
@@ -167,7 +167,7 @@ export const HeaderIcon = () => {
         console.log("Error fetching user data:", error);
       }
     };
-    fetchUserData();
+    fetchUserData()
   }, []);
 
   if (!userData) {
@@ -178,8 +178,8 @@ export const HeaderIcon = () => {
 
   return (
     <>
-      <LeaderboardsIcon />
       <ProfileIconGroup user={userData} />
+      <LeaderboardsIcon />
       <FriendsIcon />
       <SettingsIcon />
       <LogoutIcon />

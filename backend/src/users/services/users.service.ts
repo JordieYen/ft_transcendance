@@ -73,6 +73,9 @@ export class UsersService {
     const user = await this.findUsersById(id);
     if (!user) throw new NotFoundException(`User with ID ${id} not found`);
     try {
+      const user = await this.findUsersById(id);
+      console.log(user);
+      if (!user) throw new NotFoundException(`User with ID ${id} not found`);
       await this.usersRepository.delete(id);
       //   await this.achievementService.deleteUserAchvById(id);
     } catch (error) {
@@ -163,6 +166,10 @@ export class UsersService {
           'receiveFriendRequest',
           'receiveFriendRequest.receiver',
           'receiveFriendRequest.sender',
+          'sentGameInvitations',
+          'sentGameInvitations.receiver',
+          'receiveGameInvitations',
+          'receiveGameInvitations.sender',
         ],
         where: {
           id: id,

@@ -15,6 +15,7 @@ import { configValidationSchema } from './config/config.schema';
 import { FriendModule } from './friend/friend.module';
 import { StatModule } from './stat/stat.module';
 import { GatewayModule } from './gateway/gateway.module';
+import { GameInvitationModule } from './game-invitation/game-invitation.module';
 
 const configFactory = {
   isGlocal: true,
@@ -38,6 +39,7 @@ const configFactory = {
     FriendModule,
     StatModule,
     GatewayModule,
+    GameInvitationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
