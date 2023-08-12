@@ -135,6 +135,16 @@ export class UserAchievementService {
     }
   }
 
+  async deleteUserAchvById(id: number) {
+    const userAchv = await this.userAchievementRepository.find({
+      relations: { user: true, achievement: true },
+      where: {
+        user: { id: id },
+      },
+    });
+    console.log('HELLO!!!!', userAchv);
+  }
+
   async remove(id: number) {
     const userAchievemnt = await this.findOne(id);
     if (!userAchievemnt) {

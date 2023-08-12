@@ -1,11 +1,22 @@
 import useUserStore from "@/store/useUserStore";
+import { useEffect, useRef, useState } from "react";
 
-const LifetimeKills = () => {
+const LifetimeKills = ({ mode }: { mode: number }) => {
   const userData = useUserStore((state) => state.userData);
 
   return (
-    <div className="w-[180px] h-[180px] rounded-full border-[1px] border-timberwolf flex items-center justify-center">
-      <div className="w-[170px] h-[170px] rounded-full border-[2px] border-timberwolf flex flex-col items-center justify-center">
+    <div
+      className={`${
+        (mode === 1 && "w-[180px] h-[180px]") ||
+        (mode === 2 && "w-[220px] h-[220px]")
+      } rounded-full border-[1px] border-timberwolf flex items-center justify-center`}
+    >
+      <div
+        className={`${
+          (mode === 1 && "w-[170px] h-[170px]") ||
+          (mode === 2 && "w-[210px] h-[210px]")
+        } rounded-full border-[2px] border-timberwolf flex flex-col items-center justify-center`}
+      >
         <p className="w-full text-sm text-center">
           lifetime
           <br />
@@ -29,12 +40,22 @@ const LifetimeKills = () => {
   );
 };
 
-const MatchmakingRating = () => {
+const MatchmakingRating = ({ mode }: { mode: number }) => {
   const userData = useUserStore((state) => state.userData);
 
   return (
-    <div className="w-[180px] h-[180px] rounded-full border-[1px] border-timberwolf flex items-center justify-center">
-      <div className="w-[170px] h-[170px] rounded-full border-[2px] border-timberwolf flex flex-col items-center justify-center">
+    <div
+      className={`${
+        (mode === 1 && "w-[180px] h-[180px]") ||
+        (mode === 2 && "w-[220px] h-[220px]")
+      } rounded-full border-[1px] border-timberwolf flex items-center justify-center`}
+    >
+      <div
+        className={`${
+          (mode === 1 && "w-[170px] h-[170px]") ||
+          (mode === 2 && "w-[210px] h-[210px]")
+        } rounded-full border-[2px] border-timberwolf flex flex-col items-center justify-center`}
+      >
         <p className="w-full text-sm text-center">
           matchmaking
           <br />
@@ -52,10 +73,32 @@ const MatchmakingRating = () => {
 
 const UserStats = () => {
   const userData = useUserStore((state) => state.userData);
+  const userStatsRef = useRef<HTMLDivElement | null>(null);
+  const [mode, setMode] = useState(0);
+
+  useEffect(() => {
+    if (userStatsRef && userStatsRef.current) {
+      const parentDiv = userStatsRef.current;
+      if (parentDiv) {
+        const height = parentDiv.clientHeight;
+        if (height <= 540) {
+          setMode(1);
+        } else {
+          setMode(2);
+        }
+      }
+    }
+  }, [userStatsRef]);
+
   return (
-    <div className="hidden xl:flex lg:flex-1 lg:flex-col h-full bg-jetblack rounded-3xl items-center py-4 space-y-4">
-      <MatchmakingRating />
-      <LifetimeKills />
+    <div
+      ref={userStatsRef}
+      className={`hidden xl:flex lg:flex-1 lg:flex-col h-full bg-jetblack rounded-3xl items-center ${
+        mode === 1 ? "py-4" : "py-12"
+      } justify-between`}
+    >
+      <MatchmakingRating mode={mode} />
+      <LifetimeKills mode={mode} />
       <div className="flex space-x-20">
         <p className="text-timberwolf">Smash count</p>
         <p className="text-timberwolf">{userData.stat.smashes}</p>

@@ -9,16 +9,16 @@ import { Repository } from 'typeorm';
 import { User } from 'src/typeorm/user.entity';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
-import { StatService } from 'src/stat/services/stat.service';
 import { CreateStatDto } from 'src/stat/dto/create-stat.dto';
 import { unlink } from 'fs';
+import { StatService } from 'src/stat/services/stat.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-    private readonly statService: StatService, // private readonly userAchievementService: UserAchievementService,
+    private readonly statService: StatService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -71,10 +71,10 @@ export class UsersService {
 
   async deleteUserById(id: number) {
     const user = await this.findUsersById(id);
-    console.log(user);
     if (!user) throw new NotFoundException(`User with ID ${id} not found`);
     try {
       await this.usersRepository.delete(id);
+      //   await this.achievementService.deleteUserAchvById(id);
     } catch (error) {
       console.log(error);
     }

@@ -25,52 +25,11 @@ interface HeaderLogoProps {
   currentPath: string;
 }
 
-// export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
-//   return (
-//     <div className="flex flex-1 items-center gap-2">
-//       {currentPath === "/login" ? (
-//         <div className="flex flex-1 items-center gap-2">
-//           <Image
-//             className="object-contain"
-//             src="/main-logo.svg"
-//             alt="Logo"
-//             width={120}
-//             height={88}
-//           />
-//           <p className="text-3xl font-pmarker text-timberwolf">Pongmington</p>
-//         </div>
-//       ) : (
-//         <div className="flex flex-1 items-center gap-2">
-//           <button
-//             className="flex items-center gap-2"
-//             onClick={() => router.push("/pong-main")}
-//           >
-//             <Image
-//               className="object-contain"
-//               src="/main-logo.svg"
-//               alt="Logo"
-//               width={120}
-//               height={88}
-//             />
-//             {/* <img className="object-contain" src="/logo.png" alt="Logo" /> */}
-//             <p className="text-3xl font-pmarker text-timberwolf">Pongmington</p>
-//             {/* <img className="object-contain" src="/pongmington.png" alt="Pongminton"/> */}
-//           </button>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-/* Version-2: Logo still clickable in login page, but will do nothing */
 export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
   return (
     <div className="flex flex-1 items-center">
       <Link
         className="flex gap-2 items-center"
-        // onClick={() => {
-        //   if (currentPath !== "/login") router.push("/pong-main");
-        // }}
         href={currentPath !== "/login" ? "/main-menu" : ""}
       >
         <Image
@@ -80,11 +39,9 @@ export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
           width={120}
           height={88}
         />
-        {/* <img className="object-contain" src="/logo.png" alt="Logo" /> */}
         <p className="hidden md:block text-3xl font-pmarker text-timberwolf">
           Pongmington
         </p>
-        {/* <img className="object-contain" src="/pongmington.png" alt="Pongminton"/> */}
       </Link>
     </div>
   );
@@ -144,11 +101,7 @@ export const SettingsIcon = () => {
 
 export const ProfileIconGroup = ({ user }: { user: UserData }) => {
   return (
-    <Link
-      className="flex items-center space-x-2 group"
-      /* HANDLE PROFILE CLICK BELOW! */
-      href={"/profile"}
-    >
+    <Link className="flex items-center space-x-2 group z-0" href={"/profile"}>
       <img
         width={100}
         height={100}
@@ -250,6 +203,7 @@ const Header = () => {
         currentPath !== "/setup" &&
         currentPath !== "/game" && (
           <motion.div
+            className={`relative ${currentPath === "/profile" && "z-10"}`}
             initial={currentPage === "setup" ? { y: "100vh" } : { y: "0vh" }}
             animate={{ y: "0vh" }}
             transition={{ ease: "easeInOut", duration: 1.5 }}
