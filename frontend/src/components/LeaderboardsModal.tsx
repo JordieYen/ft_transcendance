@@ -191,7 +191,7 @@ const LeaderboardsModal = ({
   };
 
   return (
-    <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 left-0">
+    <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 left-0 z-20">
       <div
         className="overlay-content w-10/12 h-5/6 bg-onyxgrey rounded-2xl p-8 relative z-50"
         ref={lbRef}

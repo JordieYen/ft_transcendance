@@ -139,32 +139,14 @@ const MatchHistoryTitle = ({ mode }: { mode: number }) => {
   );
 };
 
-const UserMatchHistory = () => {
-  const matchHistoryRef = useRef<HTMLDivElement | null>(null);
-  const [mode, setMode] = useState(0);
-
-  useEffect(() => {
-    if (matchHistoryRef && matchHistoryRef.current) {
-      const parentDiv = matchHistoryRef.current;
-      if (parentDiv) {
-        const width = parentDiv.clientWidth;
-        if (width <= 1024) {
-          setMode(1);
-        } else {
-          setMode(2);
-        }
-      }
-    }
-  }, [matchHistoryRef]);
-
+const UserMatchHistory = ({ mode }: { mode: number }) => {
   return (
-    <div ref={matchHistoryRef} className="w-full h-full no-scrollbar">
+    <div className="w-full h-full no-scrollbar">
       <MatchHistoryTitle mode={mode} />
       <div className="flex flex-col flex-1 w-full h-full pb-10 rounded-3xl overflow-y-scroll no-scrollbar">
         <MatchHistory mode={mode} />
       </div>
     </div>
-    // </div>
   );
 };
 

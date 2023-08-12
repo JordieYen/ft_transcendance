@@ -102,7 +102,7 @@ const UserAchievement = ({ mode }: { mode: number }) => {
       } py-1`}
     >
       {userAchv.length !== 0 ? (
-        <div className="w-full h-full flex flex-row xl:flex-col items-start justify-start space-y-1">
+        <div className="w-full h-full flex flex-row xl:flex-col items-start justify-between">
           <div
             className={`w-full h-1/2 flex ${
               mode === 1 ? "space-x-[18px]" : "justify-between"
@@ -152,11 +152,15 @@ const UserAchievement = ({ mode }: { mode: number }) => {
   );
 };
 
-const LifetimeScore = () => {
+const LifetimeScore = ({ mode }: { mode: number }) => {
   const userData = useUserStore((state) => state.userData);
 
   return (
-    <div className="flex flex-1 w-full space-x-3">
+    <div
+      className={`flex flex-1 w-full justify-between ${
+        mode === 1 ? "" : "px-10"
+      }`}
+    >
       <div className="flex flex-col w-1/3">
         <p className="text-xs">lifetime games</p>
         <p className="text-timberwolf text-4xl">
@@ -206,35 +210,20 @@ const UserAvatar = () => {
   );
 };
 
-const UserNameAchievement = () => {
-  const userNameRef = useRef<HTMLDivElement | null>(null);
-  const [mode, setMode] = useState(0);
-
-  useEffect(() => {
-    if (userNameRef && userNameRef.current) {
-      const parentDiv = userNameRef.current;
-      if (parentDiv) {
-        const width = parentDiv.clientWidth;
-        console.log("width", width);
-        if (width <= 1280) {
-          setMode(1);
-        } else {
-          setMode(2);
-        }
-      }
-    }
-  }, [userNameRef]);
-
+const UserNameAchievement = ({ mode }: { mode: number }) => {
   return (
     <div
-      ref={userNameRef}
-      className="flex w-full h-fit lg:h-32 bg-jetblack items-center px-6 py-2 rounded-3xl"
+      className={`flex w-full h-fit bg-jetblack items-center ${
+        (mode === 1 && "px-5 py-2") ||
+        (mode === 2 && "px-10 py-5") ||
+        (mode === 3 && "px-16 py-10")
+      } rounded-3xl`}
     >
       <UserAvatar />
       <div className="flex flex-1 h-full flex-col lg:flex-row mx-4 items-start lg:items-center space-y-1">
         <UserName />
         <div className="hidden lg:block lg:h-[80%] lg:w-[3px] mx-4 rounded-full bg-dimgrey"></div>
-        <LifetimeScore />
+        <LifetimeScore mode={mode} />
         <div className="hidden xl:block xl:h-[80%] xl:w-[3px] mx-4 rounded-full bg-dimgrey"></div>
         <UserAchievement mode={mode} />
       </div>

@@ -203,7 +203,10 @@ const Header = () => {
         currentPath !== "/setup" &&
         currentPath !== "/game" && (
           <motion.div
-            className={`relative ${currentPath === "/profile" && "z-10"}`}
+            className={`relative ${
+              (currentPath === "/profile" || currentPath === "/settings") &&
+              "z-10"
+            }`}
             initial={currentPage === "setup" ? { y: "100vh" } : { y: "0vh" }}
             animate={{ y: "0vh" }}
             transition={{ ease: "easeInOut", duration: 1.5 }}
