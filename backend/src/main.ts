@@ -64,21 +64,15 @@ async function bootstrap() {
     const status = req.isAuthenticated() ? 'logged in' : 'logged out';
     console.log('status:', status, '\n', 'path', req.path, '\n');
     // console.log('session', req.session, '\n');
-    // const isAuthRoute = (
-    // req.path == '/auth/login'
-    // || req.path == '/auth/callback'
-    // || req.path == '/auth/logout'
-    // || req.path == '/api');
-
-    // if (isAuthRoute) {
-    //   next();
-    // } else if (req.isAuthenticated()) {
-    //   next();
-    // } else if (!req.isAuthenticated() && !isAuthRoute) {
-    //     console.log('redirect to login from main.ts');
-    //     return res.redirect(`${process.env.NEXT_HOST}/login`)
-    // }
-    next();
+    const allowedRoutes = ['/auth/login', '/auth/callback', '/auth/logout'];
+    if (allowedRoutes.includes(req.path)) {
+      return next();
+    }
+    if (req.isAuthenticated()) {
+      return next();
+    } else {
+      return res.redirect(`${process.env.NEXT_HOST}/login`);
+    }
   });
 
   await app.listen(3000);

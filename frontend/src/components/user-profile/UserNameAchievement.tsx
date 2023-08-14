@@ -2,7 +2,6 @@ import useUserStore from "@/store/useUserStore";
 import { formatDate } from "./UserProfile";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import UserMatchHistory from "./UserMatchHistory";
 import Image from "next/image";
 
 const RenderAchievementIcon = ({

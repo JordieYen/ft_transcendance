@@ -43,16 +43,16 @@ export class UserAchievementService {
     const userAchievements: any[] = await this.userAchievementRepository.find({
       relations: ['user', 'achievement'],
     });
-    let userAchievement: any[] = [];
+    const userAchievement: any[] = [];
     for (const achievement of userAchievements) {
-      console.log('FOR LOOP RUNNING', achievement.user.id, id);
+      // console.log('FOR LOOP RUNNING', achievement.user.id, id);
       if (achievement.user.id.toString() === id.toString()) {
-        console.log('ture');
+        // console.log('ture');
         userAchievement.push(achievement);
       }
     }
-    console.log('pepela', userAchievement);
-    console.log('UID', id);
+    // console.log('pepela', userAchievement);
+    // console.log('UID', id);
     return userAchievement;
   }
 
