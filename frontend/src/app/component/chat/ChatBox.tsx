@@ -1834,7 +1834,7 @@ const ChatBox: React.FC<any> = () => {
         >
           Friends
         </button> */}
-        <button className="bottom-nav-buttons">Friends</button>
+        {/* <button className="bottom-nav-buttons">Friends</button> */}
         {/* <button
           className="bottom-nav-buttons"
           onClick={() => router.push("game-loading")}

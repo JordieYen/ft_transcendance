@@ -129,7 +129,7 @@ const Leaderboards = ({ sortBy }: { sortBy: string }) => {
             <p className="hidden lg:flex w-28 text-timberwolf items-center justify-end">
               {user.stat.deaths === 0
                 ? "inf"
-                : user.stat.kills / user.stat.deaths}
+                : (user.stat.kills / user.stat.deaths).toFixed(2)}
             </p>
             <p className="flex w-28 text-timberwolf items-center justify-end">
               {user.stat.smashes}

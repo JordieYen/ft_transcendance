@@ -21,7 +21,7 @@ const LifetimeKills = () => {
           <p className="text-sm font-bold">
             {userData.stat?.deaths === 0
               ? "inf"
-              : userData.stat?.kills / userData.stat?.deaths}
+              : (userData.stat?.kills / userData.stat?.deaths).toFixed(2)}
           </p>
         </div>
       </div>
