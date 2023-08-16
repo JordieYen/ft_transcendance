@@ -94,7 +94,9 @@ const NameStep = () => {
         username: inputValue,
       };
       axios
-        .patch(`/users/${userData?.id}`, updateUserDto)
+        .patch(`/users/${userData?.id}`, updateUserDto, {
+          withCredentials: true,
+        })
         .then(() => {
           setUserData({ ...userData, username: inputValue });
           setCurrentStep("avatar");
@@ -237,7 +239,9 @@ const AvatarStep = () => {
       formData.append("file", selectedPic);
       if (userData.id !== null) formData.append("id", userData.id?.toString());
       axios
-        .patch("users/upload", formData)
+        .patch("users/upload", formData, {
+          withCredentials: true,
+        })
         .then((response) => {
           setUserData({
             ...userData,
@@ -394,7 +398,9 @@ const TFAStep = () => {
       firstTimeLogin: false,
     };
     axios
-      .patch(`/users/${userData?.id}`, updateUserDto)
+      .patch(`/users/${userData?.id}`, updateUserDto, {
+        withCredentials: true,
+      })
       .then(() => {
         setUserData({ ...userData, firstTimeLogin: false });
       })

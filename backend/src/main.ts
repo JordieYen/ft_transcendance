@@ -63,7 +63,7 @@ async function bootstrap() {
   app.use((req, res, next) => {
     const status = req.isAuthenticated() ? 'logged in' : 'logged out';
     console.log('status:', status, '\n', 'path', req.path, '\n');
-    // console.log('session', req.session, '\n');
+    console.log('session', req.session, '\n');
     const allowedRoutes = ['/auth/login', '/auth/callback', '/auth/logout'];
     if (allowedRoutes.includes(req.path)) {
       return next();
@@ -73,6 +73,7 @@ async function bootstrap() {
     } else {
       return res.redirect(`${process.env.NEXT_HOST}/login`);
     }
+    // next();
   });
 
   await app.listen(3000);
