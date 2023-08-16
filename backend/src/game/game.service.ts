@@ -20,6 +20,7 @@ import {
 } from './game.interface';
 import { FriendService } from 'src/friend/services/friend.service';
 import { MatchHistoryService } from 'src/match-history/services/match-history.service';
+import * as wavPlayer from 'node-wav-player';
 
 @Injectable()
 export class GameService {
@@ -510,9 +511,14 @@ export class GameService {
 
   /* set winner uid, create match-history, end game */
   async handleGameEnd(param: HandleGameStateParams) {
-    if (param.gameInfo.pOneScore == 11 || param.gameInfo.pTwoScore == 11) {
+    const endScore = 11;
+    if (
+      param.gameInfo.pOneScore == endScore ||
+      param.gameInfo.pTwoScore == endScore
+    ) {
       let winner_uid = 0;
-      if (param.gameInfo.pOneScore == 11) winner_uid = param.gameInfo.pOneId;
+      if (param.gameInfo.pOneScore == endScore)
+        winner_uid = param.gameInfo.pOneId;
       else winner_uid = param.gameInfo.pTwoId;
 
       param.server.to(param.roomId).emit('game-over');
@@ -633,5 +639,16 @@ export class GameService {
       y: param.gameInfo.ballSpeed.y,
     });
     this.startRound(param);
+  }
+
+  async playSound() {
+    try {
+      await wavPlayer.play({
+        path: './public/sounds/hit.wav',
+      });
+      console.log('The wav file started to be played successfully.');
+    } catch (error) {
+      console.error('The wav file failed to be played.', error);
+    }
   }
 }

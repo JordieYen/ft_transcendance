@@ -40,11 +40,7 @@ const FriendList = () => {
 
   useEffect(() => {
     if (userData.id) {
-      // console.log('players from game state', player1, player2, isLoadingScreenVisible);
-      // console.log("userData", userData.id);
-      // socket?.emit("join", `${userData?.id}`);
       socket?.on("friend-request-received", (receivedFriendRequest: any) => {
-        console.log("friend-request-received socket", receivedFriendRequest);
         setFriendRequestArray((prevArray: any) => {
           const existingRequest = prevArray.find(
             (request: any) => request.requestId === receivedFriendRequest.id,
@@ -131,8 +127,6 @@ const FriendList = () => {
     const friendRequests = friendRequestArray.find(
       (request: any) => request.receiverId === userId,
     );
-    console.log("friendRequests in cancel", friendRequests);
-
     socket?.emit("friend-request-cancel", {
       senderId: userData.id,
       receiverId: userId,

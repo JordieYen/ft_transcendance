@@ -54,8 +54,6 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
           });
           if (response.ok) {
               const friendRequests = await response.json() as any[];
-              console.log('friendRequests', friendRequests);
-              
               setFriendRequests(friendRequests);
           } else {
               throw new Error('Failed to fetch friend requests');

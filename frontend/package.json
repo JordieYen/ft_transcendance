@@ -31,6 +31,7 @@
     "next": "13.4.1",
     "next-auth": "^4.22.1",
     "nextjs": "^0.0.3",
+    "node-wav-player": "^0.2.0",
     "passport-42": "^1.2.6",
     "pg": "^8.11.0",
     "pixi.js": "^7.2.4",

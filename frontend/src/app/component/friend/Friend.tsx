@@ -48,7 +48,6 @@ const Friend = ({
         });
       });
       socket?.on("unfriend", (friendId: number) => {
-        console.log("unfriend", friendId);
         setFriends((prevFriends) =>
           prevFriends.filter((friend) => friend.id !== friendId),
         );
@@ -64,17 +63,8 @@ const Friend = ({
     }
   }, [socket, userDataId]);
 
-
-  useEffect(() => {
-    if (friends.length > 0) {
-      console.log("friends", friends);
-    }
-  }, [friends]);
-
   const fetchFriends = async () => {
     try {
-      console.log("userDataId", userDataId);
-
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_NEST_HOST}/friend/friends/${userDataId}`,
         {
@@ -84,7 +74,6 @@ const Friend = ({
       );
       if (response.ok) {
         const friends = await response.json();
-        console.log("friends room", friends);
         setFriends(friends);
       } else {
         throw new Error("Failed to fetch friends");

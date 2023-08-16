@@ -157,8 +157,6 @@ export class FriendService {
     await this.friendRepository.update(friendRequestId, {
       status: FriendStatus.Friended,
     });
-    console.log('friendRequestId', friendRequestId);
-
     const updatedFriendRequest = await this.findOne(friendRequestId);
     const sender = await this.userService.findUsersById(
       updatedFriendRequest.sender.id,
@@ -171,8 +169,6 @@ export class FriendService {
       channel_type: 'direct message',
     };
     const channel = await this.channelService.createChannel(dto, sender);
-    console.log('channel', channel);
-
     const dto_join: JoinChannelDto = {
       channel_uid: channel.channel_uid,
     };
@@ -376,9 +372,6 @@ export class FriendService {
       },
       relations: ['sender', 'receiver'],
     });
-
-    console.log('blockList', blockList);
-    console.log('blockedList', blockedList);
 
     return {
       blockList,

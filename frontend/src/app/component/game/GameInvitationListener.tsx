@@ -1,7 +1,6 @@
 import { SocketContext } from "@/app/socket/SocketProvider";
 import { UserData } from "@/store/useUserStore";
-import { use, useContext, useEffect, useState } from "react";
-import game from "../../../../pages/game";
+import { useContext, useEffect, useState } from "react";
 import { GameContext, useGameData } from "./GameContext";
 import InvitationPopup from "./InvitationPopup";
 import LoadingScreen from "./LoadingScreen";
@@ -10,9 +9,7 @@ const GameInvitationListener = () => {
   const { clearGameInvitation, handleInviteGame, gameInvitation } =
     useContext(GameContext);
   const socket = useContext(SocketContext);
-  const [showPopup, setShowPopup] = useState(false);
   const {
-    setGameState,
     isLoadingScreenVisible,
     player1User,
     player2User,
@@ -21,18 +18,9 @@ const GameInvitationListener = () => {
 
   useEffect(() => {
     console.log("GameInvitationListener");
-    console.log(
-      "players from game state",
-      player1User,
-      player2User,
-      isLoadingScreenVisible,
-    );
-
     const handleInvite = (data: { user: UserData; friend: UserData }) => {
-      console.log("handleInvite");
       handleInviteGame(data);
     };
-
     socket?.on("invite-player", handleInvite);
     return () => {
       socket?.off("invite-player", handleInviteGame);
