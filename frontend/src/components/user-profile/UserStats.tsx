@@ -8,13 +8,15 @@ const LifetimeKills = ({ mode }: { mode: number }) => {
     <div
       className={`${
         (mode === 1 && "w-[180px] h-[180px]") ||
-        (mode === 2 && "w-[220px] h-[220px]")
+        (mode === 2 && "w-[200px] h-[200px]") ||
+        (mode === 3 && "w-[220px] h-[220px]")
       } rounded-full border-[1px] border-timberwolf flex items-center justify-center`}
     >
       <div
         className={`${
           (mode === 1 && "w-[170px] h-[170px]") ||
-          (mode === 2 && "w-[210px] h-[210px]")
+          (mode === 2 && "w-[190px] h-[190px]") ||
+          (mode === 3 && "w-[210px] h-[210px]")
         } rounded-full border-[2px] border-timberwolf flex flex-col items-center justify-center`}
       >
         <p className="w-full text-sm text-center">
@@ -32,7 +34,7 @@ const LifetimeKills = ({ mode }: { mode: number }) => {
           <p className="text-sm font-bold">
             {userData.stat?.deaths === 0
               ? "inf"
-              : userData.stat?.kills / userData.stat?.deaths}
+              : (userData.stat?.kills / userData.stat?.deaths).toFixed(2)}
           </p>
         </div>
       </div>
@@ -47,13 +49,15 @@ const MatchmakingRating = ({ mode }: { mode: number }) => {
     <div
       className={`${
         (mode === 1 && "w-[180px] h-[180px]") ||
-        (mode === 2 && "w-[220px] h-[220px]")
+        (mode === 2 && "w-[200px] h-[200px]") ||
+        (mode === 3 && "w-[220px] h-[220px]")
       } rounded-full border-[1px] border-timberwolf flex items-center justify-center`}
     >
       <div
         className={`${
           (mode === 1 && "w-[170px] h-[170px]") ||
-          (mode === 2 && "w-[210px] h-[210px]")
+          (mode === 2 && "w-[190px] h-[190px]") ||
+          (mode === 3 && "w-[210px] h-[210px]")
         } rounded-full border-[2px] border-timberwolf flex flex-col items-center justify-center`}
       >
         <p className="w-full text-sm text-center">
@@ -71,29 +75,12 @@ const MatchmakingRating = ({ mode }: { mode: number }) => {
   );
 };
 
-const UserStats = () => {
+const UserStats = ({ mode }: { mode: number }) => {
   const userData = useUserStore((state) => state.userData);
-  const userStatsRef = useRef<HTMLDivElement | null>(null);
-  const [mode, setMode] = useState(0);
-
-  useEffect(() => {
-    if (userStatsRef && userStatsRef.current) {
-      const parentDiv = userStatsRef.current;
-      if (parentDiv) {
-        const height = parentDiv.clientHeight;
-        if (height <= 540) {
-          setMode(1);
-        } else {
-          setMode(2);
-        }
-      }
-    }
-  }, [userStatsRef]);
 
   return (
     <div
-      ref={userStatsRef}
-      className={`hidden xl:flex lg:flex-1 lg:flex-col h-full bg-jetblack rounded-3xl items-center ${
+      className={`hidden lg:flex lg:flex-1 lg:flex-col h-full bg-jetblack rounded-3xl items-center px-10 ${
         mode === 1 ? "py-4" : "py-12"
       } justify-between`}
     >

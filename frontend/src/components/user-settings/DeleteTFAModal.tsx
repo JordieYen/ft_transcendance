@@ -43,7 +43,7 @@ const DeleteTFAModal = ({
   return (
     <>
       {isOpen && (
-        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0">
+        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 z-20">
           <div
             className="flex flex-col overlay-content w-[400px] h-fit bg-onyxgrey rounded-2xl p-8 space-y-3"
             ref={tfaRef}

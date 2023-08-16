@@ -51,7 +51,7 @@ export default function SettingsPage() {
         (mode === 3 && "px-40 py-40")
       }`}
     >
-      <div className="w-full h-full pt-[128px] flex flex-col space-y-6">
+      <div className="w-full h-full pt-[128px] flex flex-col gap-6">
         <ChangeAccountModal
           isOpen={isAccOpen}
           closeModal={closeAccModal}

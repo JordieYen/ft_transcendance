@@ -513,6 +513,7 @@ const TFAStep = () => {
           <SixDigitVerification
             closeModal={undefined}
             verifiedAction={() => patchTFA()}
+            mode={1}
           />
         </motion.div>
       )}
@@ -539,9 +540,12 @@ const Setup = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/auth/profile`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NEST_HOST}/auth/profile`,
+          {
+            credentials: "include",
+          },
+        );
         if (response.ok) {
           const userData = await response.json();
           setUserData(userData);

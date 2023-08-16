@@ -50,10 +50,13 @@ export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
 export const LogoutIcon = () => {
   const router = useRouter();
   const handleLogout = async () => {
-    try {      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/auth/logout`, {
-        credentials: "include",
-      });
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_NEST_HOST}/auth/logout`,
+        {
+          credentials: "include",
+        },
+      );
       router.push("/login").then(() => {
         toast((t) => (
           <div className="flex flex-1 items-center justify-start border-saffron">
@@ -154,9 +157,12 @@ export const HeaderIcon = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/auth/profile`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NEST_HOST}/auth/profile`,
+          {
+            credentials: "include",
+          },
+        );
         if (response.ok) {
           const userData = await response.json();
           setUserData(userData);
@@ -167,7 +173,7 @@ export const HeaderIcon = () => {
         console.log("Error fetching user data:", error);
       }
     };
-    fetchUserData()
+    fetchUserData();
   }, []);
 
   if (!userData) {
@@ -214,7 +220,7 @@ const Header = () => {
               currentPage === "setup" ? () => setCurrentPage("main") : undefined
             }
           >
-            <nav className="flex mx-16 md:mx-24 lg:mx-32 pt-5 mb-5 items-center gap-8">
+            <nav className="flex px-16 md:px-24 lg:px-32 pt-5 mb-5 items-center gap-8">
               <HeaderLogo currentPath={currentPath} />
               <HeaderIcon />
             </nav>

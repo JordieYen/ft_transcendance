@@ -12,7 +12,9 @@ const MatchHistory = ({ mode }: { mode: number }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("match-history");
+        const response = await axios.get("match-history", {
+          withCredentials: true,
+        });
         const totalMatchHistory = response.data;
         let sortedMatchHistory: any[] = [];
         for (const match of totalMatchHistory) {
@@ -77,7 +79,9 @@ const MatchHistory = ({ mode }: { mode: number }) => {
                 </p>
                 <div
                   className={`flex justify-center items-center ${
-                    (mode === 1 && "w-64") || (mode === 2 && "w-80")
+                    (mode === 1 && "w-60") ||
+                    (mode === 2 && "w-64") ||
+                    (mode === 3 && "w-72")
                   }`}
                 >
                   <p className="text-3xl font-bold">{opponentScore}</p>
@@ -94,7 +98,9 @@ const MatchHistory = ({ mode }: { mode: number }) => {
                 </div>
                 <div
                   className={`flex justify-center items-center ${
-                    (mode === 1 && "w-64") || (mode === 2 && "w-80")
+                    (mode === 1 && "w-60") ||
+                    (mode === 2 && "w-64") ||
+                    (mode === 3 && "w-72")
                   }`}
                 >
                   <div
@@ -123,14 +129,18 @@ const MatchHistoryTitle = ({ mode }: { mode: number }) => {
       <p className="w-24 text-dimgrey text-sm text-center">date</p>
       <p
         className={`text-dimgrey text-sm text-center ${
-          (mode === 1 && "w-64") || (mode === 2 && "w-80")
+          (mode === 1 && "w-60") ||
+          (mode === 2 && "w-64") ||
+          (mode === 3 && "w-72")
         }`}
       >
         enemy stats
       </p>
       <p
         className={`text-dimgrey text-sm text-center ${
-          (mode === 1 && "w-64") || (mode === 2 && "w-80")
+          (mode === 1 && "w-60") ||
+          (mode === 2 && "w-64") ||
+          (mode === 3 && "w-72")
         }`}
       >
         your stats

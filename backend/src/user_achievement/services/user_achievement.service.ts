@@ -45,14 +45,10 @@ export class UserAchievementService {
     });
     let userAchievement: any[] = [];
     for (const achievement of userAchievements) {
-      console.log('FOR LOOP RUNNING', achievement.user.id, id);
       if (achievement.user.id.toString() === id.toString()) {
-        console.log('ture');
         userAchievement.push(achievement);
       }
     }
-    console.log('pepela', userAchievement);
-    console.log('UID', id);
     return userAchievement;
   }
 

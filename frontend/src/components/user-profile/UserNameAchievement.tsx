@@ -8,11 +8,11 @@ import "@/styles/globals.css";
 const RenderAchievementIcon = ({
   achv,
   achvImage,
-  index,
+  key,
 }: {
   achv: any;
   achvImage: string;
-  index: number;
+  key: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -98,16 +98,13 @@ const UserAchievement = ({ mode }: { mode: number }) => {
   return (
     <div
       className={`flex w-full h-full lg:hidden xl:flex ${
-        mode === 1 ? "xl:w-80" : "xl:w-[500px] px-10"
+        ((mode === 1 || mode === 2) && "xl:w-80") ||
+        (mode === 3 && "xl:w-[400px] px-10")
       } py-1`}
     >
       {userAchv.length !== 0 ? (
         <div className="w-full h-full flex flex-row xl:flex-col items-start justify-between">
-          <div
-            className={`w-full h-1/2 flex ${
-              mode === 1 ? "space-x-[18px]" : "justify-between"
-            }`}
-          >
+          <div className="w-full h-1/2 flex justify-between">
             {userAchv.slice(0, 5).map((achv: any, i) => {
               const achvImage = getAchvImage(achv.achievement.name);
               return (
@@ -115,7 +112,6 @@ const UserAchievement = ({ mode }: { mode: number }) => {
                   achv={achv}
                   achvImage={achvImage}
                   key={i}
-                  index={i}
                 />
               );
             })}
@@ -132,7 +128,6 @@ const UserAchievement = ({ mode }: { mode: number }) => {
                   achv={achv}
                   achvImage={achvImage}
                   key={i}
-                  index={i + 5}
                 />
               );
             })}

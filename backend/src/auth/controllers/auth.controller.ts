@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Req,
   Res,
   Session,
@@ -103,17 +104,22 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
     @Body() body: { otp: string },
+    @Query('mode') mode: string,
   ) {
     const isValid = await this.authService.verifyOtp(req.user, body.otp);
     if (isValid) {
-      await this.authService.storeSecret(req.user);
-      const payload = await this.authService.createPayload(req.user);
-      const token = await this.authService.createToken(payload);
-      res.setHeader('Authorization', `Bearer ${token}`);
-      console.log(token);
-      return res.send(token);
+      if (mode === '1') {
+        await this.authService.storeSecret(req.user);
+        const payload = await this.authService.createPayload(req.user);
+        const token = await this.authService.createToken(payload);
+        res.setHeader('Authorization', `Bearer ${token}`);
+        return res.send(token);
+      } else {
+        return res.send('ok');
+      }
+    } else {
+      throw new InvalidOtpException();
     }
-    throw new InvalidOtpException();
   }
 
   @Get('session')

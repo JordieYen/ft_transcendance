@@ -70,7 +70,7 @@ const ChangeAccountModal = ({
   return (
     <>
       {isOpen && (
-        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0">
+        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 z-20">
           <div
             className={`overlay-content ${
               promptTFA ? "w-[500px] h-fill" : "w-[400px] h-[190px]"
@@ -91,6 +91,7 @@ const ChangeAccountModal = ({
                 <SixDigitVerification
                   closeModal={closeModal}
                   verifiedAction={() => patchName()}
+                  mode={"2"}
                 />
               </div>
             ) : (
