@@ -39,7 +39,7 @@ p, span {
 }
 
 .card {
-    border: 10px solid darkgrey;
+    border: 1px solid var(--background-grey);
     margin: 10px;
     padding: 10px;
     width: 300px;
@@ -98,5 +98,18 @@ p, span {
     .users-list {
       flex: initial;
       width: 100%;
+    }
+}
+
+@media (max-width: 630px) {
+    .friend-page {
+      flex-direction: column;
+    }
+  
+    .friend-section,
+    .users-list {
+      flex: initial;
+      width: 100%;
+      padding-top: 20px;
     }
 }

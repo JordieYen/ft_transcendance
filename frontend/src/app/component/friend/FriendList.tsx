@@ -8,7 +8,6 @@ import { SocketContext } from "@/app/socket/SocketProvider";
 import Block from "./Block";
 import useSessionStorageState from "@/app/utils/useSessionStorageState";
 import useUserStore from "@/store/useUserStore";
-import { useRouter } from "next/router";
 import Avatar from "../header_icon/Avatar";
 import { toUserProfile } from "./handleClick";
 
@@ -199,8 +198,8 @@ const FriendList = () => {
 
   return (
     <div className="friend-page w-full flex">
-      <div className="friend-section w-1/3 bg-green-800">
-        <div className="friend-request-page bg-red-600">
+      <div className="friend-section w-1/3 bg-jetblack border rounded-lg border-gray-300 flex flex-col p-2 gap-4">
+        <div className="friend-request-page">
           <FriendRequest
             userId={userData?.id!}
             currUser={userData}
@@ -210,31 +209,31 @@ const FriendList = () => {
             setFriendRequestStatus={setFriendRequestStatus}
           />
         </div>
-        <div className="friend-page bg-green-800 flex">
+        <div className="friend-page rounded-lg bg-onyxgrey">
           <Friend
             userDataId={userData?.id!}
             setFriendRequestArray={setFriendRequestArray}
             setFriendRequestStatus={setFriendRequestStatus}
           />
         </div>
-        <div className="block-page bg-slate-800">
+        <div className="block-page bg-slate-800 rounded-lg">
           <Block />
         </div>
       </div>
-      <div className="users-list w-2/3">
-        <div className="flex flex-col h-full">
+      <div className="users-list w-2/3 h-full p-4">
+        <div className="flex flex-col">
           <div className="px-4">
             <SearchBar onSearch={handleSearch} onReset={fetchUsersList} />
           </div>
           <div className="flex-2 overflow-y-auto px-4">
-            <h1 className="flex justify-center">Users List</h1>
+            <h1 className="flex justify-center text-2xl font-bold mb-4">Users List</h1>
             <div className="card-container">
               {filteredUsersList &&
                 filteredUsersList.map(
                   (user) =>
                     user?.id !== userData?.id && (
-                      <div className="card" key={user?.id}>
-                        <div className="card-avatar">
+                      <div className="card shadow-lg rounded-lg p-6 border border-gray-300 hover:shadow-xl transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-105" key={user?.id}>
+                        <div className="card-avatar cursor-pointer">
                           <Avatar
                             src={user?.avatar}
                             alt="user avatar"

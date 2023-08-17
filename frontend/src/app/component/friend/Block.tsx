@@ -121,10 +121,12 @@ const Block = () => {
   }
   
   return (
-    <div>
-      <h1>Block</h1>
-      {blocks &&
-        blocks.map((block) => (
+    <div className="text-center">
+      <h1 className="font-semibold text-2xl mb-4 text-tomato">Block</h1>
+      {
+        blocks?.length > 0 ?
+        (
+          blocks.map((block) => (
           <div className="flex items-center gap-10 p-10" key={block?.id}>
             <div className="h-22 w-20 overflow-hidden">
               <Avatar
@@ -143,7 +145,11 @@ const Block = () => {
               </div>
             </div>
           </div>
-        ))}
+        ))
+        ) : (
+          <p className="text-gray-700 py-4">No block user</p>
+        )
+      }
     </div>
   );
 };

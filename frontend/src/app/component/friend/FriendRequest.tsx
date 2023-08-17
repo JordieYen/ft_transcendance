@@ -164,8 +164,8 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
   };
 
   return (
-      <div className="friend-request flex-col bg-mydarkgrey">
-        <h1>Friend Requests</h1>
+      <div className="friend-request flex-col bg-mydarkgrey rounded-lg text-center">
+        <h1 className="font-semibold text-2xl mb-4 text-timberwolf">Friend Requests</h1>
         { friendRequests?.length > 0 ? (
           friendRequests
           // .filter((friendRequest) => friendRequest?.receiver?.id === userData?.id)
@@ -200,7 +200,7 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
             </div>
           </div>
         ))) : (
-          <p>No friend requests received</p>
+          <p className="text-gray-700 py-4">No friend requests received</p>
         )}
       </div>
   );

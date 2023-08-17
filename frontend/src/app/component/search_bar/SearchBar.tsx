@@ -29,7 +29,7 @@ const SearchBar = ({ onSearch, onReset }: SearchBarProps) => {
   };
 
   return (
-    <div className="friend-search-bar flex justify-center mb-2">
+    <div className="friend-search-bar flex justify-center mb-2 sm:pt-4 md:pt-4 lg:pt-0">
       <div className="relative -z-50">
         <div>
           <input
