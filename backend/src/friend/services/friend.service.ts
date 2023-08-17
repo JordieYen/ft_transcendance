@@ -14,6 +14,7 @@ import { UpdateFriendDto } from '../dto/update-friend.dto';
 import { Repository } from 'typeorm';
 import { ChannelService } from 'src/chat/channel/channel.service';
 import { CreateChannelDto, JoinChannelDto } from 'src/chat/channel/dto';
+import { User } from 'src/typeorm/user.entity';
 
 @Injectable()
 export class FriendService {
@@ -164,15 +165,7 @@ export class FriendService {
     const receiver = await this.userService.findUsersById(
       updatedFriendRequest.receiver.id,
     );
-    const dto: CreateChannelDto = {
-      channel_name: `${sender.username + '+' + receiver.username}`,
-      channel_type: 'direct message',
-    };
-    const channel = await this.channelService.createChannel(dto, sender);
-    const dto_join: JoinChannelDto = {
-      channel_uid: channel.channel_uid,
-    };
-    await this.channelService.joinChannel(dto_join, receiver);
+    this.channelService.createChannelInFriendRequest(sender, receiver);
     return updatedFriendRequest;
   }
 
@@ -192,11 +185,18 @@ export class FriendService {
     return updatedFriendRequest;
   }
 
-  async cancelFriendRequest(friendRequestId: number) {
+  async unFriend(friendRequestId: number) {
     await this.friendRepository.update(friendRequestId, {
       status: FriendStatus.Cancel,
     });
     const updatedFriendRequest = await this.findOne(friendRequestId);
+    const sender = await this.userService.findUsersById(
+      updatedFriendRequest.sender.id,
+    );
+    const receiver = await this.userService.findUsersById(
+      updatedFriendRequest.receiver.id,
+    );
+    this.channelService.deleteChannelInUnfriend(sender, receiver);
     return updatedFriendRequest;
   }
 
@@ -222,7 +222,7 @@ export class FriendService {
       friendRequest.sender = blocker;
       friendRequest.receiver = blocked;
     }
-
+    await this.channelService.muteBothUserInBlock(blocker.id, blocked.id);
     await this.friendRepository.save(friendRequest);
     return friendRequest;
   }
@@ -270,7 +270,7 @@ export class FriendService {
     } else if (event === 'friend-request-declined') {
       return await this.declineFriendRequest(data.friendRequestId);
     } else if (event === 'friend-request-cancelled') {
-      return await this.cancelFriendRequest(data.friendRequestId);
+      return await this.unFriend(data.friendRequestId);
     } else {
       throw new BadRequestException('Invalid event');
     }
@@ -395,5 +395,20 @@ export class FriendService {
       });
       await this.friendRepository.save(newBlockedUser);
     }
+  }
+
+  async unblock(friendRequestId: number) {
+    await this.friendRepository.update(friendRequestId, {
+      status: FriendStatus.Friended,
+    });
+    const updatedFriendRequest = await this.findOne(friendRequestId);
+    const sender = await this.userService.findUsersById(
+      updatedFriendRequest.sender.id,
+    );
+    const receiver = await this.userService.findUsersById(
+      updatedFriendRequest.receiver.id,
+    );
+    this.channelService.unmuteBothUserInBlock(sender.id, receiver.id);
+    return updatedFriendRequest;
   }
 }

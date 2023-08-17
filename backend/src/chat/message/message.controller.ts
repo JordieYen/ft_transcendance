@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -34,5 +35,10 @@ export class MessageController {
   @Post('create')
   createMessage(@Body() dto: CreateMessageDto, @User() sender) {
     return this.messageService.createMessage(dto, sender);
+  }
+
+  @Delete('delete-all/:id')
+  deleteAll() {
+    return this.messageService.deleteAllMesssages();
   }
 }

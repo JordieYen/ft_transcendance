@@ -600,12 +600,37 @@ export class GameService {
     return 0;
   }
 
+  /* check when ball hits paddle */
+  checkBallHit(param: HandleGameStateParams) {
+    const leftBallPos =
+      param.gameInfo.ball.position.x - param.gameProperties.ball.radius;
+    const rightBallPos =
+      param.gameInfo.ball.position.x + param.gameProperties.ball.radius;
+    const leftPaddlePos =
+      param.gameInfo.leftPaddle.position.x +
+      param.gameProperties.leftPaddle.width / 2;
+    const rightPaddlePos =
+      param.gameInfo.leftPaddle.position.x -
+      param.gameProperties.leftPaddle.width / 2;
+    if (leftBallPos > leftPaddlePos && leftBallPos < leftPaddlePos + 20) {
+      console.log('hit left paddle');
+      return 1;
+    }
+    if (rightBallPos > rightPaddlePos && rightBallPos < rightPaddlePos + 20) {
+      console.log('hit right paddle');
+      return 1;
+    }
+    return 0;
+  }
+
   /* start round */
   startRound(param: HandleGameStateParams) {
     const startGameInterval = setInterval(() => {
       param.server
         .to(param.roomId)
         .emit('ball-position', param.gameInfo.ball.position);
+      if (this.checkBallHit(param)) this.playSound();
+
       if (this.checkBallOutOfBounds(param)) {
         this.resetBallPosition(param);
         this.handleGameEnd(param);

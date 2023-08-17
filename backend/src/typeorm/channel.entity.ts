@@ -43,6 +43,8 @@ export class Channel {
   //         this.channel_hash = bcrypt.hashSync(this.channel_hash, 10);
   // }
 
-  @OneToMany(() => Message, (message) => message.channel)
+  @OneToMany(() => Message, (message) => message.channel, {
+    onDelete: 'CASCADE',
+  })
   messages: Message[];
 }

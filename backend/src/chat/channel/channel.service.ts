@@ -13,6 +13,7 @@ import { User } from 'src/typeorm/user.entity';
 import { UsersService } from 'src/users/services/users.service';
 import { ChannelUserService } from '../channel-user/channel-user.service';
 import { CreateChannelUserDto } from '../channel-user/dto';
+import { Message } from 'src/typeorm/message.entity';
 
 @Injectable()
 export class ChannelService {
@@ -422,5 +423,138 @@ export class ChannelService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-  async testChannel(_currentUser: User) {}
+  async testChannel(_currentUser: User) {
+    // const sender = await this.userService.findUsersById(103);
+    // console.log(sender);
+    // const reciever = await this.userService.findUsersById(110);
+    // console.log(reciever);
+    // console.log('_currentUser=', _currentUser);
+    // this.deleteChannelInUnfriend(sender, reciever);
+  }
+
+  async createChannelInFriendRequest(sender: User, receiver: User) {
+    const dto: CreateChannelDto = {
+      channel_name: `${sender.username + '+' + receiver.username}`,
+      channel_type: 'direct message',
+    };
+    const channel = await this.createChannel(dto, sender);
+    const dto_join: JoinChannelDto = {
+      channel_uid: channel.channel_uid,
+    };
+    await this.joinChannel(dto_join, receiver);
+  }
+
+  async deleteChannelInUnfriend(sender: User, receiver: User) {
+    const temp = await this.findChannelsByChannelType('direct message');
+    let channelUsers;
+    temp.map(async (channel) => {
+      channelUsers = await this.channelUserService.findChannelUsersByChannelId(
+        channel.channel_uid,
+      );
+      if (channelUsers.length != 0) {
+        console.log(channelUsers);
+        if (
+          (channelUsers[0].user.id == sender.id &&
+            channelUsers[1].user.id == receiver.id) ||
+          (channelUsers[0].user.id == receiver.id &&
+            channelUsers[1].user.id == sender.id)
+        ) {
+          await this.channelUserService.deleteAllChannelUsersByChannelId(
+            channel.channel_uid,
+          );
+          await this.channelsRepository.delete({
+            channel_uid: channel.channel_uid,
+          });
+        }
+      }
+    });
+  }
+
+  async muteBothUserInBlock(sender_id: number, receiver_id: number) {
+    const temp = await this.findChannelsByChannelType('direct message');
+    let channelUsers;
+    temp.map(async (channel) => {
+      channelUsers = await this.channelUserService.findChannelUsersByChannelId(
+        channel.channel_uid,
+      );
+      if (channelUsers.length != 0) {
+        console.log(channelUsers);
+        if (
+          (channelUsers[0].user.id == sender_id &&
+            channelUsers[1].user.id == receiver_id) ||
+          (channelUsers[0].user.id == receiver_id &&
+            channelUsers[1].user.id == sender_id)
+        ) {
+          let owner;
+          if (channelUsers[0].role == Role.Owner) {
+            owner = await this.userService.findUsersById(
+              channelUsers[0].user.id,
+            );
+          } else {
+            owner = await this.userService.findUsersById(
+              channelUsers[1].user.id,
+            );
+          }
+
+          await this.channelUserService.updateMuteUserByUserIdAndChannelId(
+            sender_id,
+            channel?.channel_uid,
+            365,
+            owner,
+          );
+
+          await this.channelUserService.updateMuteUserByUserIdAndChannelId(
+            receiver_id,
+            channel?.channel_uid,
+            365,
+            owner,
+          );
+        }
+      }
+    });
+  }
+
+  async unmuteBothUserInBlock(sender_id: number, receiver_id: number) {
+    const temp = await this.findChannelsByChannelType('direct message');
+    let channelUsers;
+    temp.map(async (channel) => {
+      channelUsers = await this.channelUserService.findChannelUsersByChannelId(
+        channel.channel_uid,
+      );
+      if (channelUsers.length != 0) {
+        console.log(channelUsers);
+        if (
+          (channelUsers[0].user.id == sender_id &&
+            channelUsers[1].user.id == receiver_id) ||
+          (channelUsers[0].user.id == receiver_id &&
+            channelUsers[1].user.id == sender_id)
+        ) {
+          let owner;
+          if (channelUsers[0].role == Role.Owner) {
+            owner = await this.userService.findUsersById(
+              channelUsers[0].user.id,
+            );
+          } else {
+            owner = await this.userService.findUsersById(
+              channelUsers[1].user.id,
+            );
+          }
+
+          await this.channelUserService.updateMuteUserByUserIdAndChannelId(
+            sender_id,
+            channel?.channel_uid,
+            0,
+            owner,
+          );
+
+          await this.channelUserService.updateMuteUserByUserIdAndChannelId(
+            receiver_id,
+            channel?.channel_uid,
+            0,
+            owner,
+          );
+        }
+      }
+    });
+  }
 }

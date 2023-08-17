@@ -94,7 +94,7 @@ export class ChannelController {
     return this.channelService.deleteChannel(channel_uid, user);
   }
 
-  @Get('test')
+  @Get('test/user')
   testChannel(@User() user) {
     return this.channelService.testChannel(user);
   }

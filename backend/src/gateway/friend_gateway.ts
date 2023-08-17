@@ -100,9 +100,7 @@ export class FriendGateway {
   ) {
     try {
       const { senderId, receiverId, friendRequestId } = data;
-      const cancelRequest = await this.friendService.cancelFriendRequest(
-        friendRequestId,
-      );
+      const cancelRequest = await this.friendService.unFriend(friendRequestId);
       this.server.emit('friend-request-received', cancelRequest);
       // this.server.to(`${receiverId}`).emit('friend-request', null);
       await this.getReceiveFriendRequest(receiverId);
@@ -186,9 +184,7 @@ export class FriendGateway {
         userId,
         friendId,
       );
-      const unfriendRequest = await this.friendService.cancelFriendRequest(
-        frienship.id,
-      );
+      const unfriendRequest = await this.friendService.unFriend(frienship.id);
       this.server.to(`${friendId}`).emit('unfriend', userId);
       this.server.to(`${userId}`).emit('unfriend', friendId);
       this.server.emit('friend-request-received', unfriendRequest);
@@ -241,9 +237,7 @@ export class FriendGateway {
         unBlockerId,
         blockId,
       );
-      const acceptRequest = await this.friendService.acceptFriendRequest(
-        unblockRequest.id,
-      );
+      const acceptRequest = await this.friendService.unblock(unblockRequest.id);
       const friendsForAccepter = await this.friendService.getFriends(
         unBlockerId,
       );
