@@ -308,7 +308,18 @@ const ThreeDots = ({
     }
   };
 
-  if (channelUser?.role == "user" || channelUser?.role == "admin") {
+  if (channelUser?.channel?.channel_type == "direct message") {
+    buttons = (
+      <div>
+        <button
+          className="member-option-button"
+          onClick={() => handleClick(user?.id)}
+        >
+          Check
+        </button>
+      </div>
+    );
+  } else if (channelUser?.role == "user" || channelUser?.role == "admin") {
     if (
       currentChannelUser?.role == "owner" ||
       currentChannelUser?.role == "admin"
@@ -810,12 +821,36 @@ const DisplayUser = ({
   channelUser,
   currentChannelUser,
 }: {
+  channel: any;
   channelUser: any;
   currentChannelUser: any;
 }) => {
   const [isModalOpen, openModal, closeModal, modalRef] = useModal(false);
 
-  if (channelUser?.role == "owner") {
+  if (channelUser?.channel?.channel_type == "direct message") {
+    return (
+      <div className="members relative">
+        <p className="members-name">{channelUser?.user?.username}</p>
+        <FontAwesomeIcon
+          className="dots-button"
+          icon={faEllipsisVertical}
+          size="lg"
+          style={{ color: "#d1d0c5" }}
+          onClick={() => openModal()}
+        />
+        {isModalOpen && (
+          <ThreeDots
+            isOpen={isModalOpen}
+            closeModal={closeModal}
+            modalRef={modalRef}
+            user={channelUser.user}
+            channelUser={channelUser}
+            currentChannelUser={currentChannelUser}
+          />
+        )}
+      </div>
+    );
+  } else if (channelUser?.role == "owner") {
     return (
       <div className="members relative">
         <p className="members-name">{channelUser?.user?.username}</p>
@@ -938,6 +973,159 @@ const DisplayMessage = ({
       </p>
       <p className="sender-message">{message?.message_content}</p>
     </li>
+  );
+};
+
+const DisplayChannelName = ({ channel }: { channel: any }) => {
+  const [channelUsers, setChannelUsers] = useState<any[]>([]);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
+  useEffect(() => {
+    if (channel?.channel_type == "direct message") {
+      fetchChannelUserData();
+    }
+  }, [channel]);
+
+  const fetchChannelUserData = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3000/channel-user/channel/" + channel?.channel_uid,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        const Data = await response.json();
+        setChannelUsers(Data);
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
+  };
+
+  if (channel?.channel_type == "direct message") {
+    console.log("in");
+    console.log(channelUsers);
+    console.log(channelUsers[0]?.user?.avatar);
+    let avatar;
+    let username;
+    let userStatus;
+    if (userData.id == channelUsers[0]?.user?.id) {
+      avatar = channelUsers[1]?.user?.avatar;
+      username = channelUsers[1]?.user?.username;
+      if ((userStatus = channelUsers[1]?.user?.online == "f")) {
+        userStatus = "offline";
+      } else {
+        userStatus = "online";
+      }
+    } else {
+      avatar = channelUsers[0]?.user?.avatar;
+      username = channelUsers[0]?.user?.username;
+      if ((userStatus = channelUsers[0]?.user?.online == "f")) {
+        userStatus = "offline";
+      } else {
+        userStatus = "online";
+      }
+    }
+
+    return (
+      <div>
+        {/* <img src={avatar} className="friend-profile-pictures" /> */}
+        <h1 className="chat-name">{username}</h1>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h1 className="chat-name">
+        {channel?.channel_name}
+        {/* {channelId != "-1" ? "" : "Why did u do that?"} */}
+      </h1>
+    </div>
+  );
+};
+
+const DisplayGroupChannel = ({ channel }: { channel: any }) => {
+  const [channelUsers, setChannelUsers] = useState<any[]>([]);
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+
+  useEffect(() => {
+    if (channel?.channel_type == "direct message") {
+      fetchChannelUserData();
+    }
+  }, [channel]);
+
+  const fetchChannelUserData = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3000/channel-user/channel/" + channel?.channel_uid,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        const Data = await response.json();
+        setChannelUsers(Data);
+      }
+    } catch (error) {
+      console.log("Error fetching messages data:", error);
+    }
+  };
+
+  if (channel?.channel_type == "direct message") {
+    console.log("in");
+    console.log(channelUsers);
+    console.log(channelUsers[0]?.user?.avatar);
+    let avatar;
+    let username;
+    let userStatus;
+    if (userData.id == channelUsers[0]?.user?.id) {
+      avatar = channelUsers[1]?.user?.avatar;
+      username = channelUsers[1]?.user?.username;
+      if ((userStatus = channelUsers[1]?.user?.online == "f")) {
+        userStatus = "offline";
+      } else {
+        userStatus = "online";
+      }
+    } else {
+      avatar = channelUsers[0]?.user?.avatar;
+      username = channelUsers[0]?.user?.username;
+      if ((userStatus = channelUsers[0]?.user?.online == "f")) {
+        userStatus = "offline";
+      } else {
+        userStatus = "online";
+      }
+    }
+
+    return (
+      <div className="friend">
+        <img src={avatar} className="friend-profile-pictures" />
+        <div className="user-data">
+          <p className="user-name">{username}</p>
+          {/* <p className="user-status">{channel?.channel_type}</p> */}
+          <p className="user-status">{userStatus}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="friend">
+      <img src="gc.jpg" className="friend-profile-pictures" />
+      <div className="user-data">
+        <p className="user-name">{channel?.channel_name}</p>
+        <p className="user-status">{channel?.channel_type}</p>
+      </div>
+    </div>
   );
 };
 
@@ -1182,7 +1370,15 @@ const MembersMore = ({
 
   let buttons;
 
-  if (channelUser?.role == "owner") {
+  const handleLeave = async () => {
+    console.log("I left");
+    socket?.emit("leave-channel", channel?.channel_uid, userData.id);
+  };
+
+  if (
+    channelUser?.role == "owner" &&
+    channelUser?.channel?.channel_type != "direct message"
+  ) {
     buttons = (
       <div className="filler">
         <button
@@ -1217,14 +1413,24 @@ const MembersMore = ({
             channelUser={channelUser}
           />
         )}
+        <button className="mm-leave-channel" onClick={handleLeave}>
+          Leave Channel
+        </button>
+      </div>
+    );
+  } else {
+    buttons = (
+      <div className="filler">
+        <button className="mm-leave-channel" onClick={handleLeave}>
+          Leave Channel
+        </button>
       </div>
     );
   }
 
-  const handleLeave = async () => {
-    console.log("I left");
-    socket?.emit("leave-channel", channel?.channel_uid, userData.id);
-  };
+  if (channelUser?.channel?.channel_type == "direct message") {
+    buttons = "";
+  }
 
   return (
     <>
@@ -1244,9 +1450,6 @@ const MembersMore = ({
               Created at &nbsp;&nbsp;: {channel?.createdAt}
             </p>
             {buttons}
-            <button className="mm-leave-channel" onClick={handleLeave}>
-              Leave Channel
-            </button>
           </div>
         </div>
       )}
@@ -1630,7 +1833,10 @@ const ChatBox: React.FC<any> = () => {
             className={`slide-button ${chat_slide_out ? "hide" : "display"}`}
             icon={faComments}
             style={{ color: "#d1d0c5" }}
-            onClick={async () => {await setGroupSlideOut(true); setChatSlideOut((current) => !current);}}
+            onClick={async () => {
+              await setGroupSlideOut(true);
+              setChatSlideOut((current) => !current);
+            }}
           />
         </div>
         {/* <div
@@ -1686,20 +1892,19 @@ const ChatBox: React.FC<any> = () => {
             <div className="friends">
               {channels.map((channel, index) => (
                 <div
-                  className="friend"
+                  // className="friend"
                   key={index}
                   onClick={() => {
                     setChannelId(channel?.channel_uid);
                     setGroupSlideOut((current) => !current);
-
                   }}
                 >
-                  <img src="gc.jpg" className="friend-profile-pictures" />
+                  {/* <img src="gc.jpg" className="friend-profile-pictures" />
                   <div className="user-data">
                     <p className="user-name">{channel?.channel_name}</p>
                     <p className="user-status">{channel?.channel_type}</p>
-                    {/* #{channel?.channel_uid}</p> */}
-                  </div>
+                  </div> */}
+                  <DisplayGroupChannel channel={channel} />
                 </div>
               ))}
               {/* {allUsers.map((user, index) => (
@@ -1751,14 +1956,16 @@ const ChatBox: React.FC<any> = () => {
           <div className="chat-nav">
             <div className="chat-title">
               <FontAwesomeIcon
-                className={`more-chats-button ${channelId != "-1" ? "" : "increase-size"}`}
+                className={`more-chats-button ${
+                  channelId != "-1" ? "" : "increase-size"
+                }`}
                 icon={faBars}
                 size="lg"
                 style={{ color: "#d1d0c5" }}
                 onClick={() => setGroupSlideOut((current) => !current)}
               />
             </div>
-            <h1 className="chat-name">{currentChannel?.channel_name}{channelId != "-1" ? "" : "Why did u do that?"}</h1>
+            <DisplayChannelName channel={currentChannel} />
             <FontAwesomeIcon
               className={`more-button ${channelId != "-1" ? "" : "invisible"}`}
               icon={chat_members_slide_out ? faChevronUp : faChevronDown}
@@ -1767,9 +1974,7 @@ const ChatBox: React.FC<any> = () => {
               onClick={() => setChatMembersSlideOut((current) => !current)}
             />
           </div>
-          <div>
-            
-          </div>
+          <div></div>
           <div
             className={`chat-members ${
               chat_members_slide_out
@@ -1779,6 +1984,7 @@ const ChatBox: React.FC<any> = () => {
           >
             {channelUsers.map((channelUser, index) => (
               <DisplayUser
+                channel={currentChannel}
                 channelUser={channelUser}
                 currentChannelUser={currentChannelUser}
                 key={index}
@@ -1808,7 +2014,9 @@ const ChatBox: React.FC<any> = () => {
             ))}
             <li ref={messagesEndRef}></li>
           </ul>
-          <div className={`message-div ${channelId != "-1" ? "" : "invisible"}`}>
+          <div
+            className={`message-div ${channelId != "-1" ? "" : "invisible"}`}
+          >
             <form className="message-bar chat-style" onSubmit={handleSubmit}>
               <input
                 type="text"
