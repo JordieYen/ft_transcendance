@@ -931,6 +931,42 @@ const DisplayMessage = ({
   messages: any;
   index: number;
 }) => {
+  const [FriendStatus, setFriendStatus] = useState<any>();
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+  // console.log(message?.sender?.id);
+
+  useEffect(() => {
+    fetchFriendData();
+  }, [message]);
+
+  const fetchFriendData = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3000/friend/check-relationship/" +
+          userData.id +
+          "/" +
+          message?.sender?.id,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        const Data = await response.json();
+        setFriendStatus(Data);
+      }
+    } catch (error) {
+      // console.log("Error fetching friend data:", error);
+    }
+  };
+
+  if (FriendStatus?.status == "blocked") {
+    return;
+  }
+
   if (message?.message_type == "invite") {
     return (
       <div>
