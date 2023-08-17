@@ -976,7 +976,7 @@ const DisplayMessage = ({
   );
 };
 
-const DisplayChannelName = ({ channel}: { channel: any}) => {
+const DisplayChannelName = ({ channel }: { channel: any }) => {
   const [channelUsers, setChannelUsers] = useState<any[]>([]);
   const [userData, setUserData] = useUserStore((state) => [
     state.userData,
@@ -1035,9 +1035,7 @@ const DisplayChannelName = ({ channel}: { channel: any}) => {
     return (
       <div>
         {/* <img src={avatar} className="friend-profile-pictures" /> */}
-        <h1 className="chat-name">
-          {username}
-        </h1>
+        <h1 className="chat-name">{username}</h1>
       </div>
     );
   }
@@ -1377,7 +1375,10 @@ const MembersMore = ({
     socket?.emit("leave-channel", channel?.channel_uid, userData.id);
   };
 
-  if (channelUser?.role == "owner") {
+  if (
+    channelUser?.role == "owner" &&
+    channelUser?.channel?.channel_type != "direct message"
+  ) {
     buttons = (
       <div className="filler">
         <button
@@ -1412,6 +1413,14 @@ const MembersMore = ({
             channelUser={channelUser}
           />
         )}
+        <button className="mm-leave-channel" onClick={handleLeave}>
+          Leave Channel
+        </button>
+      </div>
+    );
+  } else {
+    buttons = (
+      <div className="filler">
         <button className="mm-leave-channel" onClick={handleLeave}>
           Leave Channel
         </button>
@@ -1956,7 +1965,7 @@ const ChatBox: React.FC<any> = () => {
                 onClick={() => setGroupSlideOut((current) => !current)}
               />
             </div>
-            <DisplayChannelName channel={currentChannel}/>
+            <DisplayChannelName channel={currentChannel} />
             <FontAwesomeIcon
               className={`more-button ${channelId != "-1" ? "" : "invisible"}`}
               icon={chat_members_slide_out ? faChevronUp : faChevronDown}
