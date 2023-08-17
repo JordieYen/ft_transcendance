@@ -2,8 +2,6 @@ import { BadRequestException, OnModuleInit } from '@nestjs/common';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { Server } from 'socket.io';
-import { User } from 'src/typeorm/user.entity';
-import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { UsersService } from 'src/users/services/users.service';
 
 @WebSocketGateway()
@@ -40,7 +38,6 @@ export class NotificationGateway implements OnModuleInit {
           const existingSocket = this.connectedUser.get(userId);
           if (!existingSocket || existingSocket.id !== socket.id) {
             this.connectedUser.set(userId, socket);
-            console.log('after: ', this.connectedUser.size);
             this.server
               .to(socket.data.userId.toString())
               .emit('online-status-changed', { isOnline: true });
@@ -95,13 +92,14 @@ export class NotificationGateway implements OnModuleInit {
           this.logConnectedUsers();
         }
       });
+      process.on('SIGINT', () => this.cleanup());
+      process.on('SIGTERM', () => this.cleanup());
     });
   }
 
   private async updateUserStatus(userId: any, isOnline: boolean) {
     const parsedUserId = parseInt(userId, 10);
     if (isNaN(parsedUserId)) {
-      console.log('Invalid userId');
       throw new BadRequestException('Invalid userId');
     }
     const user = await this.usersService.findUsersById(parsedUserId);
@@ -111,11 +109,19 @@ export class NotificationGateway implements OnModuleInit {
       });
     }
   }
+
   private logConnectedUsers() {
-    console.log('Connected users: ');
-    console.log('number: ', this.connectedUser.size);
     for (const [userId, socket] of this.connectedUser.entries()) {
       console.log('User ID:', userId, ', Socket ID:', socket.id);
     }
+  }
+
+  private async cleanup() {
+    console.log('Server is shutting down. Setting all users offline...');
+    for (const [userId, socket] of this.connectedUser.entries()) {
+      await this.updateUserStatus(+userId, false);
+      socket.disconnect(true);
+    }
+    process.exit(0);
   }
 }

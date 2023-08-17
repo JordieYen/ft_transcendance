@@ -1151,12 +1151,13 @@
 
 
 .bottom-nav {
+	z-index: -1;
 	position: fixed;
 	bottom: 0;
 	width: 100%;
 	display: flex;
 	margin-bottom: 4%;
-	justify-content: space-between;
+	justify-content: space-around;
 	padding-left: 10%;
 	padding-right: 10%;
 }

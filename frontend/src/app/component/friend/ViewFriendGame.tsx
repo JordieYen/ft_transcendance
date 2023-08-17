@@ -11,7 +11,6 @@ const ViewFriendGame = ({ roomId }: any) => {
 
   useEffect(() => {
     const handleGameUpdate = (data: any) => {
-      console.log("handleGameUpdate", data);
       setGameState(data);
       router.push("/game");
     };

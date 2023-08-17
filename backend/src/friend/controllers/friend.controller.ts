@@ -63,7 +63,7 @@ export class FriendController {
 
   @Put('cancel-friend-request/:friendRequestId')
   cancelFriendRequest(@Param('friendRequestId') friendRequestId: number) {
-    return this.friendService.cancelFriendRequest(friendRequestId);
+    return this.friendService.unFriend(friendRequestId);
   }
 
   // @Put('block-user/:friendRequestId')

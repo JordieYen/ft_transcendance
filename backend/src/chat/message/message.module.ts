@@ -3,21 +3,19 @@ import { MessageController } from './message.controller';
 import { MessageService } from './message.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Message } from 'src/typeorm/message.entity';
-import { UsersService } from 'src/users/services/users.service';
-import { ChannelService } from '../channel/channel.service';
-import { ChannelUserService } from '../channel-user/channel-user.service';
-import { User } from 'src/typeorm/user.entity';
-import { Channel } from 'src/typeorm/channel.entity';
-import { ChannelUser } from 'src/typeorm/channel_user.entity';
 import { StatModule } from 'src/stat/stat.module';
+import { ChannelModule } from '../channel/channel.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Message, User, Channel, ChannelUser]),
+    TypeOrmModule.forFeature([Message]),
     StatModule,
+    ChannelModule,
+    UsersModule,
   ],
   controllers: [MessageController],
-  providers: [MessageService, UsersService, ChannelService, ChannelUserService],
+  providers: [MessageService],
   exports: [MessageService, TypeOrmModule],
 })
 export class MessageModule {}

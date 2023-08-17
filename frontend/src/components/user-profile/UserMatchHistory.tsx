@@ -12,7 +12,9 @@ const MatchHistory = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("match-history");
+        const response = await axios.get("match-history", {
+          withCredentials: true,
+        });
         const totalMatchHistory = response.data;
         console.log(totalMatchHistory);
         console.log("Hello", totalMatchHistory[0].p1.id);

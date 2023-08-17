@@ -54,8 +54,6 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
           });
           if (response.ok) {
               const friendRequests = await response.json() as any[];
-              console.log('friendRequests', friendRequests);
-              
               setFriendRequests(friendRequests);
           } else {
               throw new Error('Failed to fetch friend requests');
@@ -166,7 +164,7 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
   };
 
   return (
-      <div className="friend-request flex-col">
+      <div className="friend-request flex-col bg-mydarkgrey">
         <h1>Friend Requests</h1>
         { friendRequests?.length > 0 ? (
           friendRequests

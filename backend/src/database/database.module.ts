@@ -1,14 +1,9 @@
-import { Module, OnApplicationBootstrap } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import entities from '../typeorm';
 import { DataSource } from 'typeorm';
-import {
-  runSeeders,
-  SeederFactoryManager,
-  SeederOptions,
-} from 'typeorm-extension';
-import { log } from 'console';
+import { SeederOptions } from 'typeorm-extension';
 import AchievementSeed from './seeds/achievement.seed';
 
 @Module({
