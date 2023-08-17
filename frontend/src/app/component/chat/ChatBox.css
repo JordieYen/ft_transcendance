@@ -540,13 +540,18 @@
 }
 
 .chat-name {
+	width: 200px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
 	opacity: 1;
-	display: inline;
+	/* display: inline; */
 	flex-direction: column;
 	padding: 4vh;
+	/* padding-right: 0; */
+	padding-left: 1vh;
+	padding-right: 0;
+	margin-right: 0;
 	font-size: x-large;
 	color: rgb(120, 120, 120);
 	font: bold;
