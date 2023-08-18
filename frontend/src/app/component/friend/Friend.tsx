@@ -213,12 +213,13 @@ const Friend = ({
   }
 
   return (
-    <div className="friend-list flex-col">
-      <h1>Friends</h1>
-      {friends &&
+    <div className="friend-list flex-col text-center">
+      <h1 className="font-semibold text-2xl mb-4 text-myyellow">Friends</h1>
+      {
+        friends.length > 0 ? (
         friends.map((friend) => (
           <div className="flex items-center gap-10 p-10" key={friend?.id}>
-            <div className="h-22 w-20 overflow-hidden">
+            <div className="h-22 w-20">
               <Avatar
                 src={friend?.avatar}
                 alt="user avatar"
@@ -227,7 +228,7 @@ const Friend = ({
                 onClick={() => toUserProfile(friend?.id)}
               />
             </div>
-            <div className="flex-col gap-1">
+            <div className="flex-col gap-1 text-left">
               <p>{friend?.username}</p>
               <div className={`${friend?.online ? "online" : "offline"}`}>
                 {friend?.online ? (
@@ -238,7 +239,7 @@ const Friend = ({
                 <span>{friend?.online ? "online" : "offline"}</span>
               </div>
               {/* Display Game Status */}
-              <div className="flex gap-3 p-2">
+              <div className="action flex flex-wrap md:flex-row gap-3 p-2">
                 {
                   (friend?.roomId !== "null" && friend?.roomId !== null) ? (
                     <ViewFriendGame roomId={friend.roomId} />
@@ -246,13 +247,17 @@ const Friend = ({
                     <InviteFriendGame friend={friend} user={userData} socket={socket}/>
                   )
                 }
-                <button onClick={() => unfriend(friend?.id)}> <FontAwesomeIcon icon={faUserTimes} />
-                </button>
-                <button onClick={() => block(friend?.id)}><FontAwesomeIcon icon={faBan} /></button>
+                <button onClick={() => unfriend(friend?.id)} className="transition-transform hover:scale-105 hover:bg-red-500 hover:text-white py-2 px-4 rounded-md"> <FontAwesomeIcon icon={faUserTimes} className="mr-2 "/>
+                Unfriend</button>
+                <button onClick={() => block(friend?.id)} className="transition-transform hover:scale-105 hover:bg-gray-700 hover:text-white py-2 px-4 rounded-md"><FontAwesomeIcon icon={faBan} className="mr-2" />Block</button>
               </div>
             </div>
           </div>
-        ))}
+        ))
+        ) : (
+          <p className="text-gray-700 py-4">No friend</p>
+          )
+        }
     </div>
   );
 };

@@ -122,6 +122,7 @@ export class GameGateway implements OnModuleInit {
         user: param.user,
       });
     }
+    this.gameService.clearRoomIdInFriend(param.user.id);
   }
 
   @SubscribeMessage('initialize-game')

@@ -1531,8 +1531,6 @@ const ChatBox: React.FC<any> = () => {
     closeMembersMoreModal,
     modalMembersMoreRef,
   ] = useModal(false);
-  const router = useRouter();
-
   const socket = useContext(SocketContext);
 
   const [userData, setUserData] = useUserStore((state) => [

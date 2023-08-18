@@ -2,7 +2,7 @@ import { UserData } from "@/store/useUserStore";
 import React from "react";
 import { Socket } from "socket.io-client";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faGamepad } from '@fortawesome/free-solid-svg-icons';
 
 interface InviteFriendGameProps {
   user: UserData;
@@ -33,8 +33,10 @@ const InviteFriendGame = ({ user, friend, socket}: InviteFriendGameProps) => {
     <>
         <button
           onClick={handleInviteFriendGame}
+          className="transition-transform hover:scale-105 hover:bg-slate-950 hover:text-white py-2 px-4 rounded-md"
         >
-          <FontAwesomeIcon icon={faEnvelope} />
+          <FontAwesomeIcon icon={faGamepad} className="mr-2" />
+          Invite
         </button>
     </>
   );
