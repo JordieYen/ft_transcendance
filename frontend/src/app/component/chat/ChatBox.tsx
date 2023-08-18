@@ -1589,22 +1589,10 @@ const ChatBox: React.FC<any> = () => {
     socket?.on(
       "message-recieved",
       async function (new_message: any, channel_id: string) {
-        // console.log("new", new_message);
-        // console.log("message", messages[1]);
-        // console.log("broooo", new_message?.channelChannelUid);
         const idNumber = new_message?.channel?.channel_uid;
         const idString: string = "" + idNumber;
         const channelIdString: string = "" + channelId;
-        // console.log(
-        //   "lollll",
-        //   new_message?.channel?.channel_uid,
-        //   idNumber,
-        //   idString,
-        //   channelId,
-        //   channelIdString,
-        // );
         if (idString == channelId) {
-          // console.log("ran");
           setMessages([...messages, new_message]);
         }
       },
@@ -1613,14 +1601,12 @@ const ChatBox: React.FC<any> = () => {
 
   useEffect(() => {
     socket?.on("channel-created", async function (new_channel: any) {
-      // console.log("test", new_channel?.channel_uid);
       setChannels([...channels, new_channel]);
     });
   }, [socket, channels]);
 
   useEffect(() => {
     socket?.on("search-channels-complete-group", async (new_channels: any) => {
-      // console.log(new_channels);
       setChannels(new_channels);
     });
   }, [socket, channels]);
@@ -1673,6 +1659,8 @@ const ChatBox: React.FC<any> = () => {
   if (!messages) {
     return <div>users not found</div>;
   }
+
+  
 
   const fetchChatData = async () => {
     try {
