@@ -47,11 +47,11 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
   }, []);
 
   useEffect(() => {
-    if (userData) {
+    if (userData.id) {
       console.log("Joining room", userData.id);
       socket?.emit("join", userData.id);
     }
-  }, [userData]);
+  }, [userData.id]);
 
   const handleUserActivity = () => {
     socket?.emit("activity");
