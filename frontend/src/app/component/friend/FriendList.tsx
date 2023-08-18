@@ -198,7 +198,7 @@ const FriendList = () => {
 
   return (
     <div className="friend-page w-full flex">
-      <div className="friend-section w-1/3 bg-jetblack border rounded-lg border-gray-300 flex flex-col p-2 gap-4">
+      <div className="friend-section w-1/3 bg-jetblack border rounded-lg border-gray-300 flex flex-col p-2 gap-4 ml-10">
         <div className="friend-request-page">
           <FriendRequest
             userId={userData?.id!}
@@ -221,10 +221,8 @@ const FriendList = () => {
         </div>
       </div>
       <div className="users-list w-2/3 h-full p-4">
+        <SearchBar onSearch={handleSearch} onReset={fetchUsersList} />
         <div className="flex flex-col">
-          <div className="px-4">
-            <SearchBar onSearch={handleSearch} onReset={fetchUsersList} />
-          </div>
           <div className="flex-2 overflow-y-auto px-4">
             <h1 className="flex justify-center text-2xl font-bold mb-4">Users List</h1>
             <div className="card-container">

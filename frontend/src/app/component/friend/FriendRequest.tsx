@@ -186,15 +186,21 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
               <div className="flex gap-5 my-5">
                 <button onClick={ () => acceptFriendRequest(friendRequest.id, friendRequest.sender.id, friendRequest.receiver.id) }
                 disabled={ friendRequest.status === 'friended'}
-                className={friendRequest.status === 'friended' || friendRequest.status === 'decline' ? 'disabled-button' : ''}
+                className={
+                  `transition-transform hover:scale-105 hover:bg-green hover:text-white py-2 px-4 rounded-md
+                  ${friendRequest.status === 'friended' || friendRequest.status === 'decline' ? 'disabled-button' : ''}`
+                }
                 >
-                  <FontAwesomeIcon icon={faCheck} />
+                  <FontAwesomeIcon icon={faCheck} className="mr-3"/>Yes
                 </button>
                 <button onClick={ () => declineFriendRequest(friendRequest.id, friendRequest.receiver.id) }
                 disabled={ friendRequest.status === 'decline'}
-                className={friendRequest.status === 'decline' || friendRequest.status === 'friended'? 'disabled-button' : ''}
+                className={
+                  `transition-transform hover:scale-105 hover:bg-tomato hover:text-white py-2 px-4 rounded-md
+                  ${friendRequest.status === 'decline' || friendRequest.status === 'friended'? 'disabled-button' : ''}`
+                }
                 >
-                  <FontAwesomeIcon icon={faTimes} />
+                  <FontAwesomeIcon icon={faTimes} className="mr-3"/>No
                 </button>
               </div>
             </div>

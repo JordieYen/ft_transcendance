@@ -3,13 +3,37 @@
     cursor: not-allowed;
 }
 
+
 .add-button {
+    background-color: transparent;
     color: black;
+    border: 2px solid black;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    outline: none;
+}
+  
+.add-button:hover {
+    background-color: #030e1e;
+    color: white;
+    transform: scale(1.05);
 }
 
 .cancel-button {
     background-color: black;
     color: var(--background-grey);
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    outline: none;
+}
+  
+.cancel-button:hover {
+    background-color: #1f2937;
+    color: white;
+    transform: scale(1.05);
 }
 
 .card-avatar .avatar-image {

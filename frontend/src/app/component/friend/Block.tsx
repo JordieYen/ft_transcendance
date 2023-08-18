@@ -139,8 +139,8 @@ const Block = () => {
             <div className="flex-col gap-1">
               <p>{block?.receiver?.username}</p>
               <div className="flex gap-2 p-2">
-                <button onClick={() => unBlock(block?.receiver?.id)}>
-                <FontAwesomeIcon icon={faUnlockAlt} />
+                <button onClick={() => unBlock(block?.receiver?.id)} className="transition-transform hover:scale-105 hover:bg-green hover:text-white py-2 px-4 rounded-md">
+                <FontAwesomeIcon icon={faUnlockAlt} className="mr-3" />Unblock
                 </button>
               </div>
             </div>
