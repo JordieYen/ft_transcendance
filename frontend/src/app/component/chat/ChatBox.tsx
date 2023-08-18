@@ -45,11 +45,11 @@ const Roles = ({
   const socket = useContext(SocketContext);
 
   const setAdmin = async () => {
-    console.log(
-      "user is now admin!",
-      channelUser?.user?.id,
-      channelUser?.channel?.channel_uid,
-    );
+    // console.log(
+    //   "user is now admin!",
+    //   channelUser?.user?.id,
+    //   channelUser?.channel?.channel_uid,
+    // );
     socket?.emit(
       "change-role",
       "admin",
@@ -60,11 +60,11 @@ const Roles = ({
   };
 
   const setUser = async () => {
-    console.log(
-      "user is now user!",
-      channelUser?.user?.id,
-      channelUser?.channel?.channel_uid,
-    );
+    // console.log(
+    //   "user is now user!",
+    //   channelUser?.user?.id,
+    //   channelUser?.channel?.channel_uid,
+    // );
     socket?.emit(
       "change-role",
       "user",
@@ -131,7 +131,7 @@ const Mute = ({
   ]);
 
   const muteUser = async (days: number) => {
-    console.log("user is being muted for ", days, " days");
+    // console.log("user is being muted for ", days, " days");
     socket?.emit(
       "mute-user",
       channelUser?.user?.id,
@@ -145,7 +145,7 @@ const Mute = ({
     currentChannelUser?.role == "owner" ||
     currentChannelUser?.role == "admin"
   ) {
-    console.log("mutedtill", mutedTill);
+    // console.log("mutedtill", mutedTill);
     if (mutedTill == undefined) {
       mutedTill = "not muted";
       content = (
@@ -262,7 +262,7 @@ const ThreeDots = ({
 
   const handleClick = async (id: number) => {
     try {
-      console.log("id in handleClick", id);
+      // console.log("id in handleClick", id);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_NEST_HOST}/users/${id}`,
@@ -272,23 +272,23 @@ const ThreeDots = ({
         },
       );
       if (response.ok) {
-        console.log("response in handleClick", response);
+        // console.log("response in handleClick", response);
         const user = await response.json();
         router.push(`/users/${user.id}`);
       }
     } catch (error) {
-      console.log("Error redirect to profile:", error);
+      // console.log("Error redirect to profile:", error);
     }
   };
 
   const kickUser = async (id: number) => {
-    console.log("kicking user");
+    // console.log("kicking user");
     socket?.emit("leave-channel", channelUser?.channel?.channel_uid, user.id);
   };
 
   const banUser = async (id: number) => {
-    console.log("banning user", channelUser?.status);
-    console.log(channelUser?.user?.id, channelUser?.channel?.channel_uid);
+    // console.log("banning user", channelUser?.status);
+    // console.log(channelUser?.user?.id, channelUser?.channel?.channel_uid);
     if (channelUser?.status == "null") {
       socket?.emit(
         "ban-from-channel",
@@ -481,12 +481,12 @@ const CreateChat = ({
     if (channelPassword != "") {
       setChannelPassword("");
     } else {
-      console.log("channel-password is empty");
+      // console.log("channel-password is empty");
     }
     if (channelType != "") {
       setChannelType("");
     } else {
-      console.log("channel-type not selected");
+      // console.log("channel-type not selected");
     }
   };
 
@@ -704,13 +704,13 @@ const BrowseChats = ({
     try {
       let response;
       if (channelType == "all") {
-        response = await fetch("http://localhost:3000/channel/typeall", {
+        response = await fetch(process.env.NEXT_PUBLIC_NEST_HOST + "/channel/typeall", {
           method: "GET",
           credentials: "include",
         });
       } else {
         response = await fetch(
-          "http://localhost:3000/channel/typeid/" + channelType,
+          process.env.NEXT_PUBLIC_NEST_HOST + "/channel/typeid/" + channelType,
           {
             method: "GET",
             credentials: "include",
@@ -724,7 +724,7 @@ const BrowseChats = ({
         throw new Error("Messages not found");
       }
     } catch (error) {
-      console.log("Error fetching messages data:", error);
+      // console.log("Error fetching messages data:", error);
     }
   };
 
@@ -736,7 +736,7 @@ const BrowseChats = ({
         changeChannelTypeSearch();
       } else {
         const response = await fetch(
-          "http://localhost:3000/channel/typesearch/" +
+          process.env.NEXT_PUBLIC_NEST_HOST + "/channel/typesearch/" +
             channelType +
             "/" +
             e.target.value,
@@ -753,7 +753,7 @@ const BrowseChats = ({
         }
       }
     } catch (error) {
-      console.log("Error fetching messages data:", error);
+      // console.log("Error fetching messages data:", error);
     }
   };
 
@@ -931,6 +931,42 @@ const DisplayMessage = ({
   messages: any;
   index: number;
 }) => {
+  const [FriendStatus, setFriendStatus] = useState<any>();
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+  // console.log(message?.sender?.id);
+
+  useEffect(() => {
+    fetchFriendData();
+  }, [message]);
+
+  const fetchFriendData = async () => {
+    try {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_NEST_HOST + "/friend/check-relationship/" +
+          userData.id +
+          "/" +
+          message?.sender?.id,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        const Data = await response.json();
+        setFriendStatus(Data);
+      }
+    } catch (error) {
+      // console.log("Error fetching friend data:", error);
+    }
+  };
+
+  if (FriendStatus?.status == "blocked") {
+    return;
+  }
+
   if (message?.message_type == "invite") {
     return (
       <div>
@@ -992,7 +1028,7 @@ const DisplayChannelName = ({ channel }: { channel: any }) => {
   const fetchChannelUserData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/channel-user/channel/" + channel?.channel_uid,
+        process.env.NEXT_PUBLIC_NEST_HOST + "/channel-user/channel/" + channel?.channel_uid,
         {
           method: "GET",
           credentials: "include",
@@ -1003,14 +1039,14 @@ const DisplayChannelName = ({ channel }: { channel: any }) => {
         setChannelUsers(Data);
       }
     } catch (error) {
-      console.log("Error fetching messages data:", error);
+      // console.log("Error fetching messages data:", error);
     }
   };
 
   if (channel?.channel_type == "direct message") {
-    console.log("in");
-    console.log(channelUsers);
-    console.log(channelUsers[0]?.user?.avatar);
+    // console.log("in");
+    // console.log(channelUsers);
+    // console.log(channelUsers[0]?.user?.avatar);
     let avatar;
     let username;
     let userStatus;
@@ -1066,7 +1102,7 @@ const DisplayGroupChannel = ({ channel }: { channel: any }) => {
   const fetchChannelUserData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/channel-user/channel/" + channel?.channel_uid,
+        process.env.NEXT_PUBLIC_NEST_HOST + "/channel-user/channel/" + channel?.channel_uid,
         {
           method: "GET",
           credentials: "include",
@@ -1077,14 +1113,14 @@ const DisplayGroupChannel = ({ channel }: { channel: any }) => {
         setChannelUsers(Data);
       }
     } catch (error) {
-      console.log("Error fetching messages data:", error);
+      // console.log("Error fetching messages data:", error);
     }
   };
 
   if (channel?.channel_type == "direct message") {
-    console.log("in");
-    console.log(channelUsers);
-    console.log(channelUsers[0]?.user?.avatar);
+    // console.log("in");
+    // console.log(channelUsers);
+    // console.log(channelUsers[0]?.user?.avatar);
     let avatar;
     let username;
     let userStatus;
@@ -1153,7 +1189,7 @@ const ChangeChannelPassword = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(oldChannelPassword, newChannelPassword);
+    // console.log(oldChannelPassword, newChannelPassword);
     socket?.emit(
       "change-password",
       channel?.channel_uid,
@@ -1254,10 +1290,10 @@ const ChangeChannelType = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("changing channel type", channelType, newChannelPassword);
+    // console.log("changing channel type", channelType, newChannelPassword);
     if (channelType != "") {
       if (channelType != "protected" || newChannelPassword != "") {
-        console.log("change!");
+        // console.log("change!");
         socket?.emit(
           "change-channel-type",
           channel?.channel_uid,
@@ -1371,7 +1407,7 @@ const MembersMore = ({
   let buttons;
 
   const handleLeave = async () => {
-    console.log("I left");
+    // console.log("I left");
     socket?.emit("leave-channel", channel?.channel_uid, userData.id);
   };
 
@@ -1528,11 +1564,12 @@ const ChatBox: React.FC<any> = () => {
   useEffect(() => {
     fetchMessageData();
     fetchUserData();
-    fetchChatData();
-    fetchChannelData();
+    if (userData.id != undefined || channelId != "-1") {
+      fetchChannelData();
+      fetchCurrentChannelUserData();
+    }
     fetchChannelUserData();
     fetchCurrentChannelData();
-    fetchCurrentChannelUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData, channelId, refresh]);
 
@@ -1550,22 +1587,10 @@ const ChatBox: React.FC<any> = () => {
     socket?.on(
       "message-recieved",
       async function (new_message: any, channel_id: string) {
-        // console.log("new", new_message);
-        // console.log("message", messages[1]);
-        // console.log("broooo", new_message?.channelChannelUid);
         const idNumber = new_message?.channel?.channel_uid;
         const idString: string = "" + idNumber;
         const channelIdString: string = "" + channelId;
-        console.log(
-          "lollll",
-          new_message?.channel?.channel_uid,
-          idNumber,
-          idString,
-          channelId,
-          channelIdString,
-        );
         if (idString == channelId) {
-          console.log("ran");
           setMessages([...messages, new_message]);
         }
       },
@@ -1574,14 +1599,12 @@ const ChatBox: React.FC<any> = () => {
 
   useEffect(() => {
     socket?.on("channel-created", async function (new_channel: any) {
-      // console.log("test", new_channel?.channel_uid);
       setChannels([...channels, new_channel]);
     });
   }, [socket, channels]);
 
   useEffect(() => {
     socket?.on("search-channels-complete-group", async (new_channels: any) => {
-      // console.log(new_channels);
       setChannels(new_channels);
     });
   }, [socket, channels]);
@@ -1589,7 +1612,7 @@ const ChatBox: React.FC<any> = () => {
   const fetchMessageData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/message/id/" + channelId,
+        process.env.NEXT_PUBLIC_NEST_HOST + "/message/id/" + channelId,
         {
           method: "GET",
           credentials: "include",
@@ -1602,7 +1625,7 @@ const ChatBox: React.FC<any> = () => {
         throw new Error("Messages not found");
       }
     } catch (error) {
-      console.log("Error fetching messages data:", error);
+      // console.log("Error fetching messages data:", error);
     }
   };
   if (!messages) {
@@ -1613,7 +1636,7 @@ const ChatBox: React.FC<any> = () => {
     try {
       const response = await fetch(
         // `${process.env.NEXT_PUBLIC_NEST_HOST}/users`,
-        "http://localhost:3000/users",
+        process.env.NEXT_PUBLIC_NEST_HOST + "/users",
         {
           method: "GET",
           credentials: "include",
@@ -1628,16 +1651,18 @@ const ChatBox: React.FC<any> = () => {
         throw new Error("Users not found");
       }
     } catch (error) {
-      console.log("Error fetching user data:", error);
+      // console.log("Error fetching user data:", error);
     }
   };
   if (!messages) {
     return <div>users not found</div>;
   }
 
+  
+
   const fetchChatData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/chat", {
+      const response = await fetch(process.env.NEXT_PUBLIC_NEST_HOST + "/chat", {
         method: "GET",
         credentials: "include",
       });
@@ -1652,7 +1677,7 @@ const ChatBox: React.FC<any> = () => {
         throw new Error("Messages not found");
       }
     } catch (error) {
-      console.log("Error fetching messages data:", error);
+      // console.log("Error fetching messages data:", error);
     }
   };
   if (!messages) {
@@ -1662,7 +1687,7 @@ const ChatBox: React.FC<any> = () => {
   const fetchChannelData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/channel/userid/" + userData.id,
+        process.env.NEXT_PUBLIC_NEST_HOST + "/channel/userid/" + userData.id,
         {
           method: "GET",
           credentials: "include",
@@ -1676,7 +1701,7 @@ const ChatBox: React.FC<any> = () => {
         throw new Error("Messages not found");
       }
     } catch (error) {
-      console.log("Error fetching messages data:", error);
+      // console.log("Error fetching messages data:", error);
     }
   };
   if (!messages) {
@@ -1686,7 +1711,7 @@ const ChatBox: React.FC<any> = () => {
   const fetchChannelUserData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/channel-user/channel/" + channelId,
+        process.env.NEXT_PUBLIC_NEST_HOST + "/channel-user/channel/" + channelId,
         {
           method: "GET",
           credentials: "include",
@@ -1700,7 +1725,7 @@ const ChatBox: React.FC<any> = () => {
         throw new Error("Messages not found");
       }
     } catch (error) {
-      console.log("Error fetching messages data:", error);
+      // console.log("Error fetching messages data:", error);
     }
   };
   if (!messages) {
@@ -1710,7 +1735,7 @@ const ChatBox: React.FC<any> = () => {
   const fetchCurrentChannelData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/channel/id/" + channelId,
+        process.env.NEXT_PUBLIC_NEST_HOST + "/channel/id/" + channelId,
         {
           method: "GET",
           credentials: "include",
@@ -1724,7 +1749,7 @@ const ChatBox: React.FC<any> = () => {
         throw new Error("Messages not found");
       }
     } catch (error) {
-      console.log("Error fetching messages data:", error);
+      // console.log("Error fetching messages data:", error);
     }
   };
   if (!messages) {
@@ -1734,9 +1759,9 @@ const ChatBox: React.FC<any> = () => {
   const fetchCurrentChannelUserData = async () => {
     try {
       const request = `${process.env.NEXT_PUBLIC_NEST_HOST}channel-user/channeluser/${channelId}/${userData.id}`;
-      console.log("bruh", request);
+      // console.log("bruh", request);
       const response = await fetch(
-        "http://localhost:3000/channel-user/channeluser/" +
+        process.env.NEXT_PUBLIC_NEST_HOST + "/channel-user/channeluser/" +
           channelId +
           "/" +
           userData.id,
@@ -1752,7 +1777,7 @@ const ChatBox: React.FC<any> = () => {
         throw new Error("Messages not found");
       }
     } catch (error) {
-      console.log("Error fetching messages data:", error);
+      // console.log("Error fetching messages data:", error);
     }
   };
   if (!messages) {
@@ -1772,7 +1797,7 @@ const ChatBox: React.FC<any> = () => {
           userData.id,
         );
       } else {
-        console.log("error : unable to send message");
+        // console.log("error : unable to send message");
       }
       setInputValue("");
     }
@@ -1798,7 +1823,7 @@ const ChatBox: React.FC<any> = () => {
         fetchChannelData();
       } else {
         const response = await fetch(
-          "http://localhost:3000/channel/searchgroup/" + e.target.value,
+          process.env.NEXT_PUBLIC_NEST_HOST + "/channel/searchgroup/" + e.target.value,
           {
             method: "GET",
             credentials: "include",
@@ -1812,7 +1837,7 @@ const ChatBox: React.FC<any> = () => {
         }
       }
     } catch (error) {
-      console.log("Error fetching messages data:", error);
+      // console.log("Error fetching messages data:", error);
     }
   };
 
