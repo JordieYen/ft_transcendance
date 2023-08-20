@@ -79,9 +79,9 @@ const MatchHistory = ({ mode }: { mode: number }) => {
                 </p>
                 <div
                   className={`flex justify-center items-center ${
-                    (mode === 1 && "w-60") ||
+                    ((mode === 0 || mode === 1) && "w-60") ||
                     (mode === 2 && "w-64") ||
-                    (mode === 3 && "w-72")
+                    (mode >= 3 && "w-72")
                   }`}
                 >
                   <p className="text-3xl font-bold">{opponentScore}</p>
@@ -98,9 +98,9 @@ const MatchHistory = ({ mode }: { mode: number }) => {
                 </div>
                 <div
                   className={`flex justify-center items-center ${
-                    (mode === 1 && "w-60") ||
+                    ((mode === 0 || mode === 1) && "w-60") ||
                     (mode === 2 && "w-64") ||
-                    (mode === 3 && "w-72")
+                    (mode >= 3 && "w-72")
                   }`}
                 >
                   <div
@@ -129,18 +129,18 @@ const MatchHistoryTitle = ({ mode }: { mode: number }) => {
       <p className="w-24 text-dimgrey text-sm text-center">date</p>
       <p
         className={`text-dimgrey text-sm text-center ${
-          (mode === 1 && "w-60") ||
+          ((mode === 0 || mode === 1) && "w-60") ||
           (mode === 2 && "w-64") ||
-          (mode === 3 && "w-72")
+          (mode >= 3 && "w-72")
         }`}
       >
         enemy stats
       </p>
       <p
         className={`text-dimgrey text-sm text-center ${
-          (mode === 1 && "w-60") ||
+          ((mode === 0 || mode === 1) && "w-60") ||
           (mode === 2 && "w-64") ||
-          (mode === 3 && "w-72")
+          (mode >= 3 && "w-72")
         }`}
       >
         your stats
@@ -151,7 +151,7 @@ const MatchHistoryTitle = ({ mode }: { mode: number }) => {
 
 const UserMatchHistory = ({ mode }: { mode: number }) => {
   return (
-    <div className="w-full h-full no-scrollbar">
+    <div className="flex flex-col w-full h-full no-scrollbar">
       <MatchHistoryTitle mode={mode} />
       <div className="flex flex-col flex-1 w-full h-full pb-10 rounded-3xl overflow-y-scroll no-scrollbar">
         <MatchHistory mode={mode} />

@@ -130,6 +130,13 @@ export class UsersService {
       await this.usersRepository.update(id, updatedUserDto);
       return await this.findUsersById(id);
     } catch (error) {
+      if (error.code === '23505') {
+        // PostgreSQL unique constraint violation (duplicate key)
+        throw new BadRequestException('Username already exists');
+      } else if (error.name === 'EntityNotFound') {
+        // Assuming TypeORM error for entity not found
+        throw new BadRequestException('User not found');
+      }
       throw new InternalServerErrorException('Failed to update user');
     }
   }

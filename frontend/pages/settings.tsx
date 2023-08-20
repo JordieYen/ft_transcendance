@@ -25,30 +25,32 @@ export default function SettingsPage() {
   const [mode, setMode] = useState(0);
 
   useEffect(() => {
-    if (userSettingsRef && userSettingsRef.current) {
+    const updateParentDimensions = () => {
       const parentDiv = userSettingsRef.current;
       if (parentDiv) {
         const width = parentDiv.clientWidth;
         const height = parentDiv.clientHeight;
-        console.log("height", height);
-        if (height <= 900) {
+        console.log(`width: ${width} && height: ${height}`);
+        if (width < 1440) {
           setMode(1);
-        } else if (height > 900 && height <= 1080) {
+        } else if (width >= 1440 && width < 1920) {
           setMode(2);
         } else {
           setMode(3);
         }
       }
-    }
-  }, [userSettingsRef]);
+    };
+
+    updateParentDimensions();
+  }, []);
 
   return (
     <div
       ref={userSettingsRef}
       className={`w-screen h-screen absolute top-0 left-0 ${
         (mode === 1 && "") ||
-        (mode === 2 && "px-20 py-10") ||
-        (mode === 3 && "px-40 py-40")
+        (mode === 2 && "px-10") ||
+        (mode >= 3 && "px-32 py-16")
       }`}
     >
       <div className="w-full h-full pt-[128px] flex flex-col gap-6">

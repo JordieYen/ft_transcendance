@@ -74,7 +74,7 @@ const ChangeAvatarModal = ({
           const { data, status } = error.response;
           if (status === 422) {
             toast.error(
-              "Avatar update failed! File size must not be more than 4MB!",
+              "Failed to change avatar: File size must not be more than 4MB!",
             );
           } else {
             toast.error("Avatar update failed! Please try again later");

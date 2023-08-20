@@ -252,8 +252,8 @@ export default function ShuttlecockMove() {
       if (currentStep === "name") {
         progress.jump(0);
         animate([
-          [progress, 0.15, { duration: 3.5 }],
-          [yOffset, -screen.height * 0.45, { duration: 3.5, at: "<" }],
+          [progress, 0.14, { duration: 3.5 }],
+          [yOffset, -screen.height * 0.4, { duration: 3.5, at: "<" }],
         ]);
       }
       if (currentStep === "avatar")
