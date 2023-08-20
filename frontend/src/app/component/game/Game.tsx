@@ -6,6 +6,7 @@ import { useGameData } from "./GameContext";
 import useGameStore from "@/store/useGameStore";
 import router from "next/router";
 import ScoreExplosion from "@/components/game/ScoreExplosion";
+import game from "../../../../pages/game";
 
 interface ScoreBoard {
   winner: number;
@@ -163,7 +164,7 @@ const Game = () => {
   // const socket = io("http://localhost:3000");
 
   useEffect(() => {
-    if (socket) {
+    if (socket && gameState?.roomId != null) {
       socket.emit("initialize-game", {
         roomId: gameState!.roomId,
         pOneId: gameState!.player1User.id,
@@ -178,6 +179,9 @@ const Game = () => {
         currentUser.current = gameState!.player2User;
       }
       gameMode.current = gameState!.player1User.gameMode;
+    } else {
+      router.push("/main-menu");
+      return ;
     }
 
     const keyArr: { [key: string]: KeyType } = {};
