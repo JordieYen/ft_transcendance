@@ -284,7 +284,7 @@ const AvatarStep = () => {
       transition={{ ease: "easeInOut", duration: 1.5 }}
       exit={{ y: "-100vh" }}
     >
-      <div className="w-[360px] border-dashed border-2 border-dimgrey rounded-3xl shadow-xl shadow-jetblack px-10 py-8">
+      <div className="w-[400px] border-dashed border-2 border-dimgrey rounded-3xl shadow-xl shadow-jetblack px-10 py-8">
         <h2 className="text-2xl font-roboto text-timberwolf">Avatar</h2>
         <p className="text-md text-dimgrey">File size should not exceed 4MB.</p>
         <div className="flex flex-col my-3 py-1 items-center justify-center avatar-preview w-full">
@@ -436,6 +436,7 @@ const TFAStep = () => {
     axios
       .post("/users/authenticate", null, {
         params: { uid: userData?.id?.toString() },
+        withCredentials: true,
       })
       .then(() => {
         setUserData({

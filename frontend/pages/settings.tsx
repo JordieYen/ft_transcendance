@@ -121,7 +121,7 @@ export default function SettingsPage() {
           </>
         )}
 
-        <DeleteAccountModal
+        {/* <DeleteAccountModal
           isOpen={isDelOpen}
           closeModal={closeDelModal}
           delRef={delRef}
@@ -134,7 +134,7 @@ export default function SettingsPage() {
           handleClick={[() => openDelModal()]}
           mode="button"
           icon={faTrash}
-        />
+        /> */}
       </div>
     </div>
   );

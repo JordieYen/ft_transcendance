@@ -77,7 +77,7 @@ const ChangeAccountModal = ({
   return (
     <>
       {isOpen && (
-        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 z-20">
+        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 left-0 z-20">
           <div
             className="overlay-content h-fill w-[500px] bg-onyxgrey rounded-2xl p-8 space-y-3"
             ref={accRef}
