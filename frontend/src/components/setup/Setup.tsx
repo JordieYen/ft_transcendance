@@ -542,7 +542,7 @@ const TFAStep = () => {
           <SixDigitVerification
             closeModal={undefined}
             verifiedAction={() => patchTFA()}
-            mode={1}
+            mode="1"
           />
         </motion.div>
       )}
