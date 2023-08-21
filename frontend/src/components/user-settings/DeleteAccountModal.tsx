@@ -34,7 +34,7 @@ const DeleteAccountModal = ({
     } else {
       closeModal();
       axios
-        .delete(`users/${userData?.id}`)
+        .delete(`users/${userData?.id}`, { withCredentials: true })
         .then(() => {
           router.push("/login").then(() => {
             toast((t) => (

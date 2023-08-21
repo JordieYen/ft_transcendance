@@ -57,7 +57,7 @@ const DeleteTFAModal = ({
   return (
     <>
       {isOpen && (
-        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 z-20">
+        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 left-0 z-20">
           <div
             className={`flex flex-col overlay-content ${
               promptTFA ? "w-[500px] h-fill" : "w-[400px] h-fit"

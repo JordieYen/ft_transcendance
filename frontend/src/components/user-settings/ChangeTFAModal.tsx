@@ -17,6 +17,8 @@ const ChangeTFAModal = ({
   closeModal,
   tfaRef,
 }: ChangeTFAModalProps) => {
+  const [promptTFA, setPromptTFA] = useState(false);
+  const [showQR, setShowQR] = useState(false);
   const [qrCodeImg, setQRCodeImg] = useState("");
   const [userData, setUserData] = useUserStore((state) => [
     state.userData,
@@ -41,8 +43,43 @@ const ChangeTFAModal = ({
       }
     };
 
-    if (isOpen === true) fetchQRCodeData();
+    if (showQR === true) {
+      fetchQRCodeData();
+    }
+  }, [showQR]);
+
+  useEffect(() => {
+    setPromptTFA(false);
+    setShowQR(false);
+    if (isOpen === true) {
+      if (userData.authentication === true) {
+        setPromptTFA(true);
+      } else {
+        setShowQR(true);
+      }
+    }
   }, [isOpen]);
+
+  const changeTFA = () => {
+    const updateUserDto = {
+      authentication: false,
+      authenticationString: "",
+    };
+    axios
+      .patch(`/users/${userData?.id}`, updateUserDto, { withCredentials: true })
+      .then(() => {
+        setUserData({
+          ...userData,
+          authentication: false,
+          authenticationString: "",
+        });
+        setPromptTFA(false);
+        setShowQR(true);
+      })
+      .catch(() => {
+        toast.error("Failed to update 2FA! Please try again later");
+      });
+  };
 
   const patchTFA = () => {
     closeModal();
@@ -74,30 +111,49 @@ const ChangeTFAModal = ({
             <h2>
               <p className="text-2xl text-dimgrey">Update 2FA</p>
             </h2>
-            <p className="text-md text-dimgrey">
-              Two factor authentication adds an extra layer of security to your
-              account. Scan this QR Code with your Authenticator App and enter
-              the verification code below.
-            </p>
-            <div className="flex rounded-lg border-[3px] border-saffron bg-white items-center justify-center">
-              {qrCodeImg ? (
-                <Image
-                  src={qrCodeImg}
-                  alt="2FA QR Code"
-                  width={150}
-                  height={150}
+            {promptTFA && (
+              <div>
+                <p className="text-dimgrey text-md">
+                  It seems like you have 2FA activated.
+                </p>
+                <p className="text-dimgrey text-md mb-4">
+                  Please input 6 digit OTP code from your authenticar app.
+                </p>
+                <SixDigitVerification
+                  closeModal={closeModal}
+                  verifiedAction={() => changeTFA()}
+                  mode={"2"}
                 />
-              ) : (
-                <p>Loading QR Code...</p>
-              )}
-            </div>
-            <hr className="border-dimgrey"></hr>
-            <p className="text-md">Verification Code:</p>
-            <SixDigitVerification
-              closeModal={closeModal}
-              verifiedAction={() => patchTFA()}
-              mode={"1"}
-            />
+              </div>
+            )}
+            {showQR && (
+              <>
+                <p className="text-md text-dimgrey">
+                  Two factor authentication adds an extra layer of security to
+                  your account. Scan this QR Code with your Authenticator App
+                  and enter the verification code below.
+                </p>
+                <div className="flex rounded-lg border-[3px] border-saffron bg-white items-center justify-center">
+                  {qrCodeImg ? (
+                    <Image
+                      src={qrCodeImg}
+                      alt="2FA QR Code"
+                      width={150}
+                      height={150}
+                    />
+                  ) : (
+                    <p>Loading QR Code...</p>
+                  )}
+                </div>
+                <hr className="border-dimgrey"></hr>
+                <p className="text-md">Verification Code:</p>
+                <SixDigitVerification
+                  closeModal={closeModal}
+                  verifiedAction={() => patchTFA()}
+                  mode={"1"}
+                />
+              </>
+            )}
           </div>
         </div>
       )}
