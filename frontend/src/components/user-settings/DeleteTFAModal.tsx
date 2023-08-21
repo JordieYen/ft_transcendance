@@ -35,7 +35,7 @@ const DeleteTFAModal = ({
       authenticationString: "",
     };
     axios
-      .patch(`/users/${userData?.id}`, updateUserDto)
+      .patch(`/users/${userData?.id}`, updateUserDto, { withCredentials: true })
       .then(() => {
         setUserData({
           ...userData,

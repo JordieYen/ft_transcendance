@@ -50,6 +50,7 @@ const ChangeTFAModal = ({
     axios
       .post("/users/authenticate", null, {
         params: { uid: userData?.id?.toString() },
+        withCredentials: true,
       })
       .then(() => {
         setUserData({
