@@ -32,15 +32,22 @@ const ChangeAccountModal = ({
       username: inputValue,
     };
     axios
-      .patch(`/users/${userData?.id}`, updateUserDto)
+      .patch(`/users/${userData?.id}`, updateUserDto, { withCredentials: true })
       .then(() => {
         setUserData({ ...userData, username: inputValue });
         closeModal();
         setIsNameUpdated(true);
         toast.success("Name successfully updated!");
       })
-      .catch(() => {
-        toast.error("Name update failed! Please try again later");
+      .catch((error) => {
+        if (error.response) {
+          const { data, status } = error.response;
+          if (data.message === "Username already exists") {
+            toast.error("Failed to change name: Name is already taken!");
+          }
+        } else {
+          toast.error("Name update failed! Please try again later");
+        }
       });
   };
 
@@ -70,11 +77,9 @@ const ChangeAccountModal = ({
   return (
     <>
       {isOpen && (
-        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0">
+        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 z-20">
           <div
-            className={`overlay-content ${
-              promptTFA ? "w-[500px] h-fill" : "w-[400px] h-[190px]"
-            } bg-onyxgrey rounded-2xl p-8`}
+            className="overlay-content h-fill w-[500px] bg-onyxgrey rounded-2xl p-8 space-y-3"
             ref={accRef}
           >
             <h2>
@@ -91,10 +96,14 @@ const ChangeAccountModal = ({
                 <SixDigitVerification
                   closeModal={closeModal}
                   verifiedAction={() => patchName()}
+                  mode={"2"}
                 />
               </div>
             ) : (
               <>
+                <p className="text-md text-dimgrey">
+                  Name must contain more than 3 characters.
+                </p>
                 <input
                   type="text"
                   value={inputValue}

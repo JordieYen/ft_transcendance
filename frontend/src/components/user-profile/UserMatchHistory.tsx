@@ -1,10 +1,10 @@
 import useUserStore from "@/store/useUserStore";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { formatDate } from "./UserProfile";
 import "@/styles/globals.css";
 
-const MatchHistory = () => {
+const MatchHistory = ({ mode }: { mode: number }) => {
   const userData = useUserStore((state) => state.userData);
   const [isRender, setIsRender] = useState(false);
   const [userMatchHistory, setUserMatchHistory] = useState<any[]>([]);
@@ -16,8 +16,6 @@ const MatchHistory = () => {
           withCredentials: true,
         });
         const totalMatchHistory = response.data;
-        // console.log(totalMatchHistory);
-        // console.log("Hello", totalMatchHistory[0].p1.id);
         let sortedMatchHistory: any[] = [];
         for (const match of totalMatchHistory) {
           if (
@@ -73,13 +71,19 @@ const MatchHistory = () => {
                     className={`w-2 h-6 ${isWinner ? "bg-green" : "bg-tomato"}`}
                   />
                 </div>
-                <p className="w-[200px] text-timberwolf text-left">
+                <p className="flex flex-1 text-timberwolf text-left">
                   {opponentUsername}
                 </p>
                 <p className="w-24 text-dimgrey text-sm text-center">
                   {gameDate}
                 </p>
-                <div className="w-[260px] flex justify-center items-center">
+                <div
+                  className={`flex justify-center items-center ${
+                    ((mode === 0 || mode === 1) && "w-60") ||
+                    (mode === 2 && "w-64") ||
+                    (mode >= 3 && "w-72")
+                  }`}
+                >
                   <p className="text-3xl font-bold">{opponentScore}</p>
                   <div
                     className={`hidden md:flex flex-col ${
@@ -92,7 +96,13 @@ const MatchHistory = () => {
                     </p>
                   </div>
                 </div>
-                <div className="w-[260px] flex justify-center items-center space-x-2">
+                <div
+                  className={`flex justify-center items-center ${
+                    ((mode === 0 || mode === 1) && "w-60") ||
+                    (mode === 2 && "w-64") ||
+                    (mode >= 3 && "w-72")
+                  }`}
+                >
                   <div
                     className={`hidden md:flex flex-col ${
                       playerScore < 10 ? "mr-4" : "mr-1"
@@ -111,22 +121,41 @@ const MatchHistory = () => {
     </>
   );
 };
-const MatchHistoryTitle = () => {
+
+const MatchHistoryTitle = ({ mode }: { mode: number }) => {
   return (
-    <div className="flex w-full py-2 ml-6">
-      <p className="w-[200px] text-dimgrey text-sm text-left">name</p>
+    <div className="flex w-full pt-1 pb-2 pl-6">
+      <p className="flex flex-1 text-dimgrey text-sm text-left">name</p>
       <p className="w-24 text-dimgrey text-sm text-center">date</p>
-      <p className="w-[260px] text-dimgrey text-sm text-center">enemy stats</p>
-      <p className="w-[260px] text-dimgrey text-sm text-center">your stats</p>
+      <p
+        className={`text-dimgrey text-sm text-center ${
+          ((mode === 0 || mode === 1) && "w-60") ||
+          (mode === 2 && "w-64") ||
+          (mode >= 3 && "w-72")
+        }`}
+      >
+        enemy stats
+      </p>
+      <p
+        className={`text-dimgrey text-sm text-center ${
+          ((mode === 0 || mode === 1) && "w-60") ||
+          (mode === 2 && "w-64") ||
+          (mode >= 3 && "w-72")
+        }`}
+      >
+        your stats
+      </p>
     </div>
   );
 };
 
-const UserMatchHistory = () => {
+const UserMatchHistory = ({ mode }: { mode: number }) => {
   return (
-    <div className="flex flex-col w-full xl:w-[840px] h-[448px] rounded-3xl overflow-y-scroll no-scrollbar">
-      <MatchHistoryTitle />
-      <MatchHistory />
+    <div className="flex flex-col w-full h-full no-scrollbar">
+      <MatchHistoryTitle mode={mode} />
+      <div className="flex flex-col flex-1 w-full h-full pb-10 rounded-3xl overflow-y-scroll no-scrollbar">
+        <MatchHistory mode={mode} />
+      </div>
     </div>
   );
 };

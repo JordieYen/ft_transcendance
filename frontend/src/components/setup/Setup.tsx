@@ -103,8 +103,15 @@ const NameStep = () => {
           setUserData({ ...userData, username: inputValue });
           setCurrentStep("avatar");
         })
-        .catch(() => {
-          toast.error("Failed to update name! Please try again");
+        .catch((error) => {
+          if (error.response) {
+            const { data, status } = error.response;
+            if (data.message === "Username already exists") {
+              toast.error("Failed to change name: Name is already taken!");
+            }
+          } else {
+            toast.error("Name update failed! Please try again later");
+          }
         });
     }
   };
@@ -122,7 +129,7 @@ const NameStep = () => {
       }}
       exit={{ y: "-100vh" }}
     >
-      <div className="w-[400px] h-[200px] items-center justify-start">
+      <div className="w-[500px] h-fit items-center justify-start">
         <div className="flex w-full h-full items-center justify-start">
           {showName ? (
             <div className="flex flex-col w-full h-full border-dashed border-2 border-dimgrey rounded-3xl shadow-xl shadow-jetblack px-10 py-8">
@@ -132,6 +139,9 @@ const NameStep = () => {
                 transition={{ duration: 0.5 }}
               >
                 <h2 className="text-2xl font-roboto text-timberwolf">Name</h2>
+                <p className="text-md text-dimgrey">
+                  Name must contain more than 3 characters.
+                </p>
               </motion.div>
               <input
                 type="text"
@@ -251,8 +261,17 @@ const AvatarStep = () => {
           });
           setCurrentStep("tfa");
         })
-        .catch(() => {
-          toast.error("Failed to update avatar! Please try again");
+        .catch((error) => {
+          if (error.response) {
+            const { data, status } = error.response;
+            if (status === 422) {
+              toast.error(
+                "Failed to change avatar: File size must not be more than 4MB!",
+              );
+            } else {
+              toast.error("Avatar update failed! Please try again later");
+            }
+          }
         });
     }
   };
@@ -267,6 +286,7 @@ const AvatarStep = () => {
     >
       <div className="w-[360px] border-dashed border-2 border-dimgrey rounded-3xl shadow-xl shadow-jetblack px-10 py-8">
         <h2 className="text-2xl font-roboto text-timberwolf">Avatar</h2>
+        <p className="text-md text-dimgrey">File size should not exceed 4MB.</p>
         <div className="flex flex-col my-3 py-1 items-center justify-center avatar-preview w-full">
           <div
             className="group cursor-pointer w-48 h-48"
@@ -521,6 +541,7 @@ const TFAStep = () => {
           <SixDigitVerification
             closeModal={undefined}
             verifiedAction={() => patchTFA()}
+            mode={1}
           />
         </motion.div>
       )}
@@ -547,9 +568,12 @@ const Setup = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_NEST_HOST}/auth/profile`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NEST_HOST}/auth/profile`,
+          {
+            credentials: "include",
+          },
+        );
         if (response.ok) {
           const userData = await response.json();
           setUserData(userData);

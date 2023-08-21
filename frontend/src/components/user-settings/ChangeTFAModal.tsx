@@ -65,7 +65,7 @@ const ChangeTFAModal = ({
   return (
     <>
       {isOpen && (
-        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0">
+        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 left-0 z-20">
           <div
             className="overlay-content w-[500px] h-fit flex flex-col bg-onyxgrey rounded-2xl p-8 space-y-3"
             ref={tfaRef}
@@ -73,13 +73,11 @@ const ChangeTFAModal = ({
             <h2>
               <p className="text-2xl text-dimgrey">Update 2FA</p>
             </h2>
-            <div className="flex flex-col space-y-1">
-              <p className="text-md text-dimgrey">
-                Two factor authentication adds an extra layer of security to
-                your account. Scan this QR Code with your Authenticator App and
-                enter the verification code below.
-              </p>
-            </div>
+            <p className="text-md text-dimgrey">
+              Two factor authentication adds an extra layer of security to your
+              account. Scan this QR Code with your Authenticator App and enter
+              the verification code below.
+            </p>
             <div className="flex rounded-lg border-[3px] border-saffron bg-white items-center justify-center">
               {qrCodeImg ? (
                 <Image
@@ -97,6 +95,7 @@ const ChangeTFAModal = ({
             <SixDigitVerification
               closeModal={closeModal}
               verifiedAction={() => patchTFA()}
+              mode={"1"}
             />
           </div>
         </div>

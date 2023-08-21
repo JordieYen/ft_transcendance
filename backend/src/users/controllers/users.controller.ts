@@ -81,7 +81,15 @@ export class UsersController {
     @Body('id', ParseIntPipe) id: number,
   ) {
     try {
-      console.log(file);
+      if (!file) {
+        throw new HttpException('No file uploaded', HttpStatus.BAD_REQUEST);
+      }
+      if (file.size > 1024 * 1024 * 4) {
+        throw new HttpException(
+          'File size too large. Max file size allowed is 4MB.',
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
       const avatarURL = `${process.env.NEST_HOST}/public/avatar/${file.filename}`;
       await this.userService.uploadAvatar(id, avatarURL);
       return { message: 'Avatar upload successfully', avatarURL };

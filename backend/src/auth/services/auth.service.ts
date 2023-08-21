@@ -126,13 +126,10 @@ export class AuthService {
   }
 
   async storeSecret(user: AuthenticatedUser) {
-    const users = await this.userService.findUsersById(user.id);
-    if (users.authentication !== true) {
-      this.userService.updateUser(user.id, {
-        authenticationString: this.secret,
-      });
-      this.userService.updateUser(user.id, { authentication: true });
-    }
+    this.userService.updateUser(user.id, {
+      authenticationString: this.secret,
+    });
+    this.userService.updateUser(user.id, { authentication: true });
   }
 
   async logout(user: AuthenticatedUser): Promise<User> {

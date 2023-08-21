@@ -59,7 +59,7 @@ const ChangeAvatarModal = ({
     formData.append("file", selectedPic!);
     if (userData.id !== null) formData.append("id", userData.id?.toString());
     axios
-      .patch("users/upload", formData)
+      .patch("users/upload", formData, { withCredentials: true })
       .then((response) => {
         closeModal();
         setUserData({
@@ -68,8 +68,18 @@ const ChangeAvatarModal = ({
         });
         toast.success("Avatar successfully updated!");
       })
-      .catch(() => {
-        toast.error("Avatar update failed! Please try again later");
+      .catch((error) => {
+        closeModal();
+        if (error.response) {
+          const { data, status } = error.response;
+          if (status === 422) {
+            toast.error(
+              "Failed to change avatar: File size must not be more than 4MB!",
+            );
+          } else {
+            toast.error("Avatar update failed! Please try again later");
+          }
+        }
       });
     setSelectedPic(null);
     setPreviewPic("");
@@ -99,15 +109,15 @@ const ChangeAvatarModal = ({
   return (
     <>
       {isOpen && (
-        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0">
+        <div className="overlay w-screen h-screen flex items-center justify-center bg-black/75 absolute top-0 left-0 z-20">
           <div
             className={`overlay-content ${
               promptTFA ? "w-[500px]" : "w-[400px]"
-            } h-fit bg-onyxgrey rounded-2xl p-8`}
+            } h-fit bg-onyxgrey rounded-2xl p-8 space-y-3`}
             ref={picRef}
           >
             <h2>
-              <p className="text-2xl text-dimgrey mb-3">Change avatar</p>
+              <p className="text-2xl text-dimgrey">Change avatar</p>
             </h2>
             {promptTFA ? (
               <div>
@@ -120,10 +130,14 @@ const ChangeAvatarModal = ({
                 <SixDigitVerification
                   closeModal={closeModal}
                   verifiedAction={() => patchAvatar()}
+                  mode={"2"}
                 />
               </div>
             ) : (
               <>
+                <p className="text-md text-dimgrey">
+                  File size should not exceed 4MB.
+                </p>
                 <div className="flex flex-col mb-3 py-1 items-center justify-center">
                   <div
                     className="avatar-preview w-40 h-40 bg-jetblack rounded-full"

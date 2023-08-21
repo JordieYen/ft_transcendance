@@ -45,14 +45,10 @@ export class UserAchievementService {
     });
     const userAchievement: any[] = [];
     for (const achievement of userAchievements) {
-      // console.log('FOR LOOP RUNNING', achievement.user.id, id);
       if (achievement.user.id.toString() === id.toString()) {
-        // console.log('ture');
         userAchievement.push(achievement);
       }
     }
-    // console.log('pepela', userAchievement);
-    // console.log('UID', id);
     return userAchievement;
   }
 
@@ -133,6 +129,16 @@ export class UserAchievementService {
         'Failed to update user achievement',
       );
     }
+  }
+
+  async deleteUserAchvById(id: number) {
+    const userAchv = await this.userAchievementRepository.find({
+      relations: { user: true, achievement: true },
+      where: {
+        user: { id: id },
+      },
+    });
+    console.log('HELLO!!!!', userAchv);
   }
 
   async remove(id: number) {

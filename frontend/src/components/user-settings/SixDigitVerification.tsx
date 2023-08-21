@@ -5,9 +5,11 @@ import toast from "react-hot-toast";
 const SixDigitVerification = ({
   closeModal,
   verifiedAction,
+  mode,
 }: {
   closeModal?: () => void;
   verifiedAction: () => void;
+  mode: string;
 }) => {
   const [verCode, setVerCode] = useState(["", "", "", "", "", ""]);
   const [isCodeComplete, setIsCodeComplete] = useState(false);
@@ -91,7 +93,7 @@ const SixDigitVerification = ({
     console.log(otpCode);
     axios
       .post(
-        "auth/otp",
+        `auth/otp?mode=${mode}`,
         { otp: otpCode },
         {
           withCredentials: true,

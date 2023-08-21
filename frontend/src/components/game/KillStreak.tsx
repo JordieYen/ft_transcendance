@@ -7,7 +7,7 @@ const KillStreak = () => {
   const gameData = useGameStore((state) => state.gameData);
 
   useEffect(() => {
-    if (gameData.currentStreak !== 0 && ref.current) {
+    if (ref.current) {
       const app = new PIXI.Application<HTMLCanvasElement>({
         autoStart: false,
         resizeTo: window,
@@ -28,7 +28,7 @@ const KillStreak = () => {
 
         const anime = new PIXI.AnimatedSprite(textures);
 
-        if (gameData.currentStreak === -1) {
+        if (gameData.currentStreak === 0) {
           app.stage.removeChild(anime);
         } else {
           console.log("RUNNING");
