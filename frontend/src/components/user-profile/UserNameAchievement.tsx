@@ -8,17 +8,14 @@ import "@/styles/globals.css";
 const RenderAchievementIcon = ({
   achv,
   achvImage,
-  key,
 }: {
   achv: any;
   achvImage: string;
-  key: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
-      key={key}
       className="w-[50px] h-[50px] relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -118,9 +115,9 @@ const UserAchievement = ({ mode }: { mode: number }) => {
               const achvImage = getAchvImage(achv.achievement.name);
               return (
                 <RenderAchievementIcon
+                  key={i}
                   achv={achv}
                   achvImage={achvImage}
-                  key={i}
                 />
               );
             })}
