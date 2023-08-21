@@ -27,7 +27,6 @@ const Block = () => {
   useEffect(() => {
     if (userData) {
       socket?.on("block", (block: any) => {
-        console.log("block", block.blockList);
         setBlocks(block.blockList);
       });
       socket?.on("unblock", (friendId: number) => {
@@ -60,9 +59,6 @@ const Block = () => {
         );
         if (response.ok) {
           const blocks = await response.json();
-          // console.log("fetch block", blocks);
-          // console.log("block.list", blocks.blockList);
-          // console.log("blocked.list", blocks.blockedList);
           setBlocks(blocks.blockList);
         } else {
           throw new Error("Failed to fetch blocks");
@@ -125,10 +121,12 @@ const Block = () => {
   }
   
   return (
-    <div>
-      <h1>Block</h1>
-      {blocks &&
-        blocks.map((block) => (
+    <div className="text-center">
+      <h1 className="font-semibold text-2xl mb-4 text-tomato">Block</h1>
+      {
+        blocks?.length > 0 ?
+        (
+          blocks.map((block) => (
           <div className="flex items-center gap-10 p-10" key={block?.id}>
             <div className="h-22 w-20 overflow-hidden">
               <Avatar
@@ -141,13 +139,17 @@ const Block = () => {
             <div className="flex-col gap-1">
               <p>{block?.receiver?.username}</p>
               <div className="flex gap-2 p-2">
-                <button onClick={() => unBlock(block?.receiver?.id)}>
-                <FontAwesomeIcon icon={faUnlockAlt} />
+                <button onClick={() => unBlock(block?.receiver?.id)} className="transition-transform hover:scale-105 hover:bg-green hover:text-white py-2 px-4 rounded-md">
+                <FontAwesomeIcon icon={faUnlockAlt} className="mr-3" />Unblock
                 </button>
               </div>
             </div>
           </div>
-        ))}
+        ))
+        ) : (
+          <p className="text-gray-700 py-4">No block user</p>
+        )
+      }
     </div>
   );
 };

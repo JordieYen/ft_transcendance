@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrophy } from "@fortawesome/free-solid-svg-icons";
@@ -20,6 +20,8 @@ import useAnimateStore from "@/store/useAnimateStore";
 import useModal from "@/hooks/useModal";
 import LeaderboardsModal from "@/components/LeaderboardsModal";
 import GameHeader from "@/components/game/GameHeader";
+import useFetchUserData from "@/app/webhook/UseFetchUserData";
+import { log } from "console";
 
 interface HeaderLogoProps {
   currentPath: string;
@@ -38,6 +40,7 @@ export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
           alt="Logo"
           width={120}
           height={88}
+          priority={true}
         />
         <p className="hidden md:block text-3xl font-pmarker text-timberwolf">
           Pongmington
@@ -103,6 +106,18 @@ export const SettingsIcon = () => {
 };
 
 export const ProfileIconGroup = ({ user }: { user: UserData }) => {
+  // const router = useRouter();
+  // const fetchUserData = useFetchUserData();
+  // const prevPathRef = useRef(router.pathname);
+
+  // useEffect(() => {
+  //   if (prevPathRef.current === "/main-menu" && router.pathname !== "/game") {
+  //     fetchUserData();
+  //     console.log("user XXXX", user);
+  //   }
+  //   prevPathRef.current = router.pathname;
+  // }, [router]);
+
   return (
     <Link className="flex items-center space-x-2 group z-0" href={"/profile"}>
       <img

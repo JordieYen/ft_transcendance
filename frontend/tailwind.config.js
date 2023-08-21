@@ -31,6 +31,9 @@ module.exports = {
         roboto: ["Roboto Mono", "monospace"],
         pmarker: ["Permanent Marker", "monospace"],
       },
+      screens: {
+        'xs': '600px',
+      }
     },
   },
   variants: {

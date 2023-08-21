@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 const UserProfilePage = () => {
     const router = useRouter();
     const { id } = router.query;
-    console.log('id', id);
+    // console.log('id', id);
     
     return (
        <PongMain userId={id} />

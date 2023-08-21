@@ -30,7 +30,7 @@ export class NotificationGateway implements OnModuleInit {
 
       socket.on('join', async (userId) => {
         if (userId && userId !== 'undefined' && !isNaN(userId)) {
-          console.log('User joined room: ' + userId);
+          // console.log('User joined room: ' + userId);
           socket.join(userId.toString());
           socket.data.userId = userId;
           this.updateUserStatus(+userId, true);
@@ -38,7 +38,6 @@ export class NotificationGateway implements OnModuleInit {
           const existingSocket = this.connectedUser.get(userId);
           if (!existingSocket || existingSocket.id !== socket.id) {
             this.connectedUser.set(userId, socket);
-            console.log('after: ', this.connectedUser.size);
             this.server
               .to(socket.data.userId.toString())
               .emit('online-status-changed', { isOnline: true });
@@ -101,7 +100,6 @@ export class NotificationGateway implements OnModuleInit {
   private async updateUserStatus(userId: any, isOnline: boolean) {
     const parsedUserId = parseInt(userId, 10);
     if (isNaN(parsedUserId)) {
-      console.log('Invalid userId');
       throw new BadRequestException('Invalid userId');
     }
     const user = await this.usersService.findUsersById(parsedUserId);
@@ -113,8 +111,6 @@ export class NotificationGateway implements OnModuleInit {
   }
 
   private logConnectedUsers() {
-    console.log('Connected users: ');
-    console.log('number: ', this.connectedUser.size);
     for (const [userId, socket] of this.connectedUser.entries()) {
       console.log('User ID:', userId, ', Socket ID:', socket.id);
     }
@@ -126,7 +122,6 @@ export class NotificationGateway implements OnModuleInit {
       await this.updateUserStatus(+userId, false);
       socket.disconnect(true);
     }
-    console.log('All users set offline.');
     process.exit(0);
   }
 }

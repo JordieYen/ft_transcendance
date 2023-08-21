@@ -40,7 +40,9 @@ const Leaderboards = ({ sortBy }: { sortBy: string }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("users");
+        const response = await axios.get("users",{
+          withCredentials: true,
+        });
         const userData = response.data;
 
         setUsers(sorting(userData));

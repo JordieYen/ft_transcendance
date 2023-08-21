@@ -157,6 +157,13 @@ export class AuthController {
     res.json({ message: 'User logout' });
   }
 
+  @Get('2fa-check')
+  async check2fa(@User() user) {
+    const userId = user.id;
+    const authUser = await this.authService.getAuthUserProfile(userId);
+    return { isAuthenticated: authUser.authentication === true };
+  }
+
   // Manual approach
   // @Get('login')
   // login(@Res() res: Response) {

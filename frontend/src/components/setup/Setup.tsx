@@ -56,6 +56,8 @@ const LogoStep = () => {
         alt="Logo"
         width={240}
         height={176}
+        style={{ width: "100%", height: "auto" }}
+        priority={true}
       />
       <p className="text-5xl font-pmarker text-timberwolf">Pongmington</p>
     </motion.div>
@@ -94,7 +96,9 @@ const NameStep = () => {
         username: inputValue,
       };
       axios
-        .patch(`/users/${userData?.id}`, updateUserDto)
+        .patch(`/users/${userData?.id}`, updateUserDto, {
+          withCredentials: true,
+        })
         .then(() => {
           setUserData({ ...userData, username: inputValue });
           setCurrentStep("avatar");
@@ -247,7 +251,9 @@ const AvatarStep = () => {
       formData.append("file", selectedPic);
       if (userData.id !== null) formData.append("id", userData.id?.toString());
       axios
-        .patch("users/upload", formData)
+        .patch("users/upload", formData, {
+          withCredentials: true,
+        })
         .then((response) => {
           setUserData({
             ...userData,
@@ -414,7 +420,9 @@ const TFAStep = () => {
       firstTimeLogin: false,
     };
     axios
-      .patch(`/users/${userData?.id}`, updateUserDto)
+      .patch(`/users/${userData?.id}`, updateUserDto, {
+        withCredentials: true,
+      })
       .then(() => {
         setUserData({ ...userData, firstTimeLogin: false });
       })

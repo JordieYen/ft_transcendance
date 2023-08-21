@@ -43,7 +43,7 @@ export class UserAchievementService {
     const userAchievements: any[] = await this.userAchievementRepository.find({
       relations: ['user', 'achievement'],
     });
-    let userAchievement: any[] = [];
+    const userAchievement: any[] = [];
     for (const achievement of userAchievements) {
       if (achievement.user.id.toString() === id.toString()) {
         userAchievement.push(achievement);

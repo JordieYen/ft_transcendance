@@ -28,7 +28,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
   useEffect(() => {
     const socket = io(`${process.env.NEXT_PUBLIC_NEST_HOST}`);
     socket.on("connect", () => {
-      console.log("Connected to socket server", socket.id);
+      // console.log("Connected to socket server", socket.id);
     });
     setSocket(socket);
     const disconnectSocket = () => {
@@ -47,11 +47,11 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
   }, []);
 
   useEffect(() => {
-    if (userData) {
-      console.log("Joining room", userData.id);
+    if (userData.id) {
+      // console.log("Joining room", userData.id);
       socket?.emit("join", userData.id);
     }
-  }, [userData]);
+  }, [userData.id]);
 
   const handleUserActivity = () => {
     socket?.emit("activity");

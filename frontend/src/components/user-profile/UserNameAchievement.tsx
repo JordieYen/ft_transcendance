@@ -1,7 +1,7 @@
 import useUserStore from "@/store/useUserStore";
 import { formatDate } from "./UserProfile";
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import "@/styles/globals.css";
 
