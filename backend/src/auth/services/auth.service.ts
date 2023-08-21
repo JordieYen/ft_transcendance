@@ -13,6 +13,8 @@ import * as qrcode from 'qrcode';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'jsonwebtoken';
 import { Profile } from 'passport-42';
+import { UserAchievementService } from 'src/user_achievement/services/user_achievement.service';
+import { CreateUserAchievementDto } from 'src/user_achievement/dto/create-user_achievement.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +22,7 @@ export class AuthService {
 
   constructor(
     private readonly userService: UsersService,
+    private readonly userAchievementService: UserAchievementService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
@@ -121,7 +124,17 @@ export class AuthService {
     if (users.authentication === true) {
       return authenticator.check(otp, users.authenticationString);
     } else {
-      return authenticator.check(otp, this.secret);
+      const result = authenticator.check(otp, this.secret);
+      if (result) {
+        const SecureAchievement = new CreateUserAchievementDto();
+        SecureAchievement.user = user.id;
+        SecureAchievement.achievement =
+          await this.userAchievementService.findAchievementIdByName(
+            'Im secured',
+          );
+        await this.userAchievementService.create(SecureAchievement);
+      }
+      return result;
     }
   }
 
