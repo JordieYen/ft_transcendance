@@ -23,7 +23,6 @@ const UserProfile = () => {
       if (parentDiv) {
         const width = parentDiv.clientWidth;
         const height = parentDiv.clientHeight;
-        console.log(`width: ${width} && height: ${height}`);
         if (width < 1280) {
           setMode(0);
         } else if (
