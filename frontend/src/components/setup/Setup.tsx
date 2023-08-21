@@ -56,6 +56,8 @@ const LogoStep = () => {
         alt="Logo"
         width={240}
         height={176}
+        style={{ width: "100%", height: "auto" }}
+        priority={true}
       />
       <p className="text-5xl font-pmarker text-timberwolf">Pongmington</p>
     </motion.div>

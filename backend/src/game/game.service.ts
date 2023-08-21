@@ -129,7 +129,7 @@ export class GameService {
     // update friends in game status
     const friends = await this.friendService.getFriendsBoth(param.user.id);
     for (const friend of friends) {
-      console.log('Friend: ', friend);
+      // console.log('Friend: ', friend);
       await this.friendService.update(friend.id, {
         ...friend,
         roomId: roomId,
@@ -177,7 +177,7 @@ export class GameService {
     // update friends in game status
     const friends = await this.friendService.getFriendsBoth(param.pTwo.id);
     for (const friend of friends) {
-      console.log('Friend: ', friend);
+      // console.log('Friend: ', friend);
       await this.friendService.update(friend.id, {
         ...friend,
         roomId: roomId,
@@ -375,25 +375,49 @@ export class GameService {
     /* set paddle to not go out of bounds */
     const mousePos = this.checkMousePosOutOfBounds(param);
     if (mousePos) param.mouseY = mousePos;
-    if (param.player === 'p1') {
+    if (param.player === 'p1' && param.gameInfo.leftPaddle) {
       Body.setPosition(param.gameInfo.leftPaddle, {
         x: param.gameInfo.leftPaddle.position.x,
         y: param.mouseY,
       });
+      param.server
+        .to(param.roomId)
+        .emit('left-paddle-position', param.gameInfo.leftPaddle.position);
     }
-    if (param.player === 'p2') {
+    if (param.player === 'p2' && param.gameInfo.rightPaddle) {
       Body.setPosition(param.gameInfo.rightPaddle, {
         x: param.gameInfo.rightPaddle.position.x,
         y: param.mouseY,
       });
+      param.server
+        .to(param.roomId)
+        .emit('right-paddle-position', param.gameInfo.rightPaddle.position);
     }
-    param.server
-      .to(param.roomId)
-      .emit('left-paddle-position', param.gameInfo.leftPaddle.position);
-    param.server
-      .to(param.roomId)
-      .emit('right-paddle-position', param.gameInfo.rightPaddle.position);
   }
+
+  // updatePaddlePos(param: UpdatePaddleParams) {
+  //   /* set paddle to not go out of bounds */
+  //   const mousePos = this.checkMousePosOutOfBounds(param);
+  //   if (mousePos) param.mouseY = mousePos;
+  //   if (param.player === 'p1' && param.gameInfo.leftPaddle) {
+  //     Body.setPosition(param.gameInfo.leftPaddle, {
+  //       x: param.gameInfo.leftPaddle.position.x,
+  //       y: param.mouseY,
+  //     });
+  //   }
+  //   if (param.player === 'p2') {
+  //     Body.setPosition(param.gameInfo.rightPaddle, {
+  //       x: param.gameInfo.rightPaddle.position.x,
+  //       y: param.mouseY,
+  //     });
+  //   }
+  //   param.server
+  //     .to(param.roomId)
+  //     .emit('left-paddle-position', param.gameInfo.leftPaddle.position);
+  //   param.server
+  //     .to(param.roomId)
+  //     .emit('right-paddle-position', param.gameInfo.rightPaddle.position);
+  // }
 
   /* calculation on perfect timing sweetspot */
   checkPerfectTiming(param: UpdatePaddleActiveStateParams) {

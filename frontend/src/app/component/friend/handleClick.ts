@@ -2,8 +2,6 @@ import router from "next/router";
 
 export const toUserProfile = async (id: number) => {
   try {
-    console.log("id in handleClick", id);
-
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_NEST_HOST}/users/${id}`,
       {
@@ -12,7 +10,6 @@ export const toUserProfile = async (id: number) => {
       },
     );
     if (response.ok) {
-      console.log("response in handleClick", response);
       const user = await response.json();
       router.push(`/users/${user.id}`);
     }

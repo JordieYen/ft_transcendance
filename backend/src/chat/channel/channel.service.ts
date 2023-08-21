@@ -478,7 +478,7 @@ export class ChannelService {
         channel.channel_uid,
       );
       if (channelUsers.length != 0) {
-        console.log(channelUsers);
+        // console.log(channelUsers);
         if (
           (channelUsers[0].user.id == sender_id &&
             channelUsers[1].user.id == receiver_id) ||
@@ -522,7 +522,7 @@ export class ChannelService {
         channel.channel_uid,
       );
       if (channelUsers.length != 0) {
-        console.log(channelUsers);
+        // console.log(channelUsers);
         if (
           (channelUsers[0].user.id == sender_id &&
             channelUsers[1].user.id == receiver_id) ||

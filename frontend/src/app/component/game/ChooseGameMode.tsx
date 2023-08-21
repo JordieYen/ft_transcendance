@@ -11,7 +11,7 @@ const ChooseGameMode = ({ onSelectGameMode, isMatchmaking }: ChooseGameModeProps
     const [selectedGameMode, setSelectedGameMode] = useState<string>("classic");
 
     const handleGameMode = () => {
-        console.log('ismatch', isMatchmaking);
+        // console.log('ismatch', isMatchmaking);
         if (!isMatchmaking) {
             const newGameMode = selectedGameMode === "classic" ? "custom" : "classic";
             setSelectedGameMode(newGameMode);

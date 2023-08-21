@@ -53,17 +53,17 @@ const UserAchievement = () => {
   useEffect(() => {
     const fetchAchvData = async () => {
       try {
-        console.log("userId", userData.id);
+        // console.log("userId", userData.id);
         const response = await axios.get(
           `User-achievement/player?id=${userData.id}`,
           {
             withCredentials: true,
           },
         );
-        console.log("response", response.data);
+        // console.log("response", response.data);
         setUserAchv(response.data);
         setFirstHalf(userAchv.slice(0, 5));
-        console.log("first half", firstHalf);
+        // console.log("first half", firstHalf);
       } catch (error) {
         console.log("error user achievement", error);
       }

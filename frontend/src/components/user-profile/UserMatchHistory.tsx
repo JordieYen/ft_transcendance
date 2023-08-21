@@ -16,8 +16,8 @@ const MatchHistory = () => {
           withCredentials: true,
         });
         const totalMatchHistory = response.data;
-        console.log(totalMatchHistory);
-        console.log("Hello", totalMatchHistory[0].p1.id);
+        // console.log(totalMatchHistory);
+        // console.log("Hello", totalMatchHistory[0].p1.id);
         let sortedMatchHistory: any[] = [];
         for (const match of totalMatchHistory) {
           if (

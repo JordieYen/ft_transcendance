@@ -17,7 +17,7 @@ const GameInvitationListener = () => {
   } = useGameData();
 
   useEffect(() => {
-    console.log("GameInvitationListener");
+    // console.log("GameInvitationListener");
     const handleInvite = (data: { user: UserData; friend: UserData }) => {
       handleInviteGame(data);
     };

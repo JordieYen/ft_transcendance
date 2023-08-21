@@ -243,7 +243,7 @@ const FriendList = () => {
                         <div className="card-details">
                           <p className="card-username">{user?.username}</p>
                           <div
-                            className={`card-status -z-10 ${
+                            className={`card-status ${
                               user?.online ? "online" : "offline"
                             }`}
                           >

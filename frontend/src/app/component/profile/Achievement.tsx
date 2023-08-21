@@ -61,7 +61,7 @@ function renderUserAchievement(achievement: any) {
 
 const Achievement: React.FC<any> = ({ achievement }) => {
     const renderAvartar = renderUserAchievement(achievement);    
-    console.log(renderAvartar);
+    // console.log(renderAvartar);
     return (
         renderAvartar && (
             <div className='achievement-section'>

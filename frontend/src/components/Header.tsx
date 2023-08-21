@@ -81,6 +81,7 @@ export const HeaderLogo = ({ currentPath }: HeaderLogoProps) => {
           alt="Logo"
           width={120}
           height={88}
+          priority={true}
         />
         {/* <img className="object-contain" src="/logo.png" alt="Logo" /> */}
         <p className="hidden md:block text-3xl font-pmarker text-timberwolf">

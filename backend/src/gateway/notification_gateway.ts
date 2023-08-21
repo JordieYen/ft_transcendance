@@ -30,7 +30,7 @@ export class NotificationGateway implements OnModuleInit {
 
       socket.on('join', async (userId) => {
         if (userId && userId !== 'undefined' && !isNaN(userId)) {
-          console.log('User joined room: ' + userId);
+          // console.log('User joined room: ' + userId);
           socket.join(userId.toString());
           socket.data.userId = userId;
           this.updateUserStatus(+userId, true);
