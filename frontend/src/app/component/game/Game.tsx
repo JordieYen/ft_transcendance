@@ -9,7 +9,7 @@ import ScoreExplosion from "@/components/game/ScoreExplosion";
 import game from "../../../../pages/game";
 
 interface ScoreBoard {
-  winner: number;
+  winner: string;
   ballYPos: number;
   pOneScore: number;
   pTwoScore: number;
@@ -159,9 +159,30 @@ const Game = () => {
     state.gameData,
     state.setGameData,
   ]);
+  const [explosionBoom, setExplosionBoom] = useState(false);
+  const [scoreWinner, setScoreWinner] = useState(0);
+  const [ballYPos, setBallYPos] = useState(0);
 
   const socket = useContext(SocketContext);
-  // const socket = io("http://localhost:3000");
+
+  useEffect(() => {
+    console.log("SETTING BRUHHH");
+    if (socket && gameState?.roomId != null) {
+      setGameData({
+        ...gameData,
+        playerOne: gameState!.player1User,
+        playerTwo: gameState!.player2User,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (explosionBoom === true) {
+      setTimeout(() => {
+        setExplosionBoom(false);
+      }, 2000);
+    }
+  }, [explosionBoom]);
 
   useEffect(() => {
     if (socket && gameState?.roomId != null) {
@@ -181,7 +202,7 @@ const Game = () => {
       gameMode.current = gameState!.player1User.gameMode;
     } else {
       router.push("/main-menu");
-      return ;
+      return;
     }
 
     const keyArr: { [key: string]: KeyType } = {};
@@ -365,12 +386,19 @@ const Game = () => {
     });
 
     socket?.on("update-score", (score: ScoreBoard) => {
+      console.log("SCOREE", score);
+      if (score.winner === "p1") {
+        setScoreWinner(1);
+        setExplosionBoom(true);
+      } else if (score.winner === "p2") {
+        setScoreWinner(2);
+        setExplosionBoom(true);
+      }
       setGameData({
         ...gameData,
         p1Score: score.pOneScore,
         p2Score: score.pTwoScore,
       });
-      // ScoreExplosion({ winPlayer: score.winner, yPos: score.ballYPos });
     });
 
     /* end game and clear screen */
@@ -422,7 +450,11 @@ const Game = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 
-  return null;
+  if (explosionBoom === true) {
+    return <ScoreExplosion winPlayer={scoreWinner} yPos={0.5} />;
+  } else {
+    return null;
+  }
 };
 
 export default Game;
