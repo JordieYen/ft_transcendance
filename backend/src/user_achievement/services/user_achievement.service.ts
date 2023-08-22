@@ -138,7 +138,7 @@ export class UserAchievementService {
         user: { id: id },
       },
     });
-    console.log('HELLO!!!!', userAchv);
+    // console.log('HELLO!!!!', userAchv);
   }
 
   async remove(id: number) {
@@ -147,5 +147,13 @@ export class UserAchievementService {
       throw new NotFoundException(`userAchievemnt with ID ${id} not found`);
     }
     return await this.userAchievementRepository.delete(id);
+  }
+
+  async findAchievementIdByName(name: string): Promise<number> {
+    const achievement = await this.achievementService.findByName(name);
+    if (!achievement) {
+      throw new NotFoundException(`Achievement with name ${name} not found`);
+    }
+    return achievement.id;
   }
 }
