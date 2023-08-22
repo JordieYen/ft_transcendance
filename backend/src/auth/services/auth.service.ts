@@ -121,11 +121,16 @@ export class AuthService {
 
   async verifyOtp(user: AuthenticatedUser, otp: string) {
     const users = await this.userService.findUsersById(user.id);
+    console.log(users);
     if (users.authentication === true) {
       return authenticator.check(otp, users.authenticationString);
     } else {
       const result = authenticator.check(otp, this.secret);
-      if (result) {
+      if (
+        result &&
+        users.authentication === false &&
+        users.authenticationString === null
+      ) {
         const SecureAchievement = new CreateUserAchievementDto();
         SecureAchievement.user = user.id;
         SecureAchievement.achievement =
