@@ -179,6 +179,11 @@ const Game = () => {
         currentUser.current = gameState!.player2User;
       }
       gameMode.current = gameState!.player1User.gameMode;
+      setGameData({
+        ...gameData,
+        playerOne: gameState!.player1User,
+        playerTwo: gameState!.player2User,
+      });
     } else {
       router.push("/main-menu");
       return ;
@@ -367,6 +372,8 @@ const Game = () => {
     socket?.on("update-score", (score: ScoreBoard) => {
       setGameData({
         ...gameData,
+        playerOne: gameState!.player1User,
+        playerTwo: gameState!.player2User,
         p1Score: score.pOneScore,
         p2Score: score.pTwoScore,
       });
