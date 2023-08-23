@@ -1,6 +1,6 @@
 import { SocketContext } from "@/app/socket/SocketProvider";
 import Matter, { Vector } from "matter-js";
-import { useContext, useEffect, useRef, useState } from "react";
+import { use, useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useGameData } from "./GameContext";
 import useGameStore from "@/store/useGameStore";
@@ -45,8 +45,11 @@ interface GameElements {
   rightPaddle: Paddle;
 }
 
-const screenWidth = 2000 / 2;
-const screenHeight = 700;
+// const screenWidth = 2000 / 2;
+// const screenHeight = 700;
+const space = 200;
+const screenWidth = window.innerWidth;
+const screenHeight = window.innerHeight - space;
 
 const borderWidth = screenWidth;
 const borderHeight = 100;
@@ -202,7 +205,6 @@ const Game = () => {
     });
 
     const canvas = render.canvas;
-    canvas.style.cursor = "none";
     Matter.Render.run(render);
 
     /* enable mouse movement */
