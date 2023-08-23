@@ -1086,6 +1086,10 @@
 	opacity: 0.7;
 }
 
+.invite-color {
+	color: greenyellow;
+}
+
 .message-div {
 	padding: 1%;
 	display: flex;
@@ -1132,6 +1136,11 @@
 	margin-top: 3%;
 	margin-right: 1.5%;
 	cursor: pointer;
+}
+
+.invite-button-invisible {
+	width: 0;
+	visibility: hidden;
 }
 
 .invite-button :hover {

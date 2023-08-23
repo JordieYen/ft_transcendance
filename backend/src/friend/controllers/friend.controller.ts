@@ -123,4 +123,9 @@ export class FriendController {
   ) {
     return this.friendService.findFriendship(+userId, +friendId);
   }
+
+  @Get('getGameStatus/:userId')
+  getGameStatus(@Param('userId') userId: number) {
+    return this.friendService.getGameStatus(userId);
+  }
 }

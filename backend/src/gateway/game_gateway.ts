@@ -15,6 +15,7 @@ import {
   GameInvitationParams,
   SmashingPaddleParams,
 } from 'src/game/game.interface';
+import { FriendService } from 'src/friend/services/friend.service';
 
 @WebSocketGateway({
   cors: {
@@ -30,14 +31,17 @@ export class GameGateway implements OnModuleInit {
   privateRooms: Map<string, UserData[]> = new Map<string, UserData[]>();
   gameInfo: Map<string, GameInfo> = new Map<string, GameInfo>();
 
-  constructor(private readonly gameService: GameService) {}
+  constructor(
+    private readonly gameService: GameService,
+    private readonly friendService: FriendService,
+  ) {}
 
   onModuleInit() {
     // does something on Game Module init
   }
 
   @SubscribeMessage('join-room')
-  JoinRoom(client: Socket, param: { user: UserData; gameMode: string }) {
+  async JoinRoom(client: Socket, param: { user: UserData; gameMode: string }) {
     param.user.socketId = client.id;
     const currentRoom = this.gameService.checkGameMode({
       user: param.user,
@@ -67,16 +71,21 @@ export class GameGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('invite-game')
-  inviteGame(client: Socket, param: GameInvitationParams) {
-    param.user.socketId = client.id;
-    param.user.gameMode = 'private';
-    this.gameService.inviteGame({
-      server: this.server,
-      client: client,
-      rooms: this.privateRooms,
-      pOne: param.user,
-      pTwo: param.friend,
-    });
+  async inviteGame(client: Socket, param: GameInvitationParams) {
+    const friendId = await param.friend?.id;
+    const test = await this.friendService.getGameStatus(friendId);
+    if (test.length == 0) {
+      console.log('invite sent');
+      param.user.socketId = client.id;
+      param.user.gameMode = 'private';
+      this.gameService.inviteGame({
+        server: this.server,
+        client: client,
+        rooms: this.privateRooms,
+        pOne: param.user,
+        pTwo: param.friend,
+      });
+    }
   }
 
   @SubscribeMessage('accept-game-invitation')
@@ -169,7 +178,11 @@ export class GameGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('start-game')
-  startGame(client: Socket, param: GameParams) {
+  async startGame(client: Socket, param: GameParams) {
+    // const p1 = await this.gameInfo.get(param.roomId).pOneId;
+    // const p2 = await this.gameInfo.get(param.roomId).pTwoId;
+    // console.log(p1, p2);
+    // await this.friendService.updateRoomId(p1, p2);
     const roundWinner = this.gameInfo.get(param.roomId).roundWinner;
     if (roundWinner === null || roundWinner === param.player) {
       if (this.gameInfo.get(param.roomId).gameStart < 1) {
