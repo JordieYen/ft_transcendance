@@ -13,6 +13,7 @@ import ShuttlecockMove from "@/components/setup/ShuttlecockMove";
 import { GameProvider } from "@/app/component/game/GameContext";
 import GameInvitationListener from "@/app/component/game/GameInvitationListener";
 import Layout from "@/app/layout";
+import Head from "next/head";
 
 // axios.defaults.baseURL = "http://localhost:3000/";
 axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_NEST_HOST}`;
@@ -31,6 +32,9 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
         <SessionCheck>
           <CustomToaster />
             <Header />
+            <Head>
+              <title>Pongminton@TM</title>
+            </Head>
             <GameProvider>
               <GameInvitationListener />
               <AnimatePresence mode="wait">
