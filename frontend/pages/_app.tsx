@@ -32,9 +32,9 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
         <SessionCheck>
           <CustomToaster />
             <Header />
-            <Head>
-              <title>Pongminton@TM</title>
-            </Head>
+              <Head>
+                <title>Pongminton@TM</title>
+              </Head>
             <GameProvider>
               <GameInvitationListener />
               <AnimatePresence mode="wait">
