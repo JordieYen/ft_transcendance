@@ -24,48 +24,10 @@ export class FriendGateway {
     private readonly usersService: UsersService,
   ) {}
 
-  // async onModuleInit() {
-  //   this.server.on('connection', (socket) => {
-  //     console.log(socket.id, ' connected');
-
-  //     socket.on('join', async (userId) => {
-  //       if (userId && userId !== 'undefined' && !isNaN(userId)) {
-  //         console.log('User joined room: ' + userId);
-  //         socket.join(userId);
-  //         socket.data.userId = userId;
-  //         this.updateUserStatus(+userId, true);
-  //       }
-  //     });
-  //     // setting heartbeat to check connection status of socket after 5 minutes
-  //     // and update online status
-  //     const heartbeat = setInterval(() => {
-  //       if (!socket.connected) {
-  //         clearInterval(heartbeat);
-  //         console.log('heaebeat stopped');
-  //         if (socket.data.userId) {
-  //           this.updateUserStatus(+socket.data.userId, false);
-  //         }
-  //       }
-  //     }, 300000);
-  //     socket.on('leave-room', () => {
-  //       if (socket.data.userId) {
-  //         console.log('User left room: ' + socket.data.userId);
-  //         socket.leave(socket.data.userId);
-  //       }
-  //     });
-  //     socket.on('disconnect', async () => {
-  //       if (socket.data.userId) {
-  //         console.log('User disconnected: ' + socket.data.userId);
-  //       }
-  //     });
-  //   });
-  // }
-
   private async updateUserStatus(userId: any, isOnline: boolean) {
     const parsedUserId = parseInt(userId, 10);
     if (isNaN(parsedUserId)) {
       console.log('Invalid userId');
-
       // throw new BadRequestException('Invalid userId');
     }
     const user = await this.usersService.findUsersById(parsedUserId);
@@ -83,7 +45,6 @@ export class FriendGateway {
     data: { senderId: number; receiverId: number },
   ) {
     try {
-      console.log('friend request sent');
       const { senderId, receiverId } = data;
       await this.sendFriendRequest(senderId, receiverId);
       await this.getReceiveFriendRequest(receiverId);
@@ -111,7 +72,6 @@ export class FriendGateway {
 
   @SubscribeMessage('friend-request-received')
   async sendFriendRequest(senderId: number, receiverId: number) {
-    console.log('friend request received');
     const friendRequest = await this.friendService.sendFriendRequest(
       senderId,
       receiverId,
@@ -120,7 +80,6 @@ export class FriendGateway {
   }
 
   async getSentFriendRequest(senderId: number) {
-    console.log('get sent friend request');
     const friendRequests = await this.friendService.getSentFriendRequest(
       senderId,
     );
@@ -130,7 +89,6 @@ export class FriendGateway {
 
   @SubscribeMessage('friend-request')
   async getReceiveFriendRequest(receiverId: number) {
-    console.log('get friend request', receiverId);
     const friendRequests = await this.friendService.getReceivedFriendRequest(
       receiverId,
     );
@@ -179,7 +137,6 @@ export class FriendGateway {
   async unfriend(client: Socket, data: { userId: number; friendId: number }) {
     try {
       const { userId, friendId } = data;
-      console.log('unfriend', userId, friendId);
       const frienship = await this.friendService.findFriendship(
         userId,
         friendId,
@@ -197,7 +154,6 @@ export class FriendGateway {
   async block(client: Socket, data: { blockerId: number; friendId: number }) {
     try {
       const { blockerId, friendId } = data;
-      console.log('block', blockerId, friendId);
       const frienship = await this.friendService.findFriendship(
         blockerId,
         friendId,
@@ -213,10 +169,6 @@ export class FriendGateway {
       const blockListReceiver = await this.friendService.getBlockedUsers(
         friendId,
       );
-      console.log('block list sender', blockListSender);
-      // this.server.to(`${friendId}`).emit('block', { user: blockListReceiver, BlockerId: blockerId});
-      // this.server.to(`${friendId}`).emit('block', blockListReceiver);
-      // this.server.to(`${blockerId}`).emit('block',  {user: blockListSender, BlockerId: blockerId});
       this.server.to(`${blockerId}`).emit('block', blockListSender);
       this.server.to(`${friendId}`).emit('unfriend', blockerId);
       this.server.to(`${blockerId}`).emit('unfriend', friendId);

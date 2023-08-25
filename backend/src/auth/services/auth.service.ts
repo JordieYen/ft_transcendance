@@ -13,6 +13,8 @@ import * as qrcode from 'qrcode';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'jsonwebtoken';
 import { Profile } from 'passport-42';
+import { UserAchievementService } from 'src/user_achievement/services/user_achievement.service';
+import { CreateUserAchievementDto } from 'src/user_achievement/dto/create-user_achievement.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +22,7 @@ export class AuthService {
 
   constructor(
     private readonly userService: UsersService,
+    private readonly userAchievementService: UserAchievementService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
@@ -118,21 +121,33 @@ export class AuthService {
 
   async verifyOtp(user: AuthenticatedUser, otp: string) {
     const users = await this.userService.findUsersById(user.id);
+    console.log(users);
     if (users.authentication === true) {
       return authenticator.check(otp, users.authenticationString);
     } else {
-      return authenticator.check(otp, this.secret);
+      const result = authenticator.check(otp, this.secret);
+      if (
+        result &&
+        users.authentication === false &&
+        users.authenticationString === null
+      ) {
+        const SecureAchievement = new CreateUserAchievementDto();
+        SecureAchievement.user = user.id;
+        SecureAchievement.achievement =
+          await this.userAchievementService.findAchievementIdByName(
+            'Im secured',
+          );
+        await this.userAchievementService.create(SecureAchievement);
+      }
+      return result;
     }
   }
 
   async storeSecret(user: AuthenticatedUser) {
-    const users = await this.userService.findUsersById(user.id);
-    if (users.authentication !== true) {
-      this.userService.updateUser(user.id, {
-        authenticationString: this.secret,
-      });
-      this.userService.updateUser(user.id, { authentication: true });
-    }
+    this.userService.updateUser(user.id, {
+      authenticationString: this.secret,
+    });
+    this.userService.updateUser(user.id, { authentication: true });
   }
 
   async logout(user: AuthenticatedUser): Promise<User> {

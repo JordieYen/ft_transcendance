@@ -45,14 +45,10 @@ export class UserAchievementService {
     });
     const userAchievement: any[] = [];
     for (const achievement of userAchievements) {
-      // console.log('FOR LOOP RUNNING', achievement.user.id, id);
       if (achievement.user.id.toString() === id.toString()) {
-        // console.log('ture');
         userAchievement.push(achievement);
       }
     }
-    // console.log('pepela', userAchievement);
-    // console.log('UID', id);
     return userAchievement;
   }
 
@@ -135,11 +131,29 @@ export class UserAchievementService {
     }
   }
 
+  async deleteUserAchvById(id: number) {
+    const userAchv = await this.userAchievementRepository.find({
+      relations: { user: true, achievement: true },
+      where: {
+        user: { id: id },
+      },
+    });
+    // console.log('HELLO!!!!', userAchv);
+  }
+
   async remove(id: number) {
     const userAchievemnt = await this.findOne(id);
     if (!userAchievemnt) {
       throw new NotFoundException(`userAchievemnt with ID ${id} not found`);
     }
     return await this.userAchievementRepository.delete(id);
+  }
+
+  async findAchievementIdByName(name: string): Promise<number> {
+    const achievement = await this.achievementService.findByName(name);
+    if (!achievement) {
+      throw new NotFoundException(`Achievement with name ${name} not found`);
+    }
+    return achievement.id;
   }
 }

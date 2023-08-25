@@ -31,12 +31,11 @@ const MatchMakingButton = ({
   const { setGameState } = useGameData();
 
   useEffect(() => {
-    console.log("MatchMakingButton", gameMode);
+    // console.log("MatchMakingButton", gameMode);
     if (socket && userData.id) {
       socket?.on("loading-screen", ({ roomId, players }: any) => {
-        console.log("loading-screen");
-        console.log("loading-screen", roomId, players);
-
+        // console.log("loading-screen");
+        // console.log("loading-screen", roomId, players);
         setPlayer1User(players[0].player);
         setPlayer2User(players[1].player);
       });
@@ -60,7 +59,7 @@ const MatchMakingButton = ({
 
   const handleMatchmaking = () => {
     if (isMatchmaking === false) {
-      console.log("start match");
+      // console.log("start match");
       onMatchMaking();
       setIsMatchmaking(true);
       socket?.emit("join-room", {
@@ -68,7 +67,7 @@ const MatchMakingButton = ({
         gameMode: gameMode,
       });
     } else {
-      console.log("cancel match");
+      // console.log("cancel match");
       onMatchMaking();
       cancelMatchMaking();
     }
@@ -95,7 +94,7 @@ const MatchMakingButton = ({
       setRoomId(roomId);
       sessionStorage.setItem("roomId", roomId);
     });
-    console.log("roomId", roomId);
+    // console.log("roomId", roomId);
     return () => {
       socket?.off("in-room");
       socket?.off("joined-room");

@@ -9,6 +9,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { FortyTwoStrategy } from './util/42.strategy';
 import { Jwt2faStrategy } from './util/jwt.strategy';
 import { UsersModule } from 'src/users/users.module';
+import { UserAchievementModule } from 'src/user_achievement/user_achievement.module';
 
 const jwtFactory = {
   imports: [ConfigModule],
@@ -35,6 +36,7 @@ const passportFactory = {
     JwtModule.registerAsync(jwtFactory),
     HttpModule,
     UsersModule,
+    UserAchievementModule,
   ],
   providers: [
     ConfigService,

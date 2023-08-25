@@ -416,25 +416,49 @@ export class GameService {
     /* set paddle to not go out of bounds */
     const mousePos = this.checkMousePosOutOfBounds(param);
     if (mousePos) param.mouseY = mousePos;
-    if (param.player === 'p1') {
+    if (param.player === 'p1' && param.gameInfo.leftPaddle) {
       Body.setPosition(param.gameInfo.leftPaddle, {
         x: param.gameInfo.leftPaddle.position.x,
         y: param.mouseY,
       });
+      param.server
+        .to(param.roomId)
+        .emit('left-paddle-position', param.gameInfo.leftPaddle.position);
     }
-    if (param.player === 'p2') {
+    if (param.player === 'p2' && param.gameInfo.rightPaddle) {
       Body.setPosition(param.gameInfo.rightPaddle, {
         x: param.gameInfo.rightPaddle.position.x,
         y: param.mouseY,
       });
+      param.server
+        .to(param.roomId)
+        .emit('right-paddle-position', param.gameInfo.rightPaddle.position);
     }
-    param.server
-      .to(param.roomId)
-      .emit('left-paddle-position', param.gameInfo.leftPaddle.position);
-    param.server
-      .to(param.roomId)
-      .emit('right-paddle-position', param.gameInfo.rightPaddle.position);
   }
+
+  // updatePaddlePos(param: UpdatePaddleParams) {
+  //   /* set paddle to not go out of bounds */
+  //   const mousePos = this.checkMousePosOutOfBounds(param);
+  //   if (mousePos) param.mouseY = mousePos;
+  //   if (param.player === 'p1' && param.gameInfo.leftPaddle) {
+  //     Body.setPosition(param.gameInfo.leftPaddle, {
+  //       x: param.gameInfo.leftPaddle.position.x,
+  //       y: param.mouseY,
+  //     });
+  //   }
+  //   if (param.player === 'p2') {
+  //     Body.setPosition(param.gameInfo.rightPaddle, {
+  //       x: param.gameInfo.rightPaddle.position.x,
+  //       y: param.mouseY,
+  //     });
+  //   }
+  //   param.server
+  //     .to(param.roomId)
+  //     .emit('left-paddle-position', param.gameInfo.leftPaddle.position);
+  //   param.server
+  //     .to(param.roomId)
+  //     .emit('right-paddle-position', param.gameInfo.rightPaddle.position);
+  // }
 
   /* calculation on perfect timing sweetspot */
   checkPerfectTiming(param: UpdatePaddleActiveStateParams) {
