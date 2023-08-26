@@ -218,8 +218,9 @@ const UserNameAchievement = ({ mode }: { mode: number }) => {
     <div
       className={`flex w-full bg-jetblack items-center ${
         ((mode === 0 || mode === 1) && "h-fit px-5 py-2") ||
-        (mode === 2 && "h-[156px] px-10 py-5") ||
-        (mode >= 3 && "h-[196px] px-16 py-10")
+        (mode === 2 && "h-[148px] px-10 py-4") ||
+        (mode === 3 && "h-[164px] px-16 py-6") ||
+        (mode === 4 && "h-[196px] px-32 py-10")
       } rounded-3xl`}
     >
       <UserAvatar />

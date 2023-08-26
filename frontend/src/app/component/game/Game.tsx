@@ -7,6 +7,7 @@ import useGameStore from "@/store/useGameStore";
 import router from "next/router";
 import ScoreExplosion from "@/components/game/ScoreExplosion";
 import game from "../../../../pages/game";
+import useGameAnimeStore from "@/store/useGameAnimeStore";
 
 interface ScoreBoard {
   winner: string;
@@ -159,14 +160,14 @@ const Game = () => {
     state.gameData,
     state.setGameData,
   ]);
-  const [explosionBoom, setExplosionBoom] = useState(false);
-  const [scoreWinner, setScoreWinner] = useState(0);
-  const [ballYPos, setBallYPos] = useState(0);
+  const [gameAnime, setGameAnime] = useGameAnimeStore((state) => [
+    state.gameAnime,
+    state.setGameAnime,
+  ]);
 
   const socket = useContext(SocketContext);
 
   useEffect(() => {
-    console.log("SETTING BRUHHH");
     if (socket && gameState?.roomId != null) {
       setGameData({
         ...gameData,
@@ -175,14 +176,6 @@ const Game = () => {
       });
     }
   }, []);
-
-  useEffect(() => {
-    if (explosionBoom === true) {
-      setTimeout(() => {
-        setExplosionBoom(false);
-      }, 2000);
-    }
-  }, [explosionBoom]);
 
   useEffect(() => {
     if (socket && gameState?.roomId != null) {
@@ -388,11 +381,21 @@ const Game = () => {
     socket?.on("update-score", (score: ScoreBoard) => {
       console.log("SCOREE", score);
       if (score.winner === "p1") {
-        setScoreWinner(1);
-        setExplosionBoom(true);
+        console.log("P1", gameAnime);
+        setGameAnime({
+          ...gameAnime,
+          startAnimate: true,
+          winPlayer: 1,
+          yPos: 0.5,
+        });
       } else if (score.winner === "p2") {
-        setScoreWinner(2);
-        setExplosionBoom(true);
+        console.log("P2", gameAnime);
+        setGameAnime({
+          ...gameAnime,
+          startAnimate: true,
+          winPlayer: 2,
+          yPos: 0.5,
+        });
       }
       setGameData({
         ...gameData,
@@ -450,11 +453,7 @@ const Game = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 
-  if (explosionBoom === true) {
-    return <ScoreExplosion winPlayer={scoreWinner} yPos={0.5} />;
-  } else {
-    return null;
-  }
+  return <ScoreExplosion />;
 };
 
 export default Game;
