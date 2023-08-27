@@ -138,22 +138,23 @@ const InviteButton = ({ currentChannel }: { currentChannel: any }) => {
           sender = channelUsers[1]?.user;
           reciever = channelUsers[0]?.user;
         }
-        console.log("sender", sender);
-        console.log("reciever", reciever);
+        // console.log("sender", sender);
+        // console.log("reciever", reciever);
         // const useless = await fetchGameStatus(reciever?.id);
         if (gameStatus.length == 0) {
-          console.log("ran");
+          // console.log("ran");
           socket?.emit("invite-game", {
             user: sender,
             friend: reciever,
           });
+          toast.success("Invitation Sent!");
         }
         setIsButtonDisabled(true);
         setTimeout(() => {
           setIsButtonDisabled(false);
         }, cooldownTime);
       } else {
-        console.log("cooldown");
+        // console.log("cooldown");
       }
     }
   };
@@ -612,8 +613,12 @@ const CreateChat = ({
           channelPassword,
           userData.id,
         );
-      }
-      if (channelType != "protected") {
+        toast.success("Channel created!");
+        setChannelName("");
+        setChannelType("");
+        setChannelPassword("");
+        await closeModal();
+      } else if (channelType != "protected") {
         socket?.emit(
           "create-channel",
           channelName,
@@ -621,22 +626,23 @@ const CreateChat = ({
           channelPassword,
           userData.id,
         );
+        toast.success("Channel created!");
+        setChannelName("");
+        setChannelType("");
+        setChannelPassword("");
+        await closeModal();
+      } else {
+        toast.error("Input a Password.");
       }
-      setChannelName("");
-      setChannelType("");
-      setChannelPassword("");
-      await closeModal();
+    } else {
+      toast.error("Make sure everything is inputed/selected.");
     }
 
     if (channelPassword != "") {
       setChannelPassword("");
-    } else {
-      // console.log("channel-password is empty");
     }
     if (channelType != "") {
       setChannelType("");
-    } else {
-      // console.log("channel-type not selected");
     }
   };
 
@@ -744,6 +750,13 @@ const JoinChat = ({
       channelPassword,
       userData.id,
     );
+    if (channel?.channel_type != "protected") {
+      toast.success("Channel Joined!");
+    } else if (channelPassword == "") {
+      toast.error("Input Password for Channel.");
+    } else {
+      toast.success("Channel Infiltration attempt made!");
+    }
     if (channelPassword != "") {
       setChannelPassword("");
     }
@@ -1658,6 +1671,7 @@ import { useRouter } from "next/router";
 import MatchMakingButton from "../game/MatchMakingButton";
 import ChooseGameMode from "../game/ChooseGameMode";
 import { useGameData } from "../game/GameContext";
+import toast from "react-hot-toast";
 
 const ChatBox: React.FC<any> = () => {
   const [refresh, setRefresh] = useState(0);
