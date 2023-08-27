@@ -1586,6 +1586,7 @@ const MembersMore = ({
   const handleLeave = async () => {
     // console.log("I left");
     socket?.emit("leave-channel", channel?.channel_uid, userData.id);
+    toast.success("You have left the channel.");
   };
 
   if (
