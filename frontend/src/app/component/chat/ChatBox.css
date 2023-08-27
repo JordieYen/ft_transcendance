@@ -1086,6 +1086,48 @@
 	opacity: 0.7;
 }
 
+.lost {
+	position: absolute;
+	top: 37%;
+	left: 10%;
+	width: 80%;
+}
+
+.meme {
+	align-items: center;
+	display: flex;
+	flex-direction: row;
+}
+
+.credits {
+	margin-top: 7%;
+}
+
+.pika {
+	min-width: 50%;
+	/* min-height: 50%; */
+	max-width: 50%;
+	/* max-height: 50%; */
+}
+
+.npa-logo {
+	opacity: 0.2;
+	position: absolute;
+	top: 25%;
+	left: 10%;
+	width: 80%;
+	-khtml-user-select: none;
+    -o-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.npa {
+	min-width: 100%;
+	max-width: 100%;
+}
+
 .invite-color {
 	color: greenyellow;
 }

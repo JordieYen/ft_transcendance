@@ -435,6 +435,7 @@ const ThreeDots = ({
   const kickUser = async (id: number) => {
     // console.log("kicking user");
     socket?.emit("leave-channel", channelUser?.channel?.channel_uid, user.id);
+    toast.success("Player has been kicked");
   };
 
   const banUser = async (id: number) => {
@@ -448,6 +449,7 @@ const ThreeDots = ({
         channelUser?.channel?.channel_uid,
         userData.id,
       );
+      toast.success("Player has been banned");
     } else {
       socket?.emit(
         "ban-from-channel",
@@ -456,6 +458,7 @@ const ThreeDots = ({
         channelUser?.channel?.channel_uid,
         userData.id,
       );
+      toast.success("Player has been unbanned");
     }
   };
 
@@ -2031,6 +2034,12 @@ const ChatBox: React.FC<any> = () => {
     }
   };
 
+  const pressMe = async () => {
+    toast.success(
+      "CREDITS\n\nChat by JORDAN HII\nGame by JOEL HII\nBackend by STEH\nDesign by ZER\n\n Hope you like our first ever fullstack project!",
+    );
+  };
+
   return (
     <div className="main-menu">
       <div className="background"></div>
@@ -2187,7 +2196,18 @@ const ChatBox: React.FC<any> = () => {
               onClick={() => setChatMembersSlideOut((current) => !current)}
             />
           </div>
-          <div></div>
+          <div className={`lost ${channelId == "-1" ? "" : "invisible"}`}>
+            <div className="meme">
+              <img src="pika.png" className="pika" />
+              <p>what are you looking for?</p>
+            </div>
+            <button className="members-more credits" onClick={pressMe}>
+              Press me
+            </button>
+          </div>
+          <div className={`npa-logo ${channelId != "-1" ? "" : "invisible"}`}>
+            <img src="shuut.png" className="npa" />
+          </div>
           <div
             className={`chat-members ${
               chat_members_slide_out
