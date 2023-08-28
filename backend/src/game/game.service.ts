@@ -656,7 +656,6 @@ export class GameService {
       if (this.checkBallHit(param)) this.playSound();
 
       if (this.checkBallOutOfBounds(param)) {
-        this.playScoreSound();
         this.resetBallPosition(param);
         this.handleGameEnd(param);
         param.gameInfo.gameStart = 0;
@@ -699,17 +698,6 @@ export class GameService {
       console.log('The wav file started to be played successfully.');
     } catch (error) {
       console.error('The wav file failed to be played.', error);
-    }
-  }
-
-  async playScoreSound() {
-    try {
-      await wavPlayer.play({
-        path: './public/sounds/score.wav',
-      });
-      console.log('The score.wav file started to be played successfully.');
-    } catch (error) {
-      console.error('The score.wav file failed to be played.', error);
     }
   }
 }

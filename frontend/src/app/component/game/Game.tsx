@@ -49,8 +49,9 @@ interface GameElements {
 // const screenWidth = 2000 / 2;
 // const screenHeight = 700;
 const space = 200;
-const screenWidth = window.innerWidth;
-const screenHeight = window.innerHeight - space;
+
+const screenWidth = window ? window.innerWidth : 0;
+const screenHeight = window !== undefined ? window.innerHeight - space : 0;
 
 const borderWidth = screenWidth;
 const borderHeight = 100;

@@ -3,6 +3,19 @@ import { Stage, usePixiApp } from "react-pixi-fiber";
 import { useEffect, useRef, useState } from "react";
 import useGameAnimeStore, { GameAnime } from "@/store/useGameAnimeStore";
 
+const SoundEffects = ({ playing }: { playing: boolean }) => {
+  const audio = new Audio("/game-effects/score.wav");
+
+  useEffect(() => {
+    console.log("WTF", playing);
+    if (playing === true) {
+      audio.play();
+    }
+  }, [playing]);
+
+  return null;
+};
+
 interface SpriteAnimationContainerProps {
   textures: any[];
   gameAnime: GameAnime;
@@ -28,15 +41,15 @@ const SpriteAnimationContainer = ({
       const anime = new PIXI.AnimatedSprite(textures);
 
       anime.anchor.set(0.5, 1);
-      anime.scale.set(0.8, 1.6);
+      anime.scale.set(0.7, 1.4);
       anime.loop = false;
 
       if (gameAnime.winPlayer === 1) {
         anime.angle = -90 + ((gameAnime.yPos - 0.5) / 0.5) * 15;
-        anime.x = app.screen.width + 50;
+        anime.x = app.screen.width + 30;
       } else {
         anime.angle = 90 - ((gameAnime.yPos - 0.5) / 0.5) * 15;
-        anime.x = 0 - 50;
+        anime.x = 0 - 30;
       }
       anime.y = gameAnime.yPos * (app.screen.height - 200) + 100;
 
@@ -79,7 +92,7 @@ const ScoreExplosion = () => {
         for (i = 0; i < 58; i++) {
           const framekey = `DEATH P3${i < 10 ? `0${i}` : i}.png`;
           const texture = PIXI.Texture.from(framekey);
-          const time = 10;
+          const time = 15;
 
           textures.push({ texture, time });
         }
@@ -89,20 +102,23 @@ const ScoreExplosion = () => {
   }, []);
 
   return (
-    <Stage
-      className={`absolute top-0 left-0 ${
-        gameAnime.startAnimate ? "block" : "hidden"
-      }`}
-      options={{ autoStart: false, resizeTo: window, backgroundAlpha: 0 }}
-    >
-      <SpriteAnimationContainer
-        textures={textures}
-        gameAnime={gameAnime}
-        postAction={() =>
-          setGameAnime({ ...gameAnime, startAnimate: false, winPlayer: 0 })
-        }
-      />
-    </Stage>
+    <>
+      <SoundEffects playing={gameAnime.startAnimate} />
+      <Stage
+        className={`absolute top-0 left-0 ${
+          gameAnime.startAnimate ? "block" : "hidden"
+        }`}
+        options={{ autoStart: false, resizeTo: window, backgroundAlpha: 0 }}
+      >
+        <SpriteAnimationContainer
+          textures={textures}
+          gameAnime={gameAnime}
+          postAction={() =>
+            setGameAnime({ ...gameAnime, startAnimate: false, winPlayer: 0 })
+          }
+        />
+      </Stage>
+    </>
   );
 };
 
