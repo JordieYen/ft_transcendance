@@ -71,11 +71,12 @@ p, span {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    z-index: -1;
 }
 
 .card-details {
     text-align: center;
-  }
+}
   
 .card-actions {
     display: flex;
