@@ -12,7 +12,13 @@ import { AnimatePresence } from "framer-motion";
 import ShuttlecockMove from "@/components/setup/ShuttlecockMove";
 import { GameProvider } from "@/app/component/game/GameContext";
 import GameInvitationListener from "@/app/component/game/GameInvitationListener";
-import Layout from "@/app/layout";
+import Head from "next/head";
+
+// fixing flavicon breaking font awesome
+import { config as fontawesomeConfig } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+
+fontawesomeConfig.autoAddCss = false;
 
 // axios.defaults.baseURL = "http://localhost:3000/";
 axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_NEST_HOST}`;
@@ -26,23 +32,23 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
   const showAdditionalIcon = allowPages.includes(currentPath);
 
   return (
-    // <SessionProvider session={pageProps.session}>
       <SocketProvider>
         <SessionCheck>
+          <Head>
+              <title>Pongminton@TM</title>
+              <link rel="icon" href="/images/logo.ico" sizes="any" />
+          </Head>
           <CustomToaster />
-            <Header />
-            <GameProvider>
-              <GameInvitationListener />
-              <AnimatePresence mode="wait">
-                {/* <ShuttlecockMove />
-                <Component {...pageProps} /> */}
-                <ShuttlecockMove key="shuttlecock-move" />
-                <Component key="main-component" {...pageProps} />
-              </AnimatePresence>
-            </GameProvider>
+          <Header />
+          <GameProvider>
+            <GameInvitationListener />
+            <AnimatePresence mode="wait">
+              <ShuttlecockMove key="shuttlecock-move" />
+              <Component key="main-component" {...pageProps} />
+            </AnimatePresence>
+          </GameProvider>
         </SessionCheck>
       </SocketProvider>
-    // </SessionProvider>
   );
 };
 

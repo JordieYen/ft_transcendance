@@ -230,13 +230,13 @@ const Friend = ({
             </div>
             <div className="flex-col gap-1 text-left">
               <p>{friend?.username}</p>
-              <div className={`${friend?.online ? "online" : "offline"}`}>
+              <div className={`${friend?.online ? "Online" : "Offline"}`}>
                 {friend?.online ? (
                   <div className="green-dot"></div>
                 ) : (
                   <div className="red-dot"></div>
                 )}
-                <span>{friend?.online ? "online" : "offline"}</span>
+                <span>{friend?.online ? "Online" : "Offline"}</span>
               </div>
               {/* Display Game Status */}
               <div className="action flex flex-wrap md:flex-row gap-3 p-2">

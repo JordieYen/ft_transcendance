@@ -1,6 +1,5 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
-import GameInvitationListener from './component/game/GameInvitationListener'
 
 const inter = Inter({ subsets: ['latin'] })
 
