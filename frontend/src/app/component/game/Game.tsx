@@ -393,7 +393,7 @@ const Game = () => {
           ...gameAnime,
           startAnimate: true,
           winPlayer: 1,
-          yPos: 0.5,
+          yPos: score.ballYPos,
         });
       } else if (score.winner === "p2") {
         console.log("P2", gameAnime);
@@ -401,7 +401,7 @@ const Game = () => {
           ...gameAnime,
           startAnimate: true,
           winPlayer: 2,
-          yPos: 0.5,
+          yPos: score.ballYPos,
         });
       }
       setGameData({

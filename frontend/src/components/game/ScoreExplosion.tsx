@@ -32,13 +32,13 @@ const SpriteAnimationContainer = ({
       anime.loop = false;
 
       if (gameAnime.winPlayer === 1) {
-        anime.angle = -90 + ((gameAnime.yPos - 0.5) / 0.5) * 30;
-        anime.x = app.screen.width;
+        anime.angle = -90 + ((gameAnime.yPos - 0.5) / 0.5) * 15;
+        anime.x = app.screen.width + 50;
       } else {
-        anime.angle = 90 - ((gameAnime.yPos - 0.5) / 0.5) * 30;
-        anime.x = 0;
+        anime.angle = 90 - ((gameAnime.yPos - 0.5) / 0.5) * 15;
+        anime.x = 0 - 50;
       }
-      anime.y = gameAnime.yPos * app.screen.height;
+      anime.y = gameAnime.yPos * (app.screen.height - 200) + 100;
 
       app.stage.addChild(anime);
 
@@ -79,7 +79,7 @@ const ScoreExplosion = () => {
         for (i = 0; i < 58; i++) {
           const framekey = `DEATH P3${i < 10 ? `0${i}` : i}.png`;
           const texture = PIXI.Texture.from(framekey);
-          const time = 20;
+          const time = 10;
 
           textures.push({ texture, time });
         }
