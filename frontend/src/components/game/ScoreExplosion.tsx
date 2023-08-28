@@ -16,20 +16,20 @@ const SpriteAnimationContainer = ({
 }: SpriteAnimationContainerProps) => {
   const app = usePixiApp();
 
+  console.log("SPRITEANIMATIONCONTAINER RUNS", app);
+
   useEffect(() => {
-    console.log("USEEFFECT RUNS", textures, gameAnime);
     if (
       gameAnime.startAnimate &&
       textures.length > 0 &&
       gameAnime.winPlayer !== 0
     ) {
       console.log("TEXTURE", textures, gameAnime);
-
       const anime = new PIXI.AnimatedSprite(textures);
 
       anime.anchor.set(0.5, 1);
       anime.scale.set(0.8, 1.6);
-      anime.loop = false; // Set loop property to false to play the animation only once
+      anime.loop = false;
 
       if (gameAnime.winPlayer === 1) {
         anime.angle = -90 + ((gameAnime.yPos - 0.5) / 0.5) * 30;
@@ -43,14 +43,14 @@ const SpriteAnimationContainer = ({
       app.stage.addChild(anime);
 
       anime.onComplete = () => {
-        app.stage.removeChild(anime); // Remove the sprite from the stage after animation completion if needed
+        app.stage.removeChild(anime);
         postAction();
         console.log("done");
       };
+
       anime.play();
 
-      // start animating
-      app.start;
+      app.start();
     }
   }, [gameAnime.startAnimate]);
 
@@ -88,10 +88,13 @@ const ScoreExplosion = () => {
     }
   }, []);
 
-  console.log("GAMEANIMESTORE", gameAnime);
-
   return (
-    <Stage options={{ autoStart: false, resizeTo: window, backgroundAlpha: 0 }}>
+    <Stage
+      className={`absolute top-0 left-0 ${
+        gameAnime.startAnimate ? "block" : "hidden"
+      }`}
+      options={{ autoStart: false, resizeTo: window, backgroundAlpha: 0 }}
+    >
       <SpriteAnimationContainer
         textures={textures}
         gameAnime={gameAnime}
