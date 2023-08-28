@@ -33,6 +33,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
           <CustomToaster />
             <Header />
               <Head>
+                <link rel="icon" href="./logo.png" sizes="any" />
                 <title>Pongminton@TM</title>
               </Head>
             <GameProvider>
