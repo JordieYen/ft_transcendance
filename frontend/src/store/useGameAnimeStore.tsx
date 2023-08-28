@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import * as PIXI from "pixi.js";
 
-interface GameAnime {
+export interface GameAnime {
   startAnimate: boolean;
   winPlayer: number;
   yPos: number;
