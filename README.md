@@ -101,6 +101,12 @@ export default async function handler(req: NextRequest) {
 if two user start a game, emit room Id and player from backend to the both user friends
 all their friend can view the game in friend list when looking at the user profile
 
+# Credit
+
+1. [Jokeroo, Game Dev](https://github.com/joekeroo)
+2. [JordieYen, Chat Dev](https://github.com/JordieYen)
+3. [Zer Lee, Design and security](https://github.com/sirhcofe)
+
 # Reference
 
 1. [Postgresql with nestjs](https://blog.devgenius.io/setting-up-nestjs-with-postgresql-ac2cce9045fe)

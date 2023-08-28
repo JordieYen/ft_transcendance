@@ -31,11 +31,11 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
       <SocketProvider>
         <SessionCheck>
           <CustomToaster />
-            <Header />
               <Head>
                 <link rel="icon" href="./logo.png" sizes="any" />
                 <title>Pongminton@TM</title>
               </Head>
+            <Header />
             <GameProvider>
               <GameInvitationListener />
               <AnimatePresence mode="wait">
