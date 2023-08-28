@@ -8,6 +8,7 @@ import ViewFriendGame from "./ViewFriendGame";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserTimes, faBan } from '@fortawesome/free-solid-svg-icons';
 import { toast } from "react-hot-toast";
+import ConfirmationModel from "./ConfirmationModel";
 
 interface FriendProps {
   userDataId: number;
@@ -83,130 +84,75 @@ const Friend = ({
     }
   };
 
-  // const unfriend = async (friendId: number) => {
-  //   try {
-  //     const confirmation = window.confirm(
-  //       "Are you sure you want to unfriend this friend?",
-  //     );
-  //     if (confirmation) {
-  //       socket?.emit("unfriend", {
-  //         userId: userDataId,
-  //         friendId: friendId,
-  //       });
-  //       setFriends((prevFriends) =>
-  //         prevFriends.filter((friend) => friend.id !== friendId),
-  //       );
-  //       setFriendRequestStatus((prevStatus) => {
-  //         return {
-  //           ...prevStatus,
-  //           [friendId]: false,
-  //           [userDataId]: false,
-  //         };
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.log("Error unfriending friend:", error);
-  //   }
-  // };
-
-  const unfriend = async (friendId: number) => {
+  const unfriend = async(friendId: number) => {
     try {
-      const confirmation = await toast.promise(
-        new Promise<void>((resolve, reject) => {
-          const userConfirmation = confirm(
-            "Are you sure you want to unfriend this friend?",
+      await new Promise<void>((resolve) => {
+        const closeModel = () => {
+          resolve();
+        }
+        const confirmAction = () => {
+          resolve();
+          socket?.emit("unfriend", {
+            userId: userDataId,
+            friendId: friendId,
+          });
+          setFriends((prevFriends) =>
+            prevFriends.filter((friend) => friend.id !== friendId)
           );
-          if (userConfirmation) {
-            socket?.emit("unfriend", {
-              userId: userDataId,
-              friendId: friendId,
-            });
-            setFriends((prevFriends) =>
-              prevFriends.filter((friend) => friend.id !== friendId),
-            );
-            setFriendRequestStatus((prevStatus) => {
-              return {
-                ...prevStatus,
-                [friendId]: false,
-                [userDataId]: false,
-              };
-            }
-            );
-            resolve();
-          } else {
-            reject();
-          }
-        }),
-        {
-          loading: "Unfriending...",
-          success: "Unfriended!",
-          error: "Cancel unfriending friend",
-        },
-      );
+          setFriendRequestStatus((prevStatus) => ({
+            ...prevStatus,
+            [friendId]: false,
+            [userDataId]: false,
+          }));
+        };
+        toast(
+          <ConfirmationModel
+            message="Are you sure you want to unfriend this friend?"
+            onConfirm={confirmAction}
+            onCancel={closeModel}
+            confirmMessage="Successfully unfriended!"
+            closeMessage="Unfriending cancelled!"
+          />
+        );
+      });
     } catch (error) {
       console.log("Error unfriending friend:", error);
     }
   };
 
-  // const block = async (friendId: number) => {
-  //   try {
-  //     const confirmation = window.confirm(
-  //       "Are you sure you want to block this friend?",
-  //     );
-  //     if (confirmation) {
-  //       socket?.emit("block", {
-  //         blockerId: userDataId,
-  //         friendId: friendId,
-  //       });
-  //       setFriends((prevFriends) =>
-  //         prevFriends.filter((friend) => friend.id !== friendId),
-  //       );
-  //       setFriendRequestStatus((prevStatus) => {
-  //         return {
-  //           ...prevStatus,
-  //           [friendId]: false,
-  //           [userDataId]: false,
-  //         };
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.log("Error blocking friend:", error);
-  //   }
-  // };
-
   const block = async (friendId: number) => {
     try {
-      const confirmation = await toast.promise(
-        new Promise<void>((resolve, reject) => {
-          const userConfirmation = confirm(
-            "Are you sure you want to block this friend?",
+      await new Promise<void>((resolve) => {
+        const closeModel = () => {
+          resolve();
+        }
+        const confirmAction = () => {
+          resolve();
+          socket?.emit("block", {
+            blockerId: userDataId,
+            friendId: friendId,
+          });
+          setFriends((prevFriends) =>
+            prevFriends.filter((friend) => friend.id !== friendId),
           );
-          if (userConfirmation) {
-            socket?.emit("block", {
-              blockerId: userDataId,
-              friendId: friendId,
-            });
-            setFriends((prevFriends) =>
-              prevFriends.filter((friend) => friend.id !== friendId),
-            );
-            setFriendRequestStatus((prevStatus) => {
-              return {
-                ...prevStatus,
-                [friendId]: false,
-                [userDataId]: false,
-              };
-            });
-            resolve();
-          } else {
-            reject();
-          }
-        }),
-        {
-          loading: "Blocking...",
-          success: "Blocked!",
-          error: "Cancel blocking friend",
-        },
-      );
+          setFriendRequestStatus((prevStatus) => {
+            return {
+              ...prevStatus,
+              [friendId]: false,
+              [userDataId]: false,
+            };
+          });
+        };
+        toast(
+          <ConfirmationModel
+            message="Are you sure you want to block this friend?"
+            onConfirm={confirmAction}
+            onCancel={closeModel}
+            confirmMessage="Successfully blocked!"
+            closeMessage="Blocking cancelled!"
+          />
+        );
+      });
     } catch (error) {
       console.log("Error blocking friend:", error);
     }

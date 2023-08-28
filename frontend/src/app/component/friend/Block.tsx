@@ -7,6 +7,7 @@ import useUserStore from "@/store/useUserStore";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
 import toast from 'react-hot-toast';
+import ConfirmationModel from "./ConfirmationModel";
 
 
 const Block = () => {
@@ -69,56 +70,67 @@ const Block = () => {
     }
   };
 
-  // const unBlock = async (blockId: number) => {
-  //   try {
-  //     const confirmation = confirm(
-  //       "Are you sure you want to unblock this user?",
-  //     );
-  //     if (confirmation) {
-  //       socket?.emit("unblock", {
-  //         unBlockerId: userData?.id,
-  //         blockId: blockId,
-  //       });
-  //       setBlocks((prevBlocks) =>
-  //         prevBlocks.filter((block) => block.id !== blockId),
-  //       );
-  //       // setBlockerId((prevBlockerIds) => prevBlockerIds.filter((blockerId) => blockerId !== blockId));
-  //     }
-  //   } catch (error) {
-  //     console.log("Error unblocking:", error);
-  //   }
-  // };
-
   const unBlock = async (blockId: number) => {
     try {
-      const confirmation = await toast.promise(
-        new Promise<void>((resolve, reject) => {
-          const userConfirmation = confirm(
-            "Are you sure you want to unblock this user?",
+      await new Promise<void>((resolve) => {
+        const closeModel = () => {
+          resolve();
+        };
+        const confirmAction = () => {
+          resolve();
+          socket?.emit("unblock", {
+            unBlockerId: userData?.id,
+            blockId: blockId,
+          });
+          setBlocks((prevBlocks) =>
+            prevBlocks.filter((block) => block.id !== blockId),
           );
-          if (userConfirmation) {
-            socket?.emit("unblock", {
-              unBlockerId: userData?.id,
-              blockId: blockId,
-            });
-            setBlocks((prevBlocks) =>
-              prevBlocks.filter((block) => block.id !== blockId),
-            );
-            resolve();
-          } else {
-            reject();
-          }
-        }),
-        {
-          loading: "Unblocking...",
-          success: "Unblocked!",
-          error: "Cancel unblock",
-        },
-    );
+        };
+        toast(
+          <ConfirmationModel
+            message="Are you sure you want to unblock this user?"
+            onConfirm={confirmAction}
+            onCancel={closeModel}
+            confirmMessage="Successfully Unblock"
+            closeMessage="Cancel Unblock"
+          />
+        );
+      })
     } catch (error) {
       console.log("Error unblocking:", error);
     }
-  }
+  };
+  
+  // const unBlock = async (blockId: number) => {
+  //   try {
+  //     const confirmation = await toast.promise(
+  //       new Promise<void>((resolve, reject) => {
+  //         const userConfirmation = confirm(
+  //           "Are you sure you want to unblock this user?",
+  //         );
+  //         if (userConfirmation) {
+  //           socket?.emit("unblock", {
+  //             unBlockerId: userData?.id,
+  //             blockId: blockId,
+  //           });
+  //           setBlocks((prevBlocks) =>
+  //             prevBlocks.filter((block) => block.id !== blockId),
+  //           );
+  //           resolve();
+  //         } else {
+  //           reject();
+  //         }
+  //       }),
+  //       {
+  //         loading: "Unblocking...",
+  //         success: "Unblocked!",
+  //         error: "Cancel unblock",
+  //       },
+  //   );
+  //   } catch (error) {
+  //     console.log("Error unblocking:", error);
+  //   }
+  // }
   
   return (
     <div className="text-center">

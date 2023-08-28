@@ -6,6 +6,7 @@ import './friend.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import toast from "react-hot-toast";
+import ConfirmationModel from "./ConfirmationModel";
 
 interface FriendRequestProps {
   userId: number;
@@ -71,93 +72,62 @@ const FriendRequest = ( {userId, currUser, friendRequestArray, setFriendRequestA
     })    
   };
 
-  // const acceptFriendRequest = async (friendRequestId: number, senderId: number, accepterId: number) => {
-  //   try {
-  //     const confirmation = window.confirm('Are you sure you want to accept this friend request?');
-  //     if (confirmation) {
-  //       socket?.emit('accept-friend-request', {
-  //         userId: userId,
-  //         friendRequestId: friendRequestId,
-  //         senderId: senderId,
-
-  //       });
-  //       setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [accepterId]: false }));
-  //       setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
-  //     }
-
-  //   } catch (error) {
-  //     console.log('Error accepting friend request:', error);
-  //   }
-  // };
-
   const acceptFriendRequest = async (friendRequestId: number, senderId: number, accepterId: number) => {
     try {
-      const confirmation = await toast.promise(
-        new Promise<void>((resolve, reject) => {
-          const userConfirmation = window.confirm('Are you sure you want to accept this friend request?');
-          if (userConfirmation) {
-            socket?.emit('accept-friend-request', {
-              userId: userId,
-              friendRequestId: friendRequestId,
-              senderId: senderId,
-            });
-            setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [accepterId]: false }));
-            setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
-            resolve();
-          } else {
-            reject();
-          }
-        }),
-        {
-          loading: 'Accepting friend request...',
-          success: 'Friend request accepted!',
-          error: 'Cancel accept friend request',
-        },
-      );
+      await new Promise<void>((resolve) => {
+        const closeModel = () => {
+          resolve();
+        };
+        const confirmAction = () => {
+          resolve();
+          socket?.emit('accept-friend-request', {
+            userId: userId,
+            friendRequestId: friendRequestId,
+            senderId: senderId,
+          });
+          setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [accepterId]: false }));
+          setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
+        };
+        toast(
+          <ConfirmationModel
+            message="Are you sure you want to accept this friend request?"
+            onConfirm={confirmAction}
+            onCancel={closeModel}
+            confirmMessage="We are friends now!"
+            closeMessage="No, I don't want to be friends"
+          />
+        );
+      });
     } catch (error) {
       console.log('Error accepting friend request:', error);
     }
   };
 
-  // const declineFriendRequest = async (friendRequestId: number, declinerId: number) => {
-  //   try {
-  //     const confirmation = window.confirm('Are you sure you want to decline this friend request?');
-  //     if (confirmation) {
-  //       socket?.emit('decline-friend-request', {
-  //         userId: userId,
-  //         friendRequestId: friendRequestId,
-  //       });
-  //       setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [declinerId]: false }));
-  //       setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
-  //     }
-  //   } catch (error) {
-  //     console.log('Error declining friend request:', error);
-  //   }
-  // };
   const declineFriendRequest = async (friendRequestId: number, declinerId: number) => {
     try {
-      const confirmation = await toast.promise(
-        new Promise<void>((resolve, reject) => {
-          const userConfirmation = window.confirm('Are you sure you want to decline this friend request?');
-          if (userConfirmation) {
-            socket?.emit('decline-friend-request', {
-              userId: userId,
-              friendRequestId: friendRequestId,
-            });
-            setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [declinerId]: false }));
-            setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
-            resolve();
-          } else {
-            reject();
-          }
-        }
-        ),
-        {
-          loading: 'Declining friend request...',
-          success: 'Friend request declined!',
-          error: 'Cancel decline friend request',
-        },
-      );
+      await new Promise<void>((resolve) => {
+        const closeModel = () => {
+          resolve();
+        };
+        const confirmAction = () => {
+          resolve();
+          socket?.emit('decline-friend-request', {
+            userId: userId,
+            friendRequestId: friendRequestId,
+          });
+          setFriendRequestStatus((prevStatus) => ({ ...prevStatus, [declinerId]: false }));
+          setFriendRequests((prevFriendRequests) => prevFriendRequests.filter((request) => request.id !== friendRequestId));
+        };
+        toast(
+          <ConfirmationModel
+            message="Are you sure you want to decline this friend request?"
+            onConfirm={confirmAction}
+            onCancel={closeModel}
+            confirmMessage="Friend request declined!"
+            closeMessage="Cancel decline friend request"
+          />
+        );
+      });
     } catch (error) {
       console.log('Error declining friend request:', error);
     }
