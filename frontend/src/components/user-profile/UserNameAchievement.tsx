@@ -8,17 +8,14 @@ import "@/styles/globals.css";
 const RenderAchievementIcon = ({
   achv,
   achvImage,
-  key,
 }: {
   achv: any;
   achvImage: string;
-  key: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
-      key={key}
       className="w-[50px] h-[50px] relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -118,9 +115,9 @@ const UserAchievement = ({ mode }: { mode: number }) => {
               const achvImage = getAchvImage(achv.achievement.name);
               return (
                 <RenderAchievementIcon
+                  key={i}
                   achv={achv}
                   achvImage={achvImage}
-                  key={i}
                 />
               );
             })}
@@ -221,8 +218,9 @@ const UserNameAchievement = ({ mode }: { mode: number }) => {
     <div
       className={`flex w-full bg-jetblack items-center ${
         ((mode === 0 || mode === 1) && "h-fit px-5 py-2") ||
-        (mode === 2 && "h-[156px] px-10 py-5") ||
-        (mode >= 3 && "h-[196px] px-16 py-10")
+        (mode === 2 && "h-[148px] px-10 py-4") ||
+        (mode === 3 && "h-[164px] px-16 py-6") ||
+        (mode === 4 && "h-[196px] px-32 py-10")
       } rounded-3xl`}
     >
       <UserAvatar />

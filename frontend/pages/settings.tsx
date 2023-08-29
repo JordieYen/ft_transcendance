@@ -30,13 +30,14 @@ export default function SettingsPage() {
       if (parentDiv) {
         const width = parentDiv.clientWidth;
         const height = parentDiv.clientHeight;
-        console.log(`width: ${width} && height: ${height}`);
         if (width < 1440) {
           setMode(1);
         } else if (width >= 1440 && width < 1920) {
           setMode(2);
-        } else {
+        } else if (width >= 1920 && width < 2560) {
           setMode(3);
+        } else {
+          setMode(4);
         }
       }
     };
@@ -50,7 +51,8 @@ export default function SettingsPage() {
       className={`w-screen h-screen absolute top-0 left-0 ${
         (mode === 1 && "") ||
         (mode === 2 && "px-10") ||
-        (mode >= 3 && "px-32 py-16")
+        (mode === 3 && "px-32 py-8") ||
+        (mode === 4 && "px-64 py-32")
       }`}
     >
       <div className="w-full h-full pt-[128px] flex flex-col gap-6">

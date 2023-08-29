@@ -32,7 +32,7 @@ const UserProfile = () => {
           setMode(1);
         } else if (width >= 1440 && width < 1920) {
           setMode(2);
-        } else if (width >= 1920 && width < 1440) {
+        } else if (width >= 1920 && width < 2560) {
           setMode(3);
         } else {
           setMode(4);
@@ -58,8 +58,8 @@ const UserProfile = () => {
       className={`w-screen h-screen absolute top-0 left-0 ${
         (mode === 1 && "") ||
         (mode === 2 && "px-10") ||
-        (mode >= 3 && "px-32 py-16") ||
-        (mode === 4 && "px-48 py-28")
+        (mode === 3 && "px-32 py-8") ||
+        (mode === 4 && "px-64 py-32")
       }`}
     >
       <div className="flex w-full h-full px-16 pt-[128px] pb-10 md:px-24 lg:px-32 flex-col space-y-4">

@@ -7,9 +7,10 @@ import useGameStore from "@/store/useGameStore";
 import router from "next/router";
 import ScoreExplosion from "@/components/game/ScoreExplosion";
 import game from "../../../../pages/game";
+import useGameAnimeStore from "@/store/useGameAnimeStore";
 
 interface ScoreBoard {
-  winner: number;
+  winner: string;
   ballYPos: number;
   pOneScore: number;
   pTwoScore: number;
@@ -162,9 +163,22 @@ const Game = () => {
     state.gameData,
     state.setGameData,
   ]);
+  const [gameAnime, setGameAnime] = useGameAnimeStore((state) => [
+    state.gameAnime,
+    state.setGameAnime,
+  ]);
 
   const socket = useContext(SocketContext);
-  // const socket = io("http://localhost:3000");
+
+  useEffect(() => {
+    if (socket && gameState?.roomId != null) {
+      setGameData({
+        ...gameData,
+        playerOne: gameState!.player1User,
+        playerTwo: gameState!.player2User,
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (socket && gameState?.roomId != null) {
@@ -189,7 +203,7 @@ const Game = () => {
       });
     } else {
       router.push("/main-menu");
-      return ;
+      return;
     }
 
     const keyArr: { [key: string]: KeyType } = {};
@@ -372,6 +386,24 @@ const Game = () => {
     });
 
     socket?.on("update-score", (score: ScoreBoard) => {
+      console.log("SCOREE", score);
+      if (score.winner === "p1") {
+        console.log("P1", gameAnime);
+        setGameAnime({
+          ...gameAnime,
+          startAnimate: true,
+          winPlayer: 1,
+          yPos: score.ballYPos,
+        });
+      } else if (score.winner === "p2") {
+        console.log("P2", gameAnime);
+        setGameAnime({
+          ...gameAnime,
+          startAnimate: true,
+          winPlayer: 2,
+          yPos: score.ballYPos,
+        });
+      }
       setGameData({
         ...gameData,
         playerOne: gameState!.player1User,
@@ -379,7 +411,6 @@ const Game = () => {
         p1Score: score.pOneScore,
         p2Score: score.pTwoScore,
       });
-      // ScoreExplosion({ winPlayer: score.winner, yPos: score.ballYPos });
     });
 
     /* end game and clear screen */
@@ -440,7 +471,7 @@ const Game = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 
-  return null;
+  return <ScoreExplosion />;
 };
 
 export default Game;
