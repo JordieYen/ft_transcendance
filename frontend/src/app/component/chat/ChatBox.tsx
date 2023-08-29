@@ -1478,6 +1478,7 @@ const ChangeChannelType = ({
           newChannelPassword,
           userData?.id,
         );
+        toast.success("Channel Type changed!");
       }
     }
     setNewChannelPassword("");
