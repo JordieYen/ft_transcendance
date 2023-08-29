@@ -23,7 +23,7 @@ export class NotificationGateway implements OnModuleInit {
           console.log('heartbeat stopped');
           if (socket.data.userId) {
             // this.updateUserStatus(+socket.data.userId, false);
-            this.connectedUser.delete(socket.data.userId);
+            // this.connectedUser.delete(socket.data.userId);
           }
         }
       }, 300000);
@@ -62,7 +62,7 @@ export class NotificationGateway implements OnModuleInit {
       socket.on('activity', () => {
         if (socket.data.userId) {
           // console.log('User activity: ' + socket.data.userId);
-          this.updateUserStatus(socket.data.userId, true);
+          // this.updateUserStatus(socket.data.userId, true);
           this.connectedUser.set(socket.data.userId, socket);
           // this.server
           //   .to(socket.data.userId)

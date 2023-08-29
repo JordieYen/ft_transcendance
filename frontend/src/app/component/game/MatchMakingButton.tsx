@@ -57,11 +57,11 @@ const MatchMakingButton = ({
     };
   }, [socket, userData, router]);
 
-  useEffect(() => {
-    if (userData.id && roomId) {
-      cancelMatchMaking();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (userData.id && roomId) {
+  //     cancelMatchMaking();
+  //   }
+  // }, []);
 
 
   const handleMatchmaking = () => {
