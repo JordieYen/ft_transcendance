@@ -154,7 +154,7 @@ const InviteButton = ({ currentChannel }: { currentChannel: any }) => {
           setIsButtonDisabled(false);
         }, cooldownTime);
       } else {
-        // console.log("cooldown");
+        toast.error("invite cooldown is active");
       }
     }
   };
