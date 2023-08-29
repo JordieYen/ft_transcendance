@@ -25,6 +25,157 @@ import { SocketContext } from "@/app/socket/SocketProvider";
 import useUserStore from "@/store/useUserStore";
 import useModal from "@/hooks/useModal";
 
+const InviteButton = ({ currentChannel }: { currentChannel: any }) => {
+  const [channelUsers, setChannelUsers] = useState<any[]>([]);
+  const [gameStatus, setGameStatus] = useState<any[]>([]);
+  const [FriendStatus, setFriendStatus] = useState<any>();
+  let sender: any;
+  let reciever: any;
+  const [userData, setUserData] = useUserStore((state) => [
+    state.userData,
+    state.setUserData,
+  ]);
+  const socket = useContext(SocketContext);
+  // const cooldownTime = 3000; // 3 seconds
+  const cooldownTime = 60000; // 60 seconds
+
+  useEffect(() => {
+    if (currentChannel?.channel_type == "direct message") {
+      fetchChannelUserData();
+      if (channelUsers.length != 0) {
+        fetchFriendData();
+      }
+      if (reciever != undefined) {
+        fetchGameStatus(reciever?.id);
+      }
+    }
+  }, [currentChannel]);
+
+  const fetchChannelUserData = async () => {
+    try {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_NEST_HOST +
+          "/channel-user/channel/" +
+          currentChannel?.channel_uid,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        const Data = await response.json();
+        setChannelUsers(Data);
+      }
+    } catch (error) {
+      // console.log("Error fetching messages data:", error);
+    }
+  };
+
+  const fetchGameStatus = async (friendId: number) => {
+    try {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_NEST_HOST + "/friend/getGameStatus/" + friendId,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        const Data = await response.json();
+        setGameStatus(Data);
+        return gameStatus;
+      }
+    } catch (error) {
+      // console.log("Error fetching messages data:", error);
+    }
+  };
+
+  const fetchFriendData = async () => {
+    try {
+      if (channelUsers[0]?.user?.id == userData?.id) {
+        sender = channelUsers[0]?.user;
+        reciever = channelUsers[1]?.user;
+      } else {
+        sender = channelUsers[1]?.user;
+        reciever = channelUsers[0]?.user;
+      }
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_NEST_HOST +
+          "/friend/check-relationship/" +
+          sender?.id +
+          "/" +
+          reciever?.id,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      if (response.ok) {
+        const Data = await response.json();
+        setFriendStatus(Data);
+      }
+    } catch (error) {
+      // console.log("Error fetching friend data:", error);
+    }
+  };
+
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+  const SendInvite = async () => {
+    if (FriendStatus?.status != "blocked") {
+      if (isButtonDisabled == false) {
+        socket?.emit(
+          "send-message",
+          "INVITATION",
+          "invite",
+          currentChannel?.channel_uid,
+          userData.id,
+        );
+        if (channelUsers[0]?.user?.id == userData?.id) {
+          sender = channelUsers[0]?.user;
+          reciever = channelUsers[1]?.user;
+        } else {
+          sender = channelUsers[1]?.user;
+          reciever = channelUsers[0]?.user;
+        }
+        // console.log("sender", sender);
+        // console.log("reciever", reciever);
+        // const useless = await fetchGameStatus(reciever?.id);
+        if (gameStatus.length == 0) {
+          // console.log("ran");
+          socket?.emit("invite-game", {
+            user: sender,
+            friend: reciever,
+          });
+          toast.success("Invitation Sent!");
+        }
+        setIsButtonDisabled(true);
+        setTimeout(() => {
+          setIsButtonDisabled(false);
+        }, cooldownTime);
+      } else {
+        toast.error("invite cooldown is active");
+      }
+    }
+  };
+
+  return (
+    <>
+      <FontAwesomeIcon
+        className={`invite-button ${
+          currentChannel?.channel_type == "direct message"
+            ? ""
+            : "invite-button-invisible"
+        }`}
+        icon={faTableTennisPaddleBall}
+        size="lg"
+        style={{ color: "#1c1e20" }}
+        onClick={SendInvite}
+      />
+    </>
+  );
+};
+
 const Roles = ({
   isOpen,
   closeModal,
@@ -284,6 +435,7 @@ const ThreeDots = ({
   const kickUser = async (id: number) => {
     // console.log("kicking user");
     socket?.emit("leave-channel", channelUser?.channel?.channel_uid, user.id);
+    toast.success("Player has been kicked");
   };
 
   const banUser = async (id: number) => {
@@ -297,6 +449,7 @@ const ThreeDots = ({
         channelUser?.channel?.channel_uid,
         userData.id,
       );
+      toast.success("Player has been banned");
     } else {
       socket?.emit(
         "ban-from-channel",
@@ -305,6 +458,7 @@ const ThreeDots = ({
         channelUser?.channel?.channel_uid,
         userData.id,
       );
+      toast.success("Player has been unbanned");
     }
   };
 
@@ -462,8 +616,12 @@ const CreateChat = ({
           channelPassword,
           userData.id,
         );
-      }
-      if (channelType != "protected") {
+        toast.success("Channel created!");
+        setChannelName("");
+        setChannelType("");
+        setChannelPassword("");
+        await closeModal();
+      } else if (channelType != "protected") {
         socket?.emit(
           "create-channel",
           channelName,
@@ -471,22 +629,23 @@ const CreateChat = ({
           channelPassword,
           userData.id,
         );
+        toast.success("Channel created!");
+        setChannelName("");
+        setChannelType("");
+        setChannelPassword("");
+        await closeModal();
+      } else {
+        toast.error("Input a Password.");
       }
-      setChannelName("");
-      setChannelType("");
-      setChannelPassword("");
-      await closeModal();
+    } else {
+      toast.error("Make sure everything is inputed/selected.");
     }
 
     if (channelPassword != "") {
       setChannelPassword("");
-    } else {
-      // console.log("channel-password is empty");
     }
     if (channelType != "") {
       setChannelType("");
-    } else {
-      // console.log("channel-type not selected");
     }
   };
 
@@ -594,6 +753,13 @@ const JoinChat = ({
       channelPassword,
       userData.id,
     );
+    if (channel?.channel_type != "protected") {
+      toast.success("Channel Joined!");
+    } else if (channelPassword == "") {
+      toast.error("Input Password for Channel.");
+    } else {
+      toast.success("Channel Infiltration attempt made!");
+    }
     if (channelPassword != "") {
       setChannelPassword("");
     }
@@ -704,10 +870,13 @@ const BrowseChats = ({
     try {
       let response;
       if (channelType == "all") {
-        response = await fetch(process.env.NEXT_PUBLIC_NEST_HOST + "/channel/typeall", {
-          method: "GET",
-          credentials: "include",
-        });
+        response = await fetch(
+          process.env.NEXT_PUBLIC_NEST_HOST + "/channel/typeall",
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
       } else {
         response = await fetch(
           process.env.NEXT_PUBLIC_NEST_HOST + "/channel/typeid/" + channelType,
@@ -736,7 +905,8 @@ const BrowseChats = ({
         changeChannelTypeSearch();
       } else {
         const response = await fetch(
-          process.env.NEXT_PUBLIC_NEST_HOST + "/channel/typesearch/" +
+          process.env.NEXT_PUBLIC_NEST_HOST +
+            "/channel/typesearch/" +
             channelType +
             "/" +
             e.target.value,
@@ -939,13 +1109,16 @@ const DisplayMessage = ({
   // console.log(message?.sender?.id);
 
   useEffect(() => {
-    fetchFriendData();
+    if (userData != undefined && message?.sender != undefined) {
+      fetchFriendData();
+    }
   }, [message]);
 
   const fetchFriendData = async () => {
     try {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_NEST_HOST + "/friend/check-relationship/" +
+        process.env.NEXT_PUBLIC_NEST_HOST +
+          "/friend/check-relationship/" +
           userData.id +
           "/" +
           message?.sender?.id,
@@ -981,9 +1154,9 @@ const DisplayMessage = ({
           >
             {message?.sender?.username}
           </p>
-          <p className="sender-message"></p>
+          <p className="sender-message invite-color"> Sent an Invite! </p>
         </li>
-        <li>
+        {/* <li>
           <div className="invite">
             <p>{message?.sender?.username} sent an Invite!</p>
             <div className="invite-request">
@@ -991,7 +1164,7 @@ const DisplayMessage = ({
               <button className="ir-button">decline</button>
             </div>
           </div>
-        </li>
+        </li> */}
       </div>
     );
   }
@@ -1028,7 +1201,9 @@ const DisplayChannelName = ({ channel }: { channel: any }) => {
   const fetchChannelUserData = async () => {
     try {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_NEST_HOST + "/channel-user/channel/" + channel?.channel_uid,
+        process.env.NEXT_PUBLIC_NEST_HOST +
+          "/channel-user/channel/" +
+          channel?.channel_uid,
         {
           method: "GET",
           credentials: "include",
@@ -1102,7 +1277,9 @@ const DisplayGroupChannel = ({ channel }: { channel: any }) => {
   const fetchChannelUserData = async () => {
     try {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_NEST_HOST + "/channel-user/channel/" + channel?.channel_uid,
+        process.env.NEXT_PUBLIC_NEST_HOST +
+          "/channel-user/channel/" +
+          channel?.channel_uid,
         {
           method: "GET",
           credentials: "include",
@@ -1301,6 +1478,7 @@ const ChangeChannelType = ({
           newChannelPassword,
           userData?.id,
         );
+        toast.success("Channel Type changed!");
       }
     }
     setNewChannelPassword("");
@@ -1409,6 +1587,7 @@ const MembersMore = ({
   const handleLeave = async () => {
     // console.log("I left");
     socket?.emit("leave-channel", channel?.channel_uid, userData.id);
+    toast.success("You have left the channel.");
   };
 
   if (
@@ -1496,6 +1675,8 @@ const MembersMore = ({
 import { useRouter } from "next/router";
 import MatchMakingButton from "../game/MatchMakingButton";
 import ChooseGameMode from "../game/ChooseGameMode";
+import { useGameData } from "../game/GameContext";
+import toast from "react-hot-toast";
 
 const ChatBox: React.FC<any> = () => {
   const [refresh, setRefresh] = useState(0);
@@ -1572,6 +1753,14 @@ const ChatBox: React.FC<any> = () => {
     fetchCurrentChannelData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData, channelId, refresh]);
+
+  const gameState = useGameData().gameState;
+  useEffect(() => {
+    socket?.emit("clear-room", {
+      roomId: gameState?.roomId,
+      user: userData,
+    });
+  }, [channelId]);
 
   useEffect(() => {
     scrollToBottom();
@@ -1658,14 +1847,15 @@ const ChatBox: React.FC<any> = () => {
     return <div>users not found</div>;
   }
 
-  
-
   const fetchChatData = async () => {
     try {
-      const response = await fetch(process.env.NEXT_PUBLIC_NEST_HOST + "/chat", {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_NEST_HOST + "/chat",
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
       if (response.ok) {
         const messageData = await response.json();
         const messageContent = messageData.map((message: any) => {
@@ -1711,7 +1901,9 @@ const ChatBox: React.FC<any> = () => {
   const fetchChannelUserData = async () => {
     try {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_NEST_HOST + "/channel-user/channel/" + channelId,
+        process.env.NEXT_PUBLIC_NEST_HOST +
+          "/channel-user/channel/" +
+          channelId,
         {
           method: "GET",
           credentials: "include",
@@ -1761,7 +1953,8 @@ const ChatBox: React.FC<any> = () => {
       const request = `${process.env.NEXT_PUBLIC_NEST_HOST}channel-user/channeluser/${channelId}/${userData.id}`;
       // console.log("bruh", request);
       const response = await fetch(
-        process.env.NEXT_PUBLIC_NEST_HOST + "/channel-user/channeluser/" +
+        process.env.NEXT_PUBLIC_NEST_HOST +
+          "/channel-user/channeluser/" +
           channelId +
           "/" +
           userData.id,
@@ -1823,7 +2016,9 @@ const ChatBox: React.FC<any> = () => {
         fetchChannelData();
       } else {
         const response = await fetch(
-          process.env.NEXT_PUBLIC_NEST_HOST + "/channel/searchgroup/" + e.target.value,
+          process.env.NEXT_PUBLIC_NEST_HOST +
+            "/channel/searchgroup/" +
+            e.target.value,
           {
             method: "GET",
             credentials: "include",
@@ -1839,6 +2034,12 @@ const ChatBox: React.FC<any> = () => {
     } catch (error) {
       // console.log("Error fetching messages data:", error);
     }
+  };
+
+  const pressMe = async () => {
+    toast.success(
+      "CREDITS\n\nChat by JORDAN HII\nGame by JOEL HII\nBackend by STEH\nDesign by ZER\n\n Hope you like our first ever fullstack project!",
+    );
   };
 
   return (
@@ -1997,7 +2198,18 @@ const ChatBox: React.FC<any> = () => {
               onClick={() => setChatMembersSlideOut((current) => !current)}
             />
           </div>
-          <div></div>
+          <div className={`lost ${channelId == "-1" ? "" : "invisible"}`}>
+            <div className="meme">
+              <img src="pika.png" className="pika" />
+              <p>what are you looking for?</p>
+            </div>
+            <button className="members-more credits" onClick={pressMe}>
+              Press me
+            </button>
+          </div>
+          <div className={`npa-logo ${channelId != "-1" ? "" : "invisible"}`}>
+            <img src="shuut.png" className="npa" />
+          </div>
           <div
             className={`chat-members ${
               chat_members_slide_out
@@ -2048,13 +2260,7 @@ const ChatBox: React.FC<any> = () => {
                 onChange={handleInputChange}
               />
             </form>
-            <FontAwesomeIcon
-              className="invite-button"
-              icon={faTableTennisPaddleBall}
-              size="lg"
-              style={{ color: "#1c1e20" }}
-              onClick={SendInvite}
-            />
+            <InviteButton currentChannel={currentChannel} />
           </div>
         </div>
       </div>

@@ -411,4 +411,48 @@ export class FriendService {
     this.channelService.unmuteBothUserInBlock(sender.id, receiver.id);
     return updatedFriendRequest;
   }
+
+  async updateRoomId(p1: number, p2: number) {
+    let friend = await this.friendRepository.findOne({
+      where: {
+        sender: { id: p1 },
+        receiver: { id: p2 },
+      },
+    });
+    if (friend == undefined) {
+      friend = await this.friendRepository.findOne({
+        where: {
+          sender: { id: p2 },
+          receiver: { id: p1 },
+        },
+      });
+    }
+
+    const test = await this.friendRepository.update(friend.id, {
+      roomId: 'in game',
+    });
+
+    return test;
+  }
+
+  async getGameStatus(userId: number) {
+    let friend = await this.friendRepository.find({
+      where: {
+        sender: { id: userId },
+        roomId: 'in game',
+      },
+      relations: ['sender', 'receiver'],
+    });
+    console.log(friend);
+    if (friend == undefined) {
+      friend = await this.friendRepository.find({
+        where: {
+          receiver: { id: userId },
+          roomId: 'in game',
+        },
+        relations: ['sender', 'receiver'],
+      });
+    }
+    return friend;
+  }
 }

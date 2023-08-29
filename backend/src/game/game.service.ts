@@ -127,13 +127,40 @@ export class GameService {
     param.client.emit('joined-room', roomId);
 
     // update friends in game status
-    const friends = await this.friendService.getFriendsBoth(param.user.id);
-    for (const friend of friends) {
-      // console.log('Friend: ', friend);
-      await this.friendService.update(friend.id, {
-        ...friend,
-        roomId: roomId,
-      });
+    // const friends = await this.friendService.getFriendsBoth(param.user.id);
+    // for (const friend of friends) {
+    //   console.log('Friend: ', friend);
+    //   await this.friendService.update(friend.id, {
+    //     ...friend,
+    //     roomId: roomId,
+    //   });
+    // }
+
+    if (roomPlayers.length === 2) {
+      const playersData = roomPlayers.map((player) => ({
+        player: player,
+      }));
+
+      const p1 = playersData[0].player.id;
+      const p2 = playersData[1].player.id;
+
+      if (p1 != undefined && p2 != undefined) {
+        await this.friendService.updateRoomId(p1, p2);
+      }
+    }
+
+    if (roomPlayers.length === 2) {
+      const playersData = roomPlayers.map((player) => ({
+        player: player,
+      }));
+
+      const p1 = playersData[0].player.id;
+      const p2 = playersData[1].player.id;
+
+      console.log(p1, p2);
+      if (p1 != undefined && p2 != undefined) {
+        await this.friendService.updateRoomId(p1, p2);
+      }
     }
 
     // start game if room has 2 players
@@ -170,18 +197,32 @@ export class GameService {
       param.pOne.id,
     );
 
-    roomPlayers.push(param.pTwo);
+    roomPlayers?.push(param.pTwo);
     param.client.join(roomId);
+
     param.client.to(param.pTwo.id.toString()).emit('joined-room', roomId);
 
     // update friends in game status
-    const friends = await this.friendService.getFriendsBoth(param.pTwo.id);
-    for (const friend of friends) {
-      // console.log('Friend: ', friend);
-      await this.friendService.update(friend.id, {
-        ...friend,
-        roomId: roomId,
-      });
+    // const friends = await this.friendService.getFriendsBoth(param.pTwo.id);
+    // for (const friend of friends) {
+    //   console.log('Friend: ', friend);
+    //   await this.friendService.update(friend.id, {
+    //     ...friend,
+    //     roomId: roomId,
+    //   });
+    // }
+
+    if (roomPlayers?.length === 2) {
+      const playersData = roomPlayers.map((player) => ({
+        player: player,
+      }));
+
+      const p1 = playersData[0].player.id;
+      const p2 = playersData[1].player.id;
+
+      if (p1 != undefined && p2 != undefined) {
+        await this.friendService.updateRoomId(p1, p2);
+      }
     }
 
     param.server.to(roomId).emit('to-loading-screen', {
