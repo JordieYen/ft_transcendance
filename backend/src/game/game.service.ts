@@ -21,7 +21,6 @@ import {
 import { FriendService } from 'src/friend/services/friend.service';
 import { MatchHistoryService } from 'src/match-history/services/match-history.service';
 import * as wavPlayer from 'node-wav-player';
-import playsound from 'play-sound';
 
 @Injectable()
 export class GameService {
@@ -692,18 +691,13 @@ export class GameService {
   }
 
   async playSound() {
-    const play = playsound();
-    const audioFilePath = './public/sounds/hit.wav';
-
     try {
-      await new Promise<void>((resolve, reject) => {
-        play.play(audioFilePath, (err) => {
-          if (err) reject(err);
-          resolve();
-        });
+      await wavPlayer.play({
+        path: './public/sounds/hit.wav',
       });
-    } catch (err) {
-      console.error(`Could not play sound: ${err.message}`);
+      console.log('The wav file started to be played successfully.');
+    } catch (error) {
+      console.error('The wav file failed to be played.', error);
     }
   }
 }

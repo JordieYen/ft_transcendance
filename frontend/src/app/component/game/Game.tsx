@@ -438,7 +438,7 @@ const Game = () => {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socket, router]);
+  }, [socket]);
 
   return null;
 };
