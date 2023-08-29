@@ -138,7 +138,7 @@ const InviteButton = ({ currentChannel }: { currentChannel: any }) => {
           sender = channelUsers[1]?.user;
           reciever = channelUsers[0]?.user;
         }
-        // console.log("sender", sender);
+        // console.log("sender", sendnezer);
         // console.log("reciever", reciever);
         // const useless = await fetchGameStatus(reciever?.id);
         if (gameStatus.length == 0) {
@@ -1228,7 +1228,7 @@ const DisplayChannelName = ({ channel }: { channel: any }) => {
     if (userData.id == channelUsers[0]?.user?.id) {
       avatar = channelUsers[1]?.user?.avatar;
       username = channelUsers[1]?.user?.username;
-      if ((userStatus = channelUsers[1]?.user?.online == "f")) {
+      if ((channelUsers[1]?.user?.online)) {
         userStatus = "offline";
       } else {
         userStatus = "online";
@@ -1236,7 +1236,7 @@ const DisplayChannelName = ({ channel }: { channel: any }) => {
     } else {
       avatar = channelUsers[0]?.user?.avatar;
       username = channelUsers[0]?.user?.username;
-      if ((userStatus = channelUsers[0]?.user?.online == "f")) {
+      if ((channelUsers[0]?.user?.online)) {
         userStatus = "offline";
       } else {
         userStatus = "online";
@@ -1304,18 +1304,18 @@ const DisplayGroupChannel = ({ channel }: { channel: any }) => {
     if (userData.id == channelUsers[0]?.user?.id) {
       avatar = channelUsers[1]?.user?.avatar;
       username = channelUsers[1]?.user?.username;
-      if ((userStatus = channelUsers[1]?.user?.online == "f")) {
-        userStatus = "offline";
-      } else {
+      if ((userStatus = channelUsers[1]?.user?.online)) {
         userStatus = "online";
+      } else {
+        userStatus = "offline";
       }
     } else {
       avatar = channelUsers[0]?.user?.avatar;
       username = channelUsers[0]?.user?.username;
-      if ((userStatus = channelUsers[0]?.user?.online == "f")) {
-        userStatus = "offline";
-      } else {
+      if ((userStatus = channelUsers[0]?.user?.online)) {
         userStatus = "online";
+      } else {
+        userStatus = "offline";
       }
     }
 
