@@ -1,22 +1,90 @@
 import * as PIXI from "pixi.js";
-import { useEffect, useRef } from "react";
+import { Stage, usePixiApp } from "react-pixi-fiber";
+import { useEffect, useRef, useState } from "react";
+import useGameAnimeStore, { GameAnime } from "@/store/useGameAnimeStore";
 
-interface ScoreExplosionProps {
-  winPlayer: number;
-  yPos: number;
-}
-
-const ScoreExplosion = ({ winPlayer, yPos }: ScoreExplosionProps) => {
-  const ref = useRef<HTMLDivElement | null>(null);
+const SoundEffects = ({ playing }: { playing: boolean }) => {
+  const audio = new Audio("/game-effects/score.wav");
 
   useEffect(() => {
-    if (ref.current) {
-      const app = new PIXI.Application<HTMLCanvasElement>({
-        autoStart: false,
-        resizeTo: window,
-        backgroundAlpha: 0,
-      });
-      ref.current.appendChild(app.view);
+    console.log("WTF", playing);
+    if (playing === true) {
+      audio.play();
+    }
+  }, [playing]);
+
+  return null;
+};
+
+interface SpriteAnimationContainerProps {
+  textures: any[];
+  gameAnime: GameAnime;
+  postAction: () => void;
+}
+
+const SpriteAnimationContainer = ({
+  textures,
+  gameAnime,
+  postAction,
+}: SpriteAnimationContainerProps) => {
+  const app = usePixiApp();
+
+  console.log("SPRITEANIMATIONCONTAINER RUNS", app);
+
+  useEffect(() => {
+    if (
+      gameAnime.startAnimate &&
+      textures.length > 0 &&
+      gameAnime.winPlayer !== 0
+    ) {
+      console.log("TEXTURE", textures, gameAnime);
+      const anime = new PIXI.AnimatedSprite(textures);
+
+      anime.anchor.set(0.5, 1);
+      anime.scale.set(0.7, 1.4);
+      anime.loop = false;
+
+      if (gameAnime.winPlayer === 1) {
+        anime.angle = -90 + ((gameAnime.yPos - 0.5) / 0.5) * 15;
+        anime.x = app.screen.width + 30;
+      } else {
+        anime.angle = 90 - ((gameAnime.yPos - 0.5) / 0.5) * 15;
+        anime.x = 0 - 30;
+      }
+      anime.y = gameAnime.yPos * (app.screen.height - 200) + 100;
+
+      app.stage.addChild(anime);
+
+      anime.onComplete = () => {
+        app.stage.removeChild(anime);
+        postAction();
+        console.log("done");
+      };
+
+      anime.play();
+
+      app.start();
+    }
+  }, [gameAnime.startAnimate]);
+
+  return null;
+};
+
+const ScoreExplosion = () => {
+  const [textures, setTextures, gameAnime, setGameAnime] = useGameAnimeStore(
+    (state) => [
+      state.textures,
+      state.setTextures,
+      state.gameAnime,
+      state.setGameAnime,
+    ],
+  );
+
+  /***********************************/
+  /* Pre-rendering of Texture Frames */
+  /***********************************/
+  useEffect(() => {
+    if (textures.length === 0) {
       PIXI.Assets.load("/game-effects/explosion-1.json").then(() => {
         const textures = [];
         let i;
@@ -28,39 +96,29 @@ const ScoreExplosion = ({ winPlayer, yPos }: ScoreExplosionProps) => {
 
           textures.push({ texture, time });
         }
-
-        const anime = new PIXI.AnimatedSprite(textures);
-
-        anime.anchor.set(0.5, 1);
-        if (winPlayer === 1) {
-          anime.angle = -90 + ((yPos - 0.5) / 0.5) * 30;
-          anime.x = app.screen.width;
-        } else {
-          anime.angle = 90 - ((yPos - 0.5) / 0.5) * 30;
-          anime.x = 0;
-        }
-        anime.scale.set(0.8, 1.6);
-
-        anime.y = yPos * app.screen.height;
-        anime.loop = false; // Set loop property to false to play the animation only once
-        anime.onComplete = () => {
-          // This callback will be called when the animation completes playing
-          app.stage.removeChild(anime); // Remove the sprite from the stage after animation completion if needed
-        };
-        anime.play();
-        app.stage.addChild(anime);
-
-        // start animating
-        app.start();
+        setTextures(textures);
       });
     }
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className="absolute w-screen h-screen top-0 left-0 bg-transparent"
-    />
+    <>
+      <SoundEffects playing={gameAnime.startAnimate} />
+      <Stage
+        className={`absolute top-0 left-0 ${
+          gameAnime.startAnimate ? "block" : "hidden"
+        }`}
+        options={{ autoStart: false, resizeTo: window, backgroundAlpha: 0 }}
+      >
+        <SpriteAnimationContainer
+          textures={textures}
+          gameAnime={gameAnime}
+          postAction={() =>
+            setGameAnime({ ...gameAnime, startAnimate: false, winPlayer: 0 })
+          }
+        />
+      </Stage>
+    </>
   );
 };
 

@@ -244,7 +244,7 @@ const FriendList = () => {
                           <p className="card-username">{user?.username}</p>
                           <div
                             className={`card-status ${
-                              user?.online ? "online" : "offline"
+                              user?.online ? "Online" : "Offline"
                             }`}
                           >
                             {user?.online ? (
@@ -253,7 +253,7 @@ const FriendList = () => {
                               <div className="red-dot"></div>
                             )}
                             <span className="card-status">
-                              {user?.online ? "online" : "offline"}
+                              {user?.online ? "Online" : "Offline"}
                             </span>
                           </div>
                         </div>

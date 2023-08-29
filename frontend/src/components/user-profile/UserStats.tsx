@@ -8,18 +8,18 @@ const LifetimeKills = ({ mode }: { mode: number }) => {
   return (
     <div
       className={`${
-        (mode === 0 && "w-[150px] h-[150px]") ||
-        (mode === 1 && "w-[180px] h-[180px]") ||
-        (mode === 2 && "w-[200px] h-[200px]") ||
-        (mode >= 3 && "w-[220px] h-[220px]")
+        (mode <= 1 && "w-[160px] h-[160px]") ||
+        (mode === 2 && "w-[180px] h-[180px]") ||
+        (mode === 3 && "w-[200px] h-[200px]") ||
+        (mode === 4 && "w-[220px] h-[220px]")
       } rounded-full border-[1px] border-timberwolf flex items-center justify-center`}
     >
       <div
         className={`${
-          (mode === 0 && "w-[140px] h-[140px]") ||
-          (mode === 1 && "w-[170px] h-[170px]") ||
-          (mode === 2 && "w-[190px] h-[190px]") ||
-          (mode >= 3 && "w-[210px] h-[210px]")
+          (mode <= 1 && "w-[150px] h-[150px]") ||
+          (mode === 2 && "w-[170px] h-[170px]") ||
+          (mode === 3 && "w-[190px] h-[190px]") ||
+          (mode === 4 && "w-[210px] h-[210px]")
         } rounded-full border-[2px] border-timberwolf flex flex-col items-center justify-center`}
       >
         <p className="w-full text-sm text-center">
@@ -51,18 +51,18 @@ const MatchmakingRating = ({ mode }: { mode: number }) => {
   return (
     <div
       className={`${
-        (mode === 0 && "w-[150px] h-[150px]") ||
-        (mode === 1 && "w-[180px] h-[180px]") ||
-        (mode === 2 && "w-[200px] h-[200px]") ||
-        (mode >= 3 && "w-[220px] h-[220px]")
+        (mode <= 1 && "w-[160px] h-[160px]") ||
+        (mode === 2 && "w-[180px] h-[180px]") ||
+        (mode === 3 && "w-[200px] h-[200px]") ||
+        (mode === 4 && "w-[220px] h-[220px]")
       } rounded-full border-[1px] border-timberwolf flex items-center justify-center`}
     >
       <div
         className={`${
-          (mode === 0 && "w-[140px] h-[140px]") ||
-          (mode === 1 && "w-[170px] h-[170px]") ||
-          (mode === 2 && "w-[190px] h-[190px]") ||
-          (mode >= 3 && "w-[210px] h-[210px]")
+          (mode <= 1 && "w-[150px] h-[150px]") ||
+          (mode === 2 && "w-[170px] h-[170px]") ||
+          (mode === 3 && "w-[190px] h-[190px]") ||
+          (mode === 4 && "w-[210px] h-[210px]")
         } rounded-full border-[2px] border-timberwolf flex flex-col items-center justify-center`}
       >
         <p className="w-full text-sm text-center">

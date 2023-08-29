@@ -32,12 +32,9 @@ module.exports = {
         pmarker: ["Permanent Marker", "monospace"],
       },
       screens: {
-        'xs': '600px',
-      }
+        xs: "600px",
+      },
     },
-  },
-  variants: {
-    extend: {},
   },
   plugins: [],
 };
