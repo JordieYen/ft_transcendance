@@ -49,9 +49,8 @@ interface GameElements {
 // const screenWidth = 2000 / 2;
 // const screenHeight = 700;
 const space = 200;
-
-const screenWidth = window ? window.innerWidth : 0;
-const screenHeight = window !== undefined ? window.innerHeight - space : 0;
+const screenWidth = globalThis.window?.innerWidth;
+const screenHeight = globalThis.window?.innerHeight - space;
 
 const borderWidth = screenWidth;
 const borderHeight = 100;
@@ -453,11 +452,20 @@ const Game = () => {
         user: currentUser.current,
       });
     };
+    
+    const handleBeforeUnload = () => {
+      handleRouteChange();
+    }
+
     router.events.on("routeChangeStart", handleRouteChange);
 
+    window.addEventListener("onbeforeunload", handleBeforeUnload); 
+    
     return () => {
       socket?.off("game-over");
       clearInterval(movePaddleInterval);
+      router.events.off("routeChangeStart", handleRouteChange);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
