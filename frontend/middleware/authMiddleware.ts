@@ -7,7 +7,7 @@ export function authMiddleware(req: NextRequest) {
     "ft_transcendence_session_id",
   );
   if (!sessionCookie) {
-    return NextResponse.redirect("http://localhost:3001/login");
+    return NextResponse.redirect(process.env.NEXT_PUBLIC_NEST_HOST + "/login");
   }
   return null;
 }

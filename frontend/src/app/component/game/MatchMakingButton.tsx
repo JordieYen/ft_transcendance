@@ -1,5 +1,5 @@
 import { SocketContext } from "@/app/socket/SocketProvider";
-import { useContext, useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useGameData } from "./GameContext";
 import useUserStore, { UserData } from "@/store/useUserStore";
@@ -57,6 +57,13 @@ const MatchMakingButton = ({
     };
   }, [socket, userData, router]);
 
+  // useEffect(() => {
+  //   if (userData.id && roomId) {
+  //     cancelMatchMaking();
+  //   }
+  // }, []);
+
+
   const handleMatchmaking = () => {
     if (isMatchmaking === false) {
       // console.log("start match");
@@ -74,6 +81,7 @@ const MatchMakingButton = ({
   };
 
   const cancelMatchMaking = () => {
+    console.log("cancel match");
     socket?.emit("clear-room", {
       roomId: roomId || sessionStorage.getItem("roomId"),
       // userName: userData.username,
@@ -100,6 +108,7 @@ const MatchMakingButton = ({
       socket?.off("joined-room");
     };
   }, [roomId, isMatchmaking]);
+
 
   useEffect(() => {
     if (roomId && isMatchmaking && player1User && player2User) {

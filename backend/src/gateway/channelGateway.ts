@@ -14,7 +14,7 @@ import { UsersService } from 'src/users/services/users.service';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3001',
+    // origin: 'http://localhost:3001',
   },
 })
 export class ChannelGateway implements OnModuleInit {
